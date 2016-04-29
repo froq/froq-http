@@ -42,20 +42,4 @@ final class Headers extends Collection
     {
         parent::__construct($headers);
     }
-
-    /**
-     * @overwride
-     * @param  int|string $key
-     * @param  any        $valueDefault
-     * @return any
-     */
-    final public function get($key, $valueDefault = null)
-    {
-        // try with modified key
-        if (!$this->offsetExists($key)) {
-            $key = to_snake_from_dash($key);
-        }
-
-        return parent::get($key, $valueDefault);
-    }
 }
