@@ -262,52 +262,50 @@ final class Request
      */
     final private function loadGlobalVar(string $name): array
     {
-        $source = '';
-        $return = [];
+        $src = '';
+        $var = [];
 
         switch ($name) {
             case 'GET':
-                $source = $_SERVER['QUERY_STRING'];
+                $src = $_SERVER['QUERY_STRING'];
                 break;
             case 'POST':
-                $source = file_get_contents('php://input');
+                $src = file_get_contents('php://input');
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
-                    $source = implode('&', array_map('trim', explode(';', $_SERVER['HTTP_COOKIE'])));
+                    $src = implode('&', array_map('trim', explode(';', $_SERVER['HTTP_COOKIE'])));
                 }
                 break;
         }
 
         // no var source?
-        if (empty($source)) {
-            return $return;
+        if (empty($src)) {
+            return $var;
         }
 
         // hex keys
-        $source = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($m) {
+        $src = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($m) {
             return bin2hex(urldecode($m[0]));
-        }, $source);
+        }, $src);
 
         // parse
-        parse_str($source, $source);
+        parse_str($src, $src);
 
-        foreach ($source as $key => $value) {
-            // prevent strict_types error
-            $key = hex2bin("{$key}");
+        foreach ($src as $key => $value) {
+            $key = hex2bin((string) $key);
 
             // not array
             if (strpos($key, '[') === false) {
-                $return[$key] = $value;
-                continue;
+                $var[$key] = $value;
+            } else {
+                // handle arrays
+                parse_str("{$key}={$value}", $value);
+
+                $var = array_merge_recursive($var, $value);
             }
-
-            // handle arrays
-            parse_str("{$key}={$value}", $value);
-
-            $return = array_merge_recursive($return, $value);
         }
 
-        return $return;
+        return $var;
     }
 }
