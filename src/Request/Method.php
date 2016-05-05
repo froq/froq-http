@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
+use  Froq\Http\Http;
+
 /**
  * @package    Froq
  * @subpackage Froq\Http\Request
@@ -31,29 +33,11 @@ namespace Froq\Http\Request;
  */
 final class Method
 {
-
-    /**
-     * Methods.
-     * @conts string
-     */
-    const NAME_GET     = 'GET',
-          NAME_POST    = 'POST',
-          NAME_PUT     = 'PUT',
-          NAME_PATCH   = 'PATCH',
-          NAME_DELETE  = 'DELETE',
-          NAME_OPTIONS = 'OPTIONS',
-          NAME_HEAD    = 'HEAD',
-          NAME_TRACE   = 'TRACE',
-          NAME_CONNECT = 'CONNECT',
-          // non-standard
-          NAME_COPY    = 'COPY',
-          NAME_MOVE    = 'MOVE';
-
     /**
      * Name.
      * @var string
      */
-    private $name = '';
+    private $name;
 
     /**
      * Constructor.
@@ -90,7 +74,7 @@ final class Method
      */
     final public function isGet(): bool
     {
-        return ($this->name == self::NAME_GET);
+        return ($this->name == Http::METHOD_GET);
     }
 
     /**
@@ -99,7 +83,7 @@ final class Method
      */
     final public function isPost(): bool
     {
-        return ($this->name == self::NAME_POST);
+        return ($this->name == Http::METHOD_POST);
     }
 
     /**
@@ -108,7 +92,7 @@ final class Method
      */
     final public function isPut(): bool
     {
-        return ($this->name == self::NAME_PUT);
+        return ($this->name == Http::METHOD_PUT);
     }
 
     /**
@@ -117,7 +101,7 @@ final class Method
      */
     final public function isPatch(): bool
     {
-        return ($this->name == self::NAME_PATCH);
+        return ($this->name == Http::METHOD_PATCH);
     }
 
     /**
@@ -126,7 +110,7 @@ final class Method
      */
     final public function isDelete(): bool
     {
-        return ($this->name == self::NAME_DELETE);
+        return ($this->name == Http::METHOD_DELETE);
     }
 
     /**
@@ -135,7 +119,7 @@ final class Method
      */
     final public function isOptions(): bool
     {
-        return ($this->name == self::NAME_OPTIONS);
+        return ($this->name == Http::METHOD_OPTIONS);
     }
 
     /**
@@ -144,7 +128,7 @@ final class Method
      */
     final public function isHead(): bool
     {
-        return ($this->name == self::NAME_HEAD);
+        return ($this->name == Http::METHOD_HEAD);
     }
 
     /**
@@ -153,7 +137,7 @@ final class Method
      */
     final public function isTrace(): bool
     {
-        return ($this->name == self::NAME_TRACE);
+        return ($this->name == Http::METHOD_TRACE);
     }
 
     /**
@@ -162,7 +146,7 @@ final class Method
      */
     final public function isConnect(): bool
     {
-        return ($this->name == self::NAME_CONNECT);
+        return ($this->name == Http::METHOD_CONNECT);
     }
 
     /**
@@ -171,7 +155,7 @@ final class Method
      */
     final public function isCopy(): bool
     {
-        return ($this->name == self::NAME_COPY);
+        return ($this->name == Http::METHOD_COPY);
     }
 
     /**
@@ -180,7 +164,7 @@ final class Method
      */
     final public function isMove(): bool
     {
-        return ($this->name == self::NAME_MOVE);
+        return ($this->name == Http::METHOD_MOVE);
     }
 
     /**

@@ -125,8 +125,8 @@ final class Request
      */
     final public function __construct()
     {
-        // set http version (not really)
-        $this->httpVersion = $_SERVER['SERVER_PROTOCOL'];
+        // set http version
+        $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
 
         // set scheme
         if (isset($_SERVER['REQUEST_SCHEME'])) {
@@ -149,9 +149,9 @@ final class Request
 
         // set/parse body for overwrite methods
         switch ($this->method) {
-            case self::METHOD_PUT:
-            case self::METHOD_POST:
-            case self::METHOD_PATCH:
+            case Http::METHOD_PUT:
+            case Http::METHOD_POST:
+            case Http::METHOD_PATCH:
                 // act as post
                 $_POST = $this->loadGlobalVar('POST');
                 $this->body = $_POST;
