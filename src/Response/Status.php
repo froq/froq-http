@@ -192,9 +192,11 @@ final class Status
      * @param int    $code
      * @param string $text
      */
-    final public function __construct(
-        int $code = self::DEFAULT_CODE, string $text = self::DEFAULT_TEXT)
+    final public function __construct(int $code = self::DEFAULT_CODE, string $text = null)
     {
+        if ($text == '') {
+            $text = self::getTextByCode($code);
+        }
         $this->code = $code;
         $this->text = $text;
     }
