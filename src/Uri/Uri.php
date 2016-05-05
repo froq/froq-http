@@ -179,7 +179,7 @@ final class Uri
      */
     final public function setScheme(string $scheme = null): self
     {
-        if ($scheme = trim($scheme)) {
+        if ($scheme = _trim($scheme)) {
             $this->scheme = $scheme;
         }
 
@@ -203,7 +203,7 @@ final class Uri
      */
     final public function setHost(string $host = null): self
     {
-        if ($host = trim($host)) {
+        if ($host = _trim($host)) {
             $this->host = $host;
         }
 
@@ -249,7 +249,7 @@ final class Uri
      */
     final public function setUser(string $user = null): self
     {
-        if ($user = trim($user)) {
+        if ($user = _trim($user)) {
             $this->user = $user;
         }
 
@@ -272,7 +272,7 @@ final class Uri
      */
     final public function setPass(string $pass = null): self
     {
-        if ($pass = trim($pass)) {
+        if ($pass = _trim($pass)) {
             $this->pass = $pass;
         }
 
@@ -295,7 +295,7 @@ final class Uri
      */
     final public function setPath(string $path = null): self
     {
-        if ($path = trim($path)) {
+        if ($path = _trim($path)) {
             $this->path = $path;
         }
 
@@ -318,7 +318,7 @@ final class Uri
      */
     final public function setQuery(string $query = null): self
     {
-        if ($query = trim($query)) {
+        if ($query = _trim($query)) {
             $this->query = $query;
         }
 
@@ -341,7 +341,7 @@ final class Uri
      */
     final public function setFragment(string $fragment = null): self
     {
-        if ($fragment = trim($fragment)) {
+        if ($fragment = _trim($fragment)) {
             $this->fragment = $fragment;
         }
 
