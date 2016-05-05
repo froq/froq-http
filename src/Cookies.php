@@ -32,14 +32,4 @@ use Froq\Util\Collection;
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Cookies extends Collection
-{
-    /**
-     * Constructor.
-     *
-     * @param array $cookies
-     */
-    final public function __construct(array $cookies = [])
-    {
-        parent::__construct($cookies);
-    }
-}
+{}

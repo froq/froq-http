@@ -32,14 +32,4 @@ use Froq\Util\Collection;
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Headers extends Collection
-{
-    /**
-     * Constructor.
-     *
-     * @param array $headers
-     */
-    final public function __construct(array $headers = [])
-    {
-        parent::__construct($headers);
-    }
-}
+{}
