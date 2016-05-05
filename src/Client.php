@@ -63,24 +63,14 @@ final class Client
      */
     final public function __construct()
     {
-        $app = app();
-
         // set ip
         $this->ip = Util::getClientIp();
 
-        // set language
-        $this->language = $app->config->get('app.language');
+        // set locale & language
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $language = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-            if (in_array($language, $app->config->get('app.languages'))) {
-                $this->language = $language;
-            }
-        }
-
-        // set locale
-        $this->locale = sprintf('%s_%s', $this->language, strtoupper($this->language));
-        if (!array_key_exists($this->locale, $app->config->get('app.locales'))) {
-            $this->locale = $app->config->get('app.locale');
+            $this->locale = str_replace('-', '_',
+                substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
+            $this->language = substr($this->locale, 0, 2);
         }
     }
 }
