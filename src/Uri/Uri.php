@@ -165,7 +165,6 @@ final class Uri
 
     /**
      * Get source.
-     *
      * @return string
      */
     final function getSource(): string
@@ -222,7 +221,6 @@ final class Uri
 
     /**
      * Set port.
-     *
      * @param  int|null port
      * @return self
      */
@@ -246,7 +244,6 @@ final class Uri
 
     /**
      * Set user.
-     *
      * @param  string $user
      * @return self
      */
@@ -270,7 +267,6 @@ final class Uri
 
     /**
      * Set pass.
-     *
      * @param  string|null $pass
      * @return self
      */
@@ -294,7 +290,6 @@ final class Uri
 
     /**
      * Set path.
-     *
      * @param  string|null $path
      * @return self
      */
@@ -318,7 +313,6 @@ final class Uri
 
     /**
      * Set query.
-     *
      * @param  string|null $query
      * @return self
      */
@@ -342,7 +336,6 @@ final class Uri
 
     /**
      * Set fragment.
-     *
      * @param  string|null $fragment
      * @return self
      */
