@@ -177,8 +177,10 @@ final class Request
         $this->headers = new Headers($headers);
         $this->cookies = new Cookies($_COOKIE);
 
-        // set params & files
+        // set params
         $this->params = new Params();
+
+        // set files
         $this->files = new Files($_FILES);
     }
 
