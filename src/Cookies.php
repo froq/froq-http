@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
-use Froq\Util\Collection;
+use Froq\Collection\Collection;
 
 /**
  * @package    Froq
