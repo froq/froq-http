@@ -48,18 +48,6 @@ final class Response
     private $httpVersion;
 
     /**
-     * Gzip.
-     * @var Froq\Encoding\Gzip
-     */
-    private $gzip;
-
-    /**
-     * Gzip options.
-     * @var array
-     */
-    private $gzipOptions = [];
-
-    /**
      * Status object.
      * @var Froq\Http\Response\Status
      */
@@ -84,21 +72,32 @@ final class Response
     private $cookies;
 
     /**
-     * Constructor.
-     *
-     * @param string $body
-     * @param array  $status (eg: [code] or [code, text])
-     * @param array  $headers
-     * @param array  $cookies
+     * Gzip.
+     * @var Froq\Encoding\Gzip
      */
-    final public function __construct(array $status = null, string $body = null,
+    // private $gzip;
+
+    /**
+     * Gzip options.
+     * @var array
+     */
+    // private $gzipOptions = [];
+
+    /**
+     * Constructor.
+     * @param any|null $status Eg: code or [code, text].
+     * @param any|null $body
+     * @param array    $headers
+     * @param array    $cookies
+     */
+    final public function __construct($status = null, $body = null,
         array $headers = [], array $cookies = [])
     {
         // set http version
-        $this->httpVersion = $_SERVER['SERVER_PROTOCOL'];
+        $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
 
         // set body
-        $this->setBody($body);
+        $this->body = new Body();
     }
 
     /**
@@ -108,7 +107,13 @@ final class Response
      */
     final public function setBody($body): self
     {
-        $this->body = new Body($body);
+        switch ($this->body->content->getType()) {
+            case BodyContent::TYPE_JSON:
+                break;
+        }
+
+        $this->body->content->setData($body);
+        $this->body->content->setLength(strlen($body));
 
         return $this;
     }
