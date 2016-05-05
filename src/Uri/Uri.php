@@ -101,10 +101,9 @@ final class Uri
 
     /**
      * Constructor.
-     *
      * @param string $source
      */
-    final public function __construct(string $source)
+    final public function __construct(string $source = '')
     {
         // set source
         $this->setSource($source);
@@ -197,7 +196,6 @@ final class Uri
 
     /**
      * Set host.
-     *
      * @param  string|null $host
      * @return self
      */
