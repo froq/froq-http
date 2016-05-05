@@ -26,51 +26,86 @@ namespace Froq\Http\Response;
 /**
  * @package    Froq
  * @subpackage Froq\Http\Response
- * @object     Froq\Http\Response\Content
+ * @object     Froq\Http\Response\BodyContent
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class Content
+final class BodyContent
 {
     /**
     * Types.
     * @const string
     */
-   const TYPE_NONE = 'none',
-         TYPE_HTML = 'text/html',
-         TYPE_XML  = 'application/xml',
-         TYPE_JSON = 'application/json';
+   const TYPE_NONE      = 'none',
+         TYPE_HTML      = 'text/html',
+         TYPE_PLAIN     = 'text/plain',
+         TYPE_XML       = 'application/xml',
+         TYPE_JSON      = 'application/json';
 
     /**
-     * Charset.
+     * Charsets.
      * @const string
      */
-    const CHARSET_UTF8 = 'utf-8';
+    const CHARSET_UTF8  = 'utf-8';
+          CHARSET_UTF16 = 'utf-16';
+          CHARSET_UTF32 = 'utf-32';
 
     /**
-     * Type.
+     * Data.
+     * @var string
+     */
+    private $data;
+
+    /**
+     * Data type.
      * @var string
      */
     private $type;
 
     /**
-     * Charset.
+     * Data charset.
      * @var string
      */
     private $charset;
 
     /**
+     * Data length.
+     * @var int
+     */
+    private $Length;
+
+    /**
      * Constructor.
+     * @param string|null $data
      * @param string|null $type
      * @param string|null $charset
      */
-    final public function __construct(string $type = null, string $charset = null)
+    final public function __construct($data = null,
+        string $type = self::TYPE_HTML, string $charset = self::CHARSET_UTF8)
     {
-        if ($type) {
-           $this->setType($type);
-        }
-        if ($charset) {
-            $this->setCharset($charset);
-        }
+        $this->setData($data);
+        $this->setType($type);
+        $this->setCharset($charset);
+    }
+
+    /**
+     * Set data.
+     * @param  string|null $data
+     * @return self
+     */
+    final public function setData(string $data = null): self
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data.
+     * @return string
+     */
+    final public function getData()
+    {
+        return $data;
     }
 
     /**
@@ -114,4 +149,31 @@ final class Content
     {
         return $this->charset;
     }
+
+    /**
+     * Set length.
+     * @param int $length
+     */
+    final public function setLength(int $length): self
+    {
+        $this->length = $length;
+
+        return $this;
+    }
+
+    /**
+     * Get length.
+     * @return int|null
+     */
+    final public function getLength()
+    {
+        return $this->length;
+    }
+
+    /**
+     * String data.
+     * @return string
+     */
+    final public function toString(): string
+    {}
 }
