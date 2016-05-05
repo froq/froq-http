@@ -26,7 +26,7 @@ namespace Froq\Http;
 use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Util\Util;
 use Froq\Http\Uri\Uri;
-use Froq\Http\Request\{Params, Method};
+use Froq\Http\Request\{Params, Files, Method};
 
 /**
  * @package    Froq
@@ -97,12 +97,6 @@ final class Request
     private $client;
 
     /**
-     * Params object (not stack).
-     * @var Froq\Http\Request\Params
-     */
-    private $params;
-
-    /**
      * Header stack.
      * @var Froq\Http\Headers
      */
@@ -113,6 +107,18 @@ final class Request
      * @var Froq\Http\Cookies
      */
     private $cookies;
+
+    /**
+     * Params object.
+     * @var Froq\Http\Request\Params
+     */
+    private $params;
+
+    /**
+     * Files object.
+     * @var Froq\Http\Request\Files
+     */
+    private $files;
 
     /**
      * Constructor.
@@ -162,9 +168,6 @@ final class Request
         // set client that contains ip & language etc.
         $this->client = new Client();
 
-        // set params
-        $this->params = new Params();
-
         $headers = [];
         foreach (getallheaders() as $key => $value) {
             $headers[to_snake_from_dash($key, true)] = $value;
@@ -173,6 +176,10 @@ final class Request
         // set headers/cookies as an object that iterable/traversable
         $this->headers = new Headers($headers);
         $this->cookies = new Cookies($_COOKIE);
+
+        // set params & files
+        $this->params = new Params();
+        $this->files = new Files($_FILES);
     }
 
     /**
