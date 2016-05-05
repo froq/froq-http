@@ -113,6 +113,15 @@ final class File extends Collection
     }
 
     /**
+     * Get name.
+     * @return string
+     */
+    final public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
      * Set temp. name.
      * @param  string $nameTemp
      * @return self
@@ -122,6 +131,15 @@ final class File extends Collection
         $this->nameTemp = $nameTemp;
 
         return $this;
+    }
+
+    /**
+     * Get temp. name.
+     * @return string
+     */
+    final public function getNameTemp(): string
+    {
+        return $this->nameTemp;
     }
 
     /**
@@ -137,6 +155,15 @@ final class File extends Collection
     }
 
     /**
+     * Get type.
+     * @return string
+     */
+    final public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
      * Set size.
      * @param int $size
      */
@@ -145,6 +172,15 @@ final class File extends Collection
         $this->size = $size;
 
         return $this;
+    }
+
+    /**
+     * Get size.
+     * @return int
+     */
+    final public function getSize(): int
+    {
+        return $this->size;
     }
 
     /**
@@ -160,6 +196,15 @@ final class File extends Collection
     }
 
     /**
+     * Get error.
+     * @return int
+     */
+    final public function getError(): int
+    {
+        return $this->error;
+    }
+
+    /**
      * Set error string.
      * @param int $errorString
      */
@@ -168,51 +213,6 @@ final class File extends Collection
         $this->errorString = $errorString;
 
         return $this;
-    }
-
-    /**
-     * Get name.
-     * @return string
-     */
-    final public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Get temp. name.
-     * @return string
-     */
-    final public function getNameTemp(): string
-    {
-        return $this->nameTemp;
-    }
-
-    /**
-     * Get type.
-     * @return string
-     */
-    final public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get size.
-     * @return int
-     */
-    final public function getSize(): int
-    {
-        return $this->size;
-    }
-
-    /**
-     * Get error.
-     * @return int
-     */
-    final public function getError(): int
-    {
-        return $this->error;
     }
 
     /**
