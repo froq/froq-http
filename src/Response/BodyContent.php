@@ -103,6 +103,15 @@ final class BodyContent
     }
 
     /**
+     * String data.
+     * @return string
+     */
+    final public function __toString(): string
+    {
+        return ((string) $this->data);
+    }
+
+    /**
      * Set data.
      * @param  string|null $data
      * @return self
@@ -120,7 +129,7 @@ final class BodyContent
      */
     final public function getData()
     {
-        return $data;
+        return $this->data;
     }
 
     /**
@@ -183,38 +192,5 @@ final class BodyContent
     final public function getLength()
     {
         return $this->length;
-    }
-
-    /**
-     * Set GZip.
-     * @param Froq\Encoding\Gzip $gzip
-     */
-    final public function setGzip(Gzip $gzip): self
-    {
-        $this->gzip = $gzip;
-
-        return $this;
-    }
-
-    /**
-     * Get GZip.
-     * @return Froq\Encoding\Gzip
-     */
-    final public function getGzip(): Gzip
-    {
-        return $this->gzip;
-    }
-
-    /**
-     * String data.
-     * @return string
-     */
-    final public function toString(): string
-    {
-        switch ($thi->type) {
-            case self::TYPE_JSON:
-                // ...
-                break;
-        }
     }
 }
