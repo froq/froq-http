@@ -26,7 +26,7 @@ namespace Froq\Http;
 use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Util\Util;
 use Froq\Http\Uri\Uri;
-use Froq\Http\Request\Params;
+use Froq\Http\Request\{Params, Method};
 
 /**
  * @package    Froq
@@ -41,16 +41,6 @@ final class Request
      * @object Froq\Util\Traits\GetterTrait
      */
     use Getter;
-
-    /**
-     * Methods.
-     * @conts string
-     */
-    const METHOD_GET    = 'GET',
-          METHOD_POST   = 'POST',
-          METHOD_PUT    = 'PUT',
-          METHOD_PATCH  = 'PATCH',
-          METHOD_DELETE = 'DELETE';
 
     /**
      * HTTP Version.
@@ -132,9 +122,6 @@ final class Request
         // set http version (not really)
         $this->httpVersion = $_SERVER['SERVER_PROTOCOL'];
 
-        // set method
-        $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
-
         // set scheme
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
@@ -143,6 +130,9 @@ final class Request
         } else {
             $this->scheme = 'http';
         }
+
+        // set method
+        $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
         // set uri
         $this->uri = new Uri($this->scheme .'://'.
@@ -183,72 +173,6 @@ final class Request
         // set headers/cookies as an object that iterable/traversable
         $this->headers = new Headers($headers);
         $this->cookies = new Cookies($_COOKIE);
-    }
-
-    /**
-     * Detect GET method.
-     *
-     * @return bool
-     */
-    final public function isGet(): bool
-    {
-        return ($this->method == self::METHOD_GET);
-    }
-
-    /**
-     * Detect POST method.
-     *
-     * @return bool
-     */
-    final public function isPost(): bool
-    {
-        return ($this->method == self::METHOD_POST);
-    }
-
-    /**
-     * Detect PUT method.
-     *
-     * @return bool
-     */
-    final public function isPut(): bool
-    {
-        return ($this->method == self::METHOD_POST);
-    }
-
-    /**
-     * Detect PATCH method.
-     *
-     * @return bool
-     */
-    final public function isPatch(): bool
-    {
-        return ($this->method == self::METHOD_PATCH);
-    }
-
-    /**
-     * Detect DELETE method.
-     *
-     * @return bool
-     */
-    final public function isDelete(): bool
-    {
-        return ($this->method == self::METHOD_DELETE);
-    }
-
-    /**
-     * Detect AJAX requests.
-     *
-     * @return bool
-     */
-    final public function isAjax(): bool
-    {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-            return (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-        }
-        if (isset($_SERVER['HTTP_X_AJAX'])) {
-            return (strtolower($_SERVER['HTTP_X_AJAX']) == 'true' || $_SERVER['HTTP_X_AJAX'] == '1');
-        }
-        return false;
     }
 
     /**
