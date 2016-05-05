@@ -85,16 +85,19 @@ final class Response
 
     /**
      * Constructor.
-     * @param any|null $status Eg: code or [code, text].
+     * @param int      $status
      * @param any|null $body
      * @param array    $headers
      * @param array    $cookies
      */
-    final public function __construct($status = null, $body = null,
+    final public function __construct(int $status = Status::OK, $body = null,
         array $headers = [], array $cookies = [])
     {
         // set http version
         $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
+
+        // set status
+        $this->status = new Status($status);
 
         // set body
         $this->body = new Body();
