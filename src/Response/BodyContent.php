@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
+use Froq\Util\Traits\GetterTrait as Getter;
+use Froq\Encoding\{Gzip, GzipException};
+
 /**
  * @package    Froq
  * @subpackage Froq\Http\Response
@@ -31,6 +34,12 @@ namespace Froq\Http\Response;
  */
 final class BodyContent
 {
+    /**
+     * Getter.
+     * @object Froq\Util\Traits\GetterTrait
+     */
+    use Getter;
+
     /**
     * Types.
     * @const string
@@ -45,8 +54,8 @@ final class BodyContent
      * Charsets.
      * @const string
      */
-    const CHARSET_UTF8  = 'utf-8';
-          CHARSET_UTF16 = 'utf-16';
+    const CHARSET_UTF8  = 'utf-8',
+          CHARSET_UTF16 = 'utf-16',
           CHARSET_UTF32 = 'utf-32';
 
     /**
@@ -56,28 +65,34 @@ final class BodyContent
     private $data;
 
     /**
-     * Data type.
+     * Type.
      * @var string
      */
     private $type;
 
     /**
-     * Data charset.
+     * Charset.
      * @var string
      */
     private $charset;
 
     /**
-     * Data length.
+     * Length.
      * @var int
      */
-    private $Length;
+    private $length;
+
+    /**
+     * GZip object.
+     * @var Froq\Encoding\Gzip
+     */
+    private $gzip;
 
     /**
      * Constructor.
      * @param string|null $data
-     * @param string|null $type
-     * @param string|null $charset
+     * @param string      $type
+     * @param string      $charset
      */
     final public function __construct($data = null,
         string $type = self::TYPE_HTML, string $charset = self::CHARSET_UTF8)
@@ -171,9 +186,35 @@ final class BodyContent
     }
 
     /**
+     * Set GZip.
+     * @param Froq\Encoding\Gzip $gzip
+     */
+    final public function setGzip(Gzip $gzip): self
+    {
+        $this->gzip = $gzip;
+
+        return $this;
+    }
+
+    /**
+     * Get GZip.
+     * @return Froq\Encoding\Gzip
+     */
+    final public function getGzip(): Gzip
+    {
+        return $this->gzip;
+    }
+
+    /**
      * String data.
      * @return string
      */
     final public function toString(): string
-    {}
+    {
+        switch ($thi->type) {
+            case self::TYPE_JSON:
+                // ...
+                break;
+        }
+    }
 }
