@@ -111,6 +111,9 @@ final class Response
     final public function setBody($body): self
     {
         $this->body = new Body($body);
+        if ($this->gzip) {
+            $this->body->content->setGzip($this->gzip);
+        }
 
         return $this;
     }
