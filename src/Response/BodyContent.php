@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace Froq\Http\Response;
 
 use Froq\Util\Traits\GetterTrait as Getter;
-use Froq\Encoding\{Gzip, GzipException};
 
 /**
  * @package    Froq
@@ -83,23 +82,17 @@ final class BodyContent
     private $length;
 
     /**
-     * GZip object.
-     * @var Froq\Encoding\Gzip
-     */
-    private $gzip;
-
-    /**
      * Constructor.
      * @param string|null $data
      * @param string      $type
      * @param string      $charset
      */
-    final public function __construct($data = null,
+    final public function __construct(string $data = null,
         string $type = self::TYPE_HTML, string $charset = self::CHARSET_UTF8)
     {
-        $this->setData($data);
-        $this->setType($type);
-        $this->setCharset($charset);
+        $this->setData($data)
+             ->setType($type)
+             ->setCharset($charset);
     }
 
     /**
@@ -125,7 +118,7 @@ final class BodyContent
 
     /**
      * Get data.
-     * @return string
+     * @return string|null
      */
     final public function getData()
     {
