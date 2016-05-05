@@ -25,9 +25,7 @@ namespace Froq\Http;
 
 use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Http\Response\{Status, Body, BodyContent};
-use Froq\Encoding\{Gzip, GzipException};
-use Froq\Encoding\{Json, JsonException};
-// use Froq\{Encoding\Gzip, Encoding\Xml, Encoding\Json, Encoding\JsonException};
+use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
 
 /**
  * @package    Froq
@@ -111,9 +109,6 @@ final class Response
     final public function setBody($body): self
     {
         $this->body = new Body($body);
-        if ($this->gzip) {
-            $this->body->content->setGzip($this->gzip);
-        }
 
         return $this;
     }
@@ -149,7 +144,7 @@ final class Response
         // $this->sendHeader('X-Load-Time', app()->loadTime());
 
         // print it beybe!
-        print $this->body->content->toString();
+        print $this->body->content;
     }
 
     // @wait
