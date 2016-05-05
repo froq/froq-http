@@ -1,10 +1,10 @@
 <?php
 /**
  * Copyright (c) 2016 Kerem Güneş
- *    <k-gun@mail.com>
+ *     <k-gun@mail.com>
  *
  * GNU General Public License v3.0
- *    <http://www.gnu.org/licenses/gpl-3.0.txt>
+ *     <http://www.gnu.org/licenses/gpl-3.0.txt>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,73 +34,73 @@ use Froq\Http\Request\Params\{Get, Post, Cookie};
  */
 final class Params
 {
-   /**
-    * Getter.
-    * @object Froq\Util\Traits\GetterTrait
-    */
-   use Getter;
+    /**
+     * Getter.
+     * @object Froq\Util\Traits\GetterTrait
+     */
+    use Getter;
 
-   /**
-    * Get params.
-    * @var Froq\Http\Request\Params\Get
-    */
-   private $get;
+    /**
+     * Get params.
+     * @var Froq\Http\Request\Params\Get
+     */
+    private $get;
 
-   /**
-    * Post params.
-    * @var Froq\Http\Request\Params\Post
-    */
-   private $post;
+    /**
+     * Post params.
+     * @var Froq\Http\Request\Params\Post
+     */
+    private $post;
 
-   /**
-    * Cookie params.
-    * @var Froq\Http\Request\Params\Cookie
-    */
-   private $cookie;
+    /**
+     * Cookie params.
+     * @var Froq\Http\Request\Params\Cookie
+     */
+    private $cookie;
 
-   /**
-    * Constructor.
-    */
-   final public function __construct()
-   {
-      $this->get = new Get();
-      $this->post = new Post();
-      $this->cookie = new Cookie();
-   }
+    /**
+     * Constructor.
+     */
+    final public function __construct()
+    {
+        $this->get = new Get();
+        $this->post = new Post();
+        $this->cookie = new Cookie();
+    }
 
-   /**
-    * Get a GET param.
-    *
-    * @param  string $key
-    * @param  mixed  $valueDefault
-    * @return mixed
-    */
-   final public function get(string $key, $valueDefault = null)
-   {
-      return $this->get->get($key, $valueDefault);
-   }
+    /**
+     * Get a GET param.
+     *
+     * @param  string $key
+     * @param  mixed  $valueDefault
+     * @return mixed
+     */
+    final public function get(string $key, $valueDefault = null)
+    {
+        return $this->get->get($key, $valueDefault);
+    }
 
-   /**
-    * Get a POST param.
-    *
-    * @param  string $key
-    * @param  mixed  $valueDefault
-    * @return mixed
-    */
-   final public function post(string $key, $valueDefault = null)
-   {
-      return $this->post->get($key, $valueDefault);
-   }
+    /**
+     * Get a POST param.
+     *
+     * @param  string $key
+     * @param  mixed  $valueDefault
+     * @return mixed
+     */
+    final public function post(string $key, $valueDefault = null)
+    {
+        return $this->post->get($key, $valueDefault);
+    }
 
-   /**
-    * Get a COOKIE param.
-    *
-    * @param  string $key
-    * @param  mixed  $valueDefault
-    * @return mixed
-    */
-   final public function cookie(string $key, $valueDefault = null)
-   {
-      return $this->cookie->get($key, $valueDefault);
-   }
+    /**
+     * Get a COOKIE param.
+     *
+     * @param  string $key
+     * @param  mixed  $valueDefault
+     * @return mixed
+     */
+    final public function cookie(string $key, $valueDefault = null)
+    {
+        return $this->cookie->get($key, $valueDefault);
+    }
 }
