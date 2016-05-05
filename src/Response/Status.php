@@ -270,21 +270,21 @@ final class Status
     }
 
     /**
-     * Get status code by text.
+     * Get code by text.
      * @param  string $text
      * @return int
      */
-    final public static function getStatusCodeByText(string $text): int
+    final public static function getCodeByText(string $text): int
     {
         return array_flip(self::$statuses)[$text] ?? 0;
     }
 
     /**
-     * Get status text by code.
+     * Get text by code.
      * @param  int $code
      * @return string
      */
-    final public static function getStatusTextByCode(int $code): string
+    final public static function getTextByCode(int $code): string
     {
         return self::$statuses[$code] ?? '';
     }
