@@ -35,10 +35,10 @@ abstract class Content
     * Content types.
     * @const string
     */
-   const NONE = 'none',
-         HTML = 'text/html',
-         XML  = 'application/xml',
-         JSON = 'application/json';
+   const TYPE_NONE = 'none',
+         TYPE_HTML = 'text/html',
+         TYPE_XML  = 'application/xml',
+         TYPE_JSON = 'application/json';
 
     /**
      * Content charset.
