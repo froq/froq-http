@@ -47,11 +47,14 @@ final class Body
 
     /**
      * Constructor.
-     * @param any $data
+     * @param string|null $data
+     * @param string      $type
+     * @param string      $charset
      */
-    final public function __construct($data = null)
+    final public function __construct($data = null,
+        string $type = BodyContent::TYPE_HTML, string $charset = BodyContent::CHARSET_UTF8)
     {
-        $this->content = new BodyContent($data);
+        $this->content = new BodyContent($data, $type, $charset);
     }
 
     /**
