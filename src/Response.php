@@ -328,7 +328,7 @@ final class Response
         }
 
         // send cookie
-        return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+        return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httponly);
     }
 
     /**
@@ -356,7 +356,7 @@ final class Response
 
         // remove instantly?
         if (!$defer) {
-            $this->sendCookie($name, null, 322869600);
+            $this->sendCookie($name, null, 0);
         }
     }
 
