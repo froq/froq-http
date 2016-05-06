@@ -381,6 +381,18 @@ final class Response
     }
 
     /**
+     * Redirect client to the given location.
+     * @param  string $location
+     * @param  int    $code
+     * @return void
+     */
+    final public function redirect(string $location, int $code = Status::FOUND)
+    {
+        $this->setStatus($code);
+        $this->setHeader('Location', $location);
+    }
+
+    /**
      * Set body.
      * @param  any $body
      * @return self
