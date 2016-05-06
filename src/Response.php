@@ -280,11 +280,11 @@ final class Response
      * @notice All these stored cookies should be sent before
      * sending the last output to the client with self.send()
      * method.
-     * @param  string $name
+     * @param  string  $name
      * @param  any     $value
      * @param  int     $expire
-     * @param  string $path
-     * @param  string $domain
+     * @param  string  $path
+     * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httponly
      * @throws \InvalidArgumentException
