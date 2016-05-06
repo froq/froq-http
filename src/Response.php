@@ -291,7 +291,7 @@ final class Response
      * @return void
      */
     final public function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false)
+        string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
@@ -320,7 +320,7 @@ final class Response
      * @return bool
      */
     final public function sendCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false): bool
+        string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false): bool
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
