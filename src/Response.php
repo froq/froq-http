@@ -78,6 +78,12 @@ final class Response
     private $gzip;
 
     /**
+     * GZip options.
+     * @var array
+     */
+    private $gzipOptions = [];
+
+    /**
      * Constructor.
      * @param int      $status
      * @param any|null $body
@@ -356,6 +362,25 @@ final class Response
     }
 
     /**
+     * Set GZip config.
+     * @param  array $gzipOptions
+     * @return self
+     */
+    final public function setGzipOptions(array $gzipOptions): self
+    {
+        isset($gzipOptions['level']) &&
+            $this->gzip->setLevel($gzipOptions['level']);
+        isset($gzipOptions['mode']) &&
+            $this->gzip->setMode($gzipOptions['mode']);
+        isset($gzipOptions['minlen']) &&
+            $this->gzip->setDataMinlen($gzipOptions['minlen']);
+
+        $this->gzipOptions = $gzipOptions;
+
+        return $this;
+    }
+
+    /**
      * Set body.
      * @param  any $body
      * @return self
@@ -363,13 +388,26 @@ final class Response
     final public function setBody($body): self
     {
         switch ($this->body->content->getType()) {
+            case BodyContent::TYPE_XML:
+                // @todo
+                break;
             case BodyContent::TYPE_JSON:
                 $json = new Json($body);
                 $body = $json->encode();
                 if ($json->hasError()) {
-                   throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+                    throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
                 }
                 break;
+        }
+
+        // gzip
+        if (!empty($this->gzipOptions)) {
+            $this->gzip->setData($body);
+            if ($this->gzip->isDataMinlenOK()) {
+                $body = $this->gzip->encode();
+                $this->setHeader('Vary', 'Accept-Encoding');
+                $this->setHeader('Content-Encoding', 'gzip');
+            }
         }
 
         $this->body->content->setData($body);
