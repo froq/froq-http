@@ -182,6 +182,82 @@ final class Response
     }
 
     /**
+     * Set a header.
+     * @notice All these stored headers should be sent before
+     * sending the last output to the client with self.send()
+     * method.
+     * @param  string $name
+     * @param  any    $value
+     * @return self
+     */
+    final public function setHeader(string $name, $value): self
+    {
+        $this->headers->set($name, $value);
+
+        return $this;
+    }
+
+    /**
+     * Send a header instantly.
+     * @param  string $name
+     * @param  any    $value
+     * @return void
+     */
+    final public function sendHeader(string $name, $value)
+    {
+        if (headers_sent()) return;
+
+        // to remove a header set value as null
+        if ($value === null) {
+            return $this->removeHeader($name);
+        }
+
+        header(sprintf('%s: %s', $name, $value));
+     }
+
+    /**
+     * Send all stored response headers.
+     * @return void
+     */
+    final public function sendHeaderAll()
+    {
+        if ($this->headers->count()) {
+            foreach ($this->headers as $name => $value) {
+                $this->sendHeader($name, $value);
+            }
+        }
+    }
+
+    /**
+     * Remove a header.
+     * @param  string $name
+     * @param  bool   $defer
+     * @return void
+     */
+    final public function removeHeader(string $name, bool $defer = false)
+    {
+        unset($this->headers[$name]);
+
+        // remove instantly?
+        if (!$defer) {
+            header_remove($name);
+        }
+    }
+
+    /**
+     * Remove all headers.
+     * @return void
+     */
+    final public function removeHeaderAll()
+    {
+        if ($this->headers->count()) {
+            foreach ($this->headers as $name => $dummy) {
+                $this->removeHeader($name);
+            }
+        }
+    }
+
+    /**
      * Set body.
      * @param  any $body
      * @return self
