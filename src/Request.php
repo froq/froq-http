@@ -148,7 +148,7 @@ final class Request
         $_GET = $this->loadGlobalVar('GET');
 
         // set/parse body for overwrite methods
-        switch ($this->method) {
+        switch ($this->method->getName()) {
             case Http::METHOD_PUT:
             case Http::METHOD_POST:
             case Http::METHOD_PATCH:
