@@ -364,6 +364,11 @@ final class Response
     {
         switch ($this->body->content->getType()) {
             case BodyContent::TYPE_JSON:
+                $json = new Json($body);
+                $body = $json->encode();
+                if ($json->hasError()) {
+                   throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+                }
                 break;
         }
 
