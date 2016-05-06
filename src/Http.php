@@ -39,7 +39,7 @@ final class Http
           VERSION_1_1       = 'HTTP/1.1',
           VERSION_2_0       = 'HTTP/2.0',
           VERSION_LATEST    = self::VERSION_2_0,
-          VERSION_CURRENT   = self::VERSION_1_1;
+          VERSION_CURRENT   = self::VERSION_1_1,
           VERSION_DEFAULT   = self::VERSION_CURRENT;
 
     /**
