@@ -251,8 +251,106 @@ final class Response
     final public function removeHeaderAll()
     {
         if ($this->headers->count()) {
-            foreach ($this->headers as $name => $dummy) {
+            foreach ($this->headers as $name => $_) {
                 $this->removeHeader($name);
+            }
+        }
+    }
+
+    /**
+     * Set a cookie.
+     * @notice All these stored cookies should be sent before
+     * sending the last output to the client with self.send()
+     * method.
+     * @param  string $name
+     * @param  any     $value
+     * @param  int     $expire
+     * @param  string $path
+     * @param  string $domain
+     * @param  bool    $secure
+     * @param  bool    $httponly
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    final public function setCookie(string $name, $value, int $expire = 0,
+        string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false)
+    {
+        // check name
+        if (!preg_match('~^[a-z0-9_\-]+$~i', $name)) {
+            throw new \InvalidArgumentException('Cookie name not accepted!');
+        }
+
+        // store cookie
+        $this->cookies->set($name, [
+            'name'      => $name,     'value'  => $value,
+            'expire'    => $expire,   'path'   => $path,
+            'domain'    => $domain,   'secure' => $secure,
+            'httponly'  => $httponly,
+        ]);
+    }
+
+    /**
+     * Send a cookie instantly.
+     * @param  string  $name
+     * @param  any     $value
+     * @param  int     $expire
+     * @param  string  $path
+     * @param  string  $domain
+     * @param  bool    $secure
+     * @param  bool    $httponly
+     * @throws \InvalidArgumentException
+     * @return bool
+     */
+    final public function sendCookie(string $name, $value, int $expire = 0,
+        string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false): bool
+    {
+        // check name
+        if (!preg_match('~^[a-z0-9_\-]+$~i', $name)) {
+            throw new \InvalidArgumentException('Cookie name not accepted!');
+        }
+
+        // send cookie
+        return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+    }
+
+    /**
+     * Send all stored cookies.
+     * @return void
+     */
+    final public function sendCookieAll() {
+        if ($this->cookies->count()) {
+            foreach ($this->cookies as $cookie) {
+                $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
+                    $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
+            }
+        }
+    }
+
+    /**
+     * Remove a cookie.
+     * @param  string $name
+     * @param  bool   $defer
+     * @return void
+     */
+    final public function removeCookie(string $name, bool $defer = false)
+    {
+        unset($this->cookies[$name]);
+
+        // remove instantly?
+        if (!$defer) {
+            $this->sendCookie($name, null, 322869600);
+        }
+    }
+
+    /**
+     * Remove all cookies.
+     * @return void
+     */
+    final public function removeCookieAll()
+    {
+        if ($this->cookies->count()) {
+            foreach ($this->cookies as $name => $_) {
+                $this->removeCookie($name);
             }
         }
     }
