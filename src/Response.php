@@ -75,13 +75,7 @@ final class Response
      * Gzip.
      * @var Froq\Encoding\Gzip
      */
-    // private $gzip;
-
-    /**
-     * Gzip options.
-     * @var array
-     */
-    // private $gzipOptions = [];
+    private $gzip;
 
     /**
      * Constructor.
@@ -93,14 +87,62 @@ final class Response
     final public function __construct(int $status = Status::OK, $body = null,
         array $headers = [], array $cookies = [])
     {
-        // set http version
+        // http version
         $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
 
-        // set status
+        // status
         $this->status = new Status($status);
 
-        // set body
+        // body
         $this->body = new Body();
+
+        // headers/cookies iters
+        $this->headers = new Headers($headers);
+        $this->cookies = new Cookies($cookies);
+
+        // gzip
+        $this->gzip = new Gzip();
+    }
+
+    /**
+     * Set status.
+     * @param  int    $code
+     * @param  string $text
+     * @return self
+     */
+    final public function setStatus(int $code, string $text = null): self
+    {
+        if ($text == null) {
+            $text = Status::getTextByCode($code);
+        }
+        $this->status->setCode($code);
+        $this->status->setText($text);
+
+        return $this;
+    }
+
+    /**
+     * Set status code.
+     * @param  int $code
+     * @return self
+     */
+    final public function setStatusCode(int $code): self
+    {
+        $this->status->setCode($code);
+
+        return $this;
+    }
+
+    /**
+     * Set status text.
+     * @param  string $text
+     * @return self
+     */
+    final public function setStatusText(string $text): self
+    {
+        $this->status->setText($text);
+
+        return $this;
     }
 
     /**
@@ -152,7 +194,7 @@ final class Response
         // $this->sendHeader('X-Load-Time', app()->loadTime());
 
         // print it beybe!
-        print $this->body->content;
+        print $this->body->content->toString();
     }
 
     // @wait
