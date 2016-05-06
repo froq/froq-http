@@ -146,6 +146,42 @@ final class Response
     }
 
     /**
+     * Set content type.
+     * @param  string $contentType
+     * @return self
+     */
+    final public function setContentType(string $contentType): self
+    {
+        $this->body->content->setType($contentType);
+
+        return $this;
+    }
+
+    /**
+     * Set content charset.
+     * @param  string $contentCharset
+     * @return self
+     */
+    final public function setContentCharset(string $contentCharset): self
+    {
+        $this->body->content->setCharset($contentCharset);
+
+        return $this;
+    }
+
+    /**
+     * Set content length.
+     * @param  int $contentLength
+     * @return self
+     */
+    final public function setContentLength(int $contentLength): self
+    {
+        $this->body->content->setLength($contentLength);
+
+        return $this;
+    }
+
+    /**
      * Set body.
      * @param  any $body
      * @return self
