@@ -389,19 +389,19 @@ final class Response
         $bodyContentLength  = $this->body->content->getLength();
 
         // content type / length
-        // if (empty($bodyContentType)) {
-        //     $this->sendHeader('Content-Type', Content::TYPE_NONE);
-        // } elseif (empty($bodyContentCharset)
-        //     || strtolower($bodyContentType) == Content::TYPE_NONE) {
-        //         $this->sendHeader('Content-Type', $bodyContentType);
-        // } else {
-        //     $this->sendHeader('Content-Type', sprintf('%s; charset=%s',
-        //         $bodyContentType, $bodyContentCharset));
-        // }
-        // $this->sendHeader('Content-Length', $bodyContentLength);
+        if (empty($bodyContentType)) {
+            $this->sendHeader('Content-Type', Content::TYPE_NONE);
+        } elseif (empty($bodyContentCharset)
+            || strtolower($bodyContentType) == Content::TYPE_NONE) {
+                $this->sendHeader('Content-Type', $bodyContentType);
+        } else {
+            $this->sendHeader('Content-Type', sprintf('%s; charset=%s',
+                $bodyContentType, $bodyContentCharset));
+        }
+        $this->sendHeader('Content-Length', $bodyContentLength);
 
-        // // real load time
-        // $this->sendHeader('X-Load-Time', app()->loadTime());
+        // real load time
+        $this->sendHeader('X-Load-Time', app()->loadTime());
 
         // print it beybe!
         print $this->body->content->toString();
