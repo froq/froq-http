@@ -111,6 +111,18 @@ final class Response
     }
 
     /**
+     * Redirect client to the given location.
+     * @param  string $location
+     * @param  int    $code
+     * @return void
+     */
+    final public function redirect(string $location, int $code = Status::FOUND)
+    {
+        $this->setStatus($code);
+        $this->setHeader('Location', $location);
+    }
+
+    /**
      * Set status.
      * @param  int    $code
      * @param  string $text
@@ -225,7 +237,7 @@ final class Response
      * Send all stored response headers.
      * @return void
      */
-    final public function sendHeaderAll()
+    final public function sendHeaders()
     {
         if ($this->headers->count()) {
             foreach ($this->headers as $name => $value) {
@@ -254,7 +266,7 @@ final class Response
      * Remove all headers.
      * @return void
      */
-    final public function removeHeaderAll()
+    final public function removeHeaders()
     {
         if ($this->headers->count()) {
             foreach ($this->headers as $name => $_) {
@@ -282,7 +294,7 @@ final class Response
         string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false)
     {
         // check name
-        if (!preg_match('~^[a-z0-9_\-]+$~i', $name)) {
+        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
             throw new \InvalidArgumentException('Cookie name not accepted!');
         }
 
@@ -311,7 +323,7 @@ final class Response
         string $path = '/', string $domain = null, bool $secure = false, bool $httponly = false): bool
     {
         // check name
-        if (!preg_match('~^[a-z0-9_\-]+$~i', $name)) {
+        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
             throw new \InvalidArgumentException('Cookie name not accepted!');
         }
 
@@ -323,7 +335,7 @@ final class Response
      * Send all stored cookies.
      * @return void
      */
-    final public function sendCookieAll() {
+    final public function sendCookies() {
         if ($this->cookies->count()) {
             foreach ($this->cookies as $cookie) {
                 $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
@@ -352,7 +364,7 @@ final class Response
      * Remove all cookies.
      * @return void
      */
-    final public function removeCookieAll()
+    final public function removeCookies()
     {
         if ($this->cookies->count()) {
             foreach ($this->cookies as $name => $_) {
@@ -378,18 +390,6 @@ final class Response
         $this->gzipOptions = $gzipOptions;
 
         return $this;
-    }
-
-    /**
-     * Redirect client to the given location.
-     * @param  string $location
-     * @param  int    $code
-     * @return void
-     */
-    final public function redirect(string $location, int $code = Status::FOUND)
-    {
-        $this->setStatus($code);
-        $this->setHeader('Location', $location);
     }
 
     /**
