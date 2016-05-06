@@ -390,9 +390,9 @@ final class Response
 
         // content type / length
         if (empty($bodyContentType)) {
-            $this->sendHeader('Content-Type', Content::TYPE_NONE);
+            $this->sendHeader('Content-Type', BodyContent::TYPE_NONE);
         } elseif (empty($bodyContentCharset)
-            || strtolower($bodyContentType) == Content::TYPE_NONE) {
+            || strtolower($bodyContentType) == BodyContent::TYPE_NONE) {
                 $this->sendHeader('Content-Type', $bodyContentType);
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s',
