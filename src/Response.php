@@ -401,7 +401,7 @@ final class Response
         $this->sendHeader('Content-Length', $bodyContentLength);
 
         // real load time
-        $this->sendHeader('X-Load-Time', app()->loadTime());
+        $this->sendHeader('X-Load-Time', app()->getLoadTime());
 
         // print it beybe!
         print $this->body->content->toString();
