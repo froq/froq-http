@@ -456,7 +456,9 @@ final class Response
         $this->sendHeader('Content-Length', $bodyContentLength);
 
         // real load time
-        $this->sendHeader('X-Load-Time', app()->getLoadTime());
+        if (function_exists('app_load_time')) {
+            $this->sendHeader('X-App-Load-Time', app_load_time());
+        }
 
         // print it beybe!
         print $this->body->content->toString();
