@@ -40,6 +40,7 @@ final class Http
           VERSION_2_0       = 'HTTP/2.0',
           VERSION_LATEST    = self::VERSION_2_0,
           VERSION_CURRENT   = self::VERSION_1_1;
+          VERSION_DEFAULT   = self::VERSION_CURRENT;
 
     /**
      * Methods.
@@ -57,4 +58,14 @@ final class Http
           // non-standard
           METHOD_COPY       = 'COPY',
           METHOD_MOVE       = 'MOVE';
+
+
+    /**
+     * Detect version.
+     * @return string
+     */
+    final public static function detectVersion(): string
+    {
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT);
+    }
 }

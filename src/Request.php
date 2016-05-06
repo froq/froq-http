@@ -126,7 +126,7 @@ final class Request
     final public function __construct()
     {
         // set http version
-        $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
+        $this->httpVersion = Http::detectVersion();
 
         // set scheme
         if (isset($_SERVER['REQUEST_SCHEME'])) {

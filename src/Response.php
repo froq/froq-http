@@ -94,7 +94,7 @@ final class Response
         array $headers = [], array $cookies = [])
     {
         // http version
-        $this->httpVersion = ($_SERVER['SERVER_PROTOCOL'] ?? Http::VERSION_1_1);
+        $this->httpVersion = Http::detectVersion();
 
         // status
         $this->status = new Status($status);
