@@ -96,12 +96,12 @@ final class BodyContent
     }
 
     /**
-     * String data.
+     * Get string data.
      * @return string
      */
     final public function __toString(): string
     {
-        return ((string) $this->data);
+        return $this->toString();
     }
 
     /**
@@ -185,5 +185,14 @@ final class BodyContent
     final public function getLength()
     {
         return $this->length;
+    }
+
+    /**
+     * Get string data.
+     * @return string
+     */
+    final public function toString(): string
+    {
+        return ((string) $this->data);
     }
 }
