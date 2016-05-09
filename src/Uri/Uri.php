@@ -32,64 +32,70 @@ namespace Froq\Http\Uri;
 final class Uri
 {
     /**
-     * URI source.
+     * Source.
      * @var string
      */
     private $source;
 
     /**
-     * URI scheme
+     * Scheme
      * @var string
      */
     private $scheme;
 
     /**
-     * URI host.
+     * Host.
      * @var string
      */
     private $host;
 
     /**
-     * URI port.
+     * Port.
      * @var int
      */
     private $port;
 
     /**
-     * URI user.
+     * User.
      * @var string
      */
     private $user;
 
     /**
-     * URI pass.
+     * Pass.
      * @var string
      */
     private $pass;
 
     /**
-     * URI path.
+     * Path.
      * @var string
      */
     private $path;
 
     /**
-     * URI query.
+     * Query.
      * @var string
      */
     private $query;
 
     /**
-     * URI fragment.
+     * Fragment.
      * @var string
      */
     private $fragment;
 
     /**
-     * URI path object.
-     * @var Froq\Http\Uri\UriPath
+     * Segments.
+     * @var array
      */
-    private $uriPath;
+    private $segments = [];
+
+    /**
+     * Segments root.
+     * @var array
+     */
+    private $segmentsRoot;
 
     /**
      * Constructor.
@@ -123,14 +129,7 @@ final class Uri
                 $this->setFragment($source['fragment']);
 
             // segments
-            if ($this->path != '') {
-                $app = app();
-                // remove path root
-                if ($app->root != '' && $app->root != '/') {
-                    $path = preg_replace('~^'. preg_quote($app->root) .'~', '', $path);
-                }
-                $this->uriPath = new UriPath($this->path);
-            }
+            $this->generateSegments();
         }
     }
 
@@ -348,6 +347,15 @@ final class Uri
     }
 
     /**
+     * Check root.
+     * @return bool
+     */
+    final public function isRoot(): bool
+    {
+        return ($this->path == '/');
+    }
+
+    /**
      * Get segment value.
      * @param  int $i
      * @param  any $default
@@ -355,7 +363,7 @@ final class Uri
      */
     final public function segment(int $i, $default = null)
     {
-        return $this->uriPath->getSegment($i, $default);
+        return $this->segments[$i] ?? $default;
     }
 
     /**
@@ -364,7 +372,7 @@ final class Uri
      */
     final public function segments(): array
     {
-        return $this->uriPath->getSegmentAll();
+        return $this->segments;
     }
 
     /**
@@ -416,5 +424,42 @@ final class Uri
         }
 
         return $return;
+    }
+
+    /**
+     * Set segments root.
+     * @param string $segmentsRoot
+     */
+    final public function setSegmentsRoot(string $segmentsRoot): self
+    {
+        $this->segmentsRoot = $segmentsRoot;
+
+        return $this;
+    }
+
+    /**
+     * Get segments root.
+     * @return string
+     */
+    final public function getSegmentsRoot(): string
+    {
+        return $this->segmentsRoot;
+    }
+
+    /**
+     * Generate segments.
+     * @return void
+     */
+    final public function generateSegments()
+    {
+        if ($this->path != '' && $this->path != '/') {
+            // remove root
+            if ($this->segmentsRoot != '' && $this->segmentsRoot != '/') {
+                $path = preg_replace('~^'. preg_quote($this->segmentsRoot) .'~', '', $path);
+            }
+
+            $this->segments = array_filter(array_map('trim',
+                preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY)));
+        }
     }
 }
