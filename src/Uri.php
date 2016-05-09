@@ -21,12 +21,12 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Uri;
+namespace Froq\Http;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Uri
- * @object     Froq\Http\Uri\Uri
+ * @subpackage Froq\Http
+ * @object     Froq\Http\Uri
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Uri
