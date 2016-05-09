@@ -25,7 +25,6 @@ namespace Froq\Http;
 
 use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Util\Util;
-use Froq\Http\Uri\Uri;
 use Froq\Http\Request\{Params, Files, Method};
 
 /**
@@ -127,7 +126,15 @@ final class Request
     {
         // set http version
         $this->httpVersion = Http::detectVersion();
+    }
 
+    /**
+     * Init.
+     * @param  array $options
+     * @return self
+     */
+    final public function init(array $options = []): self
+    {
         // set scheme
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
@@ -141,8 +148,11 @@ final class Request
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
         // set uri
-        $this->uri = new Uri($this->scheme .'://'.
-            $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+        $uri = sprintf('%s://%s%s',
+            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']);
+        $uriRoot = $options['uriRoot'] ?? '';
+        $this->uri = new Uri();
+        $this->uri->setSegmentsRoot($options['uriRoot'])->generateSegments();
 
         // fix dotted get keys
         $_GET = $this->loadGlobalVar('GET');
@@ -182,6 +192,8 @@ final class Request
 
         // set files
         $this->files = new Files($_FILES);
+
+        return $this;
     }
 
     /**
