@@ -452,7 +452,8 @@ final class Uri
      */
     final public function generateSegments()
     {
-        if ($this->path != '' && $this->path != '/') {
+        $path = $this->path;
+        if ($path != '' && $path != '/') {
             // remove root
             if ($this->segmentsRoot != '' && $this->segmentsRoot != '/') {
                 $path = preg_replace('~^'. preg_quote($this->segmentsRoot) .'~', '', $path);
