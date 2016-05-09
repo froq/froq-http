@@ -151,8 +151,8 @@ final class Request
         $uri = sprintf('%s://%s%s',
             $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']);
         $uriRoot = $options['uriRoot'] ?? '';
-        $this->uri = new Uri();
-        $this->uri->setSegmentsRoot($options['uriRoot'])->generateSegments();
+        $this->uri = new Uri($uri);
+        $this->uri->setSegmentsRoot($uriRoot)->generateSegments();
 
         // fix dotted get keys
         $_GET = $this->loadGlobalVar('GET');
