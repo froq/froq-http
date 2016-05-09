@@ -90,24 +90,33 @@ final class Response
      * @param array    $headers
      * @param array    $cookies
      */
-    final public function __construct(int $status = Status::OK, $body = null,
-        array $headers = [], array $cookies = [])
+    final public function __construct()
     {
         // http version
         $this->httpVersion = Http::detectVersion();
+    }
 
+    /**
+     * Init.
+     * @param  array $options
+     * @return self
+     */
+    final public function init(array $options = []): self
+    {
         // status
-        $this->status = new Status($status);
+        $this->status = new Status();
+
+        // headers/cookies iters
+        $this->headers = new Headers();
+        $this->cookies = new Cookies();
 
         // body
         $this->body = new Body();
 
-        // headers/cookies iters
-        $this->headers = new Headers($headers);
-        $this->cookies = new Cookies($cookies);
-
         // gzip
         $this->gzip = new Gzip();
+
+        return $this;
     }
 
     /**
