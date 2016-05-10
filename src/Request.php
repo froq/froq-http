@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
-use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Util\Util;
+use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Http\Request\{Params, Files, Method};
 
 /**
