@@ -197,6 +197,69 @@ final class Request
     }
 
     /**
+     * Get a GET param.
+     * @param  string $name
+     * @param  any    $valueDefault
+     * @return any
+     */
+    final public function getParam(string $name, $valueDefault = null)
+    {
+        return $this->params->get->get($name, $valueDefault);
+    }
+
+    /**
+     * Get all GET params.
+     * @param  bool $setNoneNull
+     * @return array
+     */
+    final public function getParams(bool $setNoneNull = false): array
+    {
+        return $this->params->get->toArray($setNoneNull);
+    }
+
+    /**
+     * Get a POST param.
+     * @param  string $name
+     * @param  any    $valueDefault
+     * @return any
+     */
+    final public function postParam(string $name, $valueDefault = null)
+    {
+        return $this->params->post->get($name, $valueDefault);
+    }
+
+    /**
+     * Get all POST params.
+     * @param  bool $setNoneNull
+     * @return array
+     */
+    final public function postParams(bool $setNoneNull = false): array
+    {
+        return $this->params->post->toArray($setNoneNull);
+    }
+
+    /**
+     * Get all COOKIE params.
+     * @param  string $name
+     * @param  any    $valueDefault
+     * @return any
+     */
+    final public function cookieParam(string $name, $valueDefault = null)
+    {
+        return $this->params->cookie->get($name, $valueDefault);
+    }
+
+    /**
+     * Get all COOKIE params.
+     * @param  bool $setNoneNull
+     * @return array
+     */
+    final public function cookieParams(bool $setNoneNull = false): array
+    {
+        return $this->params->cookie->toArray($setNoneNull);
+    }
+
+    /**
      * Fix dotted param keys.
      *
      * SORRY RASMUS, SORRY ZEEV..
