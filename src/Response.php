@@ -424,7 +424,7 @@ final class Response
         // gzip
         if (!empty($this->gzipOptions)) {
             $this->gzip->setData($body);
-            if ($this->gzip->isDataMinlenOK()) {
+            if ($this->gzip->checkDataMinlen()) {
                 $body = $this->gzip->encode();
                 $this->setHeader('Vary', 'Accept-Encoding');
                 $this->setHeader('Content-Encoding', 'gzip');
