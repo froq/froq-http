@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
-use Froq\Util\Traits\GetterTrait as Getter;
+use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Response\{Status, Body, BodyContent};
 use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
 
@@ -39,7 +39,7 @@ final class Response
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
-    use Getter;
+    use GetterTrait;
 
     /**
      * HTTP Version.

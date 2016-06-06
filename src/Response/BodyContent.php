@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
-use Froq\Util\Traits\GetterTrait as Getter;
+use Froq\Util\Traits\GetterTrait;
 
 /**
  * @package    Froq
@@ -37,7 +37,7 @@ final class BodyContent
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
-    use Getter;
+    use GetterTrait;
 
     /**
     * Types.

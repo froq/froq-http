@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
-use Froq\Util\Traits\GetterTrait as Getter;
+use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Request\Params\{Get, Post, Cookie};
 
 /**
@@ -38,7 +38,7 @@ final class Params
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
-    use Getter;
+    use GetterTrait;
 
     /**
      * Get params.

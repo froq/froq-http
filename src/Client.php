@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
-use Froq\Util\Traits\GetterTrait as Getter;
 use Froq\Util\Util;
+use Froq\Util\Traits\GetterTrait;
 
 /**
  * @package    Froq
@@ -38,7 +38,7 @@ final class Client
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
-    use Getter;
+    use GetterTrait;
 
     /**
      * Client IP.
