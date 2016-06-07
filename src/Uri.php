@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
+use Froq\Util\Traits\GetterTrait;
+
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -31,6 +33,12 @@ namespace Froq\Http;
  */
 final class Uri
 {
+    /**
+     * Getter.
+     * @object Froq\Util\Traits\GetterTrait
+     */
+    use GetterTrait;
+
     /**
      * Source.
      * @var string
