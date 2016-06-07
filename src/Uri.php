@@ -172,14 +172,12 @@ final class Uri
 
     /**
      * Set scheme.
-     * @param  string|null $scheme
+     * @param  string $scheme
      * @return self
      */
-    final public function setScheme(string $scheme = null): self
+    final public function setScheme(string $scheme): self
     {
-        if ($scheme = _trim($scheme)) {
-            $this->scheme = $scheme;
-        }
+        $this->scheme = $scheme;
 
         return $this;
     }
@@ -198,11 +196,9 @@ final class Uri
      * @param  string|null $host
      * @return self
      */
-    final public function setHost(string $host = null): self
+    final public function setHost(string $host): self
     {
-        if ($host = _trim($host)) {
-            $this->host = $host;
-        }
+        $this->host = $host;
 
         return $this;
     }
@@ -221,11 +217,9 @@ final class Uri
      * @param  int|null port
      * @return self
      */
-    final public function setPort(int $port = null): self
+    final public function setPort(int $port): self
     {
-        if ($port = intval($port)) {
-            $this->port = $port;
-        }
+        $this->port = $port;
 
         return $this;
     }
@@ -244,11 +238,9 @@ final class Uri
      * @param  string $user
      * @return self
      */
-    final public function setUser(string $user = null): self
+    final public function setUser(string $user): self
     {
-        if ($user = _trim($user)) {
-            $this->user = $user;
-        }
+        $this->user = $user;
 
         return $this;
     }
@@ -267,11 +259,9 @@ final class Uri
      * @param  string|null $pass
      * @return self
      */
-    final public function setPass(string $pass = null): self
+    final public function setPass(string $pass): self
     {
-        if ($pass = _trim($pass)) {
-            $this->pass = $pass;
-        }
+        $this->pass = $pass;
 
         return $this;
     }
@@ -290,11 +280,9 @@ final class Uri
      * @param  string|null $path
      * @return self
      */
-    final public function setPath(string $path = null): self
+    final public function setPath(string $path): self
     {
-        if ($path = _trim($path)) {
-            $this->path = $path;
-        }
+        $this->path = $path;
 
         return $this;
     }
@@ -313,11 +301,9 @@ final class Uri
      * @param  string|null $query
      * @return self
      */
-    final public function setQuery(string $query = null): self
+    final public function setQuery(string $query): self
     {
-        if ($query = _trim($query)) {
-            $this->query = $query;
-        }
+        $this->query = $query;
 
         return $this;
     }
@@ -336,11 +322,9 @@ final class Uri
      * @param  string|null $fragment
      * @return self
      */
-    final public function setFragment(string $fragment = null): self
+    final public function setFragment(string $fragment): self
     {
-        if ($fragment = _trim($fragment)) {
-            $this->fragment = $fragment;
-        }
+        $this->fragment = $fragment;
 
         return $this;
     }
@@ -425,7 +409,7 @@ final class Uri
     {
         $return = [];
         foreach (['scheme', 'host', 'port', 'user',
-                     'pass', 'path', 'query', 'fragment'] as $key) {
+                  'pass', 'path', 'query', 'fragment'] as $key) {
             if (!in_array($key, $exclude)) {
                 $return[$key] = $this->{$key};
             }
@@ -436,7 +420,8 @@ final class Uri
 
     /**
      * Set segments root.
-     * @param string $segmentsRoot
+     * @param  string $segmentsRoot
+     * @return self
      */
     final public function setSegmentsRoot(string $segmentsRoot): self
     {
