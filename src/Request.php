@@ -284,27 +284,25 @@ final class Request
                 break;
         }
 
-        // no var source?
         if (empty($src)) {
             return $var;
         }
 
-        // hex keys
+        // keep keys hexed
         $src = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($m) {
             return bin2hex(urldecode($m[0]));
         }, $src);
 
-        // parse
         parse_str($src, $src);
 
         foreach ($src as $key => $value) {
             $key = hex2bin((string) $key);
 
             // not array
-            if (strpos($key, '[') === false) {
+            if (false === strpos($key, '[')) {
                 $var[$key] = $value;
             } else {
-                // handle arrays
+                // handle array
                 parse_str("{$key}={$value}", $value);
 
                 $var = array_merge_recursive($var, $value);
