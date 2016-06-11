@@ -209,12 +209,11 @@ final class Request
 
     /**
      * Get all GET params.
-     * @param  bool $setNoneNull
      * @return array
      */
-    final public function getParams(bool $setNoneNull = false): array
+    final public function getParams(): array
     {
-        return $this->params->get->toArray($setNoneNull);
+        return $this->params->get->toArray();
     }
 
     /**
@@ -230,12 +229,11 @@ final class Request
 
     /**
      * Get all POST params.
-     * @param  bool $setNoneNull
      * @return array
      */
-    final public function postParams(bool $setNoneNull = false): array
+    final public function postParams(): array
     {
-        return $this->params->post->toArray($setNoneNull);
+        return $this->params->post->toArray();
     }
 
     /**
@@ -251,12 +249,11 @@ final class Request
 
     /**
      * Get all COOKIE params.
-     * @param  bool $setNoneNull
      * @return array
      */
-    final public function cookieParams(bool $setNoneNull = false): array
+    final public function cookieParams(): array
     {
-        return $this->params->cookie->toArray($setNoneNull);
+        return $this->params->cookie->toArray();
     }
 
     /**
