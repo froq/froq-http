@@ -142,7 +142,7 @@ final class Uri
     }
 
     /**
-     * Get URI as string.
+     * To string.
      * @return string
      */
     final public function __toString(): string
@@ -152,7 +152,8 @@ final class Uri
 
     /**
      * Set source.
-     * @param string $source
+     * @param  string $source
+     * @return self
      */
     final public function setSource(string $source): self
     {
@@ -348,10 +349,10 @@ final class Uri
     }
 
     /**
-     * Get segment value.
+     * Segment.
      * @param  int $i
      * @param  any $default
-     * @return string|null
+     * @return any
      */
     final public function segment(int $i, $default = null)
     {
@@ -359,7 +360,7 @@ final class Uri
     }
 
     /**
-     * Get segments.
+     * Segments.
      * @return array
      */
     final public function segments(): array
@@ -368,7 +369,7 @@ final class Uri
     }
 
     /**
-     * Get URI as string.
+     * To string.
      * @param  array $exclude
      * @return string
      */
@@ -401,7 +402,7 @@ final class Uri
     }
 
     /**
-     * Get URI as array.
+     * To array.
      * @param  array $exclude
      * @return array
      */
