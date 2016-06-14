@@ -116,19 +116,19 @@ final class Status
           BANDWIDTH_LIMIT_EXCEEDED         = 509;
 
     /**
-     * Status code.
+     * Code.
      * @var int
      */
     private $code;
 
     /**
-     * Status text.
+     * Text.
      * @var string
      */
     private $text;
 
     /**
-     * Status codes/texts.
+     * Statuses.
      * @var array
      */
     private static $statuses = [
@@ -197,12 +197,13 @@ final class Status
         if ($text == '') {
             $text = self::getTextByCode($code);
         }
+
         $this->code = $code;
         $this->text = $text;
     }
 
     /**
-     * Get status code and text.
+     * Stringer.
      * @return string
      */
     final public function __toString(): string
@@ -254,12 +255,12 @@ final class Status
     }
 
     /**
-     * Get status code and text.
+     * To string.
      * @return string
      */
     final public function toString(): string
     {
-        return sprintf('%d %s', $this->code, $this->text);
+        return sprintf('%s %s', $this->code, $this->text);
     }
 
     /**
