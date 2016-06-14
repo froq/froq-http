@@ -111,13 +111,10 @@ final class Uri
      */
     final public function __construct(string $source = '')
     {
-        // set source
         $this->setSource($source);
 
-        // parse source
-        $source = parse_url($source);
-
         // set properties
+        $source = parse_url($source);
         if (!empty($source)) {
             isset($source['scheme']) &&
                 $this->setScheme($source['scheme']);
@@ -340,7 +337,7 @@ final class Uri
     }
 
     /**
-     * Check root.
+     * Is root.
      * @return bool
      */
     final public function isRoot(): bool
