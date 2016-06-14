@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
-use Froq\Util\Traits\GetterTrait;
-
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -33,12 +31,6 @@ use Froq\Util\Traits\GetterTrait;
  */
 final class Uri
 {
-    /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
-     */
-    use GetterTrait;
-
     /**
      * Source.
      * @var string
@@ -100,18 +92,22 @@ final class Uri
     private $segments = [];
 
     /**
-     * Segments root.
-     * @var array
+     * Root.
+     * @var string
      */
-    private $segmentsRoot;
+    private $root = '/';
 
     /**
      * Constructor.
      * @param string $source
      */
-    final public function __construct(string $source = '')
+    final public function __construct(string $source = '', string $root = null)
     {
         $this->setSource($source);
+
+        if ($root != null) {
+            $this->setRoot($root);
+        }
 
         // set properties
         $source = parse_url($source);
@@ -337,12 +333,33 @@ final class Uri
     }
 
     /**
+     * Set root.
+     * @param  string $root
+     * @return self
+     */
+    final public function setRoot(string $root): self
+    {
+        $this->root = $root;
+
+        return $this;
+    }
+
+    /**
+     * Get root.
+     * @return string
+     */
+    final public function getRoot(): string
+    {
+        return $this->root;
+    }
+
+    /**
      * Is root.
      * @return bool
      */
     final public function isRoot(): bool
     {
-        return ($this->path == '/');
+        return ($this->root == $this->path);
     }
 
     /**
@@ -417,37 +434,16 @@ final class Uri
     }
 
     /**
-     * Set segments root.
-     * @param  string $segmentsRoot
-     * @return self
-     */
-    final public function setSegmentsRoot(string $segmentsRoot): self
-    {
-        $this->segmentsRoot = $segmentsRoot;
-
-        return $this;
-    }
-
-    /**
-     * Get segments root.
-     * @return string
-     */
-    final public function getSegmentsRoot(): string
-    {
-        return $this->segmentsRoot;
-    }
-
-    /**
      * Generate segments.
      * @return void
      */
     final public function generateSegments()
     {
         $path = $this->path;
-        if ($path != '' && $path != '/') {
+        if ($path && $path != '/') {
             // remove root
-            if ($this->segmentsRoot != '' && $this->segmentsRoot != '/') {
-                $path = preg_replace('~^'. preg_quote($this->segmentsRoot) .'~', '', $path);
+            if ($this->root && $this->root != '/') {
+                $path = preg_replace('~^'. preg_quote($this->root) .'~', '', $path);
             }
 
             $this->segments = array_filter(array_map('trim',
