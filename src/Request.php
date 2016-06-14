@@ -48,73 +48,73 @@ final class Request
     private $httpVersion;
 
     /**
-     * Request scheme.
+     * Scheme.
      * @var string
      */
     private $scheme;
 
     /**
-     * Request method.
+     * Method.
      * @var string
      */
     private $method;
 
     /**
-     * Request URI.
+     * URI.
      * @var string
      */
     private $uri;
 
     /**
-     * Parsed body data.
+     * Body.
      * @var array
      */
     private $body = [];
 
     /**
-     * Raw body data.
+     * Body raw.
      * @var string
      */
     private $bodyRaw = ''; // @wait
 
     /**
-     * Request time/time float.
+     * Time.
      * @var int/float
      */
     private $time;
 
     /**
-     * Request time.
+     * Request time float.
      * @var int
      */
     private $timeFloat;
 
     /**
-     * Client object.
+     * Client.
      * @var Froq\Http\Client
      */
     private $client;
 
     /**
-     * Header stack.
+     * Headers.
      * @var Froq\Http\Headers
      */
     private $headers;
 
     /**
-     * Cookie stack.
+     * Cookies.
      * @var Froq\Http\Cookies
      */
     private $cookies;
 
     /**
-     * Params object.
+     * Params.
      * @var Froq\Http\Request\Params
      */
     private $params;
 
     /**
-     * Files object.
+     * Files.
      * @var Froq\Http\Request\Files
      */
     private $files;
@@ -124,7 +124,6 @@ final class Request
      */
     final public function __construct()
     {
-        // set http version
         $this->httpVersion = Http::detectVersion();
     }
 
@@ -135,7 +134,6 @@ final class Request
      */
     final public function init(array $options = []): self
     {
-        // set scheme
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
         } elseif ($_SERVER['SERVER_PORT'] == '443') {
@@ -144,17 +142,15 @@ final class Request
             $this->scheme = 'http';
         }
 
-        // set method
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
-        // set uri
         $uri = sprintf('%s://%s%s',
             $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']);
         $uriRoot = $options['uriRoot'] ?? '';
         $this->uri = new Uri($uri);
         $this->uri->setSegmentsRoot($uriRoot)->generateSegments();
 
-        // fix dotted get keys
+        // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
 
         // set/parse body for overwrite methods
@@ -168,36 +164,28 @@ final class Request
                 break;
         }
 
-        // fix dotted cookie keys
+        // fix dotted COOKIE keys
         $_COOKIE = $this->loadGlobalVar('COOKIE');
 
-        // set times
         $this->time = (int) $_SERVER['REQUEST_TIME'];
         $this->timeFloat = (float) $_SERVER['REQUEST_TIME_FLOAT'];
-
-        // set client that contains ip & language etc.
-        $this->client = new Client();
 
         $headers = [];
         foreach (getallheaders() as $key => $value) {
             $headers[to_snake_from_dash($key, true)] = $value;
         }
 
-        // set headers/cookies as an object that iterable/traversable
+        $this->client  = new Client();
         $this->headers = new Headers($headers);
         $this->cookies = new Cookies($_COOKIE);
-
-        // set params
-        $this->params = new Params();
-
-        // set files
-        $this->files = new Files($_FILES);
+        $this->params  = new Params();
+        $this->files   = new Files($_FILES);
 
         return $this;
     }
 
     /**
-     * Get a GET param.
+     * Get param.
      * @param  string $name
      * @param  any    $valueDefault
      * @return any
@@ -208,7 +196,7 @@ final class Request
     }
 
     /**
-     * Get all GET params.
+     * Get params.
      * @return array
      */
     final public function getParams(): array
@@ -217,7 +205,7 @@ final class Request
     }
 
     /**
-     * Get a POST param.
+     * Post param.
      * @param  string $name
      * @param  any    $valueDefault
      * @return any
@@ -228,7 +216,7 @@ final class Request
     }
 
     /**
-     * Get all POST params.
+     * Post params.
      * @return array
      */
     final public function postParams(): array
@@ -237,7 +225,7 @@ final class Request
     }
 
     /**
-     * Get all COOKIE params.
+     * Cookie param.
      * @param  string $name
      * @param  any    $valueDefault
      * @return any
@@ -248,7 +236,7 @@ final class Request
     }
 
     /**
-     * Get all COOKIE params.
+     * Cookie params.
      * @return array
      */
     final public function cookieParams(): array
@@ -257,7 +245,7 @@ final class Request
     }
 
     /**
-     * Fix dotted param keys.
+     * Load global var (fix dotted param keys).
      *
      * SORRY RASMUS, SORRY ZEEV..
      * @see https://github.com/php/php-src/blob/master/main/php_variables.c#L93
