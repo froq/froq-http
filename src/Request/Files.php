@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
-use Froq\Http\Request\Files\File;
-
 /**
  * @package    Froq
  * @subpackage Froq\Http\Request

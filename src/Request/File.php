@@ -21,12 +21,12 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request\Files;
+namespace Froq\Http\Request;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Request\Files
- * @object     Froq\Http\Request\Files\File
+ * @subpackage Froq\Http\Request
+ * @object     Froq\Http\Request\File
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class File extends Collection
@@ -38,7 +38,7 @@ final class File extends Collection
     private $name;
 
     /**
-     * Temp. name.
+     * Temp name.
      * @var string
      */
     private $nameTemp;
@@ -84,8 +84,9 @@ final class File extends Collection
 
     /**
      * Constructor.
+     * @param array $data
      */
-    final public function __construct(array $data)
+    final public function __construct(array $data = [])
     {
         isset($data['name']) &&
             $this->setName($data['name']);
@@ -165,7 +166,8 @@ final class File extends Collection
 
     /**
      * Set size.
-     * @param int $size
+     * @param  int $size
+     * @return self
      */
     final public function setSize(int $size): self
     {
@@ -206,9 +208,10 @@ final class File extends Collection
 
     /**
      * Set error string.
-     * @param int $errorString
+     * @param  string $errorString
+     * @return self
      */
-    final public function setErrorString(int $errorString): self
+    final public function setErrorString(string $errorString): self
     {
         $this->errorString = $errorString;
 
@@ -231,6 +234,6 @@ final class File extends Collection
      */
     final public static function normalizeFileName(string $fileName): string
     {
-        return preg_replace('~[^\w]~', '', $fileName);
+        return preg_replace('~[^\w-.]~', '', $fileName);
     }
 }
