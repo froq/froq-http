@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
-use  Froq\Http\Http;
+use Froq\Http\Http;
 
 /**
  * @package    Froq
@@ -43,14 +43,15 @@ final class Method
      * Constructor.
      * @param string $name
      */
-    final public function __construct(string $name)
+    final public function __construct(string $name = '')
     {
         $this->setName($name);
     }
 
     /**
      * Set name.
-     * @param string $name
+     * @param  string $name
+     * @return self
      */
     final public function setName(string $name): self
     {
@@ -69,7 +70,7 @@ final class Method
     }
 
     /**
-     * Detect GET method.
+     * Is get.
      * @return bool
      */
     final public function isGet(): bool
@@ -78,7 +79,7 @@ final class Method
     }
 
     /**
-     * Detect POST method.
+     * Is post.
      * @return bool
      */
     final public function isPost(): bool
@@ -87,7 +88,7 @@ final class Method
     }
 
     /**
-     * Detect PUT method.
+     * Is put.
      * @return bool
      */
     final public function isPut(): bool
@@ -96,7 +97,7 @@ final class Method
     }
 
     /**
-     * Detect PATCH method.
+     * Is patch.
      * @return bool
      */
     final public function isPatch(): bool
@@ -105,7 +106,7 @@ final class Method
     }
 
     /**
-     * Detect DELETE method.
+     * Is delete.
      * @return bool
      */
     final public function isDelete(): bool
@@ -114,7 +115,7 @@ final class Method
     }
 
     /**
-     * Detect OPTIONS method.
+     * Is options.
      * @return bool
      */
     final public function isOptions(): bool
@@ -123,7 +124,7 @@ final class Method
     }
 
     /**
-     * Detect HEAD method.
+     * Is head.
      * @return bool
      */
     final public function isHead(): bool
@@ -132,7 +133,7 @@ final class Method
     }
 
     /**
-     * Detect TRACE method.
+     * Is trace.
      * @return bool
      */
     final public function isTrace(): bool
@@ -141,7 +142,7 @@ final class Method
     }
 
     /**
-     * Detect CONNECT method.
+     * Is connect.
      * @return bool
      */
     final public function isConnect(): bool
@@ -150,7 +151,7 @@ final class Method
     }
 
     /**
-     * Detect COPY method.
+     * Is copy.
      * @return bool
      */
     final public function isCopy(): bool
@@ -159,7 +160,7 @@ final class Method
     }
 
     /**
-     * Detect MOVE method.
+     * Is move.
      * @return bool
      */
     final public function isMove(): bool
@@ -168,7 +169,7 @@ final class Method
     }
 
     /**
-     * Detect AJAX requests.
+     * Is ajax.
      * @return bool
      */
     final public function isAjax(): bool
