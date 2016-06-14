@@ -144,12 +144,6 @@ final class Request
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
-        $uri = sprintf('%s://%s%s',
-            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']);
-        $uriRoot = $options['uriRoot'] ?? '';
-        $this->uri = new Uri($uri);
-        $this->uri->setSegmentsRoot($uriRoot)->generateSegments();
-
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
 
@@ -174,6 +168,10 @@ final class Request
         foreach (getallheaders() as $key => $value) {
             $headers[to_snake_from_dash($key, true)] = $value;
         }
+
+        $this->uri = new Uri(sprintf('%s://%s%s',
+            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
+        ), $options['uriRoot'] ?? null);
 
         $this->client  = new Client();
         $this->headers = new Headers($headers);
