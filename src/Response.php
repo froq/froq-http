@@ -48,25 +48,25 @@ final class Response
     private $httpVersion;
 
     /**
-     * Status object.
+     * Status.
      * @var Froq\Http\Response\Status
      */
     private $status;
 
     /**
-     * Body object.
+     * Body.
      * @var Froq\Http\Response\Body
      */
     private $body;
 
     /**
-     * Headers object.
+     * Headers.
      * @var Froq\Http\Headers
      */
     private $headers;
 
     /**
-     * Cookies object.
+     * Cookies.
      * @var Froq\Http\Cookies
      */
     private $cookies;
@@ -85,14 +85,9 @@ final class Response
 
     /**
      * Constructor.
-     * @param int      $status
-     * @param any|null $body
-     * @param array    $headers
-     * @param array    $cookies
      */
     final public function __construct()
     {
-        // http version
         $this->httpVersion = Http::detectVersion();
     }
 
@@ -103,24 +98,17 @@ final class Response
      */
     final public function init(array $options = []): self
     {
-        // status
-        $this->status = new Status();
-
-        // headers/cookies iters
+        $this->status  = new Status();
         $this->headers = new Headers();
         $this->cookies = new Cookies();
-
-        // body
-        $this->body = new Body();
-
-        // gzip
-        $this->gzip = new Gzip();
+        $this->body    = new Body();
+        $this->gzip    = new Gzip();
 
         return $this;
     }
 
     /**
-     * Redirect client to the given location.
+     * Redirect.
      * @param  string $location
      * @param  int    $code
      * @return void
@@ -142,6 +130,7 @@ final class Response
         if ($text == null) {
             $text = Status::getTextByCode($code);
         }
+
         $this->status->setCode($code);
         $this->status->setText($text);
 
@@ -209,7 +198,7 @@ final class Response
     }
 
     /**
-     * Set a header.
+     * Set header.
      * @notice All these stored headers should be sent before
      * sending the last output to the client with self.send()
      * method.
@@ -225,7 +214,7 @@ final class Response
     }
 
     /**
-     * Send a header instantly.
+     * Send header.
      * @param  string $name
      * @param  any    $value
      * @return void
@@ -234,16 +223,16 @@ final class Response
     {
         if (headers_sent()) return;
 
-        // to remove a header set value as null
+        // null means 'remove'
         if ($value === null) {
             return $this->removeHeader($name);
         }
 
         header(sprintf('%s: %s', $name, $value));
-     }
+    }
 
     /**
-     * Send all stored response headers.
+     * Send headers.
      * @return void
      */
     final public function sendHeaders()
@@ -256,7 +245,7 @@ final class Response
     }
 
     /**
-     * Remove a header.
+     * Remove header.
      * @param  string $name
      * @param  bool   $defer
      * @return void
@@ -272,7 +261,7 @@ final class Response
     }
 
     /**
-     * Remove all headers.
+     * Remove headers.
      * @return void
      */
     final public function removeHeaders()
@@ -285,7 +274,7 @@ final class Response
     }
 
     /**
-     * Set a cookie.
+     * Set cookie.
      * @notice All these stored cookies should be sent before
      * sending the last output to the client with self.send()
      * method.
@@ -307,7 +296,6 @@ final class Response
             throw new \InvalidArgumentException('Cookie name not accepted!');
         }
 
-        // store cookie
         $this->cookies->set($name, [
             'name'      => $name,     'value'  => $value,
             'expire'    => $expire,   'path'   => $path,
@@ -317,7 +305,7 @@ final class Response
     }
 
     /**
-     * Send a cookie instantly.
+     * Send cookie.
      * @param  string  $name
      * @param  any     $value
      * @param  int     $expire
@@ -336,12 +324,11 @@ final class Response
             throw new \InvalidArgumentException('Cookie name not accepted!');
         }
 
-        // send cookie
         return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httponly);
     }
 
     /**
-     * Send all stored cookies.
+     * Send cookies.
      * @return void
      */
     final public function sendCookies() {
@@ -354,7 +341,7 @@ final class Response
     }
 
     /**
-     * Remove a cookie.
+     * Remove cookie.
      * @param  string $name
      * @param  bool   $defer
      * @return void
@@ -370,7 +357,7 @@ final class Response
     }
 
     /**
-     * Remove all cookies.
+     * Remove cookies.
      * @return void
      */
     final public function removeCookies()
@@ -383,7 +370,7 @@ final class Response
     }
 
     /**
-     * Set GZip config.
+     * Set GZip options.
      * @param  array $gzipOptions
      * @return self
      */
@@ -438,12 +425,12 @@ final class Response
     }
 
     /**
-     * Send status, content type and body.
+     * Send.
      * @return void
      */
     final public function send()
     {
-        // send status
+        // status
         header(sprintf('%s %s',
             $this->httpVersion, $this->status->toString()));
 
