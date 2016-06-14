@@ -41,19 +41,19 @@ final class Params
     use GetterTrait;
 
     /**
-     * Get params.
+     * Get.
      * @var Froq\Http\Request\Params\Get
      */
     private $get;
 
     /**
-     * Post params.
+     * Post.
      * @var Froq\Http\Request\Params\Post
      */
     private $post;
 
     /**
-     * Cookie params.
+     * Cookie.
      * @var Froq\Http\Request\Params\Cookie
      */
     private $cookie;
@@ -69,11 +69,10 @@ final class Params
     }
 
     /**
-     * Get a GET param.
-     *
+     * Get.
      * @param  string $key
-     * @param  mixed  $valueDefault
-     * @return mixed
+     * @param  any    $valueDefault
+     * @return any
      */
     final public function get(string $key, $valueDefault = null)
     {
@@ -81,11 +80,10 @@ final class Params
     }
 
     /**
-     * Get a POST param.
-     *
+     * Post.
      * @param  string $key
-     * @param  mixed  $valueDefault
-     * @return mixed
+     * @param  any    $valueDefault
+     * @return any
      */
     final public function post(string $key, $valueDefault = null)
     {
@@ -93,11 +91,10 @@ final class Params
     }
 
     /**
-     * Get a COOKIE param.
-     *
+     * Cookie.
      * @param  string $key
-     * @param  mixed  $valueDefault
-     * @return mixed
+     * @param  any    $valueDefault
+     * @return any
      */
     final public function cookie(string $key, $valueDefault = null)
     {
