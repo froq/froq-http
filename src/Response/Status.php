@@ -275,20 +275,20 @@ final class Status
     /**
      * Get code by text.
      * @param  string $text
-     * @return int
+     * @return int|null
      */
-    final public static function getCodeByText(string $text): int
+    final public static function getCodeByText(string $text)
     {
-        return array_flip(self::$statuses)[$text] ?? 0;
+        return (array_flip(self::$statuses)[$text] ?? null);
     }
 
     /**
      * Get text by code.
      * @param  int $code
-     * @return string
+     * @return string|null
      */
-    final public static function getTextByCode(int $code): string
+    final public static function getTextByCode(int $code)
     {
-        return self::$statuses[$code] ?? '';
+        return (self::$statuses[$code] ?? null);
     }
 }
