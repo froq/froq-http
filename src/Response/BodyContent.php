@@ -169,7 +169,8 @@ final class BodyContent
 
     /**
      * Set length.
-     * @param int $length
+     * @param  int $length
+     * @return self
      */
     final public function setLength(int $length): self
     {

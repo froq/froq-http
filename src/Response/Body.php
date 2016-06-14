@@ -59,7 +59,8 @@ final class Body
 
     /**
      * Set content.
-     * @param Froq\Http\Response\BodyContent $content
+     * @param  Froq\Http\Response\BodyContent $content
+     * @return self
      */
     final public function setContent(BodyContent $content): self
     {
