@@ -41,6 +41,7 @@ final class Files
 
     /**
      * Constructor.
+     * @param array $files
      */
     final public function __construct(array $files = [])
     {
@@ -49,7 +50,8 @@ final class Files
 
     /**
      * Set files.
-     * @var self
+     * @param  array $files
+     * @return self
      */
     final public function setFiles(array $files = []): self
     {
