@@ -96,7 +96,7 @@ final class BodyContent
     }
 
     /**
-     * Get string data.
+     * Stringer.
      * @return string
      */
     final public function __toString(): string
@@ -189,7 +189,7 @@ final class BodyContent
     }
 
     /**
-     * Get string data.
+     * To string.
      * @return string
      */
     final public function toString(): string
