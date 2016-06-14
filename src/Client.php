@@ -63,7 +63,6 @@ final class Client
      */
     final public function __construct()
     {
-        // set ip
         $this->ip = Util::getClientIp();
 
         // set locale & language
