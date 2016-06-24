@@ -23,15 +23,13 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
-use Froq\Collection\Collection;
-
 /**
  * @package    Froq
  * @subpackage Froq\Http\Request
  * @object     Froq\Http\Request\File
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class File extends Collection
+final class File
 {
     /**
      * Name.
