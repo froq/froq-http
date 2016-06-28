@@ -117,9 +117,9 @@ final class File
 
     /**
      * Get name.
-     * @return string
+     * @return string|null
      */
-    final public function getName(): string
+    final public function getName()
     {
         return $this->name;
     }
@@ -138,9 +138,9 @@ final class File
 
     /**
      * Get temp. name.
-     * @return string
+     * @return string|null
      */
-    final public function getNameTmp(): string
+    final public function getNameTmp()
     {
         return $this->nameTmp;
     }
@@ -159,9 +159,9 @@ final class File
 
     /**
      * Get type.
-     * @return string
+     * @return string|null
      */
-    final public function getType(): string
+    final public function getType()
     {
         return $this->type;
     }
@@ -180,9 +180,9 @@ final class File
 
     /**
      * Get size.
-     * @return int
+     * @return int|null
      */
-    final public function getSize(): int
+    final public function getSize()
     {
         return $this->size;
     }
@@ -201,9 +201,9 @@ final class File
 
     /**
      * Get error.
-     * @return int
+     * @return int|null
      */
-    final public function getError(): int
+    final public function getError()
     {
         return $this->error;
     }
@@ -222,9 +222,9 @@ final class File
 
     /**
      * Get error string.
-     * @return string
+     * @return string|null
      */
-    final public function getErrorString(): string
+    final public function getErrorString()
     {
         return $this->errorString;
     }
