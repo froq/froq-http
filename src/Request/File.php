@@ -38,10 +38,10 @@ final class File
     private $name;
 
     /**
-     * Temp name.
+     * Tmp name.
      * @var string
      */
-    private $nameTemp;
+    private $nameTmp;
 
     /**
      * Type.
@@ -86,19 +86,21 @@ final class File
      * Constructor.
      * @param array $data
      */
-    final public function __construct(array $data = [])
+    final public function __construct(array $data = null)
     {
-        isset($data['name']) &&
-            $this->setName($data['name']);
-        isset($data['temp_name']) &&
-            $this->setNameTemp($data['temp_name']);
-        isset($data['type']) &&
-            $this->setType($data['type']);
-        isset($data['size']) &&
-            $this->setSize($data['size']);
-        isset($data['error']) &&
-            $this->setError($data['error']) &&
-            $this->setErrorString(self::$errors[$this->error] ?? 'Unknown error.');
+        if (!empty($data)) {
+            isset($data['name']) &&
+                $this->setName($data['name']);
+            isset($data['tmp_name']) &&
+                $this->setNameTmp($data['tmp_name']);
+            isset($data['type']) &&
+                $this->setType($data['type']);
+            isset($data['size']) &&
+                $this->setSize($data['size']);
+            isset($data['error']) &&
+                $this->setError($data['error']) &&
+                $this->setErrorString(self::$errors[$this->error] ?? 'Unknown error.');
+        }
     }
 
     /**
@@ -124,12 +126,12 @@ final class File
 
     /**
      * Set temp. name.
-     * @param  string $nameTemp
+     * @param  string $nameTmp
      * @return self
      */
-    final public function setNameTemp(string $nameTemp): self
+    final public function setNameTmp(string $nameTmp): self
     {
-        $this->nameTemp = $nameTemp;
+        $this->nameTmp = $nameTmp;
 
         return $this;
     }
@@ -138,9 +140,9 @@ final class File
      * Get temp. name.
      * @return string
      */
-    final public function getNameTemp(): string
+    final public function getNameTmp(): string
     {
-        return $this->nameTemp;
+        return $this->nameTmp;
     }
 
     /**
@@ -225,6 +227,21 @@ final class File
     final public function getErrorString(): string
     {
         return $this->errorString;
+    }
+
+    /**
+     * To array.
+     * @return array
+     */
+    final public function toArray(): array
+    {
+        return [
+            'name'     => $this->name,
+            'tmp_name' => $this->nameTmp,
+            'type'     => $this->type,
+            'size'     => $this->size,
+            'error'    => $this->error,
+        ];
     }
 
     /**
