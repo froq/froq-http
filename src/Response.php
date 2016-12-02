@@ -170,6 +170,8 @@ final class Response
     final public function setContentType(string $contentType, string $contentCharset = null): self
     {
         $this->body->content->setType($contentType);
+
+        // set content charset, "" removes charset but NULL
         if ($contentCharset !== null) {
             $this->setContentCharset($contentCharset);
         }
