@@ -163,12 +163,16 @@ final class Response
 
     /**
      * Set content type.
-     * @param  string $contentType
+     * @param  string      $contentType
+     * @param  string|null $contentCharset
      * @return self
      */
-    final public function setContentType(string $contentType): self
+    final public function setContentType(string $contentType, string $contentCharset = null): self
     {
         $this->body->content->setType($contentType);
+        if ($contentCharset !== null) {
+            $this->setContentCharset($contentCharset);
+        }
 
         return $this;
     }
