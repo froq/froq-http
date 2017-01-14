@@ -363,6 +363,15 @@ final class Uri
     }
 
     /**
+     * Segments.
+     * @return array
+     */
+    final public function segments(): array
+    {
+        return $this->segments;
+    }
+
+    /**
      * Segment.
      * @param  int $i
      * @param  any $default
@@ -374,12 +383,12 @@ final class Uri
     }
 
     /**
-     * Segments.
+     * Segments arguments.
      * @return array
      */
-    final public function segments(): array
+    final public function segmentArguments(): array
     {
-        return $this->segments;
+        return array_slice($this->segments, 2);
     }
 
     /**
