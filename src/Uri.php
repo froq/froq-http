@@ -187,7 +187,7 @@ final class Uri
 
     /**
      * Set host.
-     * @param  string|null $host
+     * @param  string $host
      * @return self
      */
     final public function setHost(string $host): self
@@ -208,7 +208,7 @@ final class Uri
 
     /**
      * Set port.
-     * @param  int|null port
+     * @param  int port
      * @return self
      */
     final public function setPort(int $port): self
@@ -250,7 +250,7 @@ final class Uri
 
     /**
      * Set pass.
-     * @param  string|null $pass
+     * @param  string $pass
      * @return self
      */
     final public function setPass(string $pass): self
@@ -271,7 +271,7 @@ final class Uri
 
     /**
      * Set path.
-     * @param  string|null $path
+     * @param  strin $path
      * @return self
      */
     final public function setPath(string $path): self
@@ -292,7 +292,7 @@ final class Uri
 
     /**
      * Set query.
-     * @param  string|null $query
+     * @param  string $query
      * @return self
      */
     final public function setQuery(string $query): self
@@ -313,7 +313,7 @@ final class Uri
 
     /**
      * Set fragment.
-     * @param  string|null $fragment
+     * @param  string $fragment
      * @return self
      */
     final public function setFragment(string $fragment): self
