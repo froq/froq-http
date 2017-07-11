@@ -67,15 +67,15 @@ final class Request
 
     /**
      * Body.
-     * @var array
+     * @var string|array
      */
-    private $body = [];
+    private $body;
 
     /**
      * Body raw.
      * @var string
      */
-    private $bodyRaw = ''; // @wait
+    private $bodyRaw;
 
     /**
      * Time.
@@ -144,6 +144,11 @@ final class Request
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
+        $headers = [];
+        foreach (getallheaders() as $key => $value) {
+            $headers[to_snake_from_dash($key, true)] = $value;
+        }
+
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
 
@@ -152,9 +157,20 @@ final class Request
             case Http::METHOD_PUT:
             case Http::METHOD_POST:
             case Http::METHOD_PATCH:
-                // act as post
-                $_POST = $this->loadGlobalVar('POST');
-                $this->body = $_POST;
+                $body = (string) file_get_contents('php://input');
+                $this->body = $body;
+                $this->bodyRaw = $body;
+
+                $contentType = $headers['content_type'] ?? '';
+                if ($contentType == 'application/json') {
+                    $this->body = json_decode($this->body, true);
+                } elseif ($contentType == 'application/x-www-form-urlencoded') {
+                    // act as post
+                    $_POST = $this->loadGlobalVar('POST', $body);
+                    $this->body = $_POST;
+                } elseif (strpos($contentType, 'multipart/form-data') === 0) {
+                    $this->body = $_POST;
+                }
                 break;
         }
 
@@ -163,11 +179,6 @@ final class Request
 
         $this->time = (int) $_SERVER['REQUEST_TIME'];
         $this->timeFloat = (float) $_SERVER['REQUEST_TIME_FLOAT'];
-
-        $headers = [];
-        foreach (getallheaders() as $key => $value) {
-            $headers[to_snake_from_dash($key, true)] = $value;
-        }
 
         $this->uri = new Uri(sprintf('%s://%s%s',
             $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
@@ -249,11 +260,11 @@ final class Request
      * @see https://github.com/php/php-src/blob/master/main/php_variables.c#L93
      *
      * @param  string $name
+     * @param  string $src
      * @return array
      */
-    final private function loadGlobalVar(string $name): array
+    final private function loadGlobalVar(string $name, string $src = ''): array
     {
-        $src = '';
         $var = [];
 
         switch ($name) {
@@ -261,7 +272,6 @@ final class Request
                 $src = $_SERVER['QUERY_STRING'];
                 break;
             case 'POST':
-                $src = file_get_contents('php://input');
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
