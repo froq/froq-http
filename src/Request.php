@@ -145,7 +145,7 @@ final class Request
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
         $headers = [];
-        foreach (getallheaders() as $key => $value) {
+        foreach (self::loadHttpHeaders() as $key => $value) {
             $headers[to_snake_from_dash($key, true)] = $value;
         }
 
@@ -251,6 +251,40 @@ final class Request
     final public function cookieParams(): array
     {
         return $this->params->cookie->toArray();
+    }
+
+    /**
+     * Load HTTP headers.
+     * @return array
+     */
+    final private function loadHttpHeaders(): array
+    {
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            if (strpos($key, 'HTTP_') === 0) {
+                $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+                $headers[$key] = $value;
+            }
+        }
+
+        // content-* issues
+        if (isset($_SERVER['CONTENT_TYPE'])   $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
+        if (isset($_SERVER['CONTENT_LENGTH']) $headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
+        if (isset($_SERVER['CONTENT_MD5'])    $headers['Content-MD5'] = $_SERVER['CONTENT_MD5'];
+
+        // authorization issues
+        if (!isset($headers['Authorization'])) {
+            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+            } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+                $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
+            } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+                $headers['Authorization'] = 'Basic ' .
+                    base64_encode($_SERVER['PHP_AUTH_USER'] .':'. ($_SERVER['PHP_AUTH_PW'] ?? ''));
+            }
+        }
+
+        return $headers;
     }
 
     /**
