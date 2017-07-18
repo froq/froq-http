@@ -162,13 +162,11 @@ final class Request
                 $this->bodyRaw = $body;
 
                 $contentType = $headers['content_type'] ?? '';
-                if ($contentType == 'application/json') {
+                if (stripos($contentType, 'application/json') === 0) {
                     $this->body = json_decode($this->body, true);
-                } elseif ($contentType == 'application/x-www-form-urlencoded') {
-                    // act as post
-                    $_POST = $this->loadGlobalVar('POST', $body);
-                    $this->body = $_POST;
-                } elseif (strpos($contentType, 'multipart/form-data') === 0) {
+                } elseif (stripos($contentType, 'application/x-www-form-urlencoded') === 0) {
+                    $this->body = $_POST = $this->loadGlobalVar('POST', $body);
+                } else {
                     $this->body = $_POST;
                 }
                 break;
@@ -261,16 +259,22 @@ final class Request
     {
         $headers = [];
         foreach ($_SERVER as $key => $value) {
-            if (strpos($key, 'HTTP_') === 0) {
+            if (stripos($key, 'HTTP_') === 0) {
                 $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
                 $headers[$key] = $value;
             }
         }
 
         // content-* issues
-        if (isset($_SERVER['CONTENT_TYPE'])   $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
-        if (isset($_SERVER['CONTENT_LENGTH']) $headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
-        if (isset($_SERVER['CONTENT_MD5'])    $headers['Content-MD5'] = $_SERVER['CONTENT_MD5'];
+        if (isset($_SERVER['CONTENT_TYPE'])) {
+            $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
+        }
+        if (isset($_SERVER['CONTENT_LENGTH'])) {
+            $headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
+        }
+        if (isset($_SERVER['CONTENT_MD5'])) {
+            $headers['Content-MD5'] = $_SERVER['CONTENT_MD5'];
+        }
 
         // authorization issues
         if (!isset($headers['Authorization'])) {
@@ -294,38 +298,38 @@ final class Request
      * @see https://github.com/php/php-src/blob/master/main/php_variables.c#L93
      *
      * @param  string $name
-     * @param  string $src
+     * @param  string $source
      * @return array
      */
-    final private function loadGlobalVar(string $name, string $src = ''): array
+    final private function loadGlobalVar(string $name, string $source = ''): array
     {
         $var = [];
 
         switch ($name) {
             case 'GET':
-                $src = $_SERVER['QUERY_STRING'];
+                $source = $_SERVER['QUERY_STRING'];
                 break;
             case 'POST':
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
-                    $src = implode('&', array_map('trim', explode(';', $_SERVER['HTTP_COOKIE'])));
+                    $source = implode('&', array_map('trim', explode(';', $_SERVER['HTTP_COOKIE'])));
                 }
                 break;
         }
 
-        if (empty($src)) {
+        if (empty($source)) {
             return $var;
         }
 
         // keep keys hexed
-        $src = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($m) {
-            return bin2hex(urldecode($m[0]));
-        }, $src);
+        $source = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function ($match) {
+            return bin2hex(urldecode($match[0]));
+        }, $source);
 
-        parse_str($src, $src);
+        parse_str($source, $source);
 
-        foreach ($src as $key => $value) {
+        foreach ($source as $key => $value) {
             $key = hex2bin((string) $key);
 
             // not array
