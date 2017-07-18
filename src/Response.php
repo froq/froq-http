@@ -458,11 +458,21 @@ final class Response
         $this->sendHeader('Content-Length', $bodyContentLength);
 
         // real load time
-        if (function_exists('app_load_time')) {
-            $this->sendHeader('X-App-Load-Time', app_load_time());
+        $app = app();
+        if ($exposeAppLoadTime = $app->config['app.exposeAppLoadTime']) {
+            $loadTime = sprintf('%.3f', $app->loadTime()['total']);
+            if ($exposeAppLoadTime === true) {
+                $this->sendHeader('X-App-Load-Time', $loadTime);
+            } elseif ($exposeAppLoadTime === 1 && $app->isDev()) {
+                $this->sendHeader('X-App-Load-Time', $loadTime);
+            } elseif ($exposeAppLoadTime === 2 && $app->isStage()) {
+                $this->sendHeader('X-App-Load-Time', $loadTime);
+            } elseif ($exposeAppLoadTime === 3 && $app->isProduction()) {
+                $this->sendHeader('X-App-Load-Time', $loadTime);
+            }
         }
 
-        // print it beybe!
+        // print it baby!
         print $this->body->content->toString();
     }
 
