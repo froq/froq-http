@@ -98,9 +98,11 @@ final class Response
      */
     final public function init(array $options = []): self
     {
+        $app = app();
+
         $this->status  = new Status();
-        $this->headers = new Headers();
-        $this->cookies = new Cookies();
+        $this->headers = new Headers($app->config['app.headers']);
+        $this->cookies = new Cookies($app->config['app.cookies']);
         $this->body    = new Body();
         $this->gzip    = new Gzip();
 
