@@ -128,12 +128,18 @@ final class Body
 
     /**
      * Set content type.
-     * @param  string $contentType
+     * @param  string      $contentType
+     * @param  string|null $contentCharset For shortcut calls.
      * @return self
      */
-    final public function setContentType(string $contentType): self
+    final public function setContentType(string $contentType, string $contentCharset = null): self
     {
         $this->contentType = $contentType;
+
+        // set content charset, "" removes charset but NULL
+        if ($contentCharset !== null) {
+            $this->setContentCharset($contentCharset);
+        }
 
         return $this;
     }
