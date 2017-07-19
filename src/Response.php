@@ -403,15 +403,18 @@ final class Response
      * Set body.
      * @param  any $body
      * @return self
+     * @throws \InvalidArgumentException
      */
     final public function setBody($body): self
     {
         if ($body instanceof ReturnResponse) {
-            $this->setStatus($body->getStatusCode())
+            $this->setStatus($body->getStatusCode() ?? Status ::OK)
                 ->setHeaders($body->getHeaders())
                 ->setCookies($body->getCookies())
             ;
-            $body = new Body($body->getData(), $body->getDataType(), $body->getDataCharset());
+            $body = new Body($body->getData(),
+                $body->getDataType() ?? $this->body->getContentType(),
+                $body->getDataCharset() ?? $this->body->getContentCharset());
         }
 
         // no elseif, could be a Body already
@@ -419,23 +422,17 @@ final class Response
             $body = $this->body->setContent($body->getContent())
                 ->setContentType($body->getContentType())
                 ->setContentCharset($body->getContentCharset())
-                ->getData()
+                ->getContent()
             ;
         }
 
-        if ($body) {
-            switch ($this->body->getContentType()) {
-                // case Body::CONTENT_TYPE_XML: // @todo
-                //     break;
-                case Body::CONTENT_TYPE_JSON:
-                    $json = new Json($body);
-                    $body = $json->encode();
-                    if ($json->hasError()) {
-                        throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
-                    }
-                    break;
-            }
+        // last check for body
+        if (!is_string($body)) {
+            throw new \InvalidArgumentException(
+                'Content must be string (encoded in service if ResponseJson etc. not used)!');
+        }
 
+        if ($body) {
             // gzip
             if (!empty($this->gzipOptions)) {
                 $this->gzip->setData($body);
@@ -445,8 +442,8 @@ final class Response
                 }
             }
 
-            $this->body->setContent($body);
-            $this->body->setContentLength(strlen($body));
+            $this->body->setContent($body)
+                ->setContentLength(strlen($body));
         }
 
         return $this;
