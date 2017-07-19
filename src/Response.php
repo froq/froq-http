@@ -25,7 +25,7 @@ namespace Froq\Http;
 
 use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
-use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
+use Froq\Encoding\{Gzip, GzipException};
 
 /**
  * @package    Froq
