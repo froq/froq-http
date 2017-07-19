@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\Util\Traits\GetterTrait;
-use Froq\Http\Response\{Status, Body, BodyContent};
+use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
 use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
 
 /**
@@ -84,11 +84,29 @@ final class Response
     private $gzipOptions = [];
 
     /**
-     * Constructor.
+     * Constructer.
      */
     final public function __construct()
     {
         $this->httpVersion = Http::detectVersion();
+    }
+
+    /**
+     * Caller.
+     * @param  string $method
+     * @param  array  $methodArguments
+     * @return self
+     */
+    final public function __call(string $method, array $methodArguments): self
+    {
+        if (method_exists($this->body, $method)) {
+            // proxify body methods
+            call_user_func_array([$this->body, $method], $methodArguments);
+
+            return $this;
+        }
+
+        throw new \BadMethodCallException("Call to undefined method '{$method}'!");
     }
 
     /**
@@ -117,8 +135,7 @@ final class Response
      */
     final public function redirect(string $location, int $code = Status::FOUND)
     {
-        $this->setStatus($code);
-        $this->setHeader('Location', $location);
+        $this->setStatus($code)->setHeader('Location', $location);
     }
 
     /**
@@ -164,48 +181,6 @@ final class Response
     }
 
     /**
-     * Set content type.
-     * @param  string      $contentType
-     * @param  string|null $contentCharset
-     * @return self
-     */
-    final public function setContentType(string $contentType, string $contentCharset = null): self
-    {
-        $this->body->content->setType($contentType);
-
-        // set content charset, "" removes charset but NULL
-        if ($contentCharset !== null) {
-            $this->setContentCharset($contentCharset);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set content charset.
-     * @param  string $contentCharset
-     * @return self
-     */
-    final public function setContentCharset(string $contentCharset): self
-    {
-        $this->body->content->setCharset($contentCharset);
-
-        return $this;
-    }
-
-    /**
-     * Set content length.
-     * @param  int $contentLength
-     * @return self
-     */
-    final public function setContentLength(int $contentLength): self
-    {
-        $this->body->content->setLength($contentLength);
-
-        return $this;
-    }
-
-    /**
      * Set header.
      * @notice All these stored headers should be sent before
      * sending the last output to the client with self.send()
@@ -217,6 +192,20 @@ final class Response
     final public function setHeader(string $name, $value): self
     {
         $this->headers->set($name, $value);
+
+        return $this;
+    }
+
+    /**
+     * Set headers.
+     * @param  array $headers
+     * @return self
+     */
+    final public function setHeaders(array $headers): self
+    {
+        foreach ($headers as $name => $value) {
+            $this->headers->set($name, $value);
+        }
 
         return $this;
     }
@@ -292,24 +281,38 @@ final class Response
      * @param  string  $path
      * @param  string  $domain
      * @param  bool    $secure
-     * @param  bool    $httponly
+     * @param  bool    $httpOnly
      * @throws \InvalidArgumentException
      * @return void
      */
     final public function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
+        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new \InvalidArgumentException('Cookie name not accepted!');
+            throw new \InvalidArgumentException("Cookie name '{$name}' not accepted!");
         }
 
         $this->cookies->set($name, [
             'name'      => $name,     'value'  => $value,
             'expire'    => $expire,   'path'   => $path,
             'domain'    => $domain,   'secure' => $secure,
-            'httponly'  => $httponly,
+            'httpOnly'  => $httpOnly,
         ]);
+    }
+
+    /**
+     * Set cookies.
+     * @param  array $cookies
+     * @return self
+     */
+    final public function setCookies(array $cookies): self
+    {
+        foreach ($cookies as $name => $value) {
+            $this->setCookie($name, $value);
+        }
+
+        return $this;
     }
 
     /**
@@ -320,19 +323,19 @@ final class Response
      * @param  string  $path
      * @param  string  $domain
      * @param  bool    $secure
-     * @param  bool    $httponly
+     * @param  bool    $httpOnly
      * @throws \InvalidArgumentException
      * @return bool
      */
     final public function sendCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false): bool
+        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): bool
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
             throw new \InvalidArgumentException('Cookie name not accepted!');
         }
 
-        return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httponly);
+        return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
     /**
@@ -343,7 +346,7 @@ final class Response
         if ($this->cookies->count()) {
             foreach ($this->cookies as $cookie) {
                 $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
-                    $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
+                    $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
             }
         }
     }
@@ -403,31 +406,48 @@ final class Response
      */
     final public function setBody($body): self
     {
-        switch ($this->body->content->getType()) {
-            case BodyContent::TYPE_XML:
-                // @todo
-                break;
-            case BodyContent::TYPE_JSON:
-                $json = new Json($body);
-                $body = $json->encode();
-                if ($json->hasError()) {
-                    throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
-                }
-                break;
+        if ($body instanceof ReturnResponse) {
+            $this->setStatus($body->getStatusCode())
+                ->setHeaders($body->getHeaders())
+                ->setCookies($body->getCookies())
+            ;
+            $body = new Body($body->getData(), $body->getDataType(), $body->getDataCharset());
         }
 
-        // gzip
-        if (!empty($this->gzipOptions)) {
-            $this->gzip->setData($body);
-            if ($this->gzip->checkDataMinlen()) {
-                $body = $this->gzip->encode();
-                $this->setHeader('Vary', 'Accept-Encoding');
-                $this->setHeader('Content-Encoding', 'gzip');
+        // no elseif, could be a Body already
+        if ($body instanceof Body) {
+            $body = $this->body->setContent($body->getContent())
+                ->setContentType($body->getContentType())
+                ->setContentCharset($body->getContentCharset())
+                ->getData()
+            ;
+        }
+
+        if ($body) {
+            switch ($this->body->getContentType()) {
+                // case Body::CONTENT_TYPE_XML: // @todo
+                //     break;
+                case Body::CONTENT_TYPE_JSON:
+                    $json = new Json($body);
+                    $body = $json->encode();
+                    if ($json->hasError()) {
+                        throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+                    }
+                    break;
             }
-        }
 
-        $this->body->content->setData($body);
-        $this->body->content->setLength(strlen($body));
+            // gzip
+            if (!empty($this->gzipOptions)) {
+                $this->gzip->setData($body);
+                if ($this->gzip->checkDataMinlen()) {
+                    $body = $this->gzip->encode();
+                    $this->setHeaders(['Vary' => 'Accept-Encoding', 'Content-Encoding' => 'gzip']);
+                }
+            }
+
+            $this->body->setContent($body);
+            $this->body->setContentLength(strlen($body));
+        }
 
         return $this;
     }
@@ -439,25 +459,24 @@ final class Response
     final public function send()
     {
         // status
-        header(sprintf('%s %s',
-            $this->httpVersion, $this->status->toString()));
+        header(sprintf('%s %s', $this->httpVersion, $this->status->toString()));
 
         // body stuff
-        $bodyContentType    = $this->body->content->getType();
-        $bodyContentCharset = $this->body->content->getCharset();
-        $bodyContentLength  = $this->body->content->getLength();
+        $contentType = $this->body->getContentType();
+        $contentCharset = $this->body->getContentCharset();
+        $contentLength = $this->body->getContentLength();
 
         // content type / length
-        if (empty($bodyContentType)) {
-            $this->sendHeader('Content-Type', BodyContent::TYPE_NONE);
-        } elseif (empty($bodyContentCharset)
-            || strtolower($bodyContentType) == BodyContent::TYPE_NONE) {
-                $this->sendHeader('Content-Type', $bodyContentType);
+        if (empty($contentType)) {
+            $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NONE);
+        } elseif (empty($contentCharset)
+            || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
+                $this->sendHeader('Content-Type', $contentType);
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s',
-                $bodyContentType, $bodyContentCharset));
+                $contentType, $contentCharset));
         }
-        $this->sendHeader('Content-Length', $bodyContentLength);
+        $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
         $app = app();
@@ -475,7 +494,7 @@ final class Response
         }
 
         // print it baby!
-        print $this->body->content->toString();
+        print $this->body->toString();
     }
 
     // @wait
