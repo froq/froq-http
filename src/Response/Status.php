@@ -171,6 +171,7 @@ final class Status
         305 => 'Use Proxy',
         // 306 is deprecated but reserved
         307 => 'Temporary Redirect',
+        308 => 'Permanent Redirect',
 
         // client error 4xx
         400 => 'Bad Request',
