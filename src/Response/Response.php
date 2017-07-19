@@ -35,59 +35,80 @@ class Response
      * Status code.
      * @var int
      */
-    private $statusCode;
+    protected $statusCode;
 
     /**
      * Data.
      * @var any
      */
-    private $data;
+    protected $data;
 
     /**
      * Data type.
      * @var string
      */
-    private $dataType;
+    protected $dataType;
 
     /**
      * Data charset.
      * @var string
      */
-    private $dataCharset;
+    protected $dataCharset;
 
     /**
      * Headers.
      * @var array
      */
-    private $headers = [];
+    protected $headers = [];
 
     /**
      * Cookies.
      * @var array
      */
-    private $cookies = [];
+    protected $cookies = [];
 
     /**
      * Constructor.
-     * @param int        $statusCode
-     * @param any        $data
-     * @param string     $dataType
-     * @param array|null $headers
-     * @param array|null $cookies
+     * @param int|string|array|null $arg0
+     * @param any                   $data
+     * @param string                $dataType
+     * @param array|null            $headers
+     * @param array|null            $cookies
      */
-    final public function __construct(int $statusCode, $data = null,
-        $dataType = null, array $headers = null, array $cookies = null)
+    public function __construct($arg0 = null, $data = null, $dataType = null,
+        array $headers = null, array $cookies = null)
     {
-        $this->statusCode = $statusCode;
+        if ($arg0 !== null) {
+            switch (gettype($arg0)) {
+                // simply set status code
+                case 'integer':
+                    $statusCode = $arg0;
+                    break;
+                // this makes status default: 200 OK
+                case 'string':
+                    $data = $arg0;
+                    break;
+                // this overwrites all arguments
+                case 'array':
+                    $arg0['statusCode'] = $arg0['code'] ?? null;
+                    extract($arg0);
+                    break;
+                default:
+                    throw new \InvalidArgumentException(
+                        'Only int|string|array|null types accepted for first argument!');
+            }
+        }
+
+        $this->statusCode = $statusCode ?? Status::OK;
 
         $this->data = $data;
-        if ($dataType) {
+        if (isset($dataType)) {
             if (is_array($dataType)) {
                 $this->dataType = $dataType[0];
-                $this->dataCharset = $dataType[1] ?? Body::CONTENT_CHARSET_UTF8;
+                $this->dataCharset = $dataType[1] ?? $dataCharset ?? null;
             } else {
                 $this->dataType = $dataType;
-                $this->dataCharset = Body::CONTENT_CHARSET_UTF8;
+                $this->dataCharset = $dataCharset ?? null;
             }
         }
 
@@ -97,9 +118,9 @@ class Response
 
     /**
      * Get status code.
-     * @return int
+     * @return int|null
      */
-    final public function getStatusCode(): int
+    final public function getStatusCode()
     {
         return $this->statusCode;
     }
@@ -115,18 +136,18 @@ class Response
 
     /**
      * Get data type.
-     * @return string
+     * @return string|null
      */
-    final public function getDataType(): string
+    final public function getDataType()
     {
         return $this->dataType;
     }
 
     /**
      * Get data charset.
-     * @return string
+     * @return string|null
      */
-    final public function getDataCharset(): string
+    final public function getDataCharset()
     {
         return $this->dataCharset;
     }
