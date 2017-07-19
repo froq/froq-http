@@ -43,19 +43,19 @@ final class Body
     * Types.
     * @const string
     */
-   const CONTENT_TYPE_NONE      = 'none',
-         CONTENT_TYPE_HTML      = 'text/html',
-         CONTENT_TYPE_PLAIN     = 'text/plain',
-         CONTENT_TYPE_XML       = 'application/xml',
-         CONTENT_TYPE_JSON      = 'application/json';
+   const CONTENT_TYPE_NONE             = 'none',
+         CONTENT_TYPE_HTML             = 'text/html',
+         CONTENT_TYPE_PLAIN            = 'text/plain',
+         CONTENT_TYPE_TEXT_XML         = 'text/xml',
+         CONTENT_TYPE_APPLICATION_XML  = 'application/xml',
+         CONTENT_TYPE_TEXT_JSON        = 'text/json',
+         CONTENT_TYPE_APPLICATION_JSON = 'application/json';
 
     /**
      * Charsets.
      * @const string
      */
-    const CONTENT_CHARSET_UTF8  = 'utf-8',
-          CONTENT_CHARSET_UTF16 = 'utf-16',
-          CONTENT_CHARSET_UTF32 = 'utf-32';
+    const CONTENT_CHARSET_UTF8         = 'utf-8';
 
     /**
      * Content.
@@ -123,7 +123,7 @@ final class Body
      */
     final public function getContent()
     {
-        return $this->content;
+        return $this->content ?? '';
     }
 
     /**
