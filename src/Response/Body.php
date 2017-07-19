@@ -40,29 +40,77 @@ final class Body
     use GetterTrait;
 
     /**
+    * Types.
+    * @const string
+    */
+   const CONTENT_TYPE_NONE      = 'none',
+         CONTENT_TYPE_HTML      = 'text/html',
+         CONTENT_TYPE_PLAIN     = 'text/plain',
+         CONTENT_TYPE_XML       = 'application/xml',
+         CONTENT_TYPE_JSON      = 'application/json';
+
+    /**
+     * Charsets.
+     * @const string
+     */
+    const CONTENT_CHARSET_UTF8  = 'utf-8',
+          CONTENT_CHARSET_UTF16 = 'utf-16',
+          CONTENT_CHARSET_UTF32 = 'utf-32';
+
+    /**
      * Content.
      * @var string
      */
     private $content;
 
     /**
-     * Constructor.
-     * @param string|null $data
-     * @param string      $type
-     * @param string      $charset
+     * Content type.
+     * @var string
      */
-    final public function __construct(string $data = null,
-        string $type = BodyContent::TYPE_HTML, string $charset = BodyContent::CHARSET_UTF8)
+    private $contentType;
+
+    /**
+     * Content charset.
+     * @var string
+     */
+    private $contentCharset;
+
+    /**
+     * Content length.
+     * @var int
+     */
+    private $contentLength;
+
+    /**
+     * Constructor.
+     * @param any|null $content
+     * @param string   $contentType
+     * @param string   $contentCharset
+     */
+    final public function __construct($content = null,
+        string $contentType = self::CONTENT_TYPE_HTML,
+        string $contentCharset = self::CONTENT_CHARSET_UTF8)
     {
-        $this->setContent(new BodyContent($data, $type, $charset));
+        $this->setContent($content)
+            ->setContentType($contentType)
+            ->setContentCharset($contentCharset);
+    }
+
+    /**
+     * Stringer.
+     * @return string
+     */
+    final public function __toString(): string
+    {
+        return $this->toString();
     }
 
     /**
      * Set content.
-     * @param  Froq\Http\Response\BodyContent $content
+     * @param  any $content
      * @return self
      */
-    final public function setContent(BodyContent $content): self
+    final public function setContent($content): self
     {
         $this->content = $content;
 
@@ -71,10 +119,82 @@ final class Body
 
     /**
      * Get content.
-     * @return Froq\Http\Response\BodyContent
+     * @return any
      */
-    final public function getContent(): BodyContent
+    final public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * Set content type.
+     * @param  string $contentType
+     * @return self
+     */
+    final public function setContentType(string $contentType): self
+    {
+        $this->contentType = $contentType;
+
+        return $this;
+    }
+
+    /**
+     * Get content type.
+     * @return string
+     */
+    final public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * Set content charset.
+     * @param  string $contentCharset
+     * @return self
+     */
+    final public function setContentCharset(string $contentCharset): self
+    {
+        $this->contentCharset = $contentCharset;
+
+        return $this;
+    }
+
+    /**
+     * Get content charset.
+     * @return string
+     */
+    final public function getContentCharset(): string
+    {
+        return $this->contentCharset;
+    }
+
+    /**
+     * Set content length.
+     * @param  int $contentLength
+     * @return self
+     */
+    final public function setContentLength(int $contentLength): self
+    {
+        $this->contentLength = $contentLength;
+
+        return $this;
+    }
+
+    /**
+     * Get content length.
+     * @return int|null
+     */
+    final public function getContentLength()
+    {
+        return $this->contentLength;
+    }
+
+    /**
+     * To string.
+     * @return string
+     */
+    final public function toString(): string
+    {
+        return (string) $this->content;
     }
 }
