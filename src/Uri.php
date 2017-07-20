@@ -384,11 +384,12 @@ final class Uri
 
     /**
      * Segments arguments.
+     * @param  int $slice
      * @return array
      */
-    final public function segmentArguments(): array
+    final public function segmentArguments(int $slice): array
     {
-        return array_slice($this->segments, 2);
+        return array_slice($this->segments, $slice);
     }
 
     /**
