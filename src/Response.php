@@ -25,7 +25,7 @@ namespace Froq\Http;
 
 use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
-use Froq\Encoding\{Gzip, GzipException};
+use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
 
 /**
  * @package    Froq
@@ -95,15 +95,13 @@ final class Response
      * Caller.
      * @param  string $method
      * @param  array  $methodArguments
-     * @return self
+     * @return any
      */
-    final public function __call(string $method, array $methodArguments): self
+    final public function __call(string $method, array $methodArguments)
     {
         if (method_exists($this->body, $method)) {
             // proxify body methods
-            call_user_func_array([$this->body, $method], $methodArguments);
-
-            return $this;
+            return call_user_func_array([$this->body, $method], $methodArguments);
         }
 
         throw new \BadMethodCallException("Call to undefined method '{$method}'!");
@@ -427,9 +425,22 @@ final class Response
         }
 
         // last check for body
-        if (!is_string($body)) {
-            throw new \InvalidArgumentException(
-                'Content must be string (encoded in service if ResponseJson etc. not used)!');
+        $bodyType = gettype($body);
+        if ($bodyType != 'string') {
+            // array returns could be encoded if content type is json
+            if ($bodyType == 'array' && ($bodyContentType = $this->getContentType())
+                    && ($bodyContentType == Body::CONTENT_TYPE_TEXT_JSON ||
+                        $bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON)
+            ) {
+                $json = new Json($body);
+                $body = $json->encode();
+                if ($json->hasError()) {
+                    throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+                }
+            } else {
+                throw new \InvalidArgumentException(
+                    'Content must be string (encoded in service if ResponseJson etc. not used)!');
+            }
         }
 
         if ($body) {
