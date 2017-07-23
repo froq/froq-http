@@ -236,11 +236,12 @@ final class File
     final public function toArray(): array
     {
         return [
-            'name'     => $this->name,
-            'tmp_name' => $this->nameTmp,
-            'type'     => $this->type,
-            'size'     => $this->size,
-            'error'    => $this->error,
+            'name'        => $this->name,
+            'tmp_name'    => $this->nameTmp,
+            'type'        => $this->type,
+            'size'        => $this->size,
+            'error'       => $this->error,
+            'errorString' => $this->errorString
         ];
     }
 
