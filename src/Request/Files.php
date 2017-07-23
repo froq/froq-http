@@ -39,11 +39,11 @@ final class Files
 
     /**
      * Constructor.
-     * @param array $files
+     * @param array|null $files
      */
-    final public function __construct(array $files = [])
+    final public function __construct(array $files = null)
     {
-        $this->setFiles($files);
+        $files && $this->setFiles($files);
     }
 
     /**
@@ -51,7 +51,7 @@ final class Files
      * @param  array $files
      * @return self
      */
-    final public function setFiles(array $files = []): self
+    final public function setFiles(array $files): self
     {
         foreach ($files as $file) {
             // single file
