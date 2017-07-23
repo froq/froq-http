@@ -144,13 +144,10 @@ final class Request
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
-        $headers = [];
-        foreach (self::loadHttpHeaders() as $key => $value) {
-            $headers[to_snake_from_dash($key, true)] = $value;
-        }
-
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
+
+        $headers = self::loadHttpHeaders();
 
         // set/parse body for overwrite methods
         switch ($this->method->getName()) {
@@ -161,10 +158,12 @@ final class Request
                 $this->body = $body;
                 $this->bodyRaw = $body;
 
-                $contentType = $headers['content_type'] ?? '';
+                $contentType = trim($headers['Content-Type'] ?? '');
+                // @link https://stackoverflow.com/questions/477816/what-is-the-correct-json-content-type
                 if (stripos($contentType, 'application/json') === 0) {
                     $this->body = json_decode($this->body, true);
                 } elseif (stripos($contentType, 'application/x-www-form-urlencoded') === 0) {
+                    // fix dotted POST keys
                     $this->body = $_POST = $this->loadGlobalVar('POST', $body);
                 } else {
                     $this->body = $_POST;
@@ -257,11 +256,17 @@ final class Request
      */
     final private function loadHttpHeaders(): array
     {
-        $headers = [];
-        foreach ($_SERVER as $key => $value) {
-            if (stripos($key, 'HTTP_') === 0) {
-                $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
-                $headers[$key] = $value;
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders(); // apache
+        } else {
+            $headers = [];
+            foreach ($_SERVER as $key => $value) {
+                if (stripos(strval($key), 'HTTP_') === 0) {
+                    $headers[
+                        // normalize key
+                        implode('-', array_map('ucwords', explode('_', strtolower(substr($key, 5)))))
+                    ] = $value;
+                }
             }
         }
 
@@ -333,7 +338,7 @@ final class Request
             $key = hex2bin((string) $key);
 
             // not array
-            if (false === strpos($key, '[')) {
+            if (strpos($key, '[') === false) {
                 $var[$key] = $value;
             } else {
                 // handle array
