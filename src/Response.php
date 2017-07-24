@@ -494,16 +494,15 @@ final class Response
         $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
-        $app = app();
-        if ($exposeAppLoadTime = $app->getConfigValue('app.exposeAppLoadTime')) {
-            $loadTime = sprintf('%.3f', $app->loadTime()['total']);
+        if ($exposeAppLoadTime = $this->app->getConfigValue('app.exposeAppLoadTime')) {
+            $loadTime = sprintf('%.3f', $this->app->loadTime()['total']);
             if ($exposeAppLoadTime === true) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 1 && $app->isDev()) {
+            } elseif ($exposeAppLoadTime === 1 && $this->app->isDev()) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 2 && $app->isStage()) {
+            } elseif ($exposeAppLoadTime === 2 && $this->app->isStage()) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 3 && $app->isProduction()) {
+            } elseif ($exposeAppLoadTime === 3 && $this->app->isProduction()) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
             }
         }
