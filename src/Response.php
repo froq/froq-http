@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
+use Froq\App;
 use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
 use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
@@ -40,6 +41,12 @@ final class Response
      * @object Froq\Util\Traits\GetterTrait
      */
     use GetterTrait;
+
+    /**
+     * App.
+     * @var Froq\App
+     */
+    private $app;
 
     /**
      * HTTP Version.
@@ -84,11 +91,22 @@ final class Response
     private $gzipOptions = [];
 
     /**
-     * Constructer.
+     * Constructor.
+     * @param Froq\App $app
      */
-    final public function __construct()
+    final public function __construct(App $app)
     {
+        $this->app = $app;
+
         $this->httpVersion = Http::detectVersion();
+
+        $config = $this->app->getConfig();
+
+        $this->status = new Status();
+        $this->headers = new Headers($config->get('app.headers'));
+        $this->cookies = new Cookies($config->get('app.cookies'));
+        $this->body = new Body();
+        $this->gzip = new Gzip();
     }
 
     /**
@@ -108,21 +126,12 @@ final class Response
     }
 
     /**
-     * Init.
-     * @param  array $options
-     * @return self
+     * Get app.
+     * @return Froq\App
      */
-    final public function init(array $options = []): self
+    public function getApp(): App
     {
-        $config = app()->getConfig();
-
-        $this->status  = new Status();
-        $this->headers = new Headers($config['app.headers']);
-        $this->cookies = new Cookies($config['app.cookies']);
-        $this->body    = new Body();
-        $this->gzip    = new Gzip();
-
-        return $this;
+        return $this->app;
     }
 
     /**
