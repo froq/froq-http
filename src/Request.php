@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace Froq\Http;
 
+use Froq\App;
 use Froq\Util\Util;
 use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Request\{Params, Files, Method};
@@ -121,37 +122,14 @@ final class Request
 
     /**
      * Constructor.
+     * @param Froq\App
      */
-    final public function __construct()
+    final public function __construct(App $app)
     {
+        $this->app = $app;
+
         $this->httpVersion = Http::detectVersion();
-    }
 
-    /**
-     * Get method.
-     * @return Froq\Http\Request\Method
-     */
-    public function getMethod(): Method
-    {
-        return $this->method;
-    }
-
-    /**
-     * Get uri.
-     * @return Froq\Http\Uri
-     */
-    public function getUri(): Uri
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Init.
-     * @param  array $options
-     * @return self
-     */
-    final public function init(array $options = []): self
-    {
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
         } elseif ($_SERVER['SERVER_PORT'] == '443') {
@@ -197,15 +175,40 @@ final class Request
 
         $this->uri = new Uri(sprintf('%s://%s%s',
             $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
-        ), $options['root'] ?? null);
+        ), $this->app->getRoot() ?? null);
 
-        $this->client  = new Client();
+        $this->client = new Client();
         $this->headers = new Headers($headers);
         $this->cookies = new Cookies($_COOKIE);
-        $this->params  = new Params();
-        $this->files   = new Files($_FILES);
+        $this->params = new Params();
+        $this->files = new Files($_FILES);
+    }
 
-        return $this;
+    /**
+     * Get app.
+     * @return Froq\App
+     */
+    public function getApp(): App
+    {
+        return $this->app;
+    }
+
+    /**
+     * Get method.
+     * @return Froq\Http\Request\Method
+     */
+    public function getMethod(): Method
+    {
+        return $this->method;
+    }
+
+    /**
+     * Get uri.
+     * @return Froq\Http\Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
     }
 
     /**
