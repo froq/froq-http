@@ -114,11 +114,11 @@ final class Response
      */
     final public function init(array $options = []): self
     {
-        $app = app();
+        $config = app()->getConfig();
 
         $this->status  = new Status();
-        $this->headers = new Headers($app->config['app.headers']);
-        $this->cookies = new Cookies($app->config['app.cookies']);
+        $this->headers = new Headers($config['app.headers']);
+        $this->cookies = new Cookies($config['app.cookies']);
         $this->body    = new Body();
         $this->gzip    = new Gzip();
 
@@ -477,18 +477,16 @@ final class Response
         // content type / length
         if (empty($contentType)) {
             $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NONE);
-        } elseif (empty($contentCharset)
-            || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
+        } elseif (empty($contentCharset) || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
                 $this->sendHeader('Content-Type', $contentType);
         } else {
-            $this->sendHeader('Content-Type', sprintf('%s; charset=%s',
-                $contentType, $contentCharset));
+            $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
         }
         $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
         $app = app();
-        if ($exposeAppLoadTime = $app->config['app.exposeAppLoadTime']) {
+        if ($exposeAppLoadTime = $app->getConfigValue('app.exposeAppLoadTime')) {
             $loadTime = sprintf('%.3f', $app->loadTime()['total']);
             if ($exposeAppLoadTime === true) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
