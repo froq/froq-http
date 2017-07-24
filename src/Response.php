@@ -133,7 +133,7 @@ final class Response
      */
     final public function redirect(string $location, int $code = Status::FOUND)
     {
-        $this->setStatus($code)->setHeader('Location', $location);
+        $this->setStatus($code)->setHeader('Location', trim($location));
     }
 
     /**
