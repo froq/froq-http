@@ -128,6 +128,24 @@ final class Request
     }
 
     /**
+     * Get method.
+     * @return Froq\Http\Request\Method
+     */
+    public function getMethod(): Method
+    {
+        return $this->method;
+    }
+
+    /**
+     * Get uri.
+     * @return Froq\Http\Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
+    }
+
+    /**
      * Init.
      * @param  array $options
      * @return self
