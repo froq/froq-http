@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Util\Util;
 use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Request\{Params, Files, Method};
 
@@ -34,19 +33,13 @@ use Froq\Http\Request\{Params, Files, Method};
  * @object     Froq\Http\Request
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class Request
+final class Request extends Message
 {
     /**
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
     use GetterTrait;
-
-    /**
-     * HTTP Version.
-     * @var string
-     */
-    private $httpVersion;
 
     /**
      * Scheme.
@@ -97,18 +90,6 @@ final class Request
     private $client;
 
     /**
-     * Headers.
-     * @var Froq\Http\Headers
-     */
-    private $headers;
-
-    /**
-     * Cookies.
-     * @var Froq\Http\Cookies
-     */
-    private $cookies;
-
-    /**
      * Params.
      * @var Froq\Http\Request\Params
      */
@@ -126,9 +107,7 @@ final class Request
      */
     final public function __construct(App $app)
     {
-        $this->app = $app;
-
-        $this->httpVersion = Http::detectVersion();
+        parent::__construct($app);
 
         if (isset($_SERVER['REQUEST_SCHEME'])) {
             $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
@@ -178,19 +157,17 @@ final class Request
         ), $this->app->getRoot() ?? null);
 
         $this->client = new Client();
-        $this->headers = new Headers($headers);
-        $this->cookies = new Cookies($_COOKIE);
         $this->params = new Params();
         $this->files = new Files($_FILES);
     }
 
     /**
-     * Get app.
-     * @return Froq\App
+     * Get scheme.
+     * @return string
      */
-    public function getApp(): App
+    public function getScheme(): string
     {
-        return $this->app;
+        return $this->scheme;
     }
 
     /**
@@ -209,6 +186,45 @@ final class Request
     public function getUri(): Uri
     {
         return $this->uri;
+    }
+
+    /**
+     * Get body.
+     * @return ?array
+     */
+    public function getBody(): ?array
+    {
+        return $this->body;
+    }
+
+    /**
+     * Get body raw.
+     * @return ?string
+     */
+    public function getBodyRaw(): ?string
+    {
+        return $this->bodyRaw;
+    }
+
+    public function getTime(): int
+    {
+        return $this->time;
+    }
+    public function getTimeFloat(): float
+    {
+        return $this->timeFloat;
+    }
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+    // public function getParams(): Params // ->params()->get('id') ?
+    // {
+    //     return $this->params;
+    // }
+    public function getFiles(): Files
+    {
+        return $this->files;
     }
 
     /**

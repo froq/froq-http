@@ -34,25 +34,13 @@ use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
  * @object     Froq\Http\Response
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class Response
+final class Response extends Message
 {
     /**
      * Getter.
      * @object Froq\Util\Traits\GetterTrait
      */
     use GetterTrait;
-
-    /**
-     * App.
-     * @var Froq\App
-     */
-    private $app;
-
-    /**
-     * HTTP Version.
-     * @var string
-     */
-    private $httpVersion;
 
     /**
      * Status.
@@ -65,18 +53,6 @@ final class Response
      * @var Froq\Http\Response\Body
      */
     private $body;
-
-    /**
-     * Headers.
-     * @var Froq\Http\Headers
-     */
-    private $headers;
-
-    /**
-     * Cookies.
-     * @var Froq\Http\Cookies
-     */
-    private $cookies;
 
     /**
      * Gzip.
@@ -96,15 +72,13 @@ final class Response
      */
     final public function __construct(App $app)
     {
-        $this->app = $app;
-
-        $this->httpVersion = Http::detectVersion();
+        parent::__construct($app);
 
         $config = $this->app->getConfig();
+        $this->setHeaders($config->get('app.headers', []));
+        $this->setCookies($config->get('app.cookies', []));
 
         $this->status = new Status();
-        $this->headers = new Headers($config->get('app.headers'));
-        $this->cookies = new Cookies($config->get('app.cookies'));
         $this->body = new Body();
         $this->gzip = new Gzip();
     }
@@ -114,6 +88,7 @@ final class Response
      * @param  string $method
      * @param  array  $methodArguments
      * @return any
+     * @throws Froq\Http\HttpException
      */
     final public function __call(string $method, array $methodArguments)
     {
@@ -122,16 +97,7 @@ final class Response
             return call_user_func_array([$this->body, $method], $methodArguments);
         }
 
-        throw new \BadMethodCallException("Call to undefined method '{$method}'!");
-    }
-
-    /**
-     * Get app.
-     * @return Froq\App
-     */
-    public function getApp(): App
-    {
-        return $this->app;
+        throw new HttpException("Call to undefined method '{$method}'!");
     }
 
     /**
@@ -188,51 +154,25 @@ final class Response
     }
 
     /**
-     * Set header.
-     * @notice All these stored headers should be sent before
-     * sending the last output to the client with self.send()
-     * method.
-     * @param  string $name
-     * @param  any    $value
-     * @return self
-     */
-    final public function setHeader(string $name, $value): self
-    {
-        $this->headers->set($name, $value);
-
-        return $this;
-    }
-
-    /**
-     * Set headers.
-     * @param  array $headers
-     * @return self
-     */
-    final public function setHeaders(array $headers): self
-    {
-        foreach ($headers as $name => $value) {
-            $this->headers->set($name, $value);
-        }
-
-        return $this;
-    }
-
-    /**
      * Send header.
      * @param  string $name
      * @param  any    $value
      * @return void
+     * @throws Froq\Http\HttpException
      */
     final public function sendHeader(string $name, $value)
     {
-        if (headers_sent()) return;
+        if (headers_sent($file, $line))
+            throw new HttpException(sprintf("Cannot send header '%s', headers was already sent int %s:%s",
+                $name, $file, $line));
 
         // null means 'remove'
         if ($value === null) {
-            return $this->removeHeader($name);
+            header_remove($name);
+            unset($this->headers[$name]);
+        } else {
+            header(sprintf('%s: %s', $name, $value));
         }
-
-        header(sprintf('%s: %s', $name, $value));
     }
 
     /**
@@ -241,85 +181,11 @@ final class Response
      */
     final public function sendHeaders()
     {
-        if ($this->headers->count()) {
+        if ($this->headers) {
             foreach ($this->headers as $name => $value) {
                 $this->sendHeader($name, $value);
             }
         }
-    }
-
-    /**
-     * Remove header.
-     * @param  string $name
-     * @param  bool   $defer
-     * @return void
-     */
-    final public function removeHeader(string $name, bool $defer = false)
-    {
-        unset($this->headers[$name]);
-
-        // remove instantly?
-        if (!$defer) {
-            header_remove($name);
-        }
-    }
-
-    /**
-     * Remove headers.
-     * @return void
-     */
-    final public function removeHeaders()
-    {
-        if ($this->headers->count()) {
-            foreach ($this->headers as $name => $_) {
-                $this->removeHeader($name);
-            }
-        }
-    }
-
-    /**
-     * Set cookie.
-     * @notice All these stored cookies should be sent before
-     * sending the last output to the client with self.send()
-     * method.
-     * @param  string  $name
-     * @param  any     $value
-     * @param  int     $expire
-     * @param  string  $path
-     * @param  string  $domain
-     * @param  bool    $secure
-     * @param  bool    $httpOnly
-     * @throws \InvalidArgumentException
-     * @return void
-     */
-    final public function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false)
-    {
-        // check name
-        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new \InvalidArgumentException("Cookie name '{$name}' not accepted!");
-        }
-
-        $this->cookies->set($name, [
-            'name'      => $name,     'value'  => $value,
-            'expire'    => $expire,   'path'   => $path,
-            'domain'    => $domain,   'secure' => $secure,
-            'httpOnly'  => $httpOnly,
-        ]);
-    }
-
-    /**
-     * Set cookies.
-     * @param  array $cookies
-     * @return self
-     */
-    final public function setCookies(array $cookies): self
-    {
-        foreach ($cookies as $name => $value) {
-            $this->setCookie($name, $value);
-        }
-
-        return $this;
     }
 
     /**
@@ -331,15 +197,15 @@ final class Response
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @throws \InvalidArgumentException
      * @return bool
+     * @throws Froq\Http\HttpException
      */
     final public function sendCookie(string $name, $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): bool
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new \InvalidArgumentException('Cookie name not accepted!');
+            throw new HttpException("Invalid cookie name '{$name}' given!");
         }
 
         return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
@@ -350,7 +216,7 @@ final class Response
      * @return void
      */
     final public function sendCookies() {
-        if ($this->cookies->count()) {
+        if ($this->cookies) {
             foreach ($this->cookies as $cookie) {
                 $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
                     $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
@@ -380,7 +246,7 @@ final class Response
      */
     final public function removeCookies()
     {
-        if ($this->cookies->count()) {
+        if ($this->cookies) {
             foreach ($this->cookies as $name => $_) {
                 $this->removeCookie($name);
             }
@@ -410,7 +276,7 @@ final class Response
      * Set body.
      * @param  any $body
      * @return self
-     * @throws \InvalidArgumentException
+     * @throws Froq\Http\HttpException
      */
     final public function setBody($body): self
     {
@@ -447,8 +313,7 @@ final class Response
                     throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
                 }
             } else {
-                throw new \InvalidArgumentException(
-                    'Content must be string (encoded in service if ResponseJson etc. not used)!');
+                throw new HttpException('Content must be string (encoded in service if ResponseJson etc. not used)!');
             }
         }
 
@@ -467,6 +332,15 @@ final class Response
         }
 
         return $this;
+    }
+
+    /**
+     * Get body.
+     * @return any
+     */
+    public function getBody()
+    {
+        return $this->body;
     }
 
     /**
