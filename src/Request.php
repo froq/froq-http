@@ -197,7 +197,7 @@ final class Request
 
         $this->uri = new Uri(sprintf('%s://%s%s',
             $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
-        ), $options['uriRoot'] ?? null);
+        ), $options['root'] ?? null);
 
         $this->client  = new Client();
         $this->headers = new Headers($headers);

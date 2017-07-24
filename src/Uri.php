@@ -105,7 +105,7 @@ final class Uri
     {
         $this->setSource($source);
 
-        if ($root != null) {
+        if ($root) {
             $this->setRoot($root);
         }
 
