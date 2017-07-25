@@ -31,7 +31,7 @@ use Froq\Encoding\{Xml, XmlException};
  * @object     Froq\Http\Response\ResponseXml
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-class ResponseXml extends Response
+final class ResponseXml extends Response
 {
     // @todo
 }
