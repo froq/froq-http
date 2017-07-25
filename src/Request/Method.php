@@ -49,6 +49,15 @@ final class Method
     }
 
     /**
+     * Stringer.
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
      * Set name.
      * @param  string $name
      * @return self
@@ -183,5 +192,14 @@ final class Method
         }
 
         return false;
+    }
+
+    /**
+     * To string.
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->name;
     }
 }
