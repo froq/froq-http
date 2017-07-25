@@ -71,9 +71,18 @@ abstract class Message
      * Get app.
      * @return Froq\App
      */
-    final public function getApp(): App
+    public final function getApp(): App
     {
         return $this->app;
+    }
+
+    /**
+     * Get http version.
+     * @return string
+     */
+    public function getHttpVersion(): string
+    {
+        return $this->httpVersion;
     }
 
     /**
@@ -85,7 +94,7 @@ abstract class Message
      * @param  any    $value
      * @return self
      */
-    final public function setHeader(string $name, $value): self
+    public final function setHeader(string $name, $value): self
     {
         $this->headers[$name] = $value;
 
@@ -98,7 +107,7 @@ abstract class Message
      * @param  any    $valueDefault
      * @return any
      */
-    final public function getHeader(string $name, $valueDefault = null)
+    public final function getHeader(string $name, $valueDefault = null)
     {
         return $this->headers[$name] ?? $valueDefault;
     }
@@ -107,7 +116,7 @@ abstract class Message
      * Get headers.
      * @return array
      */
-    final public function getHeaders(): array
+    public final function getHeaders(): array
     {
         return $this->headers;
     }
@@ -117,7 +126,7 @@ abstract class Message
      * @param  array $headers
      * @return self
      */
-    final public function setHeaders(array $headers): self
+    public final function setHeaders(array $headers): self
     {
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
@@ -141,8 +150,8 @@ abstract class Message
      * @throws \InvalidArgumentException
      * @return void
      */
-    final public function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false)
+    public final function setCookie(string $name, $value, int $expire = 0,
+        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
@@ -163,7 +172,7 @@ abstract class Message
      * @param  any    $valueDefault
      * @return any
      */
-    final public function getCookie(string $name, $valueDefault = null)
+    public final function getCookie(string $name, $valueDefault = null)
     {
         return $this->cookies[$name] ?? $valueDefault;
     }
@@ -173,7 +182,7 @@ abstract class Message
      * @param  array $cookies
      * @return self
      */
-    final public function setCookies(array $cookies): self
+    public final function setCookies(array $cookies): self
     {
         foreach ($cookies as $name => $value) {
             $this->setCookie($name, $value);
@@ -186,7 +195,7 @@ abstract class Message
      * Get cookies.
      * @return array
      */
-    final public function getCookies(): array
+    public final function getCookies(): array
     {
         return $this->cookies;
     }
