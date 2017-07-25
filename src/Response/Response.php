@@ -70,8 +70,8 @@ class Response
     /**
      * Constructor.
      * @param int|string|array|null $arg0
-     * @param any                   $data
-     * @param string                $dataType
+     * @param any|null              $data
+     * @param string|array          $dataType
      * @param array|null            $headers
      * @param array|null            $cookies
      */
@@ -95,14 +95,14 @@ class Response
                     break;
                 default:
                     throw new \InvalidArgumentException(
-                        'Only int|string|array|null types accepted for first argument!');
+                        'Only int|string|array types and null accepted for first argument!');
             }
         }
 
         $this->statusCode = $statusCode ?? Status::OK;
 
         $this->data = $data;
-        if (isset($dataType)) {
+        if (!empty($dataType)) {
             if (is_array($dataType)) {
                 $this->dataType = $dataType[0];
                 $this->dataCharset = $dataType[1] ?? $dataCharset ?? null;
@@ -118,9 +118,9 @@ class Response
 
     /**
      * Get status code.
-     * @return int|null
+     * @return ?int
      */
-    final public function getStatusCode()
+    public final function getStatusCode(): ?int
     {
         return $this->statusCode;
     }
@@ -129,25 +129,25 @@ class Response
      * Get data.
      * @return any
      */
-    final public function getData()
+    public final function getData()
     {
         return $this->data;
     }
 
     /**
      * Get data type.
-     * @return string|null
+     * @return ?string
      */
-    final public function getDataType()
+    public final function getDataType(): ?string
     {
         return $this->dataType;
     }
 
     /**
      * Get data charset.
-     * @return string|null
+     * @return ?string
      */
-    final public function getDataCharset()
+    public final function getDataCharset(): ?string
     {
         return $this->dataCharset;
     }
@@ -156,7 +156,7 @@ class Response
      * Get headers.
      * @return array
      */
-    final public function getHeaders(): array
+    public final function getHeaders(): array
     {
         return $this->headers;
     }
@@ -165,7 +165,7 @@ class Response
      * Get cookies.
      * @return array
      */
-    final public function getCookies(): array
+    public final function getCookies(): array
     {
         return $this->cookies;
     }
