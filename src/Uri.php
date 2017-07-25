@@ -38,7 +38,7 @@ final class Uri
     private $source;
 
     /**
-     * Scheme
+     * Scheme.
      * @var string
      */
     private $scheme;
@@ -100,8 +100,9 @@ final class Uri
     /**
      * Constructor.
      * @param string $source
+     * @param string $root
      */
-    final public function __construct(string $source = '', string $root = null)
+    public function __construct(string $source = '', string $root = null)
     {
         $this->setSource($source);
 
@@ -138,7 +139,7 @@ final class Uri
      * To string.
      * @return string
      */
-    final public function __toString(): string
+    public function __toString()
     {
         return $this->toString();
     }
@@ -148,7 +149,7 @@ final class Uri
      * @param  string $source
      * @return self
      */
-    final public function setSource(string $source): self
+    public function setSource(string $source): self
     {
         $this->source = $source;
 
@@ -169,7 +170,7 @@ final class Uri
      * @param  string $scheme
      * @return self
      */
-    final public function setScheme(string $scheme): self
+    public function setScheme(string $scheme): self
     {
         $this->scheme = $scheme;
 
@@ -178,9 +179,9 @@ final class Uri
 
     /**
      * Get scheme.
-     * @return string|null
+     * @return ?string
      */
-    final public function getScheme()
+    public function getScheme(): ?string
     {
         return $this->scheme;
     }
@@ -190,7 +191,7 @@ final class Uri
      * @param  string $host
      * @return self
      */
-    final public function setHost(string $host): self
+    public function setHost(string $host): self
     {
         $this->host = $host;
 
@@ -199,9 +200,9 @@ final class Uri
 
     /**
      * Get host.
-     * @return string|null
+     * @return ?string
      */
-    final public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
@@ -211,7 +212,7 @@ final class Uri
      * @param  int port
      * @return self
      */
-    final public function setPort(int $port): self
+    public function setPort(int $port): self
     {
         $this->port = $port;
 
@@ -220,9 +221,9 @@ final class Uri
 
     /**
      * Get port.
-     * @return int|null
+     * @return ?int
      */
-    final public function getPort()
+    public function getPort(): ?int
     {
         return $this->port;
     }
@@ -232,7 +233,7 @@ final class Uri
      * @param  string $user
      * @return self
      */
-    final public function setUser(string $user): self
+    public function setUser(string $user): self
     {
         $this->user = $user;
 
@@ -241,9 +242,9 @@ final class Uri
 
     /**
      * Get user.
-     * @return string|null
+     * @return ?string
      */
-    final public function getUser()
+    public function getUser(): ?string
     {
         return $this->user;
     }
@@ -253,7 +254,7 @@ final class Uri
      * @param  string $pass
      * @return self
      */
-    final public function setPass(string $pass): self
+    public function setPass(string $pass): self
     {
         $this->pass = $pass;
 
@@ -262,9 +263,9 @@ final class Uri
 
     /**
      * Get pass.
-     * @return string|null
+     * @return ?string
      */
-    final public function getPass()
+    public function getPass(): ?string
     {
         return $this->pass;
     }
@@ -274,7 +275,7 @@ final class Uri
      * @param  strin $path
      * @return self
      */
-    final public function setPath(string $path): self
+    public function setPath(string $path): self
     {
         $this->path = $path;
 
@@ -283,9 +284,9 @@ final class Uri
 
     /**
      * Get path.
-     * @return string|null
+     * @return ?string
      */
-    final public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -295,7 +296,7 @@ final class Uri
      * @param  string $query
      * @return self
      */
-    final public function setQuery(string $query): self
+    public function setQuery(string $query): self
     {
         $this->query = $query;
 
@@ -304,9 +305,9 @@ final class Uri
 
     /**
      * Get query.
-     * @return string|null
+     * @return ?string
      */
-    final public function getQuery()
+    public function getQuery(): ?string
     {
         return $this->query;
     }
@@ -316,7 +317,7 @@ final class Uri
      * @param  string $fragment
      * @return self
      */
-    final public function setFragment(string $fragment): self
+    public function setFragment(string $fragment): self
     {
         $this->fragment = $fragment;
 
@@ -325,9 +326,9 @@ final class Uri
 
     /**
      * Get fragment.
-     * @return string|null
+     * @return ?string
      */
-    final public function getFragment()
+    public function getFragment(): ?string
     {
         return $this->fragment;
     }
@@ -337,7 +338,7 @@ final class Uri
      * @param  string $root
      * @return self
      */
-    final public function setRoot(string $root): self
+    public function setRoot(string $root): self
     {
         $this->root = $root;
 
@@ -348,7 +349,7 @@ final class Uri
      * Get root.
      * @return string
      */
-    final public function getRoot(): string
+    public function getRoot(): string
     {
         return $this->root;
     }
@@ -357,7 +358,7 @@ final class Uri
      * Is root.
      * @return bool
      */
-    final public function isRoot(): bool
+    public function isRoot(): bool
     {
         return ($this->root == $this->path);
     }
@@ -366,7 +367,7 @@ final class Uri
      * Segments.
      * @return array
      */
-    final public function segments(): array
+    public function segments(): array
     {
         return $this->segments;
     }
@@ -377,7 +378,7 @@ final class Uri
      * @param  any $default
      * @return any
      */
-    final public function segment(int $i, $default = null)
+    public function segment(int $i, $default = null)
     {
         return $this->segments[$i] ?? $default;
     }
@@ -387,7 +388,7 @@ final class Uri
      * @param  int $slice
      * @return array
      */
-    final public function segmentArguments(int $slice): array
+    public function segmentArguments(int $slice): array
     {
         return array_slice($this->segments, $slice);
     }
@@ -397,7 +398,7 @@ final class Uri
      * @param  array $exclude
      * @return string
      */
-    final public function toString(array $exclude = []): string
+    public function toString(array $exclude = []): string
     {
         $array = $this->toArray($exclude);
         $return = '';
@@ -430,7 +431,7 @@ final class Uri
      * @param  array $exclude
      * @return array
      */
-    final public function toArray(array $exclude = []): array
+    public function toArray(array $exclude = []): array
     {
         $return = [];
         foreach (['scheme', 'host', 'port', 'user',
@@ -447,17 +448,16 @@ final class Uri
      * Generate segments.
      * @return void
      */
-    final public function generateSegments()
+    private function generateSegments(): void
     {
         $path = $this->path;
         if ($path && $path != '/') {
             // remove root
             if ($this->root && $this->root != '/') {
-                $path = preg_replace('~^'. preg_quote($this->root) .'~', '', $path);
+                $path = substr($path, strlen($this->root));
             }
 
-            $this->segments = array_filter(array_map('trim',
-                preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY)));
+            $this->segments = preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY);
         }
     }
 }
