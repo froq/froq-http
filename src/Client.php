@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\Util\Util;
-use Froq\Util\Traits\GetterTrait;
 
 /**
  * @package    Froq
@@ -35,25 +34,19 @@ use Froq\Util\Traits\GetterTrait;
 final class Client
 {
     /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
-     */
-    use GetterTrait;
-
-    /**
-     * Client IP.
+     * Ip.
      * @var string
      */
     private $ip;
 
     /**
-     * Client locale.
+     * Locale.
      * @var string
      */
     private $locale;
 
     /**
-     * Client language.
+     * Language.
      * @var string
      */
     private $language;
@@ -61,15 +54,40 @@ final class Client
     /**
      * Constructor.
      */
-    final public function __construct()
+    public function __construct()
     {
         $this->ip = Util::getClientIp();
 
-        // set locale & language
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->locale = str_replace('-', '_',
-                substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
+            $this->locale = str_replace('-', '_', substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
             $this->language = substr($this->locale, 0, 2);
         }
+    }
+
+    /**
+     * Get ip.
+     * @return ?string
+     */
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Get locale.
+     * @return ?string
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Get language.
+     * @return ?string
+     */
+    public function getLanguage(): ?string
+    {
+        return $this->language;
     }
 }
