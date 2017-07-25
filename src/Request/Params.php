@@ -23,81 +23,97 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
-use Froq\Util\Traits\GetterTrait;
-use Froq\Http\Request\Params\{Get, Post, Cookie};
-
 /**
  * @package    Froq
- * @subpackage Froq\Http\Request
+ * @subpackage Froq\Http
  * @object     Froq\Http\Request\Params
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Params
 {
     /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
+     * params.
+     * @var array
      */
-    use GetterTrait;
-
-    /**
-     * Get.
-     * @var Froq\Http\Request\Params\Get
-     */
-    private $get;
-
-    /**
-     * Post.
-     * @var Froq\Http\Request\Params\Post
-     */
-    private $post;
-
-    /**
-     * Cookie.
-     * @var Froq\Http\Request\Params\Cookie
-     */
-    private $cookie;
+    private $params = [];
 
     /**
      * Constructor.
      */
-    final public function __construct()
+    public function __construct()
     {
-        $this->get = new Get();
-        $this->post = new Post();
-        $this->cookie = new Cookie();
+        $this->params['get'] = $_GET;
+        $this->params['post'] = $_POST;
+        $this->params['cookie'] = $_COOKIE;
     }
 
     /**
      * Get.
-     * @param  string $key
+     * @param  string $name
      * @param  any    $valueDefault
      * @return any
      */
-    final public function get(string $key, $valueDefault = null)
+    public function get(string $name, $valueDefault = null)
     {
-        return $this->get->get($key, $valueDefault);
+        return $this->params['get'][$name] ?? $valueDefault;
+    }
+
+    /**
+     * Gets.
+     * @return array
+     */
+    public function gets(): array
+    {
+        return $this->params['get'];
     }
 
     /**
      * Post.
-     * @param  string $key
+     * @param  string $name
      * @param  any    $valueDefault
      * @return any
      */
-    final public function post(string $key, $valueDefault = null)
+    public function post(string $name, $valueDefault = null)
     {
-        return $this->post->get($key, $valueDefault);
+        return $this->params['post'][$name] ?? $valueDefault;
+    }
+
+    /**
+     * Posts.
+     * @return array
+     */
+    public function posts(): array
+    {
+        return $this->params['post'];
     }
 
     /**
      * Cookie.
-     * @param  string $key
+     * @param  string $name
      * @param  any    $valueDefault
      * @return any
      */
-    final public function cookie(string $key, $valueDefault = null)
+    public function cookie(string $name, $valueDefault = null)
     {
-        return $this->cookie->get($key, $valueDefault);
+        return $this->params['cookie'][$name] ?? $valueDefault;
+    }
+
+    /**
+     * Cookies.
+     * @return array
+     */
+    public function cookies(): array
+    {
+        return $this->params['cookie'];
+    }
+
+    /**
+     * To array.
+     * @param  string|null $key
+     * @return array.
+     */
+    public function toArray(string $key = null): array
+    {
+        return $key ? $this->params[strtolower($key)] : $this->params;
     }
 }
