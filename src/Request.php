@@ -35,12 +35,6 @@ use Froq\Http\Request\{Method, Uri, Client, Params, Files};
 final class Request extends Message
 {
     /**
-     * Scheme.
-     * @var string
-     */
-    private $scheme;
-
-    /**
      * Method.
      * @var Froq\Http\Request\Method
      */
@@ -145,15 +139,6 @@ final class Request extends Message
         $this->client = new Client();
         $this->params = new Params();
         $this->files = new Files($_FILES);
-    }
-
-    /**
-     * Get scheme.
-     * @return string
-     */
-    public function getScheme(): string
-    {
-        return $this->scheme;
     }
 
     /**
