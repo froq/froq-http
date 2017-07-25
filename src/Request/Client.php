@@ -21,14 +21,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http;
+namespace Froq\Http\Request;
 
 use Froq\Util\Util;
 
 /**
  * @package    Froq
  * @subpackage Froq\Http
- * @object     Froq\Http\Client
+ * @object     Froq\Http\Request\Client
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Client

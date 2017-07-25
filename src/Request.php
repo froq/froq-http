@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Http\Request\{Params, Files, Method};
+use Froq\Http\Request\{Method, Uri, Client, Params, Files};
 
 /**
  * @package    Froq
@@ -42,7 +42,7 @@ final class Request extends Message
 
     /**
      * Method.
-     * @var string
+     * @var Froq\Http\Request\Method
      */
     private $method;
 
@@ -78,7 +78,7 @@ final class Request extends Message
 
     /**
      * Client.
-     * @var Froq\Http\Client
+     * @var Froq\Http\Request\Client
      */
     private $client;
 
@@ -102,19 +102,10 @@ final class Request extends Message
     {
         parent::__construct($app);
 
-        if (isset($_SERVER['REQUEST_SCHEME'])) {
-            $this->scheme = strtolower($_SERVER['REQUEST_SCHEME']);
-        } elseif ($_SERVER['SERVER_PORT'] == '443') {
-            $this->scheme = 'https';
-        } else {
-            $this->scheme = 'http';
-        }
-
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
-        $this->uri = new Uri(sprintf('%s://%s%s',
-            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
-        ), $this->app->getRoot());
+        $this->uri = new Uri(sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['SERVER_NAME'],
+            $_SERVER['REQUEST_URI']), $this->app->getRoot());
 
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
@@ -176,7 +167,7 @@ final class Request extends Message
 
     /**
      * Uri.
-     * @return Froq\Http\Uri
+     * @return Froq\Http\Request\Uri
      */
     public function uri(): Uri
     {
@@ -221,7 +212,7 @@ final class Request extends Message
 
     /**
      * Client.
-     * @return Froq\Http\Client
+     * @return Froq\Http\Request\Client
      */
     public function client(): Client
     {
