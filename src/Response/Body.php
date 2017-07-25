@@ -23,22 +23,14 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
-use Froq\Util\Traits\GetterTrait;
-
 /**
  * @package    Froq
- * @subpackage Froq\Http\Response
+ * @subpackage Froq\Http
  * @object     Froq\Http\Response\Body
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Body
 {
-    /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
-     */
-    use GetterTrait;
-
     /**
     * Types.
     * @const string
@@ -87,8 +79,7 @@ final class Body
      * @param string   $contentType
      * @param string   $contentCharset
      */
-    final public function __construct($content = null,
-        string $contentType = self::CONTENT_TYPE_HTML,
+    public function __construct($content = null, string $contentType = self::CONTENT_TYPE_HTML,
         string $contentCharset = self::CONTENT_CHARSET_UTF8)
     {
         $this->setContent($content)
@@ -100,7 +91,7 @@ final class Body
      * Stringer.
      * @return string
      */
-    final public function __toString(): string
+    public function __toString()
     {
         return $this->toString();
     }
@@ -110,7 +101,7 @@ final class Body
      * @param  any $content
      * @return self
      */
-    final public function setContent($content): self
+    public function setContent($content): self
     {
         $this->content = $content;
 
@@ -121,7 +112,7 @@ final class Body
      * Get content.
      * @return any
      */
-    final public function getContent()
+    public function getContent()
     {
         return $this->content ?? '';
     }
@@ -132,7 +123,7 @@ final class Body
      * @param  string|null $contentCharset For shortcut calls.
      * @return self
      */
-    final public function setContentType(string $contentType, string $contentCharset = null): self
+    public function setContentType(string $contentType, string $contentCharset = null): self
     {
         $this->contentType = $contentType;
 
@@ -148,7 +139,7 @@ final class Body
      * Get content type.
      * @return string
      */
-    final public function getContentType(): string
+    public function getContentType(): string
     {
         return $this->contentType;
     }
@@ -158,7 +149,7 @@ final class Body
      * @param  string $contentCharset
      * @return self
      */
-    final public function setContentCharset(string $contentCharset): self
+    public function setContentCharset(string $contentCharset): self
     {
         $this->contentCharset = $contentCharset;
 
@@ -169,7 +160,7 @@ final class Body
      * Get content charset.
      * @return string
      */
-    final public function getContentCharset(): string
+    public function getContentCharset(): string
     {
         return $this->contentCharset;
     }
@@ -179,7 +170,7 @@ final class Body
      * @param  int $contentLength
      * @return self
      */
-    final public function setContentLength(int $contentLength): self
+    public function setContentLength(int $contentLength): self
     {
         $this->contentLength = $contentLength;
 
@@ -188,9 +179,9 @@ final class Body
 
     /**
      * Get content length.
-     * @return int|null
+     * @return ?int
      */
-    final public function getContentLength()
+    public function getContentLength(): ?int
     {
         return $this->contentLength;
     }
@@ -199,7 +190,7 @@ final class Body
      * To string.
      * @return string
      */
-    final public function toString(): string
+    public function toString(): string
     {
         return (string) $this->content;
     }
