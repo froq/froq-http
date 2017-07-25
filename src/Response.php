@@ -375,7 +375,7 @@ final class Response extends Message
         $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
-        if ($exposeAppLoadTime = ($this->app->config()['app.exposeAppLoadTime'] ?? [])) {
+        if ($exposeAppLoadTime = $this->app->configValue('app.exposeAppLoadTime')) {
             $loadTime = sprintf('%.3f', $this->app->loadTime()['total']);
             if ($exposeAppLoadTime === true) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
