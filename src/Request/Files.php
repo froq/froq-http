@@ -25,14 +25,14 @@ namespace Froq\Http\Request;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Request
+ * @subpackage Froq\Http
  * @object     Froq\Http\Request\Files
  * @author     Kerem Güneş <k-gun@mail.com>
  */
 final class Files
 {
     /**
-     * Get params.
+     * Files.
      * @var array
      */
     private $files = [];
@@ -41,7 +41,7 @@ final class Files
      * Constructor.
      * @param array|null $files
      */
-    final public function __construct(array $files = null)
+    public function __construct(array $files = null)
     {
         $files && $this->setFiles($files);
     }
@@ -51,7 +51,7 @@ final class Files
      * @param  array $files
      * @return self
      */
-    final public function setFiles(array $files): self
+    public function setFiles(array $files): self
     {
         foreach ($files as $file) {
             // single file
@@ -73,7 +73,7 @@ final class Files
      * Get files.
      * @return array
      */
-    final public function getFiles(): array
+    public function getFiles(): array
     {
         return $this->files;
     }
@@ -83,7 +83,7 @@ final class Files
      * @param  array $files
      * @return array
      */
-    final public static function normalizeFilesArray(array $files): array
+    public static function normalizeFilesArray(array $files): array
     {
         $return = [];
         foreach ($files as $i => $file) {
