@@ -24,9 +24,8 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Util\Traits\GetterTrait;
+use Froq\Encoding\{Gzip, Json, JsonException};
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
-use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
 
 /**
  * @package    Froq
@@ -36,12 +35,6 @@ use Froq\Encoding\{Gzip, GzipException, Json, JsonException};
  */
 final class Response extends Message
 {
-    /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
-     */
-    use GetterTrait;
-
     /**
      * Status.
      * @var Froq\Http\Response\Status
@@ -70,7 +63,7 @@ final class Response extends Message
      * Constructor.
      * @param Froq\App $app
      */
-    final public function __construct(App $app)
+    public function __construct(App $app)
     {
         parent::__construct($app);
 
@@ -90,7 +83,7 @@ final class Response extends Message
      * @return any
      * @throws Froq\Http\HttpException
      */
-    final public function __call(string $method, array $methodArguments)
+    public function __call(string $method, array $methodArguments)
     {
         if (method_exists($this->body, $method)) {
             // proxify body methods
@@ -101,12 +94,48 @@ final class Response extends Message
     }
 
     /**
+     * Get status.
+     * @return Froq\Http\Response\Status
+     */
+    public function status(): Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * Get body.
+     * @return any
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * Get gzip.
+     * @return Froq\Encoding\Gzip
+     */
+    public function getGzip(): Gzip
+    {
+        return $this->gzip;
+    }
+
+    /**
+     * Get gzip options.
+     * @return array
+     */
+    public function getGzipOptions(): array
+    {
+        return $this->gzipOptions;
+    }
+
+    /**
      * Redirect.
      * @param  string $location
      * @param  int    $code
      * @return void
      */
-    final public function redirect(string $location, int $code = Status::FOUND)
+    public function redirect(string $location, int $code = Status::FOUND)
     {
         $this->setStatus($code)->setHeader('Location', trim($location));
     }
@@ -117,7 +146,7 @@ final class Response extends Message
      * @param  string $text
      * @return self
      */
-    final public function setStatus(int $code, string $text = null): self
+    public function setStatus(int $code, string $text = null): self
     {
         if ($text == null) {
             $text = Status::getTextByCode($code);
@@ -134,7 +163,7 @@ final class Response extends Message
      * @param  int $code
      * @return self
      */
-    final public function setStatusCode(int $code): self
+    public function setStatusCode(int $code): self
     {
         $this->status->setCode($code);
 
@@ -146,7 +175,7 @@ final class Response extends Message
      * @param  string $text
      * @return self
      */
-    final public function setStatusText(string $text): self
+    public function setStatusText(string $text): self
     {
         $this->status->setText($text);
 
@@ -160,7 +189,7 @@ final class Response extends Message
      * @return void
      * @throws Froq\Http\HttpException
      */
-    final public function sendHeader(string $name, $value)
+    public function sendHeader(string $name, $value): void
     {
         if (headers_sent($file, $line))
             throw new HttpException(sprintf("Cannot send header '%s', headers was already sent int %s:%s",
@@ -179,9 +208,9 @@ final class Response extends Message
      * Send headers.
      * @return void
      */
-    final public function sendHeaders()
+    public function sendHeaders(): void
     {
-        if ($this->headers) {
+        if (!empty($this->headers)) {
             foreach ($this->headers as $name => $value) {
                 $this->sendHeader($name, $value);
             }
@@ -200,7 +229,7 @@ final class Response extends Message
      * @return bool
      * @throws Froq\Http\HttpException
      */
-    final public function sendCookie(string $name, $value, int $expire = 0,
+    public function sendCookie(string $name, $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): bool
     {
         // check name
@@ -215,8 +244,9 @@ final class Response extends Message
      * Send cookies.
      * @return void
      */
-    final public function sendCookies() {
-        if ($this->cookies) {
+    public function sendCookies(): void
+    {
+        if (!empty($this->cookies)) {
             foreach ($this->cookies as $cookie) {
                 $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
                     $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
@@ -230,7 +260,7 @@ final class Response extends Message
      * @param  bool   $defer
      * @return void
      */
-    final public function removeCookie(string $name, bool $defer = false)
+    public function removeCookie(string $name, bool $defer = false): void
     {
         unset($this->cookies[$name]);
 
@@ -241,24 +271,11 @@ final class Response extends Message
     }
 
     /**
-     * Remove cookies.
-     * @return void
-     */
-    final public function removeCookies()
-    {
-        if ($this->cookies) {
-            foreach ($this->cookies as $name => $_) {
-                $this->removeCookie($name);
-            }
-        }
-    }
-
-    /**
-     * Set GZip options.
+     * Set gzip options.
      * @param  array $gzipOptions
      * @return self
      */
-    final public function setGzipOptions(array $gzipOptions): self
+    public function setGzipOptions(array $gzipOptions): self
     {
         isset($gzipOptions['level']) &&
             $this->gzip->setLevel($gzipOptions['level']);
@@ -278,13 +295,13 @@ final class Response extends Message
      * @return self
      * @throws Froq\Http\HttpException
      */
-    final public function setBody($body): self
+    public function setBody($body): self
     {
         if ($body instanceof ReturnResponse) {
             $this->setStatus($body->getStatusCode() ?? Status ::OK)
                 ->setHeaders($body->getHeaders())
-                ->setCookies($body->getCookies())
-            ;
+                ->setCookies($body->getCookies());
+
             $body = new Body($body->getData(),
                 $body->getDataType() ?? $this->body->getContentType(),
                 $body->getDataCharset() ?? $this->body->getContentCharset());
@@ -295,8 +312,7 @@ final class Response extends Message
             $body = $this->body->setContent($body->getContent())
                 ->setContentType($body->getContentType())
                 ->setContentCharset($body->getContentCharset())
-                ->getContent()
-            ;
+                ->getContent();
         }
 
         // last check for body
@@ -335,19 +351,10 @@ final class Response extends Message
     }
 
     /**
-     * Get body.
-     * @return any
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
      * Send.
      * @return void
      */
-    final public function send()
+    public function send(): void
     {
         // status
         header(sprintf('%s %s', $this->httpVersion, $this->status->toString()));
@@ -386,5 +393,5 @@ final class Response extends Message
     }
 
     // @wait
-    final public function sendFile($file) {}
+    public function sendFile($file): void {}
 }
