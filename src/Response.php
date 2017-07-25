@@ -67,9 +67,9 @@ final class Response extends Message
     {
         parent::__construct($app);
 
-        $config = $this->app->getConfig();
-        $this->setHeaders($config->get('app.headers', []));
-        $this->setCookies($config->get('app.cookies', []));
+        $config = $this->app->config();
+        $this->setHeaders($config['app.headers'] ?? []);
+        $this->setCookies($config['app.cookies'] ?? []);
 
         $this->status = new Status();
         $this->body = new Body();
@@ -375,7 +375,7 @@ final class Response extends Message
         $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
-        if ($exposeAppLoadTime = $this->app->getConfigValue('app.exposeAppLoadTime')) {
+        if ($exposeAppLoadTime = ($this->app->config()['app.exposeAppLoadTime'] ?? [])) {
             $loadTime = sprintf('%.3f', $this->app->loadTime()['total']);
             if ($exposeAppLoadTime === true) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
