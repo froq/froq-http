@@ -27,7 +27,7 @@ use Froq\Http\Http;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Request
+ * @subpackage Froq\Http
  * @object     Froq\Http\Request\Method
  * @author     Kerem Güneş <k-gun@mail.com>
  */
@@ -43,7 +43,7 @@ final class Method
      * Constructor.
      * @param string $name
      */
-    final public function __construct(string $name = '')
+    public function __construct(string $name)
     {
         $this->setName($name);
     }
@@ -53,7 +53,7 @@ final class Method
      * @param  string $name
      * @return self
      */
-    final public function setName(string $name): self
+    public function setName(string $name): self
     {
         $this->name = strtoupper($name);
 
@@ -64,7 +64,7 @@ final class Method
      * Get name.
      * @return string
      */
-    final public function getName(): string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -73,7 +73,7 @@ final class Method
      * Is get.
      * @return bool
      */
-    final public function isGet(): bool
+    public function isGet(): bool
     {
         return ($this->name == Http::METHOD_GET);
     }
@@ -82,7 +82,7 @@ final class Method
      * Is post.
      * @return bool
      */
-    final public function isPost(): bool
+    public function isPost(): bool
     {
         return ($this->name == Http::METHOD_POST);
     }
@@ -91,7 +91,7 @@ final class Method
      * Is put.
      * @return bool
      */
-    final public function isPut(): bool
+    public function isPut(): bool
     {
         return ($this->name == Http::METHOD_PUT);
     }
@@ -100,7 +100,7 @@ final class Method
      * Is patch.
      * @return bool
      */
-    final public function isPatch(): bool
+    public function isPatch(): bool
     {
         return ($this->name == Http::METHOD_PATCH);
     }
@@ -109,7 +109,7 @@ final class Method
      * Is delete.
      * @return bool
      */
-    final public function isDelete(): bool
+    public function isDelete(): bool
     {
         return ($this->name == Http::METHOD_DELETE);
     }
@@ -118,7 +118,7 @@ final class Method
      * Is options.
      * @return bool
      */
-    final public function isOptions(): bool
+    public function isOptions(): bool
     {
         return ($this->name == Http::METHOD_OPTIONS);
     }
@@ -127,7 +127,7 @@ final class Method
      * Is head.
      * @return bool
      */
-    final public function isHead(): bool
+    public function isHead(): bool
     {
         return ($this->name == Http::METHOD_HEAD);
     }
@@ -136,7 +136,7 @@ final class Method
      * Is trace.
      * @return bool
      */
-    final public function isTrace(): bool
+    public function isTrace(): bool
     {
         return ($this->name == Http::METHOD_TRACE);
     }
@@ -145,7 +145,7 @@ final class Method
      * Is connect.
      * @return bool
      */
-    final public function isConnect(): bool
+    public function isConnect(): bool
     {
         return ($this->name == Http::METHOD_CONNECT);
     }
@@ -154,7 +154,7 @@ final class Method
      * Is copy.
      * @return bool
      */
-    final public function isCopy(): bool
+    public function isCopy(): bool
     {
         return ($this->name == Http::METHOD_COPY);
     }
@@ -163,7 +163,7 @@ final class Method
      * Is move.
      * @return bool
      */
-    final public function isMove(): bool
+    public function isMove(): bool
     {
         return ($this->name == Http::METHOD_MOVE);
     }
@@ -172,14 +172,16 @@ final class Method
      * Is ajax.
      * @return bool
      */
-    final public function isAjax(): bool
+    public function isAjax(): bool
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             return (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
         }
+
         if (isset($_SERVER['HTTP_X_AJAX'])) {
             return (strtolower($_SERVER['HTTP_X_AJAX']) == 'true' || $_SERVER['HTTP_X_AJAX'] == '1');
         }
+
         return false;
     }
 }
