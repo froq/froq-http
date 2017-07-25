@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Util\Traits\GetterTrait;
 use Froq\Http\Request\{Params, Files, Method};
 
 /**
@@ -35,12 +34,6 @@ use Froq\Http\Request\{Params, Files, Method};
  */
 final class Request extends Message
 {
-    /**
-     * Getter.
-     * @object Froq\Util\Traits\GetterTrait
-     */
-    use GetterTrait;
-
     /**
      * Scheme.
      * @var string
@@ -105,7 +98,7 @@ final class Request extends Message
      * Constructor.
      * @param Froq\App
      */
-    final public function __construct(App $app)
+    public function __construct(App $app)
     {
         parent::__construct($app);
 
@@ -119,10 +112,15 @@ final class Request extends Message
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
+        $this->uri = new Uri(sprintf('%s://%s%s',
+            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
+        ), $this->app->getRoot());
+
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
 
         $headers = self::loadHttpHeaders();
+        $this->setHeaders($headers);
 
         // set/parse body for overwrite methods
         switch ($this->method->getName()) {
@@ -148,13 +146,10 @@ final class Request extends Message
 
         // fix dotted COOKIE keys
         $_COOKIE = $this->loadGlobalVar('COOKIE');
+        $this->setCookies($_COOKIE);
 
         $this->time = (int) $_SERVER['REQUEST_TIME'];
         $this->timeFloat = (float) $_SERVER['REQUEST_TIME_FLOAT'];
-
-        $this->uri = new Uri(sprintf('%s://%s%s',
-            $this->scheme, $_SERVER['SERVER_NAME'] , $_SERVER['REQUEST_URI']
-        ), $this->app->getRoot() ?? null);
 
         $this->client = new Client();
         $this->params = new Params();
@@ -171,19 +166,19 @@ final class Request extends Message
     }
 
     /**
-     * Get method.
+     * Method.
      * @return Froq\Http\Request\Method
      */
-    public function getMethod(): Method
+    public function method(): Method
     {
         return $this->method;
     }
 
     /**
-     * Get uri.
+     * Uri.
      * @return Froq\Http\Uri
      */
-    public function getUri(): Uri
+    public function uri(): Uri
     {
         return $this->uri;
     }
@@ -206,23 +201,47 @@ final class Request extends Message
         return $this->bodyRaw;
     }
 
+    /**
+     * Get time.
+     * @return int
+     */
     public function getTime(): int
     {
         return $this->time;
     }
+
+    /**
+     * Get time float.
+     * @return float
+     */
     public function getTimeFloat(): float
     {
         return $this->timeFloat;
     }
-    public function getClient(): Client
+
+    /**
+     * Client.
+     * @return Froq\Http\Client
+     */
+    public function client(): Client
     {
         return $this->client;
     }
-    // public function getParams(): Params // ->params()->get('id') ?
-    // {
-    //     return $this->params;
-    // }
-    public function getFiles(): Files
+
+    /**
+     * Params.
+     * @return Froq\Http\Request\Params
+     */
+    public function params(): Params
+    {
+        return $this->params;
+    }
+
+    /**
+     * Files.
+     * @return Froq\Http\Request\Files
+     */
+    public function files(): Files
     {
         return $this->files;
     }
@@ -233,18 +252,18 @@ final class Request extends Message
      * @param  any    $valueDefault
      * @return any
      */
-    final public function getParam(string $name, $valueDefault = null)
+    public function getParam(string $name, $valueDefault = null)
     {
-        return $this->params->get->get($name, $valueDefault);
+        return $this->params->get($name, $valueDefault);
     }
 
     /**
      * Get params.
      * @return array
      */
-    final public function getParams(): array
+    public function getParams(): array
     {
-        return $this->params->get->toArray();
+        return $this->params->gets();
     }
 
     /**
@@ -253,18 +272,18 @@ final class Request extends Message
      * @param  any    $valueDefault
      * @return any
      */
-    final public function postParam(string $name, $valueDefault = null)
+    public function postParam(string $name, $valueDefault = null)
     {
-        return $this->params->post->get($name, $valueDefault);
+        return $this->params->post($name, $valueDefault);
     }
 
     /**
      * Post params.
      * @return array
      */
-    final public function postParams(): array
+    public function postParams(): array
     {
-        return $this->params->post->toArray();
+        return $this->params->posts();
     }
 
     /**
@@ -273,25 +292,25 @@ final class Request extends Message
      * @param  any    $valueDefault
      * @return any
      */
-    final public function cookieParam(string $name, $valueDefault = null)
+    public function cookieParam(string $name, $valueDefault = null)
     {
-        return $this->params->cookie->get($name, $valueDefault);
+        return $this->params->cookie($name, $valueDefault);
     }
 
     /**
      * Cookie params.
      * @return array
      */
-    final public function cookieParams(): array
+    public function cookieParams(): array
     {
-        return $this->params->cookie->toArray();
+        return $this->params->cookies();
     }
 
     /**
-     * Load HTTP headers.
+     * Load http headers.
      * @return array
      */
-    final private function loadHttpHeaders(): array
+    private function loadHttpHeaders(): array
     {
         if (function_exists('getallheaders')) {
             $headers = getallheaders(); // apache
@@ -334,16 +353,16 @@ final class Request extends Message
     }
 
     /**
-     * Load global var (fix dotted param keys).
+     * Load global var (without corrupting dotted param keys).
      *
      * SORRY RASMUS, SORRY ZEEV..
-     * @see https://github.com/php/php-src/blob/master/main/php_variables.c#L93
+     * @link https://github.com/php/php-src/blob/master/main/php_variables.c#L93
      *
      * @param  string $name
      * @param  string $source
      * @return array
      */
-    final private function loadGlobalVar(string $name, string $source = ''): array
+    private function loadGlobalVar(string $name, string $source = ''): array
     {
         $var = [];
 
