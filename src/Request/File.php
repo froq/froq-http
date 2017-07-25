@@ -25,7 +25,7 @@ namespace Froq\Http\Request;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Request
+ * @subpackage Froq\Http
  * @object     Froq\Http\Request\File
  * @author     Kerem Güneş <k-gun@mail.com>
  */
@@ -86,7 +86,7 @@ final class File
      * Constructor.
      * @param array $data
      */
-    final public function __construct(array $data = null)
+    public function __construct(array $data = null)
     {
         if (!empty($data)) {
             isset($data['name']) &&
@@ -108,7 +108,7 @@ final class File
      * @param  string $name
      * @return self
      */
-    final public function setName(string $name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -117,9 +117,9 @@ final class File
 
     /**
      * Get name.
-     * @return string|null
+     * @return ?string
      */
-    final public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -129,7 +129,7 @@ final class File
      * @param  string $nameTmp
      * @return self
      */
-    final public function setNameTmp(string $nameTmp): self
+    public function setNameTmp(string $nameTmp): self
     {
         $this->nameTmp = $nameTmp;
 
@@ -138,9 +138,9 @@ final class File
 
     /**
      * Get temp. name.
-     * @return string|null
+     * @return ?string
      */
-    final public function getNameTmp()
+    public function getNameTmp(): ?string
     {
         return $this->nameTmp;
     }
@@ -150,7 +150,7 @@ final class File
      * @param  string $type
      * @return self
      */
-    final public function setType(string $type): self
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -159,9 +159,9 @@ final class File
 
     /**
      * Get type.
-     * @return string|null
+     * @return ?string
      */
-    final public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -171,7 +171,7 @@ final class File
      * @param  int $size
      * @return self
      */
-    final public function setSize(int $size): self
+    public function setSize(int $size): self
     {
         $this->size = $size;
 
@@ -180,9 +180,9 @@ final class File
 
     /**
      * Get size.
-     * @return int|null
+     * @return ?int
      */
-    final public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -192,7 +192,7 @@ final class File
      * @param  int $error
      * @return self
      */
-    final public function setError(int $error): self
+    public function setError(int $error): self
     {
         $this->error = $error;
 
@@ -201,9 +201,9 @@ final class File
 
     /**
      * Get error.
-     * @return int|null
+     * @return ?int
      */
-    final public function getError()
+    public function getError(): ?int
     {
         return $this->error;
     }
@@ -213,7 +213,7 @@ final class File
      * @param  string $errorString
      * @return self
      */
-    final public function setErrorString(string $errorString): self
+    public function setErrorString(string $errorString): self
     {
         $this->errorString = $errorString;
 
@@ -222,9 +222,9 @@ final class File
 
     /**
      * Get error string.
-     * @return string|null
+     * @return ?string
      */
-    final public function getErrorString()
+    public function getErrorString(): ?string
     {
         return $this->errorString;
     }
@@ -233,7 +233,7 @@ final class File
      * To array.
      * @return array
      */
-    final public function toArray(): array
+    public function toArray(): array
     {
         return [
             'name'        => $this->name,
@@ -250,7 +250,7 @@ final class File
      * @param  string $fileName
      * @return string
      */
-    final public static function normalizeFileName(string $fileName): string
+    public static function normalizeFileName(string $fileName): string
     {
         return preg_replace('~[^\w-.]~', '', $fileName);
     }
