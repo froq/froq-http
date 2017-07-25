@@ -31,12 +31,12 @@ use Froq\Encoding\{Json, JsonException};
  * @object     Froq\Http\Response\ResponseJson
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-class ResponseJson extends Response
+final class ResponseJson extends Response
 {
     /**
      * Constructor.
-     * @param int         $statusCode
-     * @param any         $data
+     * @param int|null    $statusCode
+     * @param any|null    $data
      * @param string|null $dataCharset
      * @param array|null  $headers
      * @param array|null  $cookies
