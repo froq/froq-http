@@ -99,7 +99,7 @@ final class Request extends Message
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
         $this->uri = new Uri(sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['SERVER_NAME'],
-            $_SERVER['REQUEST_URI']), $this->app->getRoot());
+            $_SERVER['REQUEST_URI']), $this->app->root());
 
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
