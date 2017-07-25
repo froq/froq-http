@@ -25,7 +25,7 @@ namespace Froq\Http\Response;
 
 /**
  * @package    Froq
- * @subpackage Froq\Http\Response
+ * @subpackage Froq\Http
  * @object     Froq\Http\Response\Status
  * @author     Kerem Güneş <k-gun@mail.com>
  */
@@ -225,7 +225,7 @@ final class Status
      * @param int    $code
      * @param string $text
      */
-    final public function __construct(int $code = self::DEFAULT_CODE, string $text = null)
+    public function __construct(int $code = self::DEFAULT_CODE, string $text = null)
     {
         if ($text == null) {
             $text = self::getTextByCode($code);
@@ -239,7 +239,7 @@ final class Status
      * Stringer.
      * @return string
      */
-    final public function __toString(): string
+    public function __toString()
     {
         return $this->toString();
     }
@@ -249,7 +249,7 @@ final class Status
      * @param  int $code
      * @return self
      */
-    final public function setCode(int $code): self
+    public function setCode(int $code): self
     {
         $this->code = $code;
 
@@ -260,7 +260,7 @@ final class Status
      * Get code.
      * @return int
      */
-    final public function getCode(): int
+    public function getCode(): int
     {
         return $this->code;
     }
@@ -270,7 +270,7 @@ final class Status
      * @param  string $text
      * @return self
      */
-    final public function setText(string $text): self
+    public function setText(string $text): self
     {
         $this->text = $text;
 
@@ -282,7 +282,7 @@ final class Status
      * @param  int $code
      * @return string
      */
-    final public function getText(): string
+    public function getText(): string
     {
         return $this->text;
     }
@@ -291,7 +291,7 @@ final class Status
      * To string.
      * @return string
      */
-    final public function toString(): string
+    public function toString(): string
     {
         return sprintf('%s %s', $this->code, $this->text);
     }
@@ -300,7 +300,7 @@ final class Status
      * Get statuses.
      * @return array
      */
-    final public static function getStatuses(): array
+    public static function getStatuses(): array
     {
         return self::$statuses;
     }
@@ -308,9 +308,9 @@ final class Status
     /**
      * Get code by text.
      * @param  string $text
-     * @return int|null
+     * @return ?int
      */
-    final public static function getCodeByText(string $text)
+    public static function getCodeByText(string $text): ?int
     {
         return array_flip(self::$statuses)[$text] ?? null;
     }
@@ -318,9 +318,9 @@ final class Status
     /**
      * Get text by code.
      * @param  int $code
-     * @return string|null
+     * @return ?string
      */
-    final public static function getTextByCode(int $code)
+    public static function getTextByCode(int $code): ?string
     {
         return self::$statuses[$code] ?? null;
     }
