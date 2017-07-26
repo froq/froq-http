@@ -35,29 +35,29 @@ final class Http
      * Versions.
      * @const string
      */
-    const VERSION_1_0       = 'HTTP/1.0',
-          VERSION_1_1       = 'HTTP/1.1',
-          VERSION_2_0       = 'HTTP/2.0',
-          VERSION_LATEST    = self::VERSION_2_0,
-          VERSION_CURRENT   = self::VERSION_1_1,
-          VERSION_DEFAULT   = self::VERSION_CURRENT;
+    public const VERSION_1_0       = 'HTTP/1.0',
+                 VERSION_1_1       = 'HTTP/1.1',
+                 VERSION_2_0       = 'HTTP/2.0',
+                 VERSION_LATEST    = self::VERSION_2_0,
+                 VERSION_CURRENT   = self::VERSION_1_1,
+                 VERSION_DEFAULT   = self::VERSION_CURRENT;
 
     /**
      * Methods.
      * @conts string
      */
-    const METHOD_GET        = 'GET',
-          METHOD_POST       = 'POST',
-          METHOD_PUT        = 'PUT',
-          METHOD_PATCH      = 'PATCH',
-          METHOD_DELETE     = 'DELETE',
-          METHOD_OPTIONS    = 'OPTIONS',
-          METHOD_HEAD       = 'HEAD',
-          METHOD_TRACE      = 'TRACE',
-          METHOD_CONNECT    = 'CONNECT',
-          // non-standard
-          METHOD_COPY       = 'COPY',
-          METHOD_MOVE       = 'MOVE';
+    public const METHOD_GET        = 'GET',
+                 METHOD_POST       = 'POST',
+                 METHOD_PUT        = 'PUT',
+                 METHOD_PATCH      = 'PATCH',
+                 METHOD_DELETE     = 'DELETE',
+                 METHOD_OPTIONS    = 'OPTIONS',
+                 METHOD_HEAD       = 'HEAD',
+                 METHOD_TRACE      = 'TRACE',
+                 METHOD_CONNECT    = 'CONNECT',
+                 // non-standard
+                 METHOD_COPY       = 'COPY',
+                 METHOD_MOVE       = 'MOVE';
 
     /**
      * Detect version.
