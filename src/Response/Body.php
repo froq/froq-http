@@ -32,22 +32,23 @@ namespace Froq\Http\Response;
 final class Body
 {
     /**
-    * Types.
+    * Content ypes.
     * @const string
     */
-   const CONTENT_TYPE_NONE             = 'none',
-         CONTENT_TYPE_HTML             = 'text/html',
-         CONTENT_TYPE_PLAIN            = 'text/plain',
-         CONTENT_TYPE_TEXT_XML         = 'text/xml',
-         CONTENT_TYPE_APPLICATION_XML  = 'application/xml',
-         CONTENT_TYPE_TEXT_JSON        = 'text/json',
-         CONTENT_TYPE_APPLICATION_JSON = 'application/json';
+    public const CONTENT_TYPE_NONE               = 'none',
+                 CONTENT_TYPE_HTML               = 'text/html',
+                 CONTENT_TYPE_PLAIN              = 'text/plain',
+                 CONTENT_TYPE_TEXT_XML           = 'text/xml',
+                 CONTENT_TYPE_APPLICATION_XML    = 'application/xml',
+                 CONTENT_TYPE_TEXT_JSON          = 'text/json',
+                 CONTENT_TYPE_APPLICATION_JSON   = 'application/json';
 
     /**
-     * Charsets.
+     * Content charsets.
      * @const string
      */
-    const CONTENT_CHARSET_UTF8         = 'utf-8';
+    public const CONTENT_CHARSET_UTF_8           = 'utf-8',
+                 CONTENT_CHARSET_ISO_8859_1      = 'iso-8859-1';
 
     /**
      * Content.
@@ -79,8 +80,8 @@ final class Body
      * @param string   $contentType
      * @param string   $contentCharset
      */
-    public function __construct($content = null, string $contentType = self::CONTENT_TYPE_HTML,
-        string $contentCharset = self::CONTENT_CHARSET_UTF8)
+    public function __construct($content = null, string $contentType = 'text/html',
+        string $contentCharset = 'utf-8')
     {
         $this->setContent($content)
             ->setContentType($contentType)
