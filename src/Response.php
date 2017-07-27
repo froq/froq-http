@@ -135,7 +135,7 @@ final class Response extends Message
      * @param  int    $code
      * @return void
      */
-    public function redirect(string $location, int $code = Status::FOUND)
+    public function redirect(string $location, int $code = Status::FOUND): void
     {
         $this->setStatus($code)->setHeader('Location', trim($location));
     }
