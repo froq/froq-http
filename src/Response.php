@@ -329,7 +329,8 @@ final class Response extends Message
                     throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
                 }
             } else {
-                throw new HttpException('Content must be string (encoded in service if ResponseJson etc. not used)!');
+                throw new HttpException('Body content must be string or array (or encoded in service'.
+                    ' if ResponseJson etc. not used)!');
             }
         }
 
