@@ -344,7 +344,7 @@ final class Request extends Message
 
         switch ($name) {
             case 'GET':
-                $source = $_SERVER['QUERY_STRING'];
+                $source = $_SERVER['QUERY_STRING'] ?? '';
                 break;
             case 'POST':
                 break;
