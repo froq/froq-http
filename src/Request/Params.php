@@ -32,19 +32,19 @@ namespace Froq\Http\Request;
 final class Params
 {
     /**
-     * params.
+     * Stack.
      * @var array
      */
-    private $params = [];
+    private $stack = [];
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->params['get'] = $_GET;
-        $this->params['post'] = $_POST;
-        $this->params['cookie'] = $_COOKIE;
+        $this->stack['get'] = $_GET;
+        $this->stack['post'] = $_POST;
+        $this->stack['cookie'] = $_COOKIE;
     }
 
     /**
@@ -55,7 +55,7 @@ final class Params
      */
     public function get(string $name, $valueDefault = null)
     {
-        return $this->params['get'][$name] ?? $valueDefault;
+        return $this->stack['get'][$name] ?? $valueDefault;
     }
 
     /**
@@ -64,7 +64,7 @@ final class Params
      */
     public function gets(): array
     {
-        return $this->params['get'];
+        return $this->stack['get'];
     }
 
     /**
@@ -75,7 +75,7 @@ final class Params
      */
     public function post(string $name, $valueDefault = null)
     {
-        return $this->params['post'][$name] ?? $valueDefault;
+        return $this->stack['post'][$name] ?? $valueDefault;
     }
 
     /**
@@ -84,7 +84,7 @@ final class Params
      */
     public function posts(): array
     {
-        return $this->params['post'];
+        return $this->stack['post'];
     }
 
     /**
@@ -95,7 +95,7 @@ final class Params
      */
     public function cookie(string $name, $valueDefault = null)
     {
-        return $this->params['cookie'][$name] ?? $valueDefault;
+        return $this->stack['cookie'][$name] ?? $valueDefault;
     }
 
     /**
@@ -104,7 +104,7 @@ final class Params
      */
     public function cookies(): array
     {
-        return $this->params['cookie'];
+        return $this->stack['cookie'];
     }
 
     /**
@@ -114,6 +114,6 @@ final class Params
      */
     public function toArray(string $key = null): array
     {
-        return $key ? $this->params[strtolower($key)] : $this->params;
+        return ($key != null) ? $this->stack[strtolower($key)] : $this->stack;
     }
 }
