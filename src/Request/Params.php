@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
+use Froq\Util\Arrays;
+
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -32,20 +34,10 @@ namespace Froq\Http\Request;
 final class Params
 {
     /**
-     * Stack.
-     * @var array
-     */
-    private $stack = [];
-
-    /**
      * Constructor.
      */
     public function __construct()
-    {
-        $this->stack['get'] = $_GET;
-        $this->stack['post'] = $_POST;
-        $this->stack['cookie'] = $_COOKIE;
-    }
+    {}
 
     /**
      * Get.
@@ -55,7 +47,7 @@ final class Params
      */
     public function get(string $name, $valueDefault = null)
     {
-        return $this->stack['get'][$name] ?? $valueDefault;
+        return Arrays::dig($_GET, $name, $valueDefault);
     }
 
     /**
@@ -64,7 +56,7 @@ final class Params
      */
     public function gets(): array
     {
-        return $this->stack['get'];
+        return $_GET;
     }
 
     /**
@@ -75,7 +67,7 @@ final class Params
      */
     public function post(string $name, $valueDefault = null)
     {
-        return $this->stack['post'][$name] ?? $valueDefault;
+        return Arrays::dig($_POST, $name, $valueDefault);
     }
 
     /**
@@ -84,7 +76,7 @@ final class Params
      */
     public function posts(): array
     {
-        return $this->stack['post'];
+        return $_POST;
     }
 
     /**
@@ -95,7 +87,7 @@ final class Params
      */
     public function cookie(string $name, $valueDefault = null)
     {
-        return $this->stack['cookie'][$name] ?? $valueDefault;
+        return Arrays::dig($_COOKIE, $name, $valueDefault);
     }
 
     /**
@@ -104,16 +96,15 @@ final class Params
      */
     public function cookies(): array
     {
-        return $this->stack['cookie'];
+        return $_COOKIE;
     }
 
     /**
      * To array.
-     * @param  string|null $key
      * @return array.
      */
-    public function toArray(string $key = null): array
+    public function toArray(): array
     {
-        return ($key != null) ? $this->stack[strtolower($key)] : $this->stack;
+        return ['get' => $_GET, 'post' => $_POST, 'cookie' => $_COOKIE];
     }
 }
