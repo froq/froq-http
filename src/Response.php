@@ -133,11 +133,13 @@ final class Response extends Message
      * Redirect.
      * @param  string $location
      * @param  int    $code
-     * @return void
+     * @return self
      */
-    public function redirect(string $location, int $code = Status::FOUND): void
+    public function redirect(string $location, int $code = Status::FOUND): self
     {
         $this->setStatus($code)->setHeader('Location', trim($location));
+
+        return $this;
     }
 
     /**
@@ -394,5 +396,16 @@ final class Response extends Message
     }
 
     // @wait
-    public function sendFile($file): void {}
+    // public function sendFile($file): void {}
+
+    /**
+     * End.
+     * @return void
+     */
+    public function end()
+    {
+        $this->sendHeaders();
+        $this->sendCookies();
+        $this->send();
+    }
 }
