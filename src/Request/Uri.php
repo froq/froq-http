@@ -450,14 +450,14 @@ final class Uri
      */
     private function generateSegments(): void
     {
-        $path = $this->path;
+        $path = rawurldecode($this->path);
         if ($path && $path != '/') {
             // remove root
             if ($this->root && $this->root != '/') {
                 $path = substr($path, strlen($this->root));
             }
 
-            $this->segments = preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY);
+            $this->segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
         }
     }
 }
