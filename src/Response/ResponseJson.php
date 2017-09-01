@@ -44,12 +44,10 @@ final class ResponseJson extends Response
     public function __construct(int $statusCode = null, $data = null, string $dataCharset = null,
         array $headers = null, array $cookies = null)
     {
-        if ($data) {
-            $json = new Json($data);
-            $data = $json->encode();
-            if ($json->hasError()) {
-                throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
-            }
+        $json = new Json($data);
+        $data = $json->encode();
+        if ($json->hasError()) {
+            throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
         }
 
         $dataType = [Body::CONTENT_TYPE_APPLICATION_JSON, $dataCharset];
