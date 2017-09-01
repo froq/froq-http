@@ -295,7 +295,7 @@ final class Response extends Message
      * Set body.
      * @param  any $body
      * @return self
-     * @throws Froq\Http\HttpException
+     * @throws Froq\Encoding\JsonException, Froq\Http\HttpException
      */
     public function setBody($body): self
     {
@@ -304,9 +304,11 @@ final class Response extends Message
                 ->setHeaders($body->getHeaders())
                 ->setCookies($body->getCookies());
 
-            $body = new Body($body->getData(),
+            $body = new Body(
+                $body->getData(),
                 $body->getDataType() ?? $this->body->getContentType(),
-                $body->getDataCharset() ?? $this->body->getContentCharset());
+                $body->getDataCharset() ?? $this->body->getContentCharset()
+            );
         }
 
         // no elseif, could be a Body already
