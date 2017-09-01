@@ -300,7 +300,7 @@ final class Response extends Message
     public function setBody($body): self
     {
         if ($body instanceof ReturnResponse) {
-            $this->setStatus($body->getStatusCode() ?? Status ::OK)
+            $this->setStatus($body->getStatusCode() ?? Status::OK)
                 ->setHeaders($body->getHeaders())
                 ->setCookies($body->getCookies());
 
