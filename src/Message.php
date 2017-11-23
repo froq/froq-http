@@ -80,9 +80,19 @@ abstract class Message
      * Get http version.
      * @return string
      */
-    public function getHttpVersion(): string
+    public final function getHttpVersion(): string
     {
         return $this->httpVersion;
+    }
+
+    /**
+     * Has header.
+     * @param  string $name
+     * @return bool
+     */
+    public final function hasHeader(string $name): bool
+    {
+        return isset($this->headers[$name]);
     }
 
     /**
@@ -133,6 +143,16 @@ abstract class Message
         }
 
         return $this;
+    }
+
+    /**
+     * Has cookie.
+     * @param  string $name
+     * @return bool
+     */
+    public final function hasCookie(string $name): bool
+    {
+        return isset($this->cookies[$name]);
     }
 
     /**
