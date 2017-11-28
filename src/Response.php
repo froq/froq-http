@@ -193,9 +193,10 @@ final class Response extends Message
      */
     public function sendHeader(string $name, $value): void
     {
-        if (headers_sent($file, $line))
+        if (headers_sent($file, $line)) {
             throw new HttpException(sprintf("Cannot send header '%s', headers was already sent int %s:%s",
                 $name, $file, $line));
+        }
 
         // null means 'remove'
         if ($value === null) {
