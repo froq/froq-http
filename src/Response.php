@@ -405,7 +405,7 @@ final class Response extends Message
      * End.
      * @return void
      */
-    public function end()
+    public function end(): void
     {
         $this->sendHeaders();
         $this->sendCookies();
