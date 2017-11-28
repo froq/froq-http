@@ -375,12 +375,12 @@ final class Uri
     /**
      * Segment.
      * @param  int $i
-     * @param  any $default
+     * @param  any $valueDefault
      * @return any
      */
-    public function segment(int $i, $default = null)
+    public function segment(int $i, $valueDefault = null)
     {
-        return $this->segments[$i] ?? $default;
+        return $this->segments[$i] ?? $valueDefault;
     }
 
     /**
