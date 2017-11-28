@@ -332,7 +332,7 @@ final class Request extends Message
      * Load global var (without corrupting dotted param keys).
      *
      * SORRY RASMUS, SORRY ZEEV..
-     * @link https://github.com/php/php-src/blob/master/main/php_variables.c#L93
+     * @link https://github.com/php/php-src/blob/master/main/php_variables.c#L99
      *
      * @param  string $name
      * @param  string $source
