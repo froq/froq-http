@@ -29,7 +29,7 @@ namespace Froq\Http;
  * @object     Froq\Http\Http
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class Http
+final /* static */ class Http
 {
     /**
      * Versions.
