@@ -213,7 +213,7 @@ final class Status
      * @param int    $code
      * @param string $text
      */
-    public function __construct(int $code = 200, string $text = null)
+    public function __construct(int $code = self::OK, string $text = null)
     {
         if ($text == null) {
             $text = self::getTextByCode($code);
@@ -268,9 +268,9 @@ final class Status
     /**
      * Get text.
      * @param  int $code
-     * @return string
+     * @return ?string
      */
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
