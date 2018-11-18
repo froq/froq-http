@@ -224,7 +224,7 @@ final class Status
     }
 
     /**
-     * Stringer.
+     * String magic.
      * @return string
      */
     public function __toString()
