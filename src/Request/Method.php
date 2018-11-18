@@ -49,7 +49,7 @@ final class Method
     }
 
     /**
-     * Stringer.
+     * String magic.
      * @return string
      */
     public function __toString()

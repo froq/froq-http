@@ -136,7 +136,7 @@ final class Uri
     }
 
     /**
-     * To string.
+     * String magic.
      * @return string
      */
     public function __toString()

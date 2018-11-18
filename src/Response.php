@@ -77,7 +77,7 @@ final class Response extends Message
     }
 
     /**
-     * Caller.
+     * Call magic.
      * @param  string $method
      * @param  array  $methodArguments
      * @return any
