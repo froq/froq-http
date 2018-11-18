@@ -37,8 +37,8 @@ final /* static */ class Http
      */
     public const VERSION_1_0       = 'HTTP/1.0',
                  VERSION_1_1       = 'HTTP/1.1',
-                 VERSION_2_0       = 'HTTP/2.0',
-                 VERSION_LATEST    = self::VERSION_2_0,
+                 VERSION_2         = 'HTTP/2',
+                 VERSION_LATEST    = self::VERSION_2,
                  VERSION_CURRENT   = self::VERSION_1_1,
                  VERSION_DEFAULT   = self::VERSION_CURRENT;
 
