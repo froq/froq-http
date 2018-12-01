@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright (c) 2015 Kerem Güneş
- *
  * MIT License <https://opensource.org/licenses/mit>
+ *
+ * Copyright (c) 2015 Kerem Güneş
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,11 +38,12 @@ final class ResponseJson extends Response
 {
     /**
      * Constructor.
-     * @param int|null    $statusCode
-     * @param any|null    $data
-     * @param string|null $dataCharset
-     * @param array|null  $headers
-     * @param array|null  $cookies
+     * @param  int|null    $statusCode
+     * @param  any|null    $data
+     * @param  string|null $dataCharset
+     * @param  array|null  $headers
+     * @param  array|null  $cookies
+     * @throws Froq\Encoding\JsonException
      */
     public function __construct(int $statusCode = null, $data = null, string $dataCharset = null,
         array $headers = null, array $cookies = null)

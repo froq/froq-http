@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright (c) 2015 Kerem Güneş
- *
  * MIT License <https://opensource.org/licenses/mit>
+ *
+ * Copyright (c) 2015 Kerem Güneş
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -116,22 +116,14 @@ final class Uri
         // set properties
         $source = parse_url($source);
         if (!empty($source)) {
-            isset($source['scheme']) &&
-                $this->setScheme($source['scheme']);
-            isset($source['host']) &&
-                $this->setHost($source['host']);
-            isset($source['port']) &&
-                $this->setPort((int) $source['port']);
-            isset($source['user']) &&
-                $this->setUser($source['user']);
-            isset($source['pass']) &&
-                $this->setPass($source['pass']);
-            isset($source['path']) &&
-                $this->setPath($source['path']);
-            isset($source['query']) &&
-                $this->setQuery($source['query']);
-            isset($source['fragment']) &&
-                $this->setFragment($source['fragment']);
+            isset($source['scheme']) && $this->setScheme($source['scheme']);
+            isset($source['host']) && $this->setHost($source['host']);
+            isset($source['port']) && $this->setPort((int) $source['port']);
+            isset($source['user']) && $this->setUser($source['user']);
+            isset($source['pass']) && $this->setPass($source['pass']);
+            isset($source['path']) && $this->setPath($source['path']);
+            isset($source['query']) && $this->setQuery($source['query']);
+            isset($source['fragment']) && $this->setFragment($source['fragment']);
 
             // segments
             $this->generateSegments();

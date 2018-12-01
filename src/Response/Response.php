@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright (c) 2015 Kerem Güneş
- *
  * MIT License <https://opensource.org/licenses/mit>
+ *
+ * Copyright (c) 2015 Kerem Güneş
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,11 +72,12 @@ class Response
 
     /**
      * Constructor.
-     * @param int|string|array|null $arg0
-     * @param any|null              $data
-     * @param string|array          $dataType
-     * @param array|null            $headers
-     * @param array|null            $cookies
+     * @param  int|string|array|null $arg0
+     * @param  any|null              $data
+     * @param  string|array          $dataType
+     * @param  array|null            $headers
+     * @param  array|null            $cookies
+     * @throws \InvalidArgumentException
      */
     public function __construct($arg0 = null, $data = null, $dataType = null,
         array $headers = null, array $cookies = null)
