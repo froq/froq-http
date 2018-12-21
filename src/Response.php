@@ -232,18 +232,18 @@ final class Response extends Message
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @return bool
+     * @return void
      * @throws Froq\Http\HttpException
      */
     public function sendCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): bool
+        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
             throw new HttpException("Invalid cookie name '{$name}' given!");
         }
 
-        return setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
+        setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
     /**
