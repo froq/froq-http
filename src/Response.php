@@ -201,7 +201,7 @@ final class Response extends Message
                 $name, $file, $line));
         }
 
-        // null means 'remove'
+        // null means remove
         if ($value === null) {
             header_remove($name);
             unset($this->headers[$name]);
@@ -279,20 +279,15 @@ final class Response extends Message
     /**
      * Set gzip options.
      * @param  array $gzipOptions
-     * @return self
+     * @return void
      */
-    public function setGzipOptions(array $gzipOptions): self
+    public function setGzipOptions(array $gzipOptions): void
     {
-        isset($gzipOptions['level']) &&
-            $this->gzip->setLevel($gzipOptions['level']);
-        isset($gzipOptions['mode']) &&
-            $this->gzip->setMode($gzipOptions['mode']);
-        isset($gzipOptions['minlen']) &&
-            $this->gzip->setDataMinlen($gzipOptions['minlen']);
+        isset($gzipOptions['level']) && $this->gzip->setLevel($gzipOptions['level']);
+        isset($gzipOptions['mode']) && $this->gzip->setMode($gzipOptions['mode']);
+        isset($gzipOptions['minlen']) && $this->gzip->setDataMinlen($gzipOptions['minlen']);
 
         $this->gzipOptions = $gzipOptions;
-
-        return $this;
     }
 
     /**
@@ -342,7 +337,7 @@ final class Response extends Message
             }
         }
 
-        if ($body) {
+        if ($body != null) {
             // gzip
             if (!empty($this->gzipOptions)) {
                 $this->gzip->setData($body);
@@ -352,8 +347,7 @@ final class Response extends Message
                 }
             }
 
-            $this->body->setContent($body)
-                ->setContentLength(strlen($body));
+            $this->body->setContent($body)->setContentLength(strlen($body));
         }
 
         return $this;
@@ -388,7 +382,8 @@ final class Response extends Message
         $this->sendHeader('Content-Length', $contentLength);
 
         // real load time
-        if ($exposeAppLoadTime = $this->app->configValue('app.exposeAppLoadTime')) {
+        $exposeAppLoadTime = $this->app->configValue('app.exposeAppLoadTime');
+        if ($exposeAppLoadTime) {
             $loadTime = $this->app->loadTime()['s'];
             if ($exposeAppLoadTime === true) {
                 $this->sendHeader('X-App-Load-Time', $loadTime);
