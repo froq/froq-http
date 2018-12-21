@@ -92,7 +92,7 @@ class Response
                 case 'string':
                     $data = $arg0;
                     break;
-                // this overwrites all arguments
+                // this overrides all arguments
                 case 'array':
                     $arg0['statusCode'] = $arg0['code'] ?? null;
                     extract($arg0);

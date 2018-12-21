@@ -110,7 +110,7 @@ final class Request extends Message
         $headers = self::loadHttpHeaders();
         $this->setHeaders($headers);
 
-        // set/parse body for overwrite methods
+        // set/parse body for override methods
         switch ($this->method->getName()) {
             case Http::METHOD_PUT:
             case Http::METHOD_POST:
