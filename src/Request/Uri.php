@@ -446,9 +446,9 @@ final class Uri
     private function generateSegments(): void
     {
         $path = rawurldecode($this->path);
-        if ($path && $path != '/') {
+        if ($path != '' && $path != '/') {
             // remove root
-            if ($this->root && $this->root != '/') {
+            if ($this->root != '' && $this->root != '/') {
                 $path = substr($path, strlen($this->root));
             }
 
