@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
-use Froq\Encoding\{Json, JsonException};
+use Froq\Encoding\{Encoder, EncoderException};
 
 /**
  * @package    Froq
@@ -43,15 +43,15 @@ final class ResponseJson extends Response
      * @param  string|null $dataCharset
      * @param  array|null  $headers
      * @param  array|null  $cookies
-     * @throws Froq\Encoding\JsonException
+     * @throws Froq\Encoding\EncoderException
      */
     public function __construct(int $statusCode = null, $data = null, string $dataCharset = null,
         array $headers = null, array $cookies = null)
     {
-        $json = new Json($data);
-        $data = $json->encode();
-        if ($json->hasError()) {
-            throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+        $encoder = Encoder::init('json');
+        $data = $encoder->encode($data);
+        if ($encoder->hasError()) {
+            throw new EncoderException(sprintf('JSON Error: %s!', $encoder->getError()));
         }
 
         $dataType = [Body::CONTENT_TYPE_APPLICATION_JSON, $dataCharset];
