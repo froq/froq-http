@@ -238,13 +238,11 @@ final class Status
     /**
      * Set code.
      * @param  int $code
-     * @return self
+     * @return void
      */
-    public function setCode(int $code): self
+    public function setCode(int $code): void
     {
         $this->code = $code;
-
-        return $this;
     }
 
     /**
@@ -259,21 +257,19 @@ final class Status
     /**
      * Set text.
      * @param  string $text
-     * @return self
+     * @return void
      */
-    public function setText(string $text): self
+    public function setText(string $text): void
     {
         $this->text = $text;
-
-        return $this;
     }
 
     /**
      * Get text.
      * @param  int $code
-     * @return ?string
+     * @return string
      */
-    public function getText(): ?string
+    public function getText(): string
     {
         return $this->text;
     }
@@ -299,20 +295,20 @@ final class Status
     /**
      * Get code by text.
      * @param  string $text
-     * @return ?int
+     * @return int
      */
-    public static function getCodeByText(string $text): ?int
+    public static function getCodeByText(string $text): int
     {
-        return array_flip(self::$statuses)[$text] ?? null;
+        return array_flip(self::$statuses)[$text] ?? 0;
     }
 
     /**
      * Get text by code.
      * @param  int $code
-     * @return ?string
+     * @return string
      */
-    public static function getTextByCode(int $code): ?string
+    public static function getTextByCode(int $code): string
     {
-        return self::$statuses[$code] ?? null;
+        return self::$statuses[$code] ?? '';
     }
 }
