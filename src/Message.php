@@ -37,10 +37,23 @@ use Froq\App;
 abstract class Message
 {
     /**
+     * Types.
+     * @const int
+     */
+    public const TYPE_REQUEST  = 1,
+                 TYPE_RESPONSE = 2;
+
+    /**
      * App.
      * @var Froq\App
      */
     protected $app;
+
+    /**
+     * Type.
+     * @var int
+     */
+    protected $type;
 
     /**
      * HTTP Version.
@@ -63,10 +76,12 @@ abstract class Message
     /**
      * Constructor.
      * @param Froq\App $app
+     * @param int      $type
      */
-    public function __construct(App $app)
+    public function __construct(App $app, int $type)
     {
         $this->app = $app;
+        $this->type = $type;
         $this->httpVersion = Http::detectVersion();
     }
 
@@ -77,6 +92,15 @@ abstract class Message
     public final function getApp(): App
     {
         return $this->app;
+    }
+
+    /**
+     * Get type.
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
     }
 
     /**
@@ -100,14 +124,13 @@ abstract class Message
 
     /**
      * Set header.
-     * @notice All these stored headers should be sent before
-     * sending the last output to the client with self.send()
-     * method.
-     * @param  string $name
-     * @param  any    $value
+     * @notice All these stored headers should be sent before sending the last output to the client
+     * with self.send() method.
+     * @param  string  $name
+     * @param  ?string $value
      * @return self
      */
-    public final function setHeader(string $name, $value): self
+    public final function setHeader(string $name, ?string $value): self
     {
         $this->headers[$name] = $value;
 
@@ -118,20 +141,33 @@ abstract class Message
      * Get header.
      * @param  string $name
      * @param  any    $valueDefault
-     * @return any
+     * @return ?string
      */
-    public final function getHeader(string $name, $valueDefault = null)
+    public final function getHeader(string $name, ?string $valueDefault = null): ?string
     {
         return $this->headers[$name] ?? $valueDefault;
     }
 
     /**
-     * Get headers.
-     * @return array
+     * Remove header.
+     * @param  string $name
+     * @param  bool   $defer
+     * @return self
      */
-    public final function getHeaders(): array
+    public final function removeHeader(string $name, bool $defer = true): self
     {
-        return $this->headers;
+        unset($this->headers[$name]);
+
+        // remove instantly (available for Response only)
+        if (!$defer) {
+            if ($this->type != self::TYPE_RESPONSE) {
+                throw new HttpException('You cannot remove a request header!');
+            }
+
+            header_remove($name);
+        }
+
+        return $this;
     }
 
     /**
@@ -149,6 +185,15 @@ abstract class Message
     }
 
     /**
+     * Get headers.
+     * @return array
+     */
+    public final function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
      * Has cookie.
      * @param  string $name
      * @return bool
@@ -160,33 +205,34 @@ abstract class Message
 
     /**
      * Set cookie.
-     * @notice All these stored cookies should be sent before
-     * sending the last output to the client with self.send()
-     * method.
+     * @notice All these stored cookies should be sent before sending the last output to the client
+     * with self::send() method.
      * @param  string  $name
-     * @param  any     $value
+     * @param  ?string $value
      * @param  int     $expire
      * @param  string  $path
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @throws \InvalidArgumentException
-     * @return void
+     * @throws Froq\Http\HttpException
+     * @return self
      */
-    public final function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
+    public final function setCookie(string $name, ?string $value, int $expire = 0,
+        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): self
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new \InvalidArgumentException("Cookie name '{$name}' not accepted!");
+            throw new HttpException("Invalid cookie name '{$name}' given!");
         }
 
         $this->cookies[$name] = [
             'name'      => $name,     'value'  => $value,
             'expire'    => $expire,   'path'   => $path,
             'domain'    => $domain,   'secure' => $secure,
-            'httpOnly'  => $httpOnly,
+            'httpOnly'  => $httpOnly
         ];
+
+        return $this;
     }
 
     /**
@@ -198,6 +244,29 @@ abstract class Message
     public final function getCookie(string $name, $valueDefault = null)
     {
         return $this->cookies[$name] ?? $valueDefault;
+    }
+
+    /**
+     * Remove cookie.
+     * @param  string $name
+     * @param  bool   $defer
+     * @return self
+     * @throws Froq\Http\HttpException
+     */
+    public function removeCookie(string $name, bool $defer = false): self
+    {
+        unset($this->cookies[$name]);
+
+        // remove instantly (available for Response only)
+        if (!$defer) {
+            if ($this->type != self::TYPE_RESPONSE) {
+                throw new HttpException('You cannot remove a request cookie!');
+            }
+
+            $this->sendCookie($name, null, 0);
+        }
+
+        return $this;
     }
 
     /**
@@ -227,5 +296,5 @@ abstract class Message
      * Get body.
      * @return any
      */
-    abstract public function getBody();
+    public abstract function getBody();
 }
