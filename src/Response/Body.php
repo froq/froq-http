@@ -35,7 +35,7 @@ namespace Froq\Http\Response;
 final class Body
 {
     /**
-    * Content ypes.
+    * Content types.
     * @const string
     */
     public const CONTENT_TYPE_NONE               = 'none',
