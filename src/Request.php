@@ -97,7 +97,7 @@ final class Request extends Message
      */
     public function __construct(App $app)
     {
-        parent::__construct($app);
+        parent::__construct($app, parent::TYPE_REQUEST);
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
 
@@ -305,7 +305,7 @@ final class Request extends Message
             }
         }
 
-        // content-* issues
+        // content issues
         if (isset($_SERVER['CONTENT_TYPE'])) {
             $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
         }
