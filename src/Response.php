@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Encoding\{Gzip, Json, JsonException};
+use Froq\Encoding\{Encoder, EncoderException};
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
 
 /**
@@ -51,32 +51,18 @@ final class Response extends Message
     private $body;
 
     /**
-     * Gzip.
-     * @var Froq\Encoding\Gzip
-     */
-    private $gzip;
-
-    /**
-     * GZip options.
-     * @var array
-     */
-    private $gzipOptions = [];
-
-    /**
      * Constructor.
      * @param Froq\App $app
      */
     public function __construct(App $app)
     {
-        parent::__construct($app);
-
-        $config = $this->app->config();
-        $this->setHeaders($config['app.headers'] ?? []);
-        $this->setCookies($config['app.cookies'] ?? []);
+        parent::__construct($app, parent::TYPE_RESPONSE);
 
         $this->status = new Status();
         $this->body = new Body();
-        $this->gzip = new Gzip();
+
+        $this->setHeaders($this->app->configValue('app.headers', []));
+        $this->setCookies($this->app->configValue('app.cookies', []));
     }
 
     /**
@@ -103,33 +89,6 @@ final class Response extends Message
     public function status(): Status
     {
         return $this->status;
-    }
-
-    /**
-     * Get body.
-     * @return any
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * Get gzip.
-     * @return Froq\Encoding\Gzip
-     */
-    public function getGzip(): Gzip
-    {
-        return $this->gzip;
-    }
-
-    /**
-     * Get gzip options.
-     * @return array
-     */
-    public function getGzipOptions(): array
-    {
-        return $this->gzipOptions;
     }
 
     /**
@@ -164,37 +123,13 @@ final class Response extends Message
     }
 
     /**
-     * Set status code.
-     * @param  int $code
-     * @return self
-     */
-    public function setStatusCode(int $code): self
-    {
-        $this->status->setCode($code);
-
-        return $this;
-    }
-
-    /**
-     * Set status text.
-     * @param  string $text
-     * @return self
-     */
-    public function setStatusText(string $text): self
-    {
-        $this->status->setText($text);
-
-        return $this;
-    }
-
-    /**
      * Send header.
-     * @param  string $name
-     * @param  any    $value
+     * @param  string  $name
+     * @param  ?string $value
      * @return void
      * @throws Froq\Http\HttpException
      */
-    public function sendHeader(string $name, $value): void
+    public function sendHeader(string $name, ?string $value): void
     {
         if (headers_sent($file, $line)) {
             throw new HttpException(sprintf("Cannot send header '%s', headers was already sent int %s:%s",
@@ -203,9 +138,10 @@ final class Response extends Message
 
         // null means remove
         if ($value === null) {
+            $this->removeHeader($name);
             header_remove($name);
-            unset($this->headers[$name]);
         } else {
+            $this->setHeader($name, $value);
             header(sprintf('%s: %s', $name, $value));
         }
     }
@@ -226,7 +162,7 @@ final class Response extends Message
     /**
      * Send cookie.
      * @param  string  $name
-     * @param  any     $value
+     * @param  ?string $value
      * @param  int     $expire
      * @param  string  $path
      * @param  string  $domain
@@ -235,7 +171,7 @@ final class Response extends Message
      * @return void
      * @throws Froq\Http\HttpException
      */
-    public function sendCookie(string $name, $value, int $expire = 0,
+    public function sendCookie(string $name, ?string $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
     {
         // check name
@@ -261,40 +197,10 @@ final class Response extends Message
     }
 
     /**
-     * Remove cookie.
-     * @param  string $name
-     * @param  bool   $defer
-     * @return void
-     */
-    public function removeCookie(string $name, bool $defer = false): void
-    {
-        unset($this->cookies[$name]);
-
-        // remove instantly?
-        if (!$defer) {
-            $this->sendCookie($name, null, 0);
-        }
-    }
-
-    /**
-     * Set gzip options.
-     * @param  array $gzipOptions
-     * @return void
-     */
-    public function setGzipOptions(array $gzipOptions): void
-    {
-        isset($gzipOptions['level']) && $this->gzip->setLevel($gzipOptions['level']);
-        isset($gzipOptions['mode']) && $this->gzip->setMode($gzipOptions['mode']);
-        isset($gzipOptions['minlen']) && $this->gzip->setDataMinlen($gzipOptions['minlen']);
-
-        $this->gzipOptions = $gzipOptions;
-    }
-
-    /**
      * Set body.
      * @param  any $body
      * @return self
-     * @throws Froq\Encoding\JsonException, Froq\Http\HttpException
+     * @throws Froq\Http\HttpException, Froq\Encoding\EncoderException
      */
     public function setBody($body): self
     {
@@ -323,13 +229,13 @@ final class Response extends Message
         if ($bodyType != 'string') {
             // array returns could be encoded if content type is json
             if ($bodyType == 'array' && ($bodyContentType = $this->getContentType())
-                    && ($bodyContentType == Body::CONTENT_TYPE_TEXT_JSON ||
-                        $bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON)
+                    && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
+                        $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
             ) {
-                $json = new Json($body);
-                $body = $json->encode();
-                if ($json->hasError()) {
-                    throw new JsonException($json->getErrorMessage(), $json->getErrorCode());
+                $encoder = Encoder::init('json');
+                $body = $encoder->encode($body);
+                if ($encoder->hasError()) {
+                    throw new EncoderException(sprintf('JSON Error: %s!', $encoder->getError()));
                 }
             } else {
                 throw new HttpException('Body content must be string or array (or encoded in service'.
@@ -339,18 +245,44 @@ final class Response extends Message
 
         if ($body != null) {
             // gzip
-            if (!empty($this->gzipOptions)) {
-                $this->gzip->setData($body);
-                if ($this->gzip->checkDataMinlen()) {
-                    $body = $this->gzip->encode();
-                    $this->setHeaders(['Vary' => 'Accept-Encoding', 'Content-Encoding' => 'gzip']);
+            $gzipOptions = $this->app->configValue('app.gzip', []);
+            $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
+
+            // check config & client
+            $useGzip = $gzipOptions['use'] ?? false;
+            $usesGzip = strpos($acceptEncoding, 'gzip') !== false;
+
+            $bodyLength = strlen($body);
+            $bodyLengthMin = $gzipOptions['minlen'] ?? 0;
+
+            if ($useGzip && $usesGzip && $bodyLength >= $bodyLengthMin) {
+                $encoder = Encoder::init('gzip', $gzipOptions);
+                $body = $encoder->encode($body);
+                if ($encoder->hasError()) {
+                    throw new EncoderException(sprintf('GZip Error: %s!', $encoder->getError()));
                 }
+
+                // cancel php's compression & add required headers
+                if (!headers_sent()) {
+                    ini_set('zlib.output_compression', 'Off');
+                }
+                $this->setHeader('Content-Encoding', 'gzip');
+                $this->setHeader('Vary', 'Accept-Encoding');
             }
 
-            $this->body->setContent($body)->setContentLength(strlen($body));
+            $this->body->setContent($body)->setContentLength($bodyLength);
         }
 
         return $this;
+    }
+
+    /**
+     * Get body.
+     * @return any
+     */
+    public function getBody()
+    {
+        return $this->body;
     }
 
     /**
@@ -379,20 +311,16 @@ final class Response extends Message
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
         }
-        $this->sendHeader('Content-Length', $contentLength);
+        $this->sendHeader('Content-Length', (string) $contentLength);
 
         // real load time
         $exposeAppLoadTime = $this->app->configValue('app.exposeAppLoadTime');
         if ($exposeAppLoadTime) {
-            $loadTime = $this->app->loadTime()['s'];
+            $xAppLoadTime = $this->app->loadTime()['s'];
             if ($exposeAppLoadTime === true) {
-                $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 1 && $this->app->isDev()) {
-                $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 2 && $this->app->isStage()) {
-                $this->sendHeader('X-App-Load-Time', $loadTime);
-            } elseif ($exposeAppLoadTime === 3 && $this->app->isProduction()) {
-                $this->sendHeader('X-App-Load-Time', $loadTime);
+                $this->sendHeader('X-App-Load-Time', $xAppLoadTime);
+            } elseif ($exposeAppLoadTime == $this->app->env()) {
+                $this->sendHeader('X-App-Load-Time', $xAppLoadTime);
             }
         }
 
