@@ -61,8 +61,8 @@ final class Response extends Message
         $this->status = new Status();
         $this->body = new Body();
 
-        $this->setHeaders($this->app->configValue('app.headers', []));
-        $this->setCookies($this->app->configValue('app.cookies', []));
+        $this->setHeaders($this->app->configValue('headers', []));
+        $this->setCookies($this->app->configValue('cookies', []));
     }
 
     /**
@@ -245,7 +245,7 @@ final class Response extends Message
 
         if ($body != null) {
             // gzip
-            $gzipOptions = $this->app->configValue('app.gzip', []);
+            $gzipOptions = $this->app->configValue('gzip', []);
             $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
 
             // check config & client
@@ -314,14 +314,9 @@ final class Response extends Message
         $this->sendHeader('Content-Length', (string) $contentLength);
 
         // real load time
-        $exposeAppLoadTime = $this->app->configValue('app.exposeAppLoadTime');
-        if ($exposeAppLoadTime) {
-            $xAppLoadTime = $this->app->loadTime()['s'];
-            if ($exposeAppLoadTime === true) {
-                $this->sendHeader('X-App-Load-Time', $xAppLoadTime);
-            } elseif ($exposeAppLoadTime == $this->app->env()) {
-                $this->sendHeader('X-App-Load-Time', $xAppLoadTime);
-            }
+        $exposeAppLoadTime = $this->app->configValue('exposeAppLoadTime');
+        if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
+            $this->sendHeader('X-App-Load-Time', $this->app->loadTime()['s']);
         }
 
         // print it baby!
