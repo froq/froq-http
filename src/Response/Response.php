@@ -98,8 +98,8 @@ class Response
                     extract($arg0);
                     break;
                 default:
-                    throw new \InvalidArgumentException(
-                        'Only int|string|array types and null accepted for first argument!');
+                    throw new \InvalidArgumentException('Only int|string|array types and null '.
+                        'accepted for first argument');
             }
         }
 

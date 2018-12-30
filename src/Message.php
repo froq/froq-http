@@ -161,7 +161,7 @@ abstract class Message
         // remove instantly (available for Response only)
         if (!$defer) {
             if ($this->type != self::TYPE_RESPONSE) {
-                throw new HttpException('You cannot remove a request header!');
+                throw new HttpException('You cannot remove a request header');
             }
 
             header_remove($name);
@@ -222,7 +222,7 @@ abstract class Message
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new HttpException("Invalid cookie name '{$name}' given!");
+            throw new HttpException("Invalid cookie name '{$name}' given");
         }
 
         $this->cookies[$name] = [
@@ -260,7 +260,7 @@ abstract class Message
         // remove instantly (available for Response only)
         if (!$defer) {
             if ($this->type != self::TYPE_RESPONSE) {
-                throw new HttpException('You cannot remove a request cookie!');
+                throw new HttpException('You cannot remove a request cookie');
             }
 
             $this->sendCookie($name, null, 0);

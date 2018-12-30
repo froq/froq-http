@@ -66,7 +66,7 @@ final class Response extends Message
     }
 
     /**
-     * Call magic.
+     * Call magic (proxify body methods).
      * @param  string $method
      * @param  array  $methodArguments
      * @return any
@@ -79,7 +79,7 @@ final class Response extends Message
             return call_user_func_array([$this->body, $method], $methodArguments);
         }
 
-        throw new HttpException("Call to undefined method '{$method}'!");
+        throw new HttpException("Call to undefined method '{$method}'");
     }
 
     /**
@@ -132,7 +132,7 @@ final class Response extends Message
     public function sendHeader(string $name, ?string $value): void
     {
         if (headers_sent($file, $line)) {
-            throw new HttpException(sprintf("Cannot send header '%s', headers was already sent int %s:%s",
+            throw new HttpException(sprintf("Cannot send '%s' header, headers already sent in %s:%s",
                 $name, $file, $line));
         }
 
@@ -176,7 +176,7 @@ final class Response extends Message
     {
         // check name
         if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new HttpException("Invalid cookie name '{$name}' given!");
+            throw new HttpException("Invalid cookie name '{$name}' given");
         }
 
         setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
@@ -235,11 +235,11 @@ final class Response extends Message
                 $encoder = Encoder::init('json');
                 $body = $encoder->encode($body);
                 if ($encoder->hasError()) {
-                    throw new EncoderException(sprintf('JSON Error: %s!', $encoder->getError()));
+                    throw new EncoderException('JSON Error: %s'. $encoder->getError());
                 }
             } else {
                 throw new HttpException('Body content must be string or array (or encoded in service'.
-                    ' if ResponseJson etc. not used)!');
+                    ' if ResponseJson etc. not used)');
             }
         }
 
@@ -259,7 +259,7 @@ final class Response extends Message
                 $encoder = Encoder::init('gzip', $gzipOptions);
                 $body = $encoder->encode($body);
                 if ($encoder->hasError()) {
-                    throw new EncoderException(sprintf('GZip Error: %s!', $encoder->getError()));
+                    throw new EncoderException('GZip Error: %s'. $encoder->getError());
                 }
 
                 // cancel php's compression & add required headers

@@ -51,7 +51,7 @@ final class ResponseJson extends Response
         $encoder = Encoder::init('json');
         $data = $encoder->encode($data);
         if ($encoder->hasError()) {
-            throw new EncoderException(sprintf('JSON Error: %s!', $encoder->getError()));
+            throw new EncoderException('JSON Error: %s'. $encoder->getError());
         }
 
         $dataType = [Body::CONTENT_TYPE_APPLICATION_JSON, $dataCharset];
