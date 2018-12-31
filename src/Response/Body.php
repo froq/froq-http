@@ -131,7 +131,7 @@ final class Body
     {
         $this->contentType = $contentType;
 
-        // set content charset, "" removes charset but NULL
+        // set content charset ('' removes charset, but null)
         if ($contentCharset !== null) {
             $this->setContentCharset($contentCharset);
         }

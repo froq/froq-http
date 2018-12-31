@@ -109,7 +109,7 @@ final class Uri
     {
         $this->setSource($source);
 
-        if ($root) {
+        if ($root != '') {
             $this->setRoot($root);
         }
 
