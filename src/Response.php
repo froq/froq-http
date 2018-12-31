@@ -132,8 +132,8 @@ final class Response extends Message
     public function sendHeader(string $name, ?string $value): void
     {
         if (headers_sent($file, $line)) {
-            throw new HttpException(sprintf("Cannot send '%s' header, headers already sent in %s:%s",
-                $name, $file, $line));
+            throw new HttpException(sprintf("Cannot use '%s()', headers already sent in %s:%s",
+                __method__, $file, $line));
         }
 
         // null means remove
