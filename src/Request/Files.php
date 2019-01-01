@@ -46,7 +46,9 @@ final class Files
      */
     public function __construct(array $files = null)
     {
-        $files && $this->setFiles($files);
+        if ($files != null) {
+            $this->setFiles($files);
+        }
     }
 
     /**
