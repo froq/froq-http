@@ -59,14 +59,14 @@ final class Files
     public function setFiles(array $files): self
     {
         foreach ($files as $file) {
-            // single file
-            if (!is_array($file['name'])) {
-                $this->files[] = new File($file);
-            } else {
+            if (is_array($file['name'])) {
                 // multi-files
                 foreach (self::normalizeFilesArray($file) as $file) {
                     $this->files[] = new File($file);
                 }
+            } else {
+                // single file
+                $this->files[] = new File($file);
             }
         }
 
