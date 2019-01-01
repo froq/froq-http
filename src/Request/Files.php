@@ -62,8 +62,7 @@ final class Files
                 $this->files[] = new File($file);
             } else {
                 // multi-files
-                $file = self::normalizeFilesArray($file);
-                foreach ($file as $file) {
+                foreach (self::normalizeFilesArray($file) as $file) {
                     $this->files[] = new File($file);
                 }
             }
