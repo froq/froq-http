@@ -42,35 +42,19 @@ final class Files
 
     /**
      * Constructor.
-     * @param array|null $files
+     * @param array $files
      */
-    public function __construct(array $files = null)
-    {
-        if ($files != null) {
-            $this->setFiles($files);
-        }
-    }
-
-    /**
-     * Set files.
-     * @param  array $files
-     * @return self
-     */
-    public function setFiles(array $files): self
+    public function __construct(array $files)
     {
         foreach ($files as $file) {
-            if (is_array($file['name'])) {
-                // multi-files
+            if (is_array($file['name'])) {  // multi-files
                 foreach (self::normalizeFilesArray($file) as $file) {
                     $this->files[] = new File($file);
                 }
-            } else {
-                // single file
+            } else {  // single file
                 $this->files[] = new File($file);
             }
         }
-
-        return $this;
     }
 
     /**
