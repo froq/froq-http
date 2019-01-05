@@ -49,10 +49,10 @@ final class Files
         foreach ($files as $file) {
             if (is_array($file['name'])) {  // multi-files
                 foreach (self::normalizeFilesArray($file) as $file) {
-                    $this->files[] = new File($file);
+                    $this->files[] = $file;
                 }
             } else {  // single file
-                $this->files[] = new File($file);
+                $this->files[] = $file;
             }
         }
     }
