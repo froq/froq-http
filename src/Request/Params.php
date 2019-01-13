@@ -50,7 +50,7 @@ final class Params
      */
     public function get(string $name, $valueDefault = null)
     {
-        return Arrays::dig($_GET, $name, $valueDefault);
+        return Arrays::get($_GET, $name, $valueDefault);
     }
 
     /**
@@ -70,7 +70,7 @@ final class Params
      */
     public function post(string $name, $valueDefault = null)
     {
-        return Arrays::dig($_POST, $name, $valueDefault);
+        return Arrays::get($_POST, $name, $valueDefault);
     }
 
     /**
@@ -90,7 +90,7 @@ final class Params
      */
     public function cookie(string $name, $valueDefault = null)
     {
-        return Arrays::dig($_COOKIE, $name, $valueDefault);
+        return Arrays::get($_COOKIE, $name, $valueDefault);
     }
 
     /**
