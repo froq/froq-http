@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
+use Froq\Http\HttpException;
+
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -72,33 +74,33 @@ class Response
 
     /**
      * Constructor.
-     * @param  int|string|array|null $arg0
+     * @param  int|string|array|null $_
      * @param  any|null              $data
      * @param  string|array          $dataType
      * @param  array|null            $headers
      * @param  array|null            $cookies
-     * @throws \InvalidArgumentException
+     * @throws Froq\Http\HttpException
      */
-    public function __construct($arg0 = null, $data = null, $dataType = null,
+    public function __construct($_ = null, $data = null, $dataType = null,
         array $headers = null, array $cookies = null)
     {
-        if ($arg0 !== null) {
-            switch (gettype($arg0)) {
+        if ($_ !== null) {
+            switch (gettype($_)) {
                 // simply set status code
                 case 'integer':
-                    $statusCode = $arg0;
+                    $statusCode = $_;
                     break;
                 // this makes status default: 200 OK
                 case 'string':
-                    $data = $arg0;
+                    $data = $_;
                     break;
                 // this overrides all arguments
                 case 'array':
-                    $arg0['statusCode'] = $arg0['code'] ?? null;
-                    extract($arg0);
+                    $_['statusCode'] = $_['code'] ?? null;
+                    extract($_);
                     break;
                 default:
-                    throw new \InvalidArgumentException('Only int|string|array types and null '.
+                    throw new HttpException('Only int,string,array types and null '.
                         'accepted for first argument');
             }
         }
@@ -131,7 +133,7 @@ class Response
 
     /**
      * Get data.
-     * @return any
+     * @return ?any
      */
     public final function getData()
     {
