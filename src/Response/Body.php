@@ -79,16 +79,16 @@ final class Body
 
     /**
      * Constructor.
-     * @param any|null $content
-     * @param string   $contentType
-     * @param string   $contentCharset
+     * @param any|null    $content
+     * @param string|null $contentType
+     * @param string|null $contentCharset
      */
-    public function __construct($content = null, string $contentType = 'text/html',
-        string $contentCharset = 'utf-8')
+    public function __construct($content = null, string $contentType = null,
+        string $contentCharset = null)
     {
-        $this->setContent($content)
-            ->setContentType($contentType)
-            ->setContentCharset($contentCharset);
+        $this->content = $content;
+        $this->contentType = $contentType ?? self::CONTENT_TYPE_HTML;
+        $this->contentCharset = $contentCharset ?? self::CONTENT_CHARSET_UTF_8;
     }
 
     /**
@@ -102,7 +102,7 @@ final class Body
 
     /**
      * Set content.
-     * @param  any $content
+     * @param  any|null $content
      * @return self
      */
     public function setContent($content): self
@@ -114,27 +114,21 @@ final class Body
 
     /**
      * Get content.
-     * @return any
+     * @return any|null
      */
     public function getContent()
     {
-        return $this->content ?? '';
+        return $this->content;
     }
 
     /**
      * Set content type.
-     * @param  string      $contentType
-     * @param  string|null $contentCharset For shortcut calls.
+     * @param  string $contentType
      * @return self
      */
-    public function setContentType(string $contentType, string $contentCharset = null): self
+    public function setContentType(string $contentType): self
     {
         $this->contentType = $contentType;
-
-        // set content charset ('' removes charset, but null)
-        if ($contentCharset !== null) {
-            $this->setContentCharset($contentCharset);
-        }
 
         return $this;
     }
@@ -171,10 +165,10 @@ final class Body
 
     /**
      * Set content length.
-     * @param  int $contentLength
+     * @param  ?int $contentLength
      * @return self
      */
-    public function setContentLength(int $contentLength): self
+    public function setContentLength(?int $contentLength): self
     {
         $this->contentLength = $contentLength;
 
