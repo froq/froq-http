@@ -63,13 +63,11 @@ final class Method
     /**
      * Set name.
      * @param  string $name
-     * @return self
+     * @return void
      */
-    public function setName(string $name): self
+    public function setName(string $name): void
     {
         $this->name = strtoupper($name);
-
-        return $this;
     }
 
     /**
