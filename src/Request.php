@@ -124,11 +124,11 @@ final class Request extends Message
                 $jsonOptions = (array) $this->app->configValue('request.json');
                 $contentType = trim($headers['Content-Type'] ?? '');
 
-                $useJson = !empty($jsonOptions);
-                $usesJson = stripos($contentType, Body::CONTENT_TYPE_APPLICATION_JSON) === 0
-                    || stripos($contentType, Body::CONTENT_TYPE_TEXT_JSON) === 0;
+                $canEncode = !empty($jsonOptions) // could be emptied by developer to disable json
+                    && (stripos($contentType, Body::CONTENT_TYPE_APPLICATION_JSON) === 0 ||
+                        stripos($contentType, Body::CONTENT_TYPE_TEXT_JSON) === 0);
 
-                if ($useJson && $usesJson) {
+                if ($canEncode) {
                     $encoder = Encoder::init('json', $jsonOptions);
                     $this->body = $encoder->decode($this->body);
                     if ($encoder->hasError()) {
