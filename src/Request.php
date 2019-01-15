@@ -27,7 +27,9 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
+use Froq\Encoding\{Encoder, EncoderException};
 use Froq\Http\Request\{Method, Uri, Client, Params, Files};
+use Froq\Http\Response\Body;
 
 /**
  * @package    Froq
@@ -119,10 +121,20 @@ final class Request extends Message
                 $this->body = $body;
                 $this->bodyRaw = $body;
 
+                $jsonOptions = (array) $this->app->configValue('request.json');
                 $contentType = trim($headers['Content-Type'] ?? '');
-                // @link https://stackoverflow.com/questions/477816/what-is-the-correct-json-content-type
-                if (stripos($contentType, 'application/json') === 0) {
-                    $this->body = json_decode($this->body, true);
+
+                $useJson = !empty($jsonOptions);
+                $usesJson = stripos($contentType, Body::CONTENT_TYPE_APPLICATION_JSON) === 0
+                    || stripos($contentType, Body::CONTENT_TYPE_TEXT_JSON) === 0;
+
+                if ($useJson && $usesJson) {
+                    $encoder = Encoder::init('json', $jsonOptions);
+                    $this->body = $encoder->decode($this->body);
+                    if ($encoder->hasError()) {
+                        // do not throw, just store it
+                        e(new EncoderException('JSON Error: %s'. $encoder->getError()));
+                    }
                 } elseif (stripos($contentType, 'application/x-www-form-urlencoded') === 0) {
                     // fix dotted POST keys
                     $this->body = $_POST = $this->loadGlobalVar('POST', $body);
