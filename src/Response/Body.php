@@ -89,6 +89,10 @@ final class Body
         $this->content = $content;
         $this->contentType = $contentType ?? self::CONTENT_TYPE_HTML;
         $this->contentCharset = $contentCharset ?? self::CONTENT_CHARSET_UTF_8;
+        // auto-set
+        if (is_string($content)) {
+            $this->contentLength = strlen($content);
+        }
     }
 
     /**
