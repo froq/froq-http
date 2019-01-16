@@ -375,7 +375,7 @@ final class Request extends Message
         }
 
         // keep keys hexed
-        $source = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function ($match) {
+        $source = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($match) {
             return bin2hex(urldecode($match[0]));
         }, $source);
 
