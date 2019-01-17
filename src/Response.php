@@ -205,57 +205,69 @@ final class Response extends Message
     public function setBody($body): self
     {
         if ($body instanceof ReturnResponse) {
-            $this->setStatus($body->getStatusCode() ?? Status::OK)
-                ->setHeaders($body->getHeaders())
-                ->setCookies($body->getCookies());
+            $this->setStatus($body->getStatusCode())
+                 ->setHeaders($body->getHeaders())
+                 ->setCookies($body->getCookies());
 
             $body = new Body(
-                $body->getData(),
-                $body->getDataType() ?? $this->body->getContentType(),
-                $body->getDataCharset() ?? $this->body->getContentCharset()
+                $body->getContent(),
+                $body->getContentType() ?? $this->body->getContentType(),
+                $body->getContentCharset() ?? $this->body->getContentCharset()
             );
         }
 
         // no elseif, could be a Body already
         if ($body instanceof Body) {
-            $body = $this->body->setContent($body->getContent())
+            $body = $this->body
+                ->setContent($body->getContent())
                 ->setContentType($body->getContentType())
                 ->setContentCharset($body->getContentCharset())
                 ->getContent();
         }
 
-        // last check for body
-        $bodyType = gettype($body);
-        if ($bodyType != 'string') {
-            // array returns could be encoded if content type is json
-            if ($bodyType == 'array' && ($bodyContentType = $this->getContentType())
-                    && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
-                        $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
-            ) {
-                $encoder = Encoder::init('json');
-                $body = $encoder->encode($body);
-                if ($encoder->hasError()) {
-                    throw new EncoderException('JSON Error: %s'. $encoder->getError());
+        // encode/set body and body length
+        if ($body !== null) {
+            // json stuff (array/object returns could be encoded if content type is json)
+            $bodyType = gettype($body);
+            if ($bodyType != 'string') {
+                switch ($bodyType) {
+                    case 'array': case 'object':
+                        $jsonOptions = (array) $this->app->configValue('response.json');
+                        $accept = (string) $this->app->request()->getHeader('Accept');
+
+                        $canJson = !empty($jsonOptions) // could be emptied by developer to disable json
+                            && (strpos($accept, '*/*') !== false || strpos($accept, '/json') !== false);
+
+                        if ($canJson && ($bodyContentType = $this->body->getContentType())
+                            && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
+                                $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
+                        ) {
+                            $encoder = Encoder::init('json', $jsonOptions);
+                            $body = $encoder->encode($body);
+                            if ($encoder->hasError()) {
+                                throw new EncoderException('JSON Error: %s'. $encoder->getError());
+                            }
+                        }
+                        break;
+                    case 'integer': case 'double':
+                        $body = (string) $body;
+                        break;
+                    default:
+                        throw new HttpException("Body content must be string, integer, double, array".
+                            " or object (or encoded in invoked service if Http\Response\ResponseJson".
+                            " etc. not used), '{$bodyType}' given");
                 }
-            } else {
-                throw new HttpException('Body content must be string or array (or encoded in service'.
-                    ' if ResponseJson etc. not used)');
             }
-        }
 
-        if ($body != null) {
-            // gzip
-            $gzipOptions = $this->app->configValue('gzip', []);
-            $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
+            // gzip stuff
+            $gzipOptions = (array) $this->app->configValue('response.gzip');
+            $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
-            // check config & client
-            $useGzip = $gzipOptions['use'] ?? false;
-            $usesGzip = strpos($acceptEncoding, 'gzip') !== false;
+            $canGzip = !empty($gzipOptions) // could be emptied by developer to disable gzip
+                && strpos($acceptEncoding, 'gzip') !== false
+                && strlen($body) >= intval($gzipOptions['minlen'] ?? 0);
 
-            $bodyLength = strlen($body);
-            $bodyLengthMin = $gzipOptions['minlen'] ?? 0;
-
-            if ($useGzip && $usesGzip && $bodyLength >= $bodyLengthMin) {
+            if ($canGzip) {
                 $encoder = Encoder::init('gzip', $gzipOptions);
                 $body = $encoder->encode($body);
                 if ($encoder->hasError()) {
@@ -270,8 +282,10 @@ final class Response extends Message
                 $this->setHeader('Vary', 'Accept-Encoding');
             }
 
-            $this->body->setContent($body)->setContentLength($bodyLength);
+            // finally..
+            $this->body->setContent($body);
         }
+
 
         return $this;
     }
@@ -298,16 +312,15 @@ final class Response extends Message
             header(sprintf('%s %s', $this->httpVersion, $this->status->getCode()));
         }
 
-        // body stuff
         $contentType = $this->body->getContentType();
         $contentCharset = $this->body->getContentCharset();
         $contentLength = $this->body->getContentLength();
 
-        // content type / length
-        if (empty($contentType)) {
+        // content type/charset/length
+        if ($contentType == '') {
             $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NONE);
-        } elseif (empty($contentCharset) || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
-                $this->sendHeader('Content-Type', $contentType);
+        } elseif ($contentCharset == '' || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
+            $this->sendHeader('Content-Type', $contentType);
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
         }
@@ -316,7 +329,7 @@ final class Response extends Message
         // real load time
         $exposeAppLoadTime = $this->app->configValue('exposeAppLoadTime');
         if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
-            $this->sendHeader('X-App-Load-Time', $this->app->loadTime()['s']);
+            $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
         }
 
         // print it baby!
