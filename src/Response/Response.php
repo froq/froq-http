@@ -43,22 +43,22 @@ class Response
     protected $statusCode;
 
     /**
-     * Data.
+     * Content.
      * @var any
      */
-    protected $data;
+    protected $content;
 
     /**
-     * Data type.
+     * Content type.
      * @var string
      */
-    protected $dataType;
+    protected $contentType;
 
     /**
-     * Data charset.
+     * Content charset.
      * @var string
      */
-    protected $dataCharset;
+    protected $contentCharset;
 
     /**
      * Headers.
@@ -74,49 +74,20 @@ class Response
 
     /**
      * Constructor.
-     * @param  int|string|array|null $_
-     * @param  any|null              $data
-     * @param  string|array          $dataType
-     * @param  array|null            $headers
-     * @param  array|null            $cookies
-     * @throws Froq\Http\HttpException
+     * @param  int        $statusCode
+     * @param  array|null $contentStack
+     * @param  array|null $headers
+     * @param  array|null $cookies
      */
-    public function __construct($_ = null, $data = null, $dataType = null,
+    public function __construct(int $statusCode, array $contentStack = null,
         array $headers = null, array $cookies = null)
     {
-        if ($_ !== null) {
-            switch (gettype($_)) {
-                // simply set status code
-                case 'integer':
-                    $statusCode = $_;
-                    break;
-                // this makes status default: 200 OK
-                case 'string':
-                    $data = $_;
-                    break;
-                // this overrides all arguments
-                case 'array':
-                    $_['statusCode'] = $_['code'] ?? null;
-                    extract($_);
-                    break;
-                default:
-                    throw new HttpException('Only int,string,array types and null '.
-                        'accepted for first argument');
-            }
-        }
+        $this->statusCode = $statusCode;
 
-        $this->statusCode = $statusCode ?? Status::OK;
-
-        $this->data = $data;
-        if (!empty($dataType)) {
-            if (is_array($dataType)) {
-                $this->dataType = $dataType[0];
-                $this->dataCharset = $dataType[1] ?? $dataCharset ?? null;
-            } else {
-                $this->dataType = $dataType;
-                $this->dataCharset = $dataCharset ?? null;
-            }
-        }
+        @ [$content, $contentType, $contentCharset] = (array) $contentStack;
+        $this->content = $content;
+        $this->contentType = $contentType ?? Body::CONTENT_TYPE_HTML;
+        $this->contentCharset = $contentCharset ?? Body::CONTENT_CHARSET_UTF_8;
 
         $this->headers = (array) $headers;
         $this->cookies = (array) $cookies;
@@ -124,38 +95,38 @@ class Response
 
     /**
      * Get status code.
-     * @return ?int
+     * @return int
      */
-    public final function getStatusCode(): ?int
+    public final function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
     /**
-     * Get data.
-     * @return ?any
+     * Get content.
+     * @return any|null
      */
-    public final function getData()
+    public final function getContent()
     {
-        return $this->data;
+        return $this->content;
     }
 
     /**
-     * Get data type.
-     * @return ?string
+     * Get content type.
+     * @return string
      */
-    public final function getDataType(): ?string
+    public final function getContentType(): string
     {
-        return $this->dataType;
+        return $this->contentType;
     }
 
     /**
-     * Get data charset.
-     * @return ?string
+     * Get content charset.
+     * @return string
      */
-    public final function getDataCharset(): ?string
+    public final function getContentCharset(): string
     {
-        return $this->dataCharset;
+        return $this->contentCharset;
     }
 
     /**
@@ -174,5 +145,46 @@ class Response
     public final function getCookies(): array
     {
         return $this->cookies;
+    }
+
+    /**
+     * Prepare content array.
+     * @param  any    $contentStack
+     * @param  string $contentType
+     * @return array
+     */
+    protected final function prepareContentStack($contentStack, string $contentType): array
+    {
+        // for proper extract
+        if (is_assoc_array($contentStack)) {
+            $contentStack = [$contentStack];
+        }
+
+        if (is_array($contentStack)) {
+            $content = $contentStack[0] ?? null;
+            $contentCharset = $contentStack[1] ?? null;
+        } else {
+            $content = $contentStack;
+            $contentCharset = null;
+        }
+
+        $contentTypeCheck = gettype($content);
+        switch ($contentTypeCheck) {
+            case 'NULL':
+                return [$content, $contentType, $contentCharset];
+            // array/object types
+            case 'array': case 'object':
+                // encodable?
+                if (!strpos($contentType, '/json') && !strpos($contentType, '/xml')) {
+                    throw new HttpException("Array/object contents encodable for only JSON and XML".
+                        " responses ('{$contentTypeCheck}' given)");
+                }
+                return [$content, $contentType, $contentCharset];
+            // scalar types
+            case 'string': case 'integer': case 'double': case 'boolean':
+                return [(string) $content, $contentType, $contentCharset];
+        }
+
+        throw new HttpException("Unsupported content stack type '{$contentTypeCheck}'");
     }
 }
