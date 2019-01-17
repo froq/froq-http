@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
-use Froq\Encoding\{Xml, XmlException};
+use Froq\Encoding\{Encoder, EncoderException};
 
 /**
  * @package    Froq

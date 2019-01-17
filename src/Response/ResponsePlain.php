@@ -29,10 +29,10 @@ namespace Froq\Http\Response;
 /**
  * @package    Froq
  * @subpackage Froq\Http
- * @object     Froq\Http\Response\ResponseHtml
+ * @object     Froq\Http\Response\ResponsePlain
  * @author     Kerem Güneş <k-gun@mail.com>
  */
-final class ResponseHtml extends Response
+final class ResponsePlain extends Response
 {
     /**
      * Constructor.
@@ -46,7 +46,7 @@ final class ResponseHtml extends Response
     {
         parent::__construct($statusCode,
             // override
-            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_HTML),
+            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_PLAIN),
                 $headers, $cookies);
     }
 }

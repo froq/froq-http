@@ -38,24 +38,18 @@ final class ResponseJson extends Response
 {
     /**
      * Constructor.
-     * @param  int|null    $statusCode
-     * @param  any|null    $data
-     * @param  string|null $dataCharset
-     * @param  array|null  $headers
-     * @param  array|null  $cookies
+     * @param  int               $statusCode
+     * @param  array|string|null $contentStack
+     * @param  array|null        $headers
+     * @param  array|null        $cookies
      * @throws Froq\Encoding\EncoderException
      */
-    public function __construct(int $statusCode = null, $data = null, string $dataCharset = null,
+    public function __construct(int $statusCode, $contentStack = null,
         array $headers = null, array $cookies = null)
     {
-        $encoder = Encoder::init('json');
-        $data = $encoder->encode($data);
-        if ($encoder->hasError()) {
-            throw new EncoderException('JSON Error: %s'. $encoder->getError());
-        }
-
-        $dataType = [Body::CONTENT_TYPE_APPLICATION_JSON, $dataCharset];
-
-        parent::__construct($statusCode, $data, $dataType, $headers, $cookies);
+        parent::__construct($statusCode,
+            // override
+            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_APPLICATION_JSON),
+                $headers, $cookies);
     }
 }
