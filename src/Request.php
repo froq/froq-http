@@ -113,35 +113,15 @@ final class Request extends Message
         $this->setHeaders($headers);
 
         // set/parse body for override methods
-        switch ($this->method->getName()) {
-            case Http::METHOD_PUT:
-            case Http::METHOD_POST:
-            case Http::METHOD_PATCH:
-                $body = (string) file_get_contents('php://input');
-                $this->body = $body;
-                $this->bodyRaw = $body;
+        $body = (string) file_get_contents('php://input');
+        $this->body = $body;
+        $this->bodyRaw = $body;
 
-                $jsonOptions = (array) $this->app->configValue('request.json');
-                $contentType = trim($headers['Content-Type'] ?? '');
-
-                $canJson = !empty($jsonOptions) // could be emptied by developer to disable json
-                    && (stripos($contentType, Body::CONTENT_TYPE_APPLICATION_JSON) === 0 ||
-                        stripos($contentType, Body::CONTENT_TYPE_TEXT_JSON) === 0);
-
-                if ($canJson) {
-                    $encoder = Encoder::init('json', $jsonOptions);
-                    $this->body = $encoder->decode($this->body);
-                    if ($encoder->hasError()) {
-                        // do not throw, just store it
-                        e(new EncoderException('JSON Error: %s'. $encoder->getError()));
-                    }
-                } elseif (stripos($contentType, 'application/x-www-form-urlencoded') === 0) {
-                    // fix dotted POST keys
-                    $this->body = $_POST = $this->loadGlobalVar('POST', $body);
-                } else {
-                    $this->body = $_POST;
-                }
-                break;
+        if (stripos(trim($headers['Content-Type'] ?? ''), 'application/x-www-form-urlencoded') === 0) {
+            // fix dotted POST keys
+            $this->body = $_POST = $this->loadGlobalVar('POST', $body);
+        } else {
+            $this->body = $_POST;
         }
 
         // fix dotted COOKIE keys
