@@ -9,9 +9,9 @@
     ],
     "require": {
         "php": "^7.2",
-        "froq/froq": "~3.0",
-        "froq/froq-util": "~3.0",
-        "froq/froq-encoding": "~3.0"
+        "froq/froq": "dev-master",
+        "froq/froq-util": "dev-master",
+        "froq/froq-encoding": "dev-master"
     },
     "autoload": {
         "classmap": ["src/"],
