@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Encoding\{Encoder, EncoderException};
 use Froq\Http\Request\{Method, Uri, Client, Params, Files};
 use Froq\Http\Response\Body;
 
