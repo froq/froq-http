@@ -26,8 +26,6 @@ declare(strict_types=1);
 
 namespace Froq\Http\Response;
 
-use Froq\Encoding\{Encoder, EncoderException};
-
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -43,7 +41,6 @@ final class ResponseJson extends Response
      * @param  array|string|null $contentStack
      * @param  array|null        $headers
      * @param  array|null        $cookies
-     * @throws Froq\Encoding\EncoderException
      */
     public function __construct(int $statusCode, $contentStack = null,
         array $headers = null, array $cookies = null)
