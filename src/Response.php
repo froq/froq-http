@@ -232,14 +232,12 @@ final class Response extends Message
             $bodyType = gettype($body);
             if ($bodyType != 'string') {
                 switch ($bodyType) {
-                    case 'array': case 'object':
+                    case 'array':
+                    case 'object':
                         $jsonOptions = (array) $this->app->configValue('response.json');
-                        $accept = (string) $this->app->request()->getHeader('Accept');
 
-                        $canJson = !empty($jsonOptions) // could be emptied by developer to disable json
-                            && (strpos($accept, '*/*') !== false || strpos($accept, '/json') !== false);
-
-                        if ($canJson && ($bodyContentType = $this->body->getContentType())
+                        if (!empty($jsonOptions) // could be emptied by developer to disable json
+                            && ($bodyContentType = $this->body->getContentType())
                             && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
                                 $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
                         ) {
@@ -250,14 +248,18 @@ final class Response extends Message
                             }
                         }
                         break;
-                    case 'integer': case 'double':
+                    case 'integer':
+                    case 'double':
                         $body = (string) $body;
                         break;
-                    default:
-                        throw new HttpException("Body content must be string, integer, double, array".
-                            " or object (or encoded in invoked service if Http\Response\ResponseJson".
-                            " etc. not used), '{$bodyType}' given");
                 }
+            }
+
+            // not encoded/converted
+            if (!is_string($body)) {
+                throw new HttpException("Body content must be string, integer, double, array or ".
+                    " object (or encoded in invoked service method if Http\Response\ResponseJson".
+                    " etc. not used), '{$bodyType}' given");
             }
 
             // gzip stuff
@@ -286,7 +288,6 @@ final class Response extends Message
             // finally..
             $this->body->setContent($body);
         }
-
 
         return $this;
     }
