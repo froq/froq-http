@@ -257,9 +257,10 @@ final class Response extends Message
 
             // not encoded/converted
             if (!is_string($body)) {
-                throw new HttpException("Body content must be string, integer, double, array or ".
-                    " object (or encoded in invoked service method if Http\Response\ResponseJson".
-                    " etc. not used), '{$bodyType}' given");
+                throw new HttpException("Body content must be string, number, array or object".
+                    " (or encoded in invoked service method if Froq\Http\Response\ResponseJson".
+                    " not used, or content type set as application/json or text/json),".
+                    " '{$bodyType}' given");
             }
 
             // gzip stuff
