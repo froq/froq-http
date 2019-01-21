@@ -33,6 +33,7 @@ use Froq\Util\Arrays;
  * @subpackage Froq\Http
  * @object     Froq\Http\Request\Params
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Params
 {

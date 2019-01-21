@@ -31,6 +31,7 @@ namespace Froq\Http\Response;
  * @subpackage Froq\Http
  * @object     Froq\Http\Response\Body
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Body
 {

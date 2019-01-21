@@ -33,6 +33,7 @@ use Froq\Util\Util;
  * @subpackage Froq\Http
  * @object     Froq\Http\Request\Client
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Client
 {

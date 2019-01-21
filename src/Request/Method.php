@@ -33,6 +33,7 @@ use Froq\Http\Http;
  * @subpackage Froq\Http
  * @object     Froq\Http\Request\Method
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Method
 {

@@ -33,6 +33,7 @@ use Froq\Http\HttpException;
  * @subpackage Froq\Http
  * @object     Froq\Http\Response\Response
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 class Response
 {

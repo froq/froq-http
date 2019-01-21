@@ -33,6 +33,7 @@ use Froq\App;
  * @subpackage Froq\Http
  * @object     Froq\Http\Message
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 abstract class Message
 {

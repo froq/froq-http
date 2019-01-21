@@ -31,6 +31,7 @@ namespace Froq\Http\Response;
  * @subpackage Froq\Http
  * @object     Froq\Http\Response\ResponsePlain
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      3.0
  */
 final class ResponsePlain extends Response
 {

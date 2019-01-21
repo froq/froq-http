@@ -31,6 +31,7 @@ namespace Froq\Http\Request;
  * @subpackage Froq\Http
  * @object     Froq\Http\Request\Files
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Files
 {

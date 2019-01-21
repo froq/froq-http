@@ -36,6 +36,7 @@ use Froq\Http\Response\Body;
  * @subpackage Froq\Http
  * @object     Froq\Http\Request
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Request extends Message
 {

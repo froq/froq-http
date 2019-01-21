@@ -33,6 +33,7 @@ use Froq\Encoding\{Encoder, EncoderException};
  * @subpackage Froq\Http
  * @object     Froq\Http\Response\ResponseXml
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class ResponseXml extends Response
 {

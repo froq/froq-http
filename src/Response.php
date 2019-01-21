@@ -35,6 +35,7 @@ use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
  * @subpackage Froq\Http
  * @object     Froq\Http\Response
  * @author     Kerem Güneş <k-gun@mail.com>
+ * @since      1.0
  */
 final class Response extends Message
 {
