@@ -110,7 +110,7 @@ final class Uri
     {
         $this->setSource($source);
 
-        if ($root != '') {
+        if ($root != null) {
             $this->setRoot($root);
         }
 
@@ -391,53 +391,42 @@ final class Uri
 
     /**
      * To string.
-     * @param  array $exclude
+     * @param  array|null $excludedFields
      * @return string
      */
-    public function toString(array $exclude = []): string
+    public function toString(array $excludedFields = null): string
     {
-        $array = $this->toArray($exclude);
+        $data = $this->data;
+        if ($excludedFields != null) {
+            $data = array_filter($data, function ($field) use ($excludedFields) {
+                return !in_array($field, $excludedFields);
+            }, 2);
+        }
+
         $return = '';
 
-        isset($array['scheme']) &&
-            $return .= $array['scheme'] . '://';
-        if (isset($array['user']) || isset($array['pass'])) {
-            isset($array['user']) &&
-                $return .= $array['user'];
-            isset($array['pass']) &&
-                $return .= ':' . $array['pass'];
+        isset($data['scheme']) && $return .= $data['scheme'] . '://';
+        if (isset($data['user']) || isset($data['pass'])) {
+            isset($data['user']) && $return .= $data['user'];
+            isset($data['pass']) && $return .= ':'. $data['pass'];
             $return .= '@';
         }
-        isset($array['host']) &&
-            $return .= $array['host'];
-        isset($array['port']) &&
-            $return .= ':' . $array['port'];
-        isset($array['path']) &&
-            $return .= $array['path'];
-        isset($array['query']) &&
-            $return .= '?' . $array['query'];
-        isset($array['fragment']) &&
-            $return .= '#' . $array['fragment'];
+        isset($data['host']) && $return .= $data['host'];
+        isset($data['port']) && $return .= ':' . $data['port'];
+        isset($data['path']) && $return .= $data['path'];
+        isset($data['query']) && $return .= '?' . $data['query'];
+        isset($data['fragment']) && $return .= '#' . $data['fragment'];
 
         return $return;
     }
 
     /**
      * To array.
-     * @param  array $exclude
      * @return array
      */
-    public function toArray(array $exclude = []): array
+    public function toArray(): array
     {
-        $return = [];
-        foreach (['scheme', 'host', 'port', 'user',
-                  'pass', 'path', 'query', 'fragment'] as $key) {
-            if (!in_array($key, $exclude)) {
-                $return[$key] = $this->{$key};
-            }
-        }
-
-        return $return;
+        return $this->data;
     }
 
     /**
