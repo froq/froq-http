@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace Froq\Http\Request;
 
+use Froq\Http\HttpException;
+
 /**
  * @package    Froq
  * @subpackage Froq\Http
@@ -42,52 +44,18 @@ final class Uri
     private $source;
 
     /**
-     * Scheme.
+     * Source data.
      * @var string
      */
-    private $scheme;
+    private $sourceData;
 
     /**
-     * Host.
-     * @var string
+     * Source data keys.
+     * @var array
      */
-    private $host;
-
-    /**
-     * Port.
-     * @var int
-     */
-    private $port;
-
-    /**
-     * User.
-     * @var string
-     */
-    private $user;
-
-    /**
-     * Pass.
-     * @var string
-     */
-    private $pass;
-
-    /**
-     * Path.
-     * @var string
-     */
-    private $path;
-
-    /**
-     * Query.
-     * @var string
-     */
-    private $query;
-
-    /**
-     * Fragment.
-     * @var string
-     */
-    private $fragment;
+    private $sourceDataKeys = [
+        'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
+    ];
 
     /**
      * Segments.
@@ -96,38 +64,30 @@ final class Uri
     private $segments = [];
 
     /**
-     * Root.
+     * Segments root.
      * @var string
      */
-    private $root = '/';
+    private $segmentsRoot;
 
     /**
      * Constructor.
-     * @param string $source
-     * @param string $root
+     * @param string|array $source
      */
-    public function __construct(string $source = '', string $root = null)
+    public function __construct($source = null)
     {
-        $this->setSource($source);
-
-        if ($root != null) {
-            $this->setRoot($root);
-        }
-
-        // set properties
-        $source = parse_url($source);
-        if (!empty($source)) {
-            isset($source['scheme']) && $this->setScheme($source['scheme']);
-            isset($source['host']) && $this->setHost($source['host']);
-            isset($source['port']) && $this->setPort((int) $source['port']);
-            isset($source['user']) && $this->setUser($source['user']);
-            isset($source['pass']) && $this->setPass($source['pass']);
-            isset($source['path']) && $this->setPath($source['path']);
-            isset($source['query']) && $this->setQuery($source['query']);
-            isset($source['fragment']) && $this->setFragment($source['fragment']);
-
-            // segments
-            $this->generateSegments();
+        if ($source != null) {
+            $this->source = $source;
+            $sourceType = gettype($source);
+            if ($sourceType == 'string') {
+                $this->sourceData = parse_url($source);
+            } elseif ($sourceType == 'array') {
+                foreach ($source as $key => $value) {
+                    $this->__call('set'. $key, [$value]);
+                }
+            } else {
+                throw new HttpException(sprintf("Only 'string/array' type sources allowed for %s ".
+                    "object '{$sourceType}' given", self::class));
+            }
         }
     }
 
@@ -141,231 +101,47 @@ final class Uri
     }
 
     /**
-     * Set source.
-     * @param  string $source
-     * @return self
+     * Call magic.
+     * @param  string     $method
+     * @param  array|null $methodArguments
+     * @return int|string|self
+     * @throws Froq\Http\HttpException
      */
-    public function setSource(string $source): self
+    public function __call(string $method, array $methodArguments = null)
     {
-        $this->source = $source;
+        $cmd = substr($method, 0, 3);
+        if ($cmd != 'set' && $cmd != 'get') {
+            throw new HttpException(sprintf("Only 'set/get' methods allowed for %s::__call() magic",
+                self::class));
+        }
 
-        return $this;
-    }
+        $key = strtolower(substr($method, 3));
+        if (!in_array($key, $this->sourceDataKeys)) {
+            throw new HttpException(sprintf("No field such '%s' exists on %s", $key, self::class));
+        }
 
-    /**
-     * Get source.
-     * @return string
-     */
-    final function getSource(): string
-    {
-        return $this->source;
-    }
+        // setters
+        if ($cmd == 'set') {
+            // sorry babe, we love hard..
+            if (!array_key_exists(0, $methodArguments)) {
+                throw new HttpException(sprintf("No argument given for %s::set%s()", self::class, ucfirst($key)));
+            }
+            $value = $methodArguments[0];
 
-    /**
-     * Set scheme.
-     * @param  string $scheme
-     * @return self
-     */
-    public function setScheme(string $scheme): self
-    {
-        $this->scheme = $scheme;
+            if ($key == 'port' && !is_int($value)) {
+                throw new HttpException(sprintf("'port' field must be an integer for %s", self::class));
+            } elseif ($value !== null && !is_string($value)) {
+                throw new HttpException(sprintf("All fields must be string (except 'port') for %s", self::class));
+            }
 
-        return $this;
-    }
+            $this->sourceData[$key] = $value;
 
-    /**
-     * Get scheme.
-     * @return ?string
-     */
-    public function getScheme(): ?string
-    {
-        return $this->scheme;
-    }
+            return $this;
+        }
 
-    /**
-     * Set host.
-     * @param  string $host
-     * @return self
-     */
-    public function setHost(string $host): self
-    {
-        $this->host = $host;
-
-        return $this;
-    }
-
-    /**
-     * Get host.
-     * @return ?string
-     */
-    public function getHost(): ?string
-    {
-        return $this->host;
-    }
-
-    /**
-     * Set port.
-     * @param  int port
-     * @return self
-     */
-    public function setPort(int $port): self
-    {
-        $this->port = $port;
-
-        return $this;
-    }
-
-    /**
-     * Get port.
-     * @return ?int
-     */
-    public function getPort(): ?int
-    {
-        return $this->port;
-    }
-
-    /**
-     * Set user.
-     * @param  string $user
-     * @return self
-     */
-    public function setUser(string $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user.
-     * @return ?string
-     */
-    public function getUser(): ?string
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set pass.
-     * @param  string $pass
-     * @return self
-     */
-    public function setPass(string $pass): self
-    {
-        $this->pass = $pass;
-
-        return $this;
-    }
-
-    /**
-     * Get pass.
-     * @return ?string
-     */
-    public function getPass(): ?string
-    {
-        return $this->pass;
-    }
-
-    /**
-     * Set path.
-     * @param  strin $path
-     * @return self
-     */
-    public function setPath(string $path): self
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    /**
-     * Get path.
-     * @return ?string
-     */
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set query.
-     * @param  string $query
-     * @return self
-     */
-    public function setQuery(string $query): self
-    {
-        $this->query = $query;
-
-        return $this;
-    }
-
-    /**
-     * Get query.
-     * @return ?string
-     */
-    public function getQuery(): ?string
-    {
-        return $this->query;
-    }
-
-    /**
-     * Set fragment.
-     * @param  string $fragment
-     * @return self
-     */
-    public function setFragment(string $fragment): self
-    {
-        $this->fragment = $fragment;
-
-        return $this;
-    }
-
-    /**
-     * Get fragment.
-     * @return ?string
-     */
-    public function getFragment(): ?string
-    {
-        return $this->fragment;
-    }
-
-    /**
-     * Set root.
-     * @param  string $root
-     * @return self
-     */
-    public function setRoot(string $root): self
-    {
-        $this->root = $root;
-
-        return $this;
-    }
-
-    /**
-     * Get root.
-     * @return string
-     */
-    public function getRoot(): string
-    {
-        return $this->root;
-    }
-
-    /**
-     * Is root.
-     * @return bool
-     */
-    public function isRoot(): bool
-    {
-        return ($this->root == $this->path);
-    }
-
-    /**
-     * Segments.
-     * @return array
-     */
-    public function segments(): array
-    {
-        return $this->segments;
+        if ($cmd == 'get') { // getters
+            return $this->sourceData[$key] ?? null;
+        }
     }
 
     /**
@@ -380,6 +156,24 @@ final class Uri
     }
 
     /**
+     * Segments.
+     * @return array
+     */
+    public function segments(): array
+    {
+        return $this->segments;
+    }
+
+    /**
+     * Get segments root.
+     * @return ?string
+     */
+    public function segmentsRoot(): ?string
+    {
+        return $this->segmentsRoot;
+    }
+
+    /**
      * Segment arguments.
      * @param  int $offset
      * @return array
@@ -390,34 +184,30 @@ final class Uri
     }
 
     /**
-     * To string.
-     * @param  array|null $excludedFields
-     * @return string
+     * Generate segments.
+     * @param  string $root
+     * @return void
      */
-    public function toString(array $excludedFields = null): string
+    public function generateSegments(string $root = null): void
     {
-        $data = $this->data;
-        if ($excludedFields != null) {
-            $data = array_filter($data, function ($field) use ($excludedFields) {
-                return !in_array($field, $excludedFields);
-            }, 2);
+        $path = rawurldecode($this->sourceData['path'] ?? '');
+        if ($path && $path != '/') {
+            // drop root if exists
+            if ($root && $root != '/') {
+                $root = '/'. trim($root, '/'). '/';
+                // prevent wrong generate action
+                if (strpos($path, $root) === false) {
+                    throw new HttpException("Uri path '{$path}' has no root such '{$root}'");
+                }
+
+                $path = substr($path, strlen($root));
+
+                // update segments root
+                $this->segmentsRoot = $root;
+            }
+
+            $this->segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
         }
-
-        $return = '';
-
-        isset($data['scheme']) && $return .= $data['scheme'] . '://';
-        if (isset($data['user']) || isset($data['pass'])) {
-            isset($data['user']) && $return .= $data['user'];
-            isset($data['pass']) && $return .= ':'. $data['pass'];
-            $return .= '@';
-        }
-        isset($data['host']) && $return .= $data['host'];
-        isset($data['port']) && $return .= ':' . $data['port'];
-        isset($data['path']) && $return .= $data['path'];
-        isset($data['query']) && $return .= '?' . $data['query'];
-        isset($data['fragment']) && $return .= '#' . $data['fragment'];
-
-        return $return;
     }
 
     /**
@@ -426,23 +216,37 @@ final class Uri
      */
     public function toArray(): array
     {
-        return $this->data;
+        return $this->sourceData;
     }
 
     /**
-     * Generate segments.
-     * @return void
+     * To string.
+     * @param  array|null $excludedKeys
+     * @return string
      */
-    private function generateSegments(): void
+    public function toString(array $excludedKeys = null): string
     {
-        $path = rawurldecode($this->path);
-        if ($path != '' && $path != '/') {
-            // remove root
-            if ($this->root != '' && $this->root != '/') {
-                $path = substr($path, strlen($this->root));
-            }
-
-            $this->segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
+        $sourceData = $this->sourceData;
+        if ($excludedKeys != null) {
+            $sourceData = array_filter($sourceData, function ($key) use ($excludedKeys) {
+                return !in_array($key, $excludedKeys);
+            }, 2);
         }
+
+        $return = '';
+
+        !empty($sourceData['scheme']) && $return .= $sourceData['scheme'] . '://';
+        if (!empty($sourceData['user']) || !empty($sourceData['pass'])) {
+            !empty($sourceData['user']) && $return .= $sourceData['user'];
+            !empty($sourceData['pass']) && $return .= ':'. $sourceData['pass'];
+            $return .= '@';
+        }
+        !empty($sourceData['host']) && $return .= $sourceData['host'];
+        !empty($sourceData['port']) && $return .= ':'. $sourceData['port'];
+        !empty($sourceData['path']) && $return .= $sourceData['path'];
+        !empty($sourceData['query']) && $return .= '?'. $sourceData['query'];
+        !empty($sourceData['fragment']) && $return .= '#'. $sourceData['fragment'];
+
+        return $return;
     }
 }
