@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace Froq\Http;
 
 use Froq\App;
-use Froq\Encoding\{Encoder, EncoderException};
+use Froq\Encoding\EncoderException;
 use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
 
 /**
@@ -234,17 +234,16 @@ final class Response extends Message
                 switch ($bodyType) {
                     case 'array':
                     case 'object':
-                        $jsonOptions = (array) $this->app->configValue('response.json');
+                        $jsonOptions = $this->app->configValue('response.json');
 
                         if (!empty($jsonOptions) // could be emptied by developer to disable json
                             && ($bodyContentType = $this->body->getContentType())
                             && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
                                 $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
                         ) {
-                            $encoder = Encoder::init('json', $jsonOptions);
-                            $body = $encoder->encode($body);
-                            if ($encoder->hasError()) {
-                                throw new EncoderException('JSON Error: %s'. $encoder->getError());
+                            [$body, $error] = Encoder::jsonEncode($body, $jsonOptions);
+                            if ($error) {
+                                throw new EncoderException($error);
                             }
                         }
                         break;
@@ -264,7 +263,7 @@ final class Response extends Message
             }
 
             // gzip stuff
-            $gzipOptions = (array) $this->app->configValue('response.gzip');
+            $gzipOptions = $this->app->configValue('response.gzip');
             $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
             $canGzip = !empty($gzipOptions) // could be emptied by developer to disable gzip
@@ -272,10 +271,9 @@ final class Response extends Message
                 && strlen($body) >= intval($gzipOptions['minlen'] ?? 0);
 
             if ($canGzip) {
-                $encoder = Encoder::init('gzip', $gzipOptions);
-                $body = $encoder->encode($body);
-                if ($encoder->hasError()) {
-                    throw new EncoderException('GZip Error: %s'. $encoder->getError());
+                [$body, $error] = Encoder::gzipEncode($body, $gzipOptions);
+                if ($error) {
+                    throw new EncoderException($error);
                 }
 
                 // cancel php's compression & add required headers
