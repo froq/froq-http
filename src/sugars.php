@@ -140,6 +140,26 @@ function uri(): Uri
 }
 
 /**
+ * Segment.
+ * @param  int      $i
+ * @param  any|null $value_default
+ * @return any|null
+ */
+function segment(int $i, $value_default = null)
+{
+    return app()->request()->uri()->segment($i, $value_default);
+}
+
+/**
+ * Segments.
+ * @return array
+ */
+function segments(): array
+{
+    return app()->request()->uri()->segments();
+}
+
+/**
  * Redirect.
  * @param  ... $arguments
  * @return void
