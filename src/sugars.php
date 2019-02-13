@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 use Froq\Http\Request\Uri;
 use Froq\Http\Response\Status;
+use Froq\Http\{Request, Response};
 
 /**
  * Is get.
@@ -112,6 +113,24 @@ function cookie(string $name = null, $value_default = null)
 }
 
 /**
+ * Request.
+ * @return Froq\Http\Request
+ */
+function request(): Request
+{
+    return app()->request();
+}
+
+/**
+ * Response.
+ * @return Froq\Http\Response
+ */
+function response(): Response
+{
+    return app()->response();
+}
+
+/**
  * Uri.
  * @return Froq\Http\Request\Uri
  */
@@ -122,12 +141,12 @@ function uri(): Uri
 
 /**
  * Redirect.
- * @param  ... $args
+ * @param  ... $arguments
  * @return void
  */
-function redirect(...$args): void
+function redirect(...$arguments): void
 {
-    redirect_to(vsprintf(array_shift($args), $args));
+    redirect_to(vsprintf(array_shift($arguments), $arguments));
 }
 
 /**
