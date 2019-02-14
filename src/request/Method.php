@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request;
+namespace froq\http\request;
 
-use Froq\Http\Http;
+use froq\http\Http;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request\Method
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Method.
+ * @package froq\http\request
+ * @object  froq\http\request\Method
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Method
 {

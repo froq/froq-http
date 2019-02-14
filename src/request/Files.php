@@ -24,30 +24,63 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\request;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\ResponsePlain
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      3.0
+ * Files.
+ * @package froq\http\request
+ * @object  froq\http\request\Files
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
-final class ResponsePlain extends Response
+final class Files
 {
     /**
-     * Constructor.
-     * @param  int               $statusCode
-     * @param  array|string|null $contentStack
-     * @param  array|null        $headers
-     * @param  array|null        $cookies
+     * Files.
+     * @var array
      */
-    public function __construct(int $statusCode, $contentStack = null,
-        array $headers = null, array $cookies = null)
+    private $files = [];
+
+    /**
+     * Constructor.
+     * @param array $files
+     */
+    public function __construct(array $files)
     {
-        parent::__construct($statusCode,
-            // override
-            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_PLAIN),
-                $headers, $cookies);
+        foreach ($files as $file) {
+            if (is_array($file['name'])) {  // multi-files
+                foreach (self::normalizeFilesArray($file) as $file) {
+                    $this->files[] = $file;
+                }
+            } else {  // single file
+                $this->files[] = $file;
+            }
+        }
+    }
+
+    /**
+     * Get files.
+     * @return array
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
+
+    /**
+     * Normalize files array.
+     * @param  array $files
+     * @return array
+     */
+    public static function normalizeFilesArray(array $files): array
+    {
+        $return = [];
+        foreach ($files as $i => $file) {
+            foreach ($file as $key => $value) {
+                $return[$key][$i] = $value;
+            }
+        }
+
+        return $return;
     }
 }

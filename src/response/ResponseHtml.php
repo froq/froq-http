@@ -24,16 +24,30 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\ResponseXml
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Html response.
+ * @package froq\http\response
+ * @object  froq\http\response\HtmlResponse
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
-final class ResponseXml extends Response
+final class HtmlResponse extends Response
 {
-    // @todo
+    /**
+     * Constructor.
+     * @param  int               $statusCode
+     * @param  array|string|null $contentStack
+     * @param  array|null        $headers
+     * @param  array|null        $cookies
+     */
+    public function __construct(int $statusCode, $contentStack = null,
+        array $headers = null, array $cookies = null)
+    {
+        parent::__construct($statusCode,
+            // override
+            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_HTML),
+                $headers, $cookies);
+    }
 }

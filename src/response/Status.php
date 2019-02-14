@@ -24,13 +24,13 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\Status
- * @author     Kerem Güneş <k-gun@mail.com>
+ * Status.
+ * @package froq\http\response
+ * @object  froq\http\response\Status
+ * @author  Kerem Güneş <k-gun@mail.com>
  */
 final class Status
 {

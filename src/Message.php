@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http;
+namespace froq\http;
 
-use Froq\App;
+use froq\App;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Message
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Message.
+ * @package froq\http
+ * @object  froq\http\Message
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 abstract class Message
 {
@@ -46,7 +46,7 @@ abstract class Message
 
     /**
      * App.
-     * @var Froq\App
+     * @var froq\App
      */
     protected $app;
 
@@ -76,7 +76,7 @@ abstract class Message
 
     /**
      * Constructor.
-     * @param Froq\App $app
+     * @param froq\App $app
      * @param int      $type
      */
     public function __construct(App $app, int $type)
@@ -88,7 +88,7 @@ abstract class Message
 
     /**
      * Get app.
-     * @return Froq\App
+     * @return froq\App
      */
     public final function getApp(): App
     {
@@ -215,7 +215,7 @@ abstract class Message
      * @param  string  $domain
      * @param  bool    $secure
      * @param  bool    $httpOnly
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      * @return self
      */
     public final function setCookie(string $name, ?string $value, int $expire = 0,
@@ -252,7 +252,7 @@ abstract class Message
      * @param  string $name
      * @param  bool   $defer
      * @return self
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      */
     public function removeCookie(string $name, bool $defer = false): self
     {

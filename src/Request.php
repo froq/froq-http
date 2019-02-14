@@ -24,24 +24,24 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http;
+namespace froq\http;
 
-use Froq\App;
-use Froq\Http\Request\{Method, Uri, Client, Params, Files};
-use Froq\Http\Response\Body;
+use froq\App;
+use froq\http\request\{Method, Uri, Client, Params, Files};
+use froq\http\response\Body;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Request.
+ * @package froq\http
+ * @object  froq\http\Request
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Request extends Message
 {
     /**
      * Method.
-     * @var Froq\Http\Request\Method
+     * @var froq\http\request\Method
      */
     private $method;
 
@@ -77,25 +77,25 @@ final class Request extends Message
 
     /**
      * Client.
-     * @var Froq\Http\Request\Client
+     * @var froq\http\request\Client
      */
     private $client;
 
     /**
      * Params.
-     * @var Froq\Http\Request\Params
+     * @var froq\http\request\Params
      */
     private $params;
 
     /**
      * Files.
-     * @var Froq\Http\Request\Files
+     * @var froq\http\request\Files
      */
     private $files;
 
     /**
      * Constructor.
-     * @param Froq\App
+     * @param froq\App
      */
     public function __construct(App $app)
     {
@@ -139,7 +139,7 @@ final class Request extends Message
 
     /**
      * Method.
-     * @return Froq\Http\Request\Method
+     * @return froq\http\request\Method
      */
     public function method(): Method
     {
@@ -148,7 +148,7 @@ final class Request extends Message
 
     /**
      * Uri.
-     * @return Froq\Http\Request\Uri
+     * @return froq\http\request\Uri
      */
     public function uri(): Uri
     {
@@ -193,7 +193,7 @@ final class Request extends Message
 
     /**
      * Client.
-     * @return Froq\Http\Request\Client
+     * @return froq\http\request\Client
      */
     public function client(): Client
     {
@@ -202,7 +202,7 @@ final class Request extends Message
 
     /**
      * Params.
-     * @return Froq\Http\Request\Params
+     * @return froq\http\request\Params
      */
     public function params(): Params
     {
@@ -211,7 +211,7 @@ final class Request extends Message
 
     /**
      * Files.
-     * @return Froq\Http\Request\Files
+     * @return froq\http\request\Files
      */
     public function files(): Files
     {

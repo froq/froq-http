@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\Body
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Body.
+ * @package froq\http\response
+ * @object  froq\http\response\Body
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Body
 {

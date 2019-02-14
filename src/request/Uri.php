@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request;
+namespace froq\http\request;
 
-use Froq\Http\HttpException;
+use froq\http\HttpException;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request\Uri
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Uri.
+ * @package froq\http\request
+ * @object  froq\http\request\Uri
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Uri
 {
@@ -105,7 +105,7 @@ final class Uri
      * @param  string     $method
      * @param  array|null $methodArguments
      * @return int|string|self
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      */
     public function __call(string $method, array $methodArguments = null)
     {

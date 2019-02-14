@@ -24,9 +24,9 @@
  */
 declare(strict_types=1);
 
-use Froq\Http\Request\Uri;
-use Froq\Http\Response\Status;
-use Froq\Http\{Request, Response};
+use froq\http\request\Uri;
+use froq\http\response\Status;
+use froq\http\{Request, Response};
 
 /**
  * Is get.
@@ -114,7 +114,7 @@ function cookie(string $name = null, $value_default = null)
 
 /**
  * Request.
- * @return Froq\Http\Request
+ * @return froq\http\Request
  */
 function request(): Request
 {
@@ -123,7 +123,7 @@ function request(): Request
 
 /**
  * Response.
- * @return Froq\Http\Response
+ * @return froq\http\Response
  */
 function response(): Response
 {
@@ -132,7 +132,7 @@ function response(): Response
 
 /**
  * Uri.
- * @return Froq\Http\Request\Uri
+ * @return froq\http\request\Uri
  */
 function uri(): Uri
 {

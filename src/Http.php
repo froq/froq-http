@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http;
+namespace froq\http;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Http
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Http.
+ * @package froq\http
+ * @object  froq\http\Http
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final /* static */ class Http
 {

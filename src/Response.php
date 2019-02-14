@@ -24,36 +24,36 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http;
+namespace froq\http;
 
-use Froq\App;
-use Froq\Encoding\EncoderException;
-use Froq\Http\Response\{Status, Body, Response as ReturnResponse};
+use froq\App;
+use froq\encoding\{Encoder, EncoderException};
+use froq\http\response\{Status, Body, Response as ReturnResponse};
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Response.
+ * @package froq\http
+ * @object  froq\http\Response
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Response extends Message
 {
     /**
      * Status.
-     * @var Froq\Http\Response\Status
+     * @var froq\http\response\Status
      */
     private $status;
 
     /**
      * Body.
-     * @var Froq\Http\Response\Body
+     * @var froq\http\response\Body
      */
     private $body;
 
     /**
      * Constructor.
-     * @param Froq\App $app
+     * @param froq\App $app
      */
     public function __construct(App $app)
     {
@@ -71,7 +71,7 @@ final class Response extends Message
      * @param  string $method
      * @param  array  $methodArguments
      * @return any
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      */
     public function __call(string $method, array $methodArguments)
     {
@@ -85,7 +85,7 @@ final class Response extends Message
 
     /**
      * Get status.
-     * @return Froq\Http\Response\Status
+     * @return froq\http\response\Status
      */
     public function status(): Status
     {
@@ -128,7 +128,7 @@ final class Response extends Message
      * @param  string  $name
      * @param  ?string $value
      * @return void
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      */
     public function sendHeader(string $name, ?string $value): void
     {
@@ -170,7 +170,7 @@ final class Response extends Message
      * @param  bool    $secure
      * @param  bool    $httpOnly
      * @return void
-     * @throws Froq\Http\HttpException
+     * @throws froq\http\HttpException
      */
     public function sendCookie(string $name, ?string $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
@@ -201,7 +201,7 @@ final class Response extends Message
      * Set body.
      * @param  any $body
      * @return self
-     * @throws Froq\Http\HttpException, Froq\Encoding\EncoderException
+     * @throws froq\http\HttpException, froq\encoding\EncoderException
      */
     public function setBody($body): self
     {
@@ -257,7 +257,7 @@ final class Response extends Message
             // not encoded/converted
             if (!is_string($body)) {
                 throw new HttpException("Body content must be string, number, array or object".
-                    " (or encoded in invoked service method if Froq\Http\Response\ResponseJson".
+                    " (or encoded in invoked service method if froq\\http\\response\\JsonResponse".
                     " not used, or content type set as application/json or text/json),".
                     " '{$bodyType}' given");
             }

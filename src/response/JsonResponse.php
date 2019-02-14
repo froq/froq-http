@@ -24,63 +24,30 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request\Files
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Json response.
+ * @package froq\http\response
+ * @object  froq\http\response\JsonResponse
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
-final class Files
+final class JsonResponse extends Response
 {
     /**
-     * Files.
-     * @var array
-     */
-    private $files = [];
-
-    /**
      * Constructor.
-     * @param array $files
+     * @param  int               $statusCode
+     * @param  array|string|null $contentStack
+     * @param  array|null        $headers
+     * @param  array|null        $cookies
      */
-    public function __construct(array $files)
+    public function __construct(int $statusCode, $contentStack = null,
+        array $headers = null, array $cookies = null)
     {
-        foreach ($files as $file) {
-            if (is_array($file['name'])) {  // multi-files
-                foreach (self::normalizeFilesArray($file) as $file) {
-                    $this->files[] = $file;
-                }
-            } else {  // single file
-                $this->files[] = $file;
-            }
-        }
-    }
-
-    /**
-     * Get files.
-     * @return array
-     */
-    public function getFiles(): array
-    {
-        return $this->files;
-    }
-
-    /**
-     * Normalize files array.
-     * @param  array $files
-     * @return array
-     */
-    public static function normalizeFilesArray(array $files): array
-    {
-        $return = [];
-        foreach ($files as $i => $file) {
-            foreach ($file as $key => $value) {
-                $return[$key][$i] = $value;
-            }
-        }
-
-        return $return;
+        parent::__construct($statusCode,
+            // override
+            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_APPLICATION_JSON),
+                $headers, $cookies);
     }
 }

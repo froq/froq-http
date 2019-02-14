@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\response;
 
-use Froq\Http\HttpException;
+use froq\http\HttpException;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\Response
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Response.
+ * @package froq\http\response
+ * @object  froq\http\response\Response
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 class Response
 {
@@ -153,6 +153,7 @@ class Response
      * @param  any    $contentStack
      * @param  string $contentType
      * @return array
+     * @throws froq\http\HttpException
      */
     protected final function prepareContentStack($contentStack, string $contentType): array
     {

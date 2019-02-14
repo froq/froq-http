@@ -24,74 +24,30 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request;
-
-use Froq\Util\Util;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request\Client
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Plain response.
+ * @package froq\http\response
+ * @object  froq\http\response\PlainResponse
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0
  */
-final class Client
+final class PlainResponse extends Response
 {
     /**
-     * Ip.
-     * @var string
-     */
-    private $ip;
-
-    /**
-     * Locale.
-     * @var string
-     */
-    private $locale;
-
-    /**
-     * Language.
-     * @var string
-     */
-    private $language;
-
-    /**
      * Constructor.
+     * @param  int               $statusCode
+     * @param  array|string|null $contentStack
+     * @param  array|null        $headers
+     * @param  array|null        $cookies
      */
-    public function __construct()
+    public function __construct(int $statusCode, $contentStack = null,
+        array $headers = null, array $cookies = null)
     {
-        $this->ip = Util::getClientIp();
-
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->locale = str_replace('-', '_', substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
-            $this->language = substr($this->locale, 0, 2);
-        }
-    }
-
-    /**
-     * Get ip.
-     * @return ?string
-     */
-    public function getIp(): ?string
-    {
-        return $this->ip;
-    }
-
-    /**
-     * Get locale.
-     * @return ?string
-     */
-    public function getLocale(): ?string
-    {
-        return $this->locale;
-    }
-
-    /**
-     * Get language.
-     * @return ?string
-     */
-    public function getLanguage(): ?string
-    {
-        return $this->language;
+        parent::__construct($statusCode,
+            // override
+            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_PLAIN),
+                $headers, $cookies);
     }
 }

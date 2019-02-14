@@ -24,30 +24,74 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\request;
+
+use froq\util\Util;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\ResponseHtml
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Client.
+ * @package froq\http\request
+ * @object  froq\http\request\Client
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
-final class ResponseHtml extends Response
+final class Client
 {
     /**
-     * Constructor.
-     * @param  int               $statusCode
-     * @param  array|string|null $contentStack
-     * @param  array|null        $headers
-     * @param  array|null        $cookies
+     * Ip.
+     * @var string
      */
-    public function __construct(int $statusCode, $contentStack = null,
-        array $headers = null, array $cookies = null)
+    private $ip;
+
+    /**
+     * Locale.
+     * @var string
+     */
+    private $locale;
+
+    /**
+     * Language.
+     * @var string
+     */
+    private $language;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
     {
-        parent::__construct($statusCode,
-            // override
-            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_HTML),
-                $headers, $cookies);
+        $this->ip = Util::getClientIp();
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $this->locale = str_replace('-', '_', substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
+            $this->language = substr($this->locale, 0, 2);
+        }
+    }
+
+    /**
+     * Get ip.
+     * @return ?string
+     */
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Get locale.
+     * @return ?string
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Get language.
+     * @return ?string
+     */
+    public function getLanguage(): ?string
+    {
+        return $this->language;
     }
 }

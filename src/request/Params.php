@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Request;
+namespace froq\http\request;
 
-use Froq\Util\Arrays;
+use froq\util\Arrays;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Request\Params
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Params.
+ * @package froq\http\request
+ * @object  froq\http\request\Params
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
 final class Params
 {

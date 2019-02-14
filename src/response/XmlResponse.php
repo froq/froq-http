@@ -24,30 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace Froq\Http\Response;
+namespace froq\http\response;
 
 /**
- * @package    Froq
- * @subpackage Froq\Http
- * @object     Froq\Http\Response\ResponseJson
- * @author     Kerem Güneş <k-gun@mail.com>
- * @since      1.0
+ * Xml response.
+ * @package froq\http\response
+ * @object  froq\http\response\XmlResponse
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   1.0
  */
-final class ResponseJson extends Response
+final class XmlResponse extends Response
 {
-    /**
-     * Constructor.
-     * @param  int               $statusCode
-     * @param  array|string|null $contentStack
-     * @param  array|null        $headers
-     * @param  array|null        $cookies
-     */
-    public function __construct(int $statusCode, $contentStack = null,
-        array $headers = null, array $cookies = null)
-    {
-        parent::__construct($statusCode,
-            // override
-            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_APPLICATION_JSON),
-                $headers, $cookies);
-    }
+    // @todo
 }
