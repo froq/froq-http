@@ -360,6 +360,9 @@ final class Request extends Message
             return bin2hex(urldecode($match[0]));
         }, $source);
 
+        // preserve pluses, so parse_str() will replace all with spaces
+        $source = str_replace('+', '%2B', $source);
+
         parse_str($source, $source);
 
         foreach ($source as $key => $value) {
