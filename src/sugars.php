@@ -140,6 +140,34 @@ function uri(): Uri
 }
 
 /**
+ * Request uri.
+ * @alias of uri()
+ */
+function request_uri(): Uri
+{
+    return uri();
+}
+
+/**
+ * Status.
+ * @param int $code
+ * @return void
+ */
+function status(int $code): void
+{
+    app()->response()->setStatus($code);
+}
+
+/**
+ * Response status.
+ * @alias of status()
+ */
+function response_status(int $code): void
+{
+    status($code);
+}
+
+/**
  * Segment.
  * @param  int      $i
  * @param  any|null $value_default
