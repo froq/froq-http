@@ -54,7 +54,7 @@ final class Uri
      * @var array
      */
     private $sourceDataKeys = [
-        'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
+        'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
     ];
 
     /**
