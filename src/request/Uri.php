@@ -206,7 +206,13 @@ final class Uri
                 $this->segmentsRoot = $root;
             }
 
-            $this->segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
+            $segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
+            if ($segments != null) {
+                // push index next
+                foreach ($segments as $i => $segment) {
+                    $this->segments[$i + 1] = $segment;
+                }
+            }
         }
     }
 
