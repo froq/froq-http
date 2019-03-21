@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\App;
+use froq\util\Util;
 use froq\http\request\{Method, Uri, Client, Params, Files};
 use froq\http\response\Body;
 
@@ -325,24 +326,19 @@ final class Request extends Message
     }
 
     /**
-     * Load global var (without corrupting dotted param keys).
-     *
-     * SORRY RASMUS, SORRY ZEEV..
-     * @link https://github.com/php/php-src/blob/master/main/php_variables.c#L99
-     *
+     * Load global var (without changing dotted param keys).
      * @param  string $name
      * @param  string $source
      * @return array
      */
     private function loadGlobalVar(string $name, string $source = ''): array
     {
-        $var = [];
-
         switch ($name) {
             case 'GET':
                 $source = $_SERVER['QUERY_STRING'] ?? '';
                 break;
             case 'POST':
+                // pass
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
@@ -351,34 +347,6 @@ final class Request extends Message
                 break;
         }
 
-        if (empty($source)) {
-            return $var;
-        }
-
-        // keep keys hexed
-        $source = preg_replace_callback('~(^|(?<=&))[^=[&]+~', function($match) {
-            return bin2hex(urldecode($match[0]));
-        }, $source);
-
-        // preserve pluses, so parse_str() will replace all with spaces
-        $source = str_replace('+', '%2B', $source);
-
-        parse_str($source, $source);
-
-        foreach ($source as $key => $value) {
-            $key = hex2bin((string) $key);
-
-            // not array
-            if (strpos($key, '[') === false) {
-                $var[$key] = $value;
-            } else {
-                // handle array
-                parse_str("{$key}={$value}", $value);
-
-                $var = array_merge_recursive($var, $value);
-            }
-        }
-
-        return $var;
+        return Util::parseQueryString($source);
     }
 }
