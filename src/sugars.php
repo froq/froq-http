@@ -87,6 +87,16 @@ function get(string $name = null, $value_default = null)
 }
 
 /**
+ * Get contains.
+ * @param  string $name
+ * @return bool
+ */
+function get_contains(string $name): bool
+{
+    return array_key_exists($name, app()->request()->getParams());
+}
+
+/**
  * Post.
  * @param  string|null $name
  * @param  any|null    $value_default
@@ -100,6 +110,16 @@ function post(string $name = null, $value_default = null)
 }
 
 /**
+ * Post contains.
+ * @param  string $name
+ * @return bool
+ */
+function post_contains(string $name): bool
+{
+    return array_key_exists($name, app()->request()->postParams());
+}
+
+/**
  * Cookie.
  * @param  string|null $name
  * @param  any|null    $value_default
@@ -110,6 +130,16 @@ function cookie(string $name = null, $value_default = null)
     $request = app()->request();
 
     return ($name === null) ? $request->cookieParams() : $request->cookieParam($name, $value_default);
+}
+
+/**
+ * Cookie contains.
+ * @param  string $name
+ * @return bool
+ */
+function cookie_contains(string $name): bool
+{
+    return array_key_exists($name, app()->request()->cookieParams());
 }
 
 /**
