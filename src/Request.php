@@ -333,12 +333,14 @@ final class Request extends Message
      */
     private function loadGlobalVar(string $name, string $source = ''): array
     {
+        $encode = false;
+
         switch ($name) {
             case 'GET':
                 $source = $_SERVER['QUERY_STRING'] ?? '';
+                $encode = true;
                 break;
-            case 'POST':
-                // pass
+            case 'POST': // pass
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
@@ -347,6 +349,6 @@ final class Request extends Message
                 break;
         }
 
-        return Util::parseQueryString($source);
+        return Util::parseQueryString($source, $encode);
     }
 }
