@@ -37,17 +37,16 @@ final class JsonResponse extends Response
 {
     /**
      * Constructor.
-     * @param  int               $statusCode
-     * @param  array|string|null $contentStack
-     * @param  array|null        $headers
-     * @param  array|null        $cookies
+     * @param  int         $statusCode
+     * @param  any|null    $content
+     * @param  string|null $contentCharset
+     * @param  array|null  $headers
+     * @param  array|null  $cookies
      */
-    public function __construct(int $statusCode, $contentStack = null,
+    public function __construct(int $statusCode, $content, string $contentCharset = null,
         array $headers = null, array $cookies = null)
     {
-        parent::__construct($statusCode,
-            // override
-            parent::prepareContentStack($contentStack, Body::CONTENT_TYPE_APPLICATION_JSON),
-                $headers, $cookies);
+        parent::__construct($statusCode, $content, Body::CONTENT_TYPE_JSON, $contentCharset,
+            $headers, $cookies);
     }
 }

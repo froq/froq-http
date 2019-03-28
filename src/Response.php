@@ -153,10 +153,8 @@ final class Response extends Message
      */
     public function sendHeaders(): void
     {
-        if (!empty($this->headers)) {
-            foreach ($this->headers as $name => $value) {
-                $this->sendHeader($name, $value);
-            }
+        foreach ((array) $this->headers as $name => $value) {
+            $this->sendHeader($name, $value);
         }
     }
 
@@ -189,11 +187,9 @@ final class Response extends Message
      */
     public function sendCookies(): void
     {
-        if (!empty($this->cookies)) {
-            foreach ($this->cookies as $cookie) {
-                $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
-                    $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
-            }
+        foreach ((array) $this->cookies as $cookie) {
+            $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
+                $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
         }
     }
 
@@ -232,14 +228,11 @@ final class Response extends Message
             $bodyType = gettype($body);
             if ($bodyType != 'string') {
                 switch ($bodyType) {
-                    case 'array':
-                    case 'object':
+                    case 'array': case 'object':
                         $jsonOptions = $this->app->configValue('response.json');
-
-                        if (!empty($jsonOptions) // could be emptied by developer to disable json
+                        if ($jsonOptions != null // could be emptied by developer to disable json
                             && ($bodyContentType = $this->body->getContentType())
-                            && ($bodyContentType == Body::CONTENT_TYPE_APPLICATION_JSON ||
-                                $bodyContentType == Body::CONTENT_TYPE_TEXT_JSON)
+                            && (strpos($bodyContentType, '/json') || strpos($bodyContentType, '+json'))
                         ) {
                             [$body, $error] = Encoder::jsonEncode($body, $jsonOptions);
                             if ($error) {
@@ -247,8 +240,7 @@ final class Response extends Message
                             }
                         }
                         break;
-                    case 'integer':
-                    case 'double':
+                    case 'integer': case 'double':
                         $body = (string) $body;
                         break;
                 }
@@ -266,7 +258,7 @@ final class Response extends Message
             $gzipOptions = $this->app->configValue('response.gzip');
             $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
-            $canGzip = !empty($gzipOptions) // could be emptied by developer to disable gzip
+            $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
                 && strpos($acceptEncoding, 'gzip') !== false
                 && strlen($body) >= intval($gzipOptions['minlen'] ?? 0);
 

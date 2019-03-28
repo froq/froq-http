@@ -42,10 +42,10 @@ final class Body
     public const CONTENT_TYPE_NONE               = 'none',
                  CONTENT_TYPE_HTML               = 'text/html',
                  CONTENT_TYPE_PLAIN              = 'text/plain',
-                 CONTENT_TYPE_TEXT_XML           = 'text/xml',
-                 CONTENT_TYPE_APPLICATION_XML    = 'application/xml',
-                 CONTENT_TYPE_TEXT_JSON          = 'text/json',
-                 CONTENT_TYPE_APPLICATION_JSON   = 'application/json';
+                 CONTENT_TYPE_XML                = 'application/xml',
+                 CONTENT_TYPE_XML_TEXT           = 'text/xml',
+                 CONTENT_TYPE_JSON               = 'application/json',
+                 CONTENT_TYPE_JSON_TEXT          = 'text/json';
 
     /**
      * Content charsets.
@@ -84,12 +84,11 @@ final class Body
      * @param string|null $contentType
      * @param string|null $contentCharset
      */
-    public function __construct($content = null, string $contentType = null,
-        string $contentCharset = null)
+    public function __construct($content = null, string $contentType = null, string $contentCharset = null)
     {
         $this->content = $content;
-        $this->contentType = $contentType ?? self::CONTENT_TYPE_HTML;
-        $this->contentCharset = $contentCharset ?? self::CONTENT_CHARSET_UTF_8;
+        $this->contentType = $contentType ?: self::CONTENT_TYPE_HTML; // @default
+        $this->contentCharset = $contentCharset ?: self::CONTENT_CHARSET_UTF_8; // @default
         // auto-set
         if (is_string($content)) {
             $this->contentLength = strlen($content);

@@ -75,20 +75,21 @@ class Response
 
     /**
      * Constructor.
-     * @param  int        $statusCode
-     * @param  array|null $contentStack
-     * @param  array|null $headers
-     * @param  array|null $cookies
+     * @param  int         $statusCode
+     * @param  any|null    $content
+     * @param  string|null $contentType
+     * @param  string|null $contentCharset
+     * @param  array|null  $headers
+     * @param  array|null  $cookies
      */
-    public function __construct(int $statusCode, array $contentStack = null,
+    public function __construct(int $statusCode, $content, string $contentType = null, string $contentCharset = null,
         array $headers = null, array $cookies = null)
     {
         $this->statusCode = $statusCode;
 
-        @ [$content, $contentType, $contentCharset] = (array) $contentStack;
         $this->content = $content;
-        $this->contentType = $contentType ?? Body::CONTENT_TYPE_HTML;
-        $this->contentCharset = $contentCharset ?? Body::CONTENT_CHARSET_UTF_8;
+        $this->contentType = $contentType ?: Body::CONTENT_TYPE_HTML; // @default
+        $this->contentCharset = $contentCharset ?: Body::CONTENT_CHARSET_UTF_8; // @default
 
         $this->headers = (array) $headers;
         $this->cookies = (array) $cookies;
@@ -146,47 +147,5 @@ class Response
     public final function getCookies(): array
     {
         return $this->cookies;
-    }
-
-    /**
-     * Prepare content array.
-     * @param  any    $contentStack
-     * @param  string $contentType
-     * @return array
-     * @throws froq\http\HttpException
-     */
-    protected final function prepareContentStack($contentStack, string $contentType): array
-    {
-        // for proper extract
-        if (is_assoc_array($contentStack)) {
-            $contentStack = [$contentStack];
-        }
-
-        if (is_array($contentStack)) {
-            $content = $contentStack[0] ?? null;
-            $contentCharset = $contentStack[1] ?? null;
-        } else {
-            $content = $contentStack;
-            $contentCharset = null;
-        }
-
-        $contentTypeCheck = gettype($content);
-        switch ($contentTypeCheck) {
-            case 'NULL':
-                return [$content, $contentType, $contentCharset];
-            // array/object types
-            case 'array': case 'object':
-                // encodable?
-                if (!strpos($contentType, '/json') && !strpos($contentType, '/xml')) {
-                    throw new HttpException("Array/object contents encodable for only JSON and XML".
-                        " responses ('{$contentTypeCheck}' given)");
-                }
-                return [$content, $contentType, $contentCharset];
-            // scalar types
-            case 'string': case 'integer': case 'double': case 'boolean':
-                return [(string) $content, $contentType, $contentCharset];
-        }
-
-        throw new HttpException("Unsupported content stack type '{$contentTypeCheck}'");
     }
 }
