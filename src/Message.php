@@ -146,7 +146,18 @@ abstract class Message
      */
     public final function getHeader(string $name, ?string $valueDefault = null): ?string
     {
-        return $this->headers[$name] ?? $this->headers[strtolower($name)] ?? $valueDefault;
+        if (isset($this->headers[$name])) {
+            return $this->headers[$name];
+        }
+
+        $_name = strtolower($name);
+        foreach ($this->headers as $name => $value) {
+            if ($_name === strtolower($name)) {
+                return $value;
+            }
+        }
+
+        return $valueDefault;
     }
 
     /**
