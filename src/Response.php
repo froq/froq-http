@@ -67,23 +67,6 @@ final class Response extends Message
     }
 
     /**
-     * Call magic (proxify body methods).
-     * @param  string $method
-     * @param  array  $methodArguments
-     * @return any
-     * @throws froq\http\HttpException
-     */
-    public function __call(string $method, array $methodArguments)
-    {
-        if (method_exists($this->body, $method)) {
-            // proxify body methods
-            return call_user_func_array([$this->body, $method], $methodArguments);
-        }
-
-        throw new HttpException("Call to undefined method '{$method}'");
-    }
-
-    /**
      * Set/Get status.
      * @param  ...$arguments
      * @return self|froq\http\response\Status
