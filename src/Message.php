@@ -146,7 +146,7 @@ abstract class Message
      */
     public final function getHeader(string $name, ?string $valueDefault = null): ?string
     {
-        return $this->headers[$name] ?? $valueDefault;
+        return $this->headers[$name] ?? $this->headers[strtolower($name)] ?? $valueDefault;
     }
 
     /**
@@ -192,6 +192,24 @@ abstract class Message
     public final function getHeaders(): array
     {
         return $this->headers;
+    }
+
+    /**
+     * Header.
+     * @alias of self.getHeader(),self.setHeader()
+     */
+    public final function header(string $name, string $value = null)
+    {
+        return ($value === null) ? $this->getHeader($name) : $this->setHeader($name, $value);
+    }
+
+    /**
+     * Headers.
+     * @alias of self.getHeaders(),self.setHeaders()
+     */
+    public final function headers(array $headers = null): array
+    {
+        return ($headers == null) ? $this->getHeaders() : $this->setHeaders($headers);
     }
 
     /**
@@ -291,6 +309,24 @@ abstract class Message
     public final function getCookies(): array
     {
         return $this->cookies;
+    }
+
+    /**
+     * Cookie.
+     * @alias of self.getCookie(),self.setCookie()
+     */
+    public final function cookie(string $name, string $value = null)
+    {
+        return ($value === null) ? $this->getCookie($name) : $this->setCookie($name, $value);
+    }
+
+    /**
+     * Cookies.
+     * @alias of self.getCookies(),self.setCookies()
+     */
+    public final function cookies(array $cookies = null): array
+    {
+        return ($cookies == null) ? $this->getCookies() : $this->getCookies($cookies);
     }
 
     /**

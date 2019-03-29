@@ -84,12 +84,23 @@ final class Response extends Message
     }
 
     /**
-     * Get status.
-     * @return froq\http\response\Status
+     * Set/Get status.
+     * @param  ...$arguments
+     * @return self|froq\http\response\Status
      */
-    public function status(): Status
+    public function status(...$arguments)
     {
-        return $this->status;
+        return $arguments ? $this->setStatus(...$arguments) : $this->status;
+    }
+
+    /**
+     * Set/Get body.
+     * @param  ...$arguments
+     * @return self|froq\http\response\Body
+     */
+    public function body(...$arguments)
+    {
+        return $arguments ? $this->setBody(...$arguments) : $this->body;
     }
 
     /**
