@@ -172,7 +172,7 @@ abstract class Message
 
         // remove instantly (available for Response only)
         if (!$defer) {
-            if ($this->type != self::TYPE_RESPONSE) {
+            if ($this->type == self::TYPE_REQUEST) {
                 throw new HttpException('You cannot remove a request header');
             }
 
@@ -250,17 +250,22 @@ abstract class Message
     public final function setCookie(string $name, ?string $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): self
     {
-        // check name
-        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new HttpException("Invalid cookie name '{$name}' given");
-        }
+        // do simple for request cookies
+        if ($this->type == self::TYPE_REQUEST) {
+            $this->cookies[$name] = $value;
+        } else {
+            // check name
+            if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
+                throw new HttpException("Invalid cookie name '{$name}' given");
+            }
 
-        $this->cookies[$name] = [
-            'name'      => $name,     'value'  => $value,
-            'expire'    => $expire,   'path'   => $path,
-            'domain'    => $domain,   'secure' => $secure,
-            'httpOnly'  => $httpOnly
-        ];
+            $this->cookies[$name] = [
+                'name'      => $name,     'value'  => $value,
+                'expire'    => $expire,   'path'   => $path,
+                'domain'    => $domain,   'secure' => $secure,
+                'httpOnly'  => $httpOnly
+            ];
+        }
 
         return $this;
     }
@@ -289,7 +294,7 @@ abstract class Message
 
         // remove instantly (available for Response only)
         if (!$defer) {
-            if ($this->type != self::TYPE_RESPONSE) {
+            if ($this->type == self::TYPE_REQUEST) {
                 throw new HttpException('You cannot remove a request cookie');
             }
 
