@@ -60,7 +60,7 @@ final class Response extends Message
         parent::__construct($app, parent::TYPE_RESPONSE);
 
         $this->status = new Status();
-        $this->body = new Body();
+        $this->body = new Body(null, '', '');
 
         $this->setHeaders($this->app->configValue('headers', []));
         $this->setCookies($this->app->configValue('cookies', []));
@@ -254,7 +254,7 @@ final class Response extends Message
 
             $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
                 && strpos($acceptEncoding, 'gzip') !== false
-                && strlen($body) >= intval($gzipOptions['minlen'] ?? 0);
+                && strlen($body) >= intval($gzipOptions['minlen'] ?? 1);
 
             if ($canGzip) {
                 [$body, $error] = Encoder::gzipEncode($body, $gzipOptions);

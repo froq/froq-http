@@ -88,8 +88,8 @@ class Response
         $this->statusCode = $statusCode;
 
         $this->content = $content;
-        $this->contentType = $contentType ?: Body::CONTENT_TYPE_HTML; // @default
-        $this->contentCharset = $contentCharset ?: Body::CONTENT_CHARSET_UTF_8; // @default
+        $this->contentType = $contentType ?? Body::CONTENT_TYPE_HTML; // @default
+        $this->contentCharset = $contentCharset ?? Body::CONTENT_CHARSET_UTF_8; // @default
 
         $this->headers = (array) $headers;
         $this->cookies = (array) $cookies;
