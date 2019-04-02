@@ -60,7 +60,7 @@ final class Response extends Message
         parent::__construct($app, parent::TYPE_RESPONSE);
 
         $this->status = new Status();
-        $this->body = new Body(null, '', '');
+        $this->body = new Body();
 
         $this->setHeaders($this->app->configValue('headers', []));
         $this->setCookies($this->app->configValue('cookies', []));
