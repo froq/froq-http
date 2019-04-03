@@ -218,6 +218,26 @@ function segments(): array
 }
 
 /**
+ * Segment param.
+ * @param  int $i
+ * @param  any $value_default
+ * @return any|null
+ */
+function segment_param(int $i, $value_default = null)
+{
+    return segment_params()[$i - 1] ?? $value_default;
+}
+
+/**
+ * Segment params.
+ * @return array
+ */
+function segment_params()
+{
+    return app()->request()->uri()->segmentArguments(app()->service()->isSite() ? 2 : 1);
+}
+
+/**
  * Redirect.
  * @param  ... $arguments
  * @return void
