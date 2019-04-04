@@ -190,33 +190,36 @@ final class Response extends Message
     /**
      * Set body.
      * @param  any $body
+     * @param  string|null $contentType
+     * @param  string|null $contentCharset
      * @return self
      * @throws froq\http\HttpException, froq\encoding\EncoderException
      */
-    public function setBody($body): self
+    public function setBody($body, string $contentType = null, string $contentCharset = null): self
     {
-        if ($body instanceof ReturnResponse) {
-            $this->setStatus($body->getStatusCode())
-                 ->setHeaders($body->getHeaders())
-                 ->setCookies($body->getCookies());
+        if ($body != null) {
+            if ($body instanceof ReturnResponse) {
+                $this->setStatus($body->getStatusCode())
+                     ->setHeaders($body->getHeaders())
+                     ->setCookies($body->getCookies());
 
-            $body = new Body(
-                $body->getContent(),
-                $body->getContentType() ?? $this->body->getContentType(),
-                $body->getContentCharset() ?? $this->body->getContentCharset()
-            );
+                $body = new Body(
+                    $body->getContent(),
+                    $body->getContentType() ?? $this->body->getContentType(),
+                    $body->getContentCharset() ?? $this->body->getContentCharset()
+                );
+            }
+
+            // no elseif, could be a Body already
+            if ($body instanceof Body) {
+                $body = $this->body
+                    ->setContent($body->getContent())
+                    ->setContentType($body->getContentType())
+                    ->setContentCharset($body->getContentCharset())
+                    ->getContent();
+            }
         }
 
-        // no elseif, could be a Body already
-        if ($body instanceof Body) {
-            $body = $this->body
-                ->setContent($body->getContent())
-                ->setContentType($body->getContentType())
-                ->setContentCharset($body->getContentCharset())
-                ->getContent();
-        }
-
-        // encode/set body and body length
         if ($body !== null) {
             // json stuff (array/object returns could be encoded if content type is json)
             $bodyType = gettype($body);
@@ -249,30 +252,36 @@ final class Response extends Message
             }
 
             // gzip stuff
-            $gzipOptions = $this->app->configValue('response.gzip');
-            $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
+            $bodyLength = strlen($body);
+            if ($bodyLength > 0) { // prevent gzip corruption for 0 byte data
+                $gzipOptions = $this->app->configValue('response.gzip');
+                $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
-            $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
-                && strpos($acceptEncoding, 'gzip') !== false
-                && strlen($body) >= intval($gzipOptions['minlen'] ?? 1);
+                $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
+                    && strpos($acceptEncoding, 'gzip') !== false
+                    && $bodyLength >= ($gzipOptions['minlen'] ?? 1);
 
-            if ($canGzip) {
-                [$body, $error] = Encoder::gzipEncode($body, $gzipOptions);
-                if ($error) {
-                    throw new EncoderException($error);
+                if ($canGzip) {
+                    [$body, $error] = Encoder::gzipEncode($body, $gzipOptions);
+                    if ($error) {
+                        throw new EncoderException($error);
+                    }
+
+                    // cancel php's compression & add required headers
+                    if (!headers_sent()) {
+                        ini_set('zlib.output_compression', 'Off');
+                    }
+                    $this->setHeader('Content-Encoding', 'gzip');
+                    $this->setHeader('Vary', 'Accept-Encoding');
                 }
-
-                // cancel php's compression & add required headers
-                if (!headers_sent()) {
-                    ini_set('zlib.output_compression', 'Off');
-                }
-                $this->setHeader('Content-Encoding', 'gzip');
-                $this->setHeader('Vary', 'Accept-Encoding');
             }
 
-            // finally..
-            $this->body->setContent($body);
+            $this->body->setContent($body); // finally..
         }
+
+        // '' accepted for 'none' responses
+        if ($contentType !== null) $this->body->setContentType($contentType);
+        if ($contentCharset !== null) $this->body->setContentCharset($contentCharset);
 
         return $this;
     }

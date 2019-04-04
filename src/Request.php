@@ -111,8 +111,10 @@ final class Request extends Message
         // fix dotted GET keys
         $_GET = $this->loadGlobalVar('GET');
 
-        $headers = self::loadHttpHeaders();
-        $this->setHeaders($headers);
+        $headers = $this->loadHttpHeaders();
+        foreach ($headers as $name => $value) {
+            $this->headers[$name] = $value;
+        }
 
         // set/parse body for override methods
         $body = (string) file_get_contents('php://input');
@@ -127,8 +129,11 @@ final class Request extends Message
         }
 
         // fix dotted COOKIE keys
-        $_COOKIE = $this->loadGlobalVar('COOKIE');
-        $this->setCookies($_COOKIE);
+        $cookies = $this->loadGlobalVar('COOKIE');
+        foreach ($cookies as $name => $value) {
+            $this->cookies[$name] = $value;
+        }
+        $_COOKIE = $cookies;
 
         $this->time = (int) $_SERVER['REQUEST_TIME'];
         $this->timeFloat = (float) $_SERVER['REQUEST_TIME_FLOAT'];

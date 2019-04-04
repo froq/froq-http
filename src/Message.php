@@ -133,6 +133,10 @@ abstract class Message
      */
     public final function setHeader(string $name, ?string $value): self
     {
+        if ($this->type == self::TYPE_REQUEST) {
+            throw new HttpException('You cannot modify request headers');
+        }
+
         $this->headers[$name] = $value;
 
         return $this;
@@ -140,8 +144,8 @@ abstract class Message
 
     /**
      * Get header.
-     * @param  string $name
-     * @param  any    $valueDefault
+     * @param  string  $name
+     * @param  ?string $valueDefault
      * @return ?string
      */
     public final function getHeader(string $name, ?string $valueDefault = null): ?string
@@ -152,7 +156,7 @@ abstract class Message
 
         $_name = strtolower($name);
         foreach ($this->headers as $name => $value) {
-            if ($_name === strtolower($name)) {
+            if ($_name == strtolower($name)) {
                 return $value;
             }
         }
@@ -168,14 +172,12 @@ abstract class Message
      */
     public final function removeHeader(string $name, bool $defer = true): self
     {
+        if ($this->type == self::TYPE_REQUEST) {
+            throw new HttpException('You cannot modify request headers');
+        }
+
         unset($this->headers[$name]);
-
-        // remove instantly (available for Response only)
-        if (!$defer) {
-            if ($this->type == self::TYPE_REQUEST) {
-                throw new HttpException('You cannot remove a request header');
-            }
-
+        if (!$defer) { // remove instantly
             header_remove($name);
         }
 
@@ -250,33 +252,32 @@ abstract class Message
     public final function setCookie(string $name, ?string $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): self
     {
-        // do simple for request cookies
         if ($this->type == self::TYPE_REQUEST) {
-            $this->cookies[$name] = $value;
-        } else {
-            // check name
-            if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-                throw new HttpException("Invalid cookie name '{$name}' given");
-            }
-
-            $this->cookies[$name] = [
-                'name'      => $name,     'value'  => $value,
-                'expire'    => $expire,   'path'   => $path,
-                'domain'    => $domain,   'secure' => $secure,
-                'httpOnly'  => $httpOnly
-            ];
+            throw new HttpException('You cannot modify request cookies');
         }
+
+        // check name
+        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
+            throw new HttpException("Invalid cookie name '{$name}' given");
+        }
+
+        $this->cookies[$name] = [
+            'name'      => $name,     'value'  => $value,
+            'expire'    => $expire,   'path'   => $path,
+            'domain'    => $domain,   'secure' => $secure,
+            'httpOnly'  => $httpOnly
+        ];
 
         return $this;
     }
 
     /**
      * Get cookie.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string  $name
+     * @param  ?string $valueDefault
+     * @return ?string
      */
-    public final function getCookie(string $name, $valueDefault = null)
+    public final function getCookie(string $name, ?string $valueDefault = null): ?string
     {
         return $this->cookies[$name] ?? $valueDefault;
     }
@@ -290,14 +291,12 @@ abstract class Message
      */
     public function removeCookie(string $name, bool $defer = false): self
     {
+        if ($this->type == self::TYPE_REQUEST) {
+            throw new HttpException('You cannot modify request cookies');
+        }
+
         unset($this->cookies[$name]);
-
-        // remove instantly (available for Response only)
-        if (!$defer) {
-            if ($this->type == self::TYPE_REQUEST) {
-                throw new HttpException('You cannot remove a request cookie');
-            }
-
+        if (!$defer) { // remove instantly
             $this->sendCookie($name, null, 0);
         }
 

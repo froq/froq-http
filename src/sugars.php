@@ -29,6 +29,89 @@ use froq\http\response\Status;
 use froq\http\{Request, Response};
 
 /**
+ * Request.
+ * @return froq\http\Request
+ */
+function request(): Request
+{
+    return app()->request();
+}
+
+/**
+ * Request uri.
+ * @return froq\http\request\Uri
+ */
+function request_uri(): Uri
+{
+    return app()->request()->uri();
+}
+
+/**
+ * Request header.
+ * @param  string  $name
+ * @param  ?string $value_default
+ * @return ?string
+ */
+function request_header(string $name, ?string $value_default = null): ?string
+{
+    return app()->request()->getHeader($name, $value_default);
+}
+
+/**
+ * Response.
+ * @return froq\http\Response
+ */
+function response(): Response
+{
+    return app()->response();
+}
+
+/**
+ * Response status.
+ * @param  int $code
+ * @return void
+ */
+function response_status(int $code): void
+{
+    app()->response()->setStatus($code);
+}
+
+/**
+ * Response header.
+ * @param  string $name
+ * @param  string $value
+ * @return void
+ */
+function response_header(string $name, ?string $value): void
+{
+    app()->response()->setHeader($name, $value);
+}
+
+/**
+ * Response cookie.
+ * @param  string $name
+ * @param  string $value
+ * @return void
+ */
+function response_cookie(string $name, ?string $value, int $expire = 0,
+        string $path = '/', string $domain = '', bool $secure = false, bool $http_only = false): void
+{
+    app()->response()->setCookie($name, $value, $expire, $path, $domain, $secure, $http_only);
+}
+
+/**
+ * Response body.
+ * @param  any         $body
+ * @param  string|null $content_type
+ * @param  string|null $content_charset
+ * @return void
+ */
+function response_body($body, string $content_type = null, string $content_charset = null): void
+{
+    app()->response()->setBody($body, $content_type, $content_charset);
+}
+
+/**
  * Is get.
  * @return bool
  */
@@ -87,11 +170,11 @@ function get(string $name = null, $value_default = null)
 }
 
 /**
- * Get contains.
+ * Get has.
  * @param  string $name
  * @return bool
  */
-function get_contains(string $name): bool
+function get_has(string $name): bool
 {
     return array_key_exists($name, app()->request()->getParams());
 }
@@ -110,11 +193,11 @@ function post(string $name = null, $value_default = null)
 }
 
 /**
- * Post contains.
+ * Post has.
  * @param  string $name
  * @return bool
  */
-function post_contains(string $name): bool
+function post_has(string $name): bool
 {
     return array_key_exists($name, app()->request()->postParams());
 }
@@ -133,36 +216,18 @@ function cookie(string $name = null, $value_default = null)
 }
 
 /**
- * Cookie contains.
+ * Cookie has.
  * @param  string $name
  * @return bool
  */
-function cookie_contains(string $name): bool
+function cookie_has(string $name): bool
 {
     return array_key_exists($name, app()->request()->cookieParams());
 }
 
 /**
- * Request.
- * @return froq\http\Request
- */
-function request(): Request
-{
-    return app()->request();
-}
-
-/**
- * Response.
- * @return froq\http\Response
- */
-function response(): Response
-{
-    return app()->response();
-}
-
-/**
  * Uri.
- * @return froq\http\request\Uri
+ * @alias of request_uri()
  */
 function uri(): Uri
 {
@@ -170,31 +235,12 @@ function uri(): Uri
 }
 
 /**
- * Request uri.
- * @alias of uri()
- */
-function request_uri(): Uri
-{
-    return uri();
-}
-
-/**
  * Status.
- * @param int $code
- * @return void
+ * @alias of response_status()
  */
 function status(int $code): void
 {
-    app()->response()->setStatus($code);
-}
-
-/**
- * Response status.
- * @alias of status()
- */
-function response_status(int $code): void
-{
-    status($code);
+    response_status($code);
 }
 
 /**
