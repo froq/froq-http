@@ -240,7 +240,7 @@ function uri(): Uri
  */
 function status(int $code): void
 {
-    response_status($code);
+    app()->response()->setStatus($code);
 }
 
 /**
