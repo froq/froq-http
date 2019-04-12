@@ -327,15 +327,13 @@ final class Response extends Message
             $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
         }
 
-        $contentType = $this->body->getContentType();
-        $contentCharset = $this->body->getContentCharset();
-        $contentLength = $this->body->getContentLength();
+        [$contentType, $contentCharset, $contentLength] = $this->body->toArray();
 
-        // content type/charset/length
+        // content type/charset?/length
         if ($this->body->isImage()) {
             $this->sendHeader('Content-Type', $contentType);
         } elseif ($contentType == '') {
-            $this->sendHeader('Content-Type', 'none');
+            $this->sendHeader('Content-Type', 'n/a');
         } elseif ($contentCharset == '' || in_array($contentType, ['n/a', 'none'])) {
             $this->sendHeader('Content-Type', $contentType);
         } else {

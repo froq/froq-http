@@ -48,7 +48,10 @@ final class Body
                  CONTENT_TYPE_XML                = 'application/xml',
                  CONTENT_TYPE_XML_TEXT           = 'text/xml',
                  CONTENT_TYPE_JSON               = 'application/json',
-                 CONTENT_TYPE_JSON_TEXT          = 'text/json';
+                 CONTENT_TYPE_JSON_TEXT          = 'text/json',
+                 CONTENT_TYPE_IMAGE_JPEG         = 'image/jpeg',
+                 CONTENT_TYPE_IMAGE_PNG          = 'image/png',
+                 CONTENT_TYPE_IMAGE_GIF          = 'image/gif';
 
     /**
      * Content charsets.
@@ -99,14 +102,17 @@ final class Body
         } elseif ($this->isImage()) {
             ob_start();
             switch ($contentType) {
-                case 'image/png':
-                    imagepng($content) && $this->setContentLength(ob_get_length());
+                case self::CONTENT_TYPE_IMAGE_JPEG:
+                    imagejpeg($content)
+                        && $this->setContentLength(ob_get_length());
                     break;
-                case 'image/gif':
-                    imagegif($content) && $this->setContentLength(ob_get_length());
+                case self::CONTENT_TYPE_IMAGE_PNG:
+                    imagepng($content)
+                        && $this->setContentLength(ob_get_length());
                     break;
-                case 'image/jpeg':
-                    imagejpeg($content) && $this->setContentLength(ob_get_length());
+                case self::CONTENT_TYPE_IMAGE_GIF:
+                    imagegif($content)
+                        && $this->setContentLength(ob_get_length());
                     break;
                 default:
                     throw new HttpException("Unimplemented content type '{$contentType}'");
@@ -219,19 +225,31 @@ final class Body
     /**
      * Is image.
      * @return bool
+     * @since  3.9
      */
     public function isImage(): bool
     {
-        return strpos($this->contentType, 'image/') === 0;
+        return is_resource($this->content) && strpos($this->contentType, 'image/') === 0;
     }
 
     /**
      * Is string.
      * @return bool
+     * @since  3.9
      */
     public function isString(): bool
     {
         return is_string($this->content) && !$this->isImage();
+    }
+
+    /**
+     * To array.
+     * @return array
+     * @since  3.10
+     */
+    public function toArray(): array
+    {
+        return [$this->contentType, $this->contentCharset, $this->contentLength];
     }
 
     /**
@@ -247,14 +265,17 @@ final class Body
             return $content;
         } elseif ($this->isImage()) {
             switch ($contentType) {
-                case 'image/png':
-                    imagepng($content) && imagedestroy($content);
+                case self::CONTENT_TYPE_IMAGE_JPEG:
+                    imagejpeg($content)
+                        && imagedestroy($content);
                     break;
-                case 'image/gif':
-                    imagegif($content) && imagedestroy($content);
+                case self::CONTENT_TYPE_IMAGE_PNG:
+                    imagepng($content)
+                        && imagedestroy($content);
                     break;
-                case 'image/jpeg':
-                    imagejpeg($content) && imagedestroy($content);
+                case self::CONTENT_TYPE_IMAGE_GIF:
+                    imagegif($content)
+                        && imagedestroy($content);
                     break;
                 default:
                     throw new HttpException("Unimplemented content type '{$contentType}'");
