@@ -208,6 +208,13 @@ final class Response extends Message
                     $body->getContentType() ?? $this->body->getContentType(),
                     $body->getContentCharset() ?? $this->body->getContentCharset()
                 );
+
+                // override, no need to all stuff below
+                if ($body->isImage()) {
+                    $this->body = $body;
+
+                    return $this;
+                }
             }
 
             // no elseif, could be a Body already
@@ -276,12 +283,18 @@ final class Response extends Message
                 }
             }
 
-            $this->body->setContent($body); // finally..
+            // finally..
+            $this->body->setContent($body)
+                       ->setContentLength(strlen($body));
         }
 
         // '' accepted for 'none' responses
-        if ($contentType !== null) $this->body->setContentType($contentType);
-        if ($contentCharset !== null) $this->body->setContentCharset($contentCharset);
+        if ($contentType !== null) {
+            $this->body->setContentType($contentType);
+        }
+        if ($contentCharset !== null) {
+            $this->body->setContentCharset($contentCharset);
+        }
 
         return $this;
     }
@@ -308,25 +321,27 @@ final class Response extends Message
             header(sprintf('%s %s', $this->httpVersion, $this->status->getCode()));
         }
 
+        // load time
+        $exposeAppLoadTime = $this->app->configValue('exposeAppLoadTime');
+        if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
+            $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
+        }
+
         $contentType = $this->body->getContentType();
         $contentCharset = $this->body->getContentCharset();
         $contentLength = $this->body->getContentLength();
 
         // content type/charset/length
-        if ($contentType == '') {
-            $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NONE);
-        } elseif ($contentCharset == '' || strtolower($contentType) == Body::CONTENT_TYPE_NONE) {
+        if ($this->body->isImage()) {
+            $this->sendHeader('Content-Type', $contentType);
+        } elseif ($contentType == '') {
+            $this->sendHeader('Content-Type', 'none');
+        } elseif ($contentCharset == '' || in_array($contentType, ['n/a', 'none'])) {
             $this->sendHeader('Content-Type', $contentType);
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
         }
         $this->sendHeader('Content-Length', (string) $contentLength);
-
-        // real load time
-        $exposeAppLoadTime = $this->app->configValue('exposeAppLoadTime');
-        if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
-            $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
-        }
 
         // print it baby!
         print $this->body->toString();

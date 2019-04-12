@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
+use froq\http\HttpException;
+
 /**
  * Body.
  * @package froq\http\response
@@ -39,7 +41,8 @@ final class Body
     * Content types.
     * @const string
     */
-    public const CONTENT_TYPE_NONE               = 'none',
+    public const CONTENT_TYPE_NA                 = 'n/a',
+                 CONTENT_TYPE_NONE               = 'none',
                  CONTENT_TYPE_HTML               = 'text/html',
                  CONTENT_TYPE_PLAIN              = 'text/plain',
                  CONTENT_TYPE_XML                = 'application/xml',
@@ -89,9 +92,26 @@ final class Body
         $this->content = $content;
         $this->contentType = $contentType ?? self::CONTENT_TYPE_HTML; // @default
         $this->contentCharset = $contentCharset ?? self::CONTENT_CHARSET_UTF_8; // @default
-        // auto-set
-        if (is_string($content)) {
-            $this->contentLength = strlen($content);
+
+        // auto-set for content length
+        if ($this->isString()) {
+            $this->setContentLength(strlen($content));
+        } elseif ($this->isImage()) {
+            ob_start();
+            switch ($contentType) {
+                case 'image/png':
+                    imagepng($content) && $this->setContentLength(ob_get_length());
+                    break;
+                case 'image/gif':
+                    imagegif($content) && $this->setContentLength(ob_get_length());
+                    break;
+                case 'image/jpeg':
+                    imagejpeg($content) && $this->setContentLength(ob_get_length());
+                    break;
+                default:
+                    throw new HttpException("Unimplemented content type '{$contentType}'");
+            }
+            ob_end_clean();
         }
     }
 
@@ -127,12 +147,17 @@ final class Body
 
     /**
      * Set content type.
-     * @param  string $contentType
+     * @param  string      $contentType
+     * @param  string|null $contentCharset
      * @return self
      */
-    public function setContentType(string $contentType): self
+    public function setContentType(string $contentType, string $contentCharset = null): self
     {
         $this->contentType = $contentType;
+
+        if ($contentCharset !== null) {
+            $this->setContentCharset($contentCharset);
+        }
 
         return $this;
     }
@@ -169,10 +194,10 @@ final class Body
 
     /**
      * Set content length.
-     * @param  ?int $contentLength
+     * @param  int $contentLength
      * @return self
      */
-    public function setContentLength(?int $contentLength): self
+    public function setContentLength(int $contentLength): self
     {
         $this->contentLength = $contentLength;
 
@@ -181,11 +206,32 @@ final class Body
 
     /**
      * Get content length.
-     * @return ?int
+     * @return int
      */
-    public function getContentLength(): ?int
+    public function getContentLength(): int
     {
         return $this->contentLength;
+    }
+
+    // @wait
+    // public function isFile(): bool {}
+
+    /**
+     * Is image.
+     * @return bool
+     */
+    public function isImage(): bool
+    {
+        return strpos($this->contentType, 'image/') === 0;
+    }
+
+    /**
+     * Is string.
+     * @return bool
+     */
+    public function isString(): bool
+    {
+        return is_string($this->content) && !$this->isImage();
     }
 
     /**
@@ -194,6 +240,26 @@ final class Body
      */
     public function toString(): string
     {
-        return (string) $this->content;
+        $content = $this->content;
+        $contentType = $this->contentType;
+
+        if ($this->isString()) {
+            return $content;
+        } elseif ($this->isImage()) {
+            switch ($contentType) {
+                case 'image/png':
+                    imagepng($content) && imagedestroy($content);
+                    break;
+                case 'image/gif':
+                    imagegif($content) && imagedestroy($content);
+                    break;
+                case 'image/jpeg':
+                    imagejpeg($content) && imagedestroy($content);
+                    break;
+                default:
+                    throw new HttpException("Unimplemented content type '{$contentType}'");
+            }
+            return '';
+        }
     }
 }
