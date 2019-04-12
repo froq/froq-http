@@ -172,7 +172,12 @@ final class Response extends Message
             throw new HttpException("Invalid cookie name '{$name}' given");
         }
 
-        setcookie($name, (string) $value, $expire, $path, $domain, $secure, $httpOnly);
+        $value = (string) $value;
+        if ($expire < 0) {
+            $value = '';
+        }
+
+        setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
     /**

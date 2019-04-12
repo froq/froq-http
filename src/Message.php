@@ -239,17 +239,17 @@ abstract class Message
      * Set cookie.
      * @notice All these stored cookies should be sent before sending the last output to the client
      * with self::send() method.
-     * @param  string  $name
-     * @param  ?string $value
-     * @param  int     $expire
-     * @param  string  $path
-     * @param  string  $domain
-     * @param  bool    $secure
-     * @param  bool    $httpOnly
+     * @param  string            $name
+     * @param  string|array|null $value
+     * @param  int               $expire
+     * @param  string            $path
+     * @param  string            $domain
+     * @param  bool              $secure
+     * @param  bool              $httpOnly
      * @throws froq\http\HttpException
      * @return self
      */
-    public final function setCookie(string $name, ?string $value, int $expire = 0,
+    public final function setCookie(string $name, $value, int $expire = 0,
         string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): self
     {
         if ($this->type == self::TYPE_REQUEST) {
@@ -261,11 +261,14 @@ abstract class Message
             throw new HttpException("Invalid cookie name '{$name}' given");
         }
 
+        if (is_array($value)) {
+            @ [$value, $expire, $path, $domain, $secure, $httpOnly] = $value;
+        }
+
         $this->cookies[$name] = [
-            'name'      => $name,     'value'  => $value,
-            'expire'    => $expire,   'path'   => $path,
-            'domain'    => $domain,   'secure' => $secure,
-            'httpOnly'  => $httpOnly
+            'name'   => $name,                'value'    => strval($value),  'expire' => intval($expire),
+            'path'   => strval($path ?? '/'), 'domain'   => strval($domain),
+            'secure' => !!$secure,            'httpOnly' => !!$httpOnly
         ];
 
         return $this;
