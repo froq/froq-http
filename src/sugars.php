@@ -24,9 +24,9 @@
  */
 declare(strict_types=1);
 
+use froq\http\{Request, Response};
 use froq\http\request\Uri;
 use froq\http\response\Status;
-use froq\http\{Request, Response};
 
 /**
  * Request.
@@ -35,26 +35,6 @@ use froq\http\{Request, Response};
 function request(): Request
 {
     return app()->request();
-}
-
-/**
- * Request uri.
- * @return froq\http\request\Uri
- */
-function request_uri(): Uri
-{
-    return app()->request()->uri();
-}
-
-/**
- * Request header.
- * @param  string  $name
- * @param  ?string $value_default
- * @return ?string
- */
-function request_header(string $name, ?string $value_default = null): ?string
-{
-    return app()->request()->getHeader($name, $value_default);
 }
 
 /**
@@ -67,48 +47,22 @@ function response(): Response
 }
 
 /**
- * Response status.
+ * Uri.
+ * @return froq\http\request\Uri
+ */
+function uri(): Uri
+{
+    return request()->uri();
+}
+
+/**
+ * Status.
  * @param  int $code
  * @return void
  */
-function response_status(int $code): void
+function status(int $code): void
 {
-    app()->response()->setStatus($code);
-}
-
-/**
- * Response header.
- * @param  string $name
- * @param  string $value
- * @return void
- */
-function response_header(string $name, ?string $value): void
-{
-    app()->response()->setHeader($name, $value);
-}
-
-/**
- * Response cookie.
- * @param  string $name
- * @param  string $value
- * @return void
- */
-function response_cookie(string $name, ?string $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $http_only = false): void
-{
-    app()->response()->setCookie($name, $value, $expire, $path, $domain, $secure, $http_only);
-}
-
-/**
- * Response body.
- * @param  any         $body
- * @param  string|null $content_type
- * @param  string|null $content_charset
- * @return void
- */
-function response_body($body, string $content_type = null, string $content_charset = null): void
-{
-    app()->response()->setBody($body, $content_type, $content_charset);
+    response()->setStatus($code);
 }
 
 /**
@@ -117,7 +71,7 @@ function response_body($body, string $content_type = null, string $content_chars
  */
 function is_get(): bool
 {
-    return app()->request()->method()->isGet();
+    return request()->method()->isGet();
 }
 
 /**
@@ -126,7 +80,7 @@ function is_get(): bool
  */
 function is_post(): bool
 {
-    return app()->request()->method()->isPost();
+    return request()->method()->isPost();
 }
 
 /**
@@ -135,7 +89,7 @@ function is_post(): bool
  */
 function is_put(): bool
 {
-    return app()->request()->method()->isPut();
+    return request()->method()->isPut();
 }
 
 /**
@@ -144,7 +98,7 @@ function is_put(): bool
  */
 function is_delete(): bool
 {
-    return app()->request()->method()->isDelete();
+    return request()->method()->isDelete();
 }
 
 /**
@@ -153,7 +107,7 @@ function is_delete(): bool
  */
 function is_ajax(): bool
 {
-    return app()->request()->method()->isAjax();
+    return request()->method()->isAjax();
 }
 
 /**
@@ -164,9 +118,9 @@ function is_ajax(): bool
  */
 function get(string $name = null, $value_default = null)
 {
-    $request = app()->request();
-
-    return ($name === null) ? $request->getParams() : $request->getParam($name, $value_default);
+    return ($name === null)
+        ? request()->getParams()
+        : request()->getParam($name, $value_default);
 }
 
 /**
@@ -176,7 +130,7 @@ function get(string $name = null, $value_default = null)
  */
 function get_has(string $name): bool
 {
-    return array_key_exists($name, app()->request()->getParams());
+    return array_key_exists($name, get());
 }
 
 /**
@@ -187,9 +141,9 @@ function get_has(string $name): bool
  */
 function post(string $name = null, $value_default = null)
 {
-    $request = app()->request();
-
-    return ($name === null) ? $request->postParams() : $request->postParam($name, $value_default);
+    return ($name === null)
+        ? request()->postParams()
+        : request()->postParam($name, $value_default);
 }
 
 /**
@@ -199,7 +153,7 @@ function post(string $name = null, $value_default = null)
  */
 function post_has(string $name): bool
 {
-    return array_key_exists($name, app()->request()->postParams());
+    return array_key_exists($name, post());
 }
 
 /**
@@ -210,9 +164,9 @@ function post_has(string $name): bool
  */
 function cookie(string $name = null, $value_default = null)
 {
-    $request = app()->request();
-
-    return ($name === null) ? $request->cookieParams() : $request->cookieParam($name, $value_default);
+    return ($name === null)
+        ? request()->cookieParams()
+        : request()->cookieParam($name, $value_default);
 }
 
 /**
@@ -222,25 +176,7 @@ function cookie(string $name = null, $value_default = null)
  */
 function cookie_has(string $name): bool
 {
-    return array_key_exists($name, app()->request()->cookieParams());
-}
-
-/**
- * Uri.
- * @alias of request_uri()
- */
-function uri(): Uri
-{
-    return app()->request()->uri();
-}
-
-/**
- * Status.
- * @alias of response_status()
- */
-function status(int $code): void
-{
-    app()->response()->setStatus($code);
+    return array_key_exists($name, cookie());
 }
 
 /**
@@ -251,7 +187,7 @@ function status(int $code): void
  */
 function segment(int $i, $value_default = null)
 {
-    return app()->request()->uri()->segment($i, $value_default);
+    return uri()->segment($i, $value_default);
 }
 
 /**
@@ -260,13 +196,13 @@ function segment(int $i, $value_default = null)
  */
 function segments(): array
 {
-    return app()->request()->uri()->segments();
+    return uri()->segments();
 }
 
 /**
  * Segment param.
  * @param  int $i
- * @param  any $value_default
+ * @param  any|null $value_default
  * @return any|null
  */
 function segment_param(int $i, $value_default = null)
@@ -278,9 +214,9 @@ function segment_param(int $i, $value_default = null)
  * Segment params.
  * @return array
  */
-function segment_params()
+function segment_params(): array
 {
-    return app()->request()->uri()->segmentArguments(app()->service()->isSite() ? 2 : 1);
+    return uri()->segmentArguments(app()->service()->isSite() ? 2 : 1);
 }
 
 /**
@@ -290,16 +226,16 @@ function segment_params()
  */
 function redirect(...$arguments): void
 {
-    redirect_to(vsprintf(array_shift($arguments), $arguments));
+    redirect_with(vsprintf(array_shift($arguments), $arguments));
 }
 
 /**
- * Redirect to.
+ * Redirect with.
  * @param  string $location
  * @param  int    $code
  * @return void
  */
-function redirect_to(string $location, int $code = Status::FOUND): void
+function redirect_with(string $location, int $code = Status::FOUND): void
 {
-    app()->response()->redirect($location, $code);
+    response()->redirect($location, $code);
 }
