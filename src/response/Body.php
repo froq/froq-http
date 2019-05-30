@@ -282,7 +282,8 @@ final class Body
                 default:
                     throw new HttpException("Unimplemented content type '{$contentType}'");
             }
-            return '';
         }
+
+        return '';
     }
 }
