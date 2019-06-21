@@ -112,15 +112,16 @@ function is_ajax(): bool
 
 /**
  * Get.
- * @param  string|null $name
- * @param  any|null    $value_default
+ * @param  string|array|null $name
+ * @param  any|null          $value_default
  * @return any|null
  */
-function get(string $name = null, $value_default = null)
+function get($name = null, $value_default = null)
 {
-    return ($name === null)
-        ? request()->getParams()
-        : request()->getParam($name, $value_default);
+    if (is_null($name) || is_array($name)) {
+        return request()->getParams($name, $value_default);
+    }
+    return request()->getParam($name, $value_default);
 }
 
 /**
@@ -135,15 +136,16 @@ function get_has(string $name): bool
 
 /**
  * Post.
- * @param  string|null $name
- * @param  any|null    $value_default
+ * @param  string|array|null $name
+ * @param  any|null          $value_default
  * @return any|null
  */
 function post(string $name = null, $value_default = null)
 {
-    return ($name === null)
-        ? request()->postParams()
-        : request()->postParam($name, $value_default);
+    if (is_null($name) || is_array($name)) {
+        return request()->postParams($name, $value_default);
+    }
+    return request()->postParam($name, $value_default);
 }
 
 /**
@@ -158,15 +160,16 @@ function post_has(string $name): bool
 
 /**
  * Cookie.
- * @param  string|null $name
- * @param  any|null    $value_default
+ * @param  string|array|null $name
+ * @param  any|null          $value_default
  * @return any|null
  */
 function cookie(string $name = null, $value_default = null)
 {
-    return ($name === null)
-        ? request()->cookieParams()
-        : request()->cookieParam($name, $value_default);
+    if (is_null($name) || is_array($name)) {
+        return request()->cookieParams($name, $value_default);
+    }
+    return request()->cookieParam($name, $value_default);
 }
 
 /**

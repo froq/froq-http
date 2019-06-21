@@ -56,11 +56,14 @@ final class Params
 
     /**
      * Gets.
+     * @param  array|null $names
+     * @param  any        $valuesDefault
      * @return array
      */
-    public function gets(): array
+    public function gets(array $names = null, $valuesDefault = null): array
     {
-        return $_GET;
+        return ($names == null) ? $_GET // all
+            : Arrays::getAll($_GET, $names, $valuesDefault);
     }
 
     /**
@@ -76,11 +79,14 @@ final class Params
 
     /**
      * Posts.
+     * @param  array|null $names
+     * @param  any        $valueDefaults
      * @return array
      */
-    public function posts(): array
+    public function posts(array $names = null, $valueDefaults = null): array
     {
-        return $_POST;
+        return ($names == null) ? $_POST // all
+            : Arrays::getAll($_POST, $names, $valueDefaults);
     }
 
     /**
@@ -96,11 +102,14 @@ final class Params
 
     /**
      * Cookies.
+     * @param  array|null $names
+     * @param  any        $valuesDefault
      * @return array
      */
-    public function cookies(): array
+    public function cookies(array $names = null, $valuesDefault = null): array
     {
-        return $_COOKIE;
+        return ($names == null) ? $_COOKIE // all
+            : Arrays::getAll($_COOKIE, $names, $valuesDefault);
     }
 
     /**

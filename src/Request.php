@@ -237,11 +237,13 @@ final class Request extends Message
 
     /**
      * Get params.
+     * @param  array|null $names
+     * @param  any        $valuesDefault
      * @return array
      */
-    public function getParams(): array
+    public function getParams(array $names = null, $valuesDefault = null): array
     {
-        return $this->params->gets();
+        return $this->params->gets($names, $valuesDefault);
     }
 
     /**
@@ -257,11 +259,13 @@ final class Request extends Message
 
     /**
      * Post params.
+     * @param  array|null $names
+     * @param  any        $valuesDefault
      * @return array
      */
-    public function postParams(): array
+    public function postParams(array $names = null, $valuesDefault = null): array
     {
-        return $this->params->posts();
+        return $this->params->posts($names, $valuesDefault);
     }
 
     /**
@@ -277,11 +281,13 @@ final class Request extends Message
 
     /**
      * Cookie params.
+     * @param  array|null $names
+     * @param  any        $valuesDefault
      * @return array
      */
-    public function cookieParams(): array
+    public function cookieParams(array $names = null, $valuesDefault = null): array
     {
-        return $this->params->cookies();
+        return $this->params->cookies($names, $valuesDefault);
     }
 
     /**
