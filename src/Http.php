@@ -41,10 +41,8 @@ final /* static */ class Http
      */
     public const VERSION_1_0       = 'HTTP/1.0',
                  VERSION_1_1       = 'HTTP/1.1',
-                 VERSION_2         = 'HTTP/2',
-                 VERSION_LATEST    = self::VERSION_2,
-                 VERSION_CURRENT   = self::VERSION_1_1,
-                 VERSION_DEFAULT   = self::VERSION_CURRENT;
+                 VERSION_2_0       = 'HTTP/2.0',
+                 VERSION_DEFAULT   = self::VERSION_1_1;
 
     /**
      * Methods.
@@ -69,6 +67,6 @@ final /* static */ class Http
      */
     public static function detectVersion(): string
     {
-        return $_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT;
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT);
     }
 }

@@ -320,10 +320,10 @@ final class Response extends Message
     public function send(): void
     {
         // status
-        if ($this->httpVersion == Http::VERSION_1_0 || $this->httpVersion == Http::VERSION_1_1) {
-            header(sprintf('%s %s %s', $this->httpVersion, $this->status->getCode(), $this->status->getText()));
-        } elseif ($this->httpVersion == Http::VERSION_2) {
+        if ($this->httpVersion == Http::VERSION_2_0) {
             header(sprintf('%s %s', $this->httpVersion, $this->status->getCode()));
+        } elseif ($this->httpVersion == Http::VERSION_1_0 || $this->httpVersion == Http::VERSION_1_1) {
+            header(sprintf('%s %s %s', $this->httpVersion, $this->status->getCode(), $this->status->getText()));
         }
 
         // load time
