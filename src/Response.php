@@ -124,7 +124,7 @@ final class Response extends Message
      * @return void
      * @throws froq\http\HttpException
      */
-    public function sendHeader(string $name, ?string $value): void
+    public function sendHeader(string $name, ?string $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
             throw new HttpException(sprintf("Cannot use '%s()', headers already sent in %s:%s",
@@ -136,8 +136,7 @@ final class Response extends Message
             $this->removeHeader($name);
             header_remove($name);
         } else {
-            $this->setHeader($name, $value);
-            header(sprintf('%s: %s', $name, $value));
+            header(sprintf('%s: %s', $name, $value), $replace);
         }
     }
 
@@ -148,7 +147,13 @@ final class Response extends Message
     public function sendHeaders(): void
     {
         foreach ((array) $this->headers as $name => $value) {
-            $this->sendHeader($name, $value);
+            if (is_array($value)) { // @see Message.addHeader()
+                foreach ($value as $value) {
+                    $this->sendHeader($name, $value, false);
+                }
+            } else {
+                $this->sendHeader($name, $value);
+            }
         }
     }
 

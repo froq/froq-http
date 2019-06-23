@@ -124,6 +124,28 @@ abstract class Message
     }
 
     /**
+     * Add header.
+     * @param string  $name
+     * @param ?string $value
+     * @param bool    $replace
+     */
+    public final function addHeader(string $name, ?string $value, bool $replace = true): self
+    {
+        if ($this->type == self::TYPE_REQUEST) {
+            throw new HttpException('You cannot modify request headers');
+        }
+
+        if ($replace) {
+            $this->headers[$name] = $value;
+        } else {
+            $this->headers[$name] = (array) ($this->headers[$name] ?? []);
+            $this->headers[$name][] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
      * Set header.
      * @notice All these stored headers should be sent before sending the last output to the client
      * with self.send() method.
@@ -138,6 +160,20 @@ abstract class Message
         }
 
         $this->headers[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set headers.
+     * @param  array $headers
+     * @return self
+     */
+    public final function setHeaders(array $headers): self
+    {
+        foreach ($headers as $name => $value) {
+            $this->setHeader($name, $value);
+        }
 
         return $this;
     }
@@ -165,6 +201,15 @@ abstract class Message
     }
 
     /**
+     * Get headers.
+     * @return array
+     */
+    public final function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
      * Remove header.
      * @param  string $name
      * @param  bool   $defer
@@ -182,47 +227,6 @@ abstract class Message
         }
 
         return $this;
-    }
-
-    /**
-     * Set headers.
-     * @param  array $headers
-     * @return self
-     */
-    public final function setHeaders(array $headers): self
-    {
-        foreach ($headers as $name => $value) {
-            $this->setHeader($name, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get headers.
-     * @return array
-     */
-    public final function getHeaders(): array
-    {
-        return $this->headers;
-    }
-
-    /**
-     * Header.
-     * @alias of self.getHeader(),self.setHeader()
-     */
-    public final function header(string $name, string $value = null)
-    {
-        return ($value === null) ? $this->getHeader($name) : $this->setHeader($name, $value);
-    }
-
-    /**
-     * Headers.
-     * @alias of self.getHeaders(),self.setHeaders()
-     */
-    public final function headers(array $headers = null): array
-    {
-        return ($headers == null) ? $this->getHeaders() : $this->setHeaders($headers);
     }
 
     /**
@@ -275,6 +279,20 @@ abstract class Message
     }
 
     /**
+     * Set cookies.
+     * @param  array $cookies
+     * @return self
+     */
+    public final function setCookies(array $cookies): self
+    {
+        foreach ($cookies as $name => $value) {
+            $this->setCookie($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get cookie.
      * @param  string  $name
      * @param  ?string $valueDefault
@@ -283,6 +301,15 @@ abstract class Message
     public final function getCookie(string $name, ?string $valueDefault = null): ?string
     {
         return $this->cookies[$name] ?? $valueDefault;
+    }
+
+    /**
+     * Get cookies.
+     * @return array
+     */
+    public final function getCookies(): array
+    {
+        return $this->cookies;
     }
 
     /**
@@ -307,26 +334,26 @@ abstract class Message
     }
 
     /**
-     * Set cookies.
-     * @param  array $cookies
-     * @return self
+     * Header.
+     * @alias of self.getHeader(),self.setHeader(),self.addHeader()
      */
-    public final function setCookies(array $cookies): self
+    public final function header(string $name, string $value = null, bool $replace = true)
     {
-        foreach ($cookies as $name => $value) {
-            $this->setCookie($name, $value);
+        if ($value == null) {
+            return $this->getHeader($name);
         }
 
-        return $this;
+        return $replace ? $this->setHeader($name, $value)
+                        : $this->addHeader($name, $value, false);
     }
 
     /**
-     * Get cookies.
-     * @return array
+     * Headers.
+     * @alias of self.getHeaders(),self.setHeaders()
      */
-    public final function getCookies(): array
+    public final function headers(array $headers = null): array
     {
-        return $this->cookies;
+        return ($headers == null) ? $this->getHeaders() : $this->setHeaders($headers);
     }
 
     /**
