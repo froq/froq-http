@@ -248,11 +248,11 @@ function redirect_to(string $location): void
 
 /**
  * Redirect with.
- * @param  string   $location
- * @param  int|null $code
+ * @param  string $location
+ * @param  int    $code
  * @return void
  */
-function redirect_with(string $location, int $code = null): void
+function redirect_with(string $location, int $code): void
 {
-    response()->redirect($location, $code ?? Status::FOUND);
+    response()->redirect($location, $code);
 }
