@@ -24,9 +24,9 @@
  */
 declare(strict_types=1);
 
-use froq\http\{Request, Response};
 use froq\http\request\Uri;
 use froq\http\response\Status;
+use froq\http\{Request, Response};
 
 /**
  * Request.
@@ -229,7 +229,7 @@ function segment_params(): array
  * @param  array|null $headers
  * @return void
  */
-function redirect(string $location, int $code, array $headers = null): void
+function redirect(string $location, int $code = Status::FOUND, array $headers = null): void
 {
     response()->redirect($location, $code, $headers);
 }

@@ -95,8 +95,7 @@ final class Response extends Message
      */
     public function redirect(string $location, int $code = Status::FOUND, array $headers = null): self
     {
-        $this->setStatus($code);
-        $this->setHeader('Location', trim($location));
+        $this->setHeader('Location', trim($location))->setStatus($code);
 
         if ($headers != null) {
             $this->setHeaders($headers);
