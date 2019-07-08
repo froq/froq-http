@@ -77,7 +77,7 @@ final class Response extends Message
     }
 
     /**
-     * Set/Get body.
+     * Set/get body.
      * @param  ...$arguments
      * @return self|froq\http\response\Body
      */
@@ -88,13 +88,19 @@ final class Response extends Message
 
     /**
      * Redirect.
-     * @param  string $location
-     * @param  int    $code
+     * @param  string     $location
+     * @param  int        $code
+     * @param  array|null $headers
      * @return self
      */
-    public function redirect(string $location, int $code = Status::FOUND): self
+    public function redirect(string $location, int $code = Status::FOUND, array $headers = null): self
     {
-        $this->setStatus($code)->setHeader('Location', trim($location));
+        $this->setStatus($code);
+        $this->setHeader('Location', trim($location));
+
+        if ($headers != null) {
+            $this->setHeaders($headers);
+        }
 
         return $this;
     }

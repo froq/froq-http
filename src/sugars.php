@@ -224,35 +224,12 @@ function segment_params(): array
 
 /**
  * Redirect.
- * @param  ... $arguments
+ * @param  string     $location
+ * @param  int        $code
+ * @param  array|null $headers
  * @return void
  */
-function redirect(...$arguments): void
+function redirect(string $location, int $code, array $headers = null): void
 {
-    $location = array_shift($arguments);
-    if ($arguments) {
-        $location = vsprintf($location, $arguments);
-    }
-    response()->redirect($location);
-}
-
-/**
- * Redirect to.
- * @param  string $location
- * @return void
- */
-function redirect_to(string $location): void
-{
-    response()->redirect($location, Status::FOUND);
-}
-
-/**
- * Redirect with.
- * @param  string $location
- * @param  int    $code
- * @return void
- */
-function redirect_with(string $location, int $code): void
-{
-    response()->redirect($location, $code);
+    response()->redirect($location, $code, $headers);
 }
