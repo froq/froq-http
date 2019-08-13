@@ -219,8 +219,15 @@ final class Body
         return $this->contentLength;
     }
 
-    // @wait
-    // public function isFile(): bool {}
+    /**
+     * Is string.
+     * @return bool
+     * @since  3.9
+     */
+    public function isString(): bool
+    {
+        return is_string($this->content);
+    }
 
     /**
      * Is image.
@@ -229,20 +236,13 @@ final class Body
      */
     public function isImage(): bool
     {
-        return is_resource($this->content) && in_array($this->contentType, [
+        return in_array($this->contentType, [
             self::CONTENT_TYPE_IMAGE_JPEG, self::CONTENT_TYPE_IMAGE_PNG, self::CONTENT_TYPE_IMAGE_GIF,
         ]);
     }
 
-    /**
-     * Is string.
-     * @return bool
-     * @since  3.9
-     */
-    public function isString(): bool
-    {
-        return is_string($this->content) && !$this->isImage();
-    }
+    // @wait
+    // public function isFile(): bool {}
 
     /**
      * To array.

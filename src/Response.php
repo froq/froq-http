@@ -224,7 +224,7 @@ final class Response extends Message
                     $body->getContentCharset() ?? $this->body->getContentCharset()
                 );
 
-                // override, no need to all stuff below
+                // override, not needed all the stuff below
                 if ($body->isImage()) {
                     $this->body = $body;
 
