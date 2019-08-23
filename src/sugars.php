@@ -41,9 +41,19 @@ function request(): Request
  * Response.
  * @return froq\http\Response
  */
-function response(): Response
+function response(...$arguments): Response
 {
-    return app()->response();
+    $response = app()->response();
+    if ($arguments) {
+        @ [$code, $content, $contentType, $contentCharset, $headers, $cookies] = $arguments;
+        if ($code) $response->setStatus($code);
+        if (!is_null($content)) {
+            $response->setBody($content, $contentType, $contentCharset);
+        }
+        if ($headers) $response->setHeaders($headers);
+        if ($cookies) $response->setCookies($cookies);
+    }
+    return $response;
 }
 
 /**
@@ -208,16 +218,16 @@ function segments(): array
  * @param  any|null $value_default
  * @return any|null
  */
-function segment_param(int $i, $value_default = null)
+function segment_argument(int $i, $value_default = null)
 {
-    return segment_params()[$i - 1] ?? $value_default;
+    return segment_arguments()[$i - 1] ?? $value_default;
 }
 
 /**
- * Segment params.
+ * Segment arguments.
  * @return array
  */
-function segment_params(): array
+function segment_arguments(): array
 {
     return uri()->segmentArguments(app()->service()->isSite() ? 2 : 1);
 }

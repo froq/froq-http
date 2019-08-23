@@ -28,7 +28,7 @@ namespace froq\http;
 
 use froq\App;
 use froq\encoding\{Encoder, EncoderException};
-use froq\http\response\{Status, Body, Response as ReturnResponse};
+use froq\http\response\{Status, Body, Response as ResponseResponse};
 
 /**
  * Response.
@@ -213,7 +213,9 @@ final class Response extends Message
     public function setBody($body, string $contentType = null, string $contentCharset = null): self
     {
         if ($body != null) {
-            if ($body instanceof ReturnResponse) {
+            if ($body instanceof Response) {
+                $body = $body->getBody();
+            } elseif ($body instanceof ResponseResponse) {
                 $this->setStatus($body->getStatusCode())
                      ->setHeaders($body->getHeaders())
                      ->setCookies($body->getCookies());
