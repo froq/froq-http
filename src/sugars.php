@@ -128,10 +128,9 @@ function is_ajax(): bool
  */
 function get($name = null, $value_default = null)
 {
-    if (is_null($name) || is_array($name)) {
-        return request()->getParams($name, $value_default);
-    }
-    return request()->getParam($name, $value_default);
+    return is_null($name) || is_array($name)
+        ? request()->getParams($name, $value_default)
+        : request()->getParam($name, $value_default);
 }
 
 /**
@@ -141,7 +140,7 @@ function get($name = null, $value_default = null)
  */
 function get_has(string $name): bool
 {
-    return array_key_exists($name, get());
+    return array_key_exists($name, request()->getParams());
 }
 
 /**
@@ -150,12 +149,11 @@ function get_has(string $name): bool
  * @param  any|null          $value_default
  * @return any|null
  */
-function post(string $name = null, $value_default = null)
+function post($name = null, $value_default = null)
 {
-    if (is_null($name) || is_array($name)) {
-        return request()->postParams($name, $value_default);
-    }
-    return request()->postParam($name, $value_default);
+    return is_null($name) || is_array($name)
+        ? request()->postParams($name, $value_default)
+        : request()->postParam($name, $value_default);
 }
 
 /**
@@ -165,7 +163,7 @@ function post(string $name = null, $value_default = null)
  */
 function post_has(string $name): bool
 {
-    return array_key_exists($name, post());
+    return array_key_exists($name, request()->postParams());
 }
 
 /**
@@ -174,12 +172,11 @@ function post_has(string $name): bool
  * @param  any|null          $value_default
  * @return any|null
  */
-function cookie(string $name = null, $value_default = null)
+function cookie($name = null, $value_default = null)
 {
-    if (is_null($name) || is_array($name)) {
-        return request()->cookieParams($name, $value_default);
-    }
-    return request()->cookieParam($name, $value_default);
+    return is_null($name) || is_array($name)
+        ? request()->cookieParams($name, $value_default)
+        : request()->cookieParam($name, $value_default);
 }
 
 /**
@@ -189,7 +186,7 @@ function cookie(string $name = null, $value_default = null)
  */
 function cookie_has(string $name): bool
 {
-    return array_key_exists($name, cookie());
+    return array_key_exists($name, request()->cookieParams());
 }
 
 /**
