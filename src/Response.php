@@ -91,15 +91,15 @@ final class Response extends Message
      * @param  string     $location
      * @param  int        $code
      * @param  array|null $headers
+     * @param  array|null $cookies
      * @return self
      */
-    public function redirect(string $location, int $code = Status::FOUND, array $headers = null): self
+    public function redirect(string $location, int $code = Status::FOUND, array $headers = null, array $cookies = null): self
     {
         $this->setHeader('Location', trim($location))->setStatus($code);
 
-        if ($headers != null) {
-            $this->setHeaders($headers);
-        }
+        if ($headers != null) $this->setHeaders($headers);
+        if ($cookies != null) $this->setCookies($cookies);
 
         return $this;
     }

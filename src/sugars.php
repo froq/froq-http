@@ -234,9 +234,10 @@ function segment_arguments(): array
  * @param  string     $location
  * @param  int        $code
  * @param  array|null $headers
+ * @param  array|null $cookies
  * @return void
  */
-function redirect(string $location, int $code = Status::FOUND, array $headers = null): void
+function redirect(string $location, int $code = Status::FOUND, array $headers = null, array $cookies = null): void
 {
-    response()->redirect($location, $code, $headers);
+    response()->redirect($location, $code, $headers, $cookies);
 }
