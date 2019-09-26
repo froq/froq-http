@@ -66,13 +66,13 @@ final class Request extends Message
 
     /**
      * Time.
-     * @var int/float
+     * @var int
      */
     private $time;
 
     /**
      * Request time float.
-     * @var int
+     * @var float
      */
     private $timeFloat;
 
