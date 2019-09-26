@@ -328,7 +328,7 @@ final class Request extends Message
             } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
                 $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
             } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
-                $headers['Authorization'] = 'Basic ' .
+                $headers['Authorization'] = 'Basic '.
                     base64_encode($_SERVER['PHP_AUTH_USER'] .':'. ($_SERVER['PHP_AUTH_PW'] ?? ''));
             }
         }

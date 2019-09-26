@@ -62,8 +62,8 @@ final class Response extends Message
         $this->status = new Status();
         $this->body = new Body();
 
-        $this->setHeaders($this->app->configValue('headers', []));
-        $this->setCookies($this->app->configValue('cookies', []));
+        $this->setHeaders($this->app->config('headers', []));
+        $this->setCookies($this->app->config('cookies', []));
     }
 
     /**
@@ -250,7 +250,7 @@ final class Response extends Message
             if ($bodyType != 'string') {
                 switch ($bodyType) {
                     case 'array': case 'object':
-                        $jsonOptions = $this->app->configValue('response.json');
+                        $jsonOptions = $this->app->config('response.json');
                         if ($jsonOptions != null // could be emptied by developer to disable json
                             && ($bodyContentType = $this->body->getContentType())
                             && (strpos($bodyContentType, '/json') || strpos($bodyContentType, '+json'))
@@ -278,7 +278,7 @@ final class Response extends Message
             // gzip stuff
             $bodyLength = strlen($body);
             if ($bodyLength > 0) { // prevent gzip corruption for 0 byte data
-                $gzipOptions = $this->app->configValue('response.gzip');
+                $gzipOptions = $this->app->config('response.gzip');
                 $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
                 $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
@@ -339,7 +339,7 @@ final class Response extends Message
         }
 
         // load time
-        $exposeAppLoadTime = $this->app->configValue('exposeAppLoadTime');
+        $exposeAppLoadTime = $this->app->config('exposeAppLoadTime');
         if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
             $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
         }
