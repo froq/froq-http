@@ -86,7 +86,7 @@ final class Method
      */
     public function isGet(): bool
     {
-        return ($this->name == Http::METHOD_GET);
+        return ($this->name === Http::METHOD_GET);
     }
 
     /**
@@ -95,7 +95,7 @@ final class Method
      */
     public function isPost(): bool
     {
-        return ($this->name == Http::METHOD_POST);
+        return ($this->name === Http::METHOD_POST);
     }
 
     /**
@@ -104,7 +104,7 @@ final class Method
      */
     public function isPut(): bool
     {
-        return ($this->name == Http::METHOD_PUT);
+        return ($this->name === Http::METHOD_PUT);
     }
 
     /**
@@ -113,7 +113,7 @@ final class Method
      */
     public function isPatch(): bool
     {
-        return ($this->name == Http::METHOD_PATCH);
+        return ($this->name === Http::METHOD_PATCH);
     }
 
     /**
@@ -122,7 +122,7 @@ final class Method
      */
     public function isDelete(): bool
     {
-        return ($this->name == Http::METHOD_DELETE);
+        return ($this->name === Http::METHOD_DELETE);
     }
 
     /**
@@ -131,7 +131,7 @@ final class Method
      */
     public function isOptions(): bool
     {
-        return ($this->name == Http::METHOD_OPTIONS);
+        return ($this->name === Http::METHOD_OPTIONS);
     }
 
     /**
@@ -140,7 +140,7 @@ final class Method
      */
     public function isHead(): bool
     {
-        return ($this->name == Http::METHOD_HEAD);
+        return ($this->name === Http::METHOD_HEAD);
     }
 
     /**
@@ -149,7 +149,7 @@ final class Method
      */
     public function isTrace(): bool
     {
-        return ($this->name == Http::METHOD_TRACE);
+        return ($this->name === Http::METHOD_TRACE);
     }
 
     /**
@@ -158,7 +158,7 @@ final class Method
      */
     public function isConnect(): bool
     {
-        return ($this->name == Http::METHOD_CONNECT);
+        return ($this->name === Http::METHOD_CONNECT);
     }
 
     /**
@@ -167,7 +167,7 @@ final class Method
      */
     public function isCopy(): bool
     {
-        return ($this->name == Http::METHOD_COPY);
+        return ($this->name === Http::METHOD_COPY);
     }
 
     /**
@@ -176,7 +176,7 @@ final class Method
      */
     public function isMove(): bool
     {
-        return ($this->name == Http::METHOD_MOVE);
+        return ($this->name === Http::METHOD_MOVE);
     }
 
     /**
@@ -185,15 +185,12 @@ final class Method
      */
     public function isAjax(): bool
     {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-            return (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-        }
-
-        if (isset($_SERVER['HTTP_X_AJAX'])) {
-            return (strtolower($_SERVER['HTTP_X_AJAX']) == 'true' || $_SERVER['HTTP_X_AJAX'] == '1');
-        }
-
-        return false;
+        return (
+            (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                && strtoupper($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_SERVER['HTTP_X_AJAX'])
+                && strtoupper($_SERVER['HTTP_X_AJAX']) === 'true' || $_SERVER['HTTP_X_AJAX'] === '1')
+        );
     }
 
     /**
