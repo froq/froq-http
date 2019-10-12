@@ -112,8 +112,6 @@ final class Body implements Stringable
                 case self::CONTENT_TYPE_IMAGE_GIF:
                     imagegif($content) && $this->setContentLength(ob_get_length());
                     break;
-                default:
-                    throw new HttpException("Unimplemented content type '{$contentType}'");
             }
             ob_end_clean();
         }
@@ -226,7 +224,7 @@ final class Body implements Stringable
     public function isImage(): bool
     {
         return in_array($this->contentType, [
-            self::CONTENT_TYPE_IMAGE_JPEG, self::CONTENT_TYPE_IMAGE_PNG, self::CONTENT_TYPE_IMAGE_GIF,
+            self::CONTENT_TYPE_IMAGE_JPEG, self::CONTENT_TYPE_IMAGE_PNG, self::CONTENT_TYPE_IMAGE_GIF
         ]);
     }
 
@@ -255,8 +253,6 @@ final class Body implements Stringable
                 case self::CONTENT_TYPE_IMAGE_GIF:
                     imagegif($content) && imagedestroy($content);
                     break;
-                default:
-                    throw new HttpException("Unimplemented content type '{$contentType}'");
             }
         }
 
