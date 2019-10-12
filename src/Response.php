@@ -252,8 +252,7 @@ final class Response extends Message
                     case 'array': case 'object':
                         $jsonOptions = $this->app->config('response.json');
                         if ($jsonOptions != null // could be emptied by developer to disable json
-                            && ($bodyContentType = $this->body->getContentType())
-                            && (strpos($bodyContentType, '/json') || strpos($bodyContentType, '+json'))
+                            && preg_match('~[/+]json~i', (string) $this->body->getContentType())
                         ) {
                             [$body, $error] = Encoder::jsonEncode($body, $jsonOptions);
                             if ($error) {
@@ -338,20 +337,16 @@ final class Response extends Message
             header(sprintf('%s %s %s', $this->httpVersion, $this->status->getCode(), $this->status->getText()));
         }
 
-        // load time
-        $exposeAppLoadTime = $this->app->config('exposeAppLoadTime');
-        if ($exposeAppLoadTime === true || $exposeAppLoadTime === $this->app->env()) {
-            $this->sendHeader('X-App-Load-Time', $this->app->loadTime());
-        }
-
-        [$contentType, $contentCharset, $contentLength] = $this->body->toArray();
+        [$contentType, $contentCharset, $contentLength] = [
+            $this->body->getContentType(), $this->body->getContentCharset(), $this->body->getContentLength()
+        ];
 
         // content type/charset?/length
         if ($this->body->isImage()) {
             $this->sendHeader('Content-Type', $contentType);
         } elseif ($contentType == '') {
-            $this->sendHeader('Content-Type', 'n/a');
-        } elseif ($contentCharset == '' || in_array($contentType, ['n/a', 'none'])) {
+            $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NA);
+        } elseif ($contentCharset == '' || in_array($contentType, [Body::CONTENT_TYPE_NA, Body::CONTENT_TYPE_NONE])) {
             $this->sendHeader('Content-Type', $contentType);
         } else {
             $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
