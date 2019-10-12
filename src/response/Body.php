@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace froq\http\response;
 
 use froq\http\HttpException;
+use froq\util\interfaces\Stringable;
 
 /**
  * Body.
@@ -35,7 +36,7 @@ use froq\http\HttpException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   1.0
  */
-final class Body
+final class Body implements Stringable
 {
     /**
     * Content types.
@@ -103,31 +104,19 @@ final class Body
             ob_start();
             switch ($contentType) {
                 case self::CONTENT_TYPE_IMAGE_JPEG:
-                    imagejpeg($content)
-                        && $this->setContentLength(ob_get_length());
+                    imagejpeg($content) && $this->setContentLength(ob_get_length());
                     break;
                 case self::CONTENT_TYPE_IMAGE_PNG:
-                    imagepng($content)
-                        && $this->setContentLength(ob_get_length());
+                    imagepng($content) && $this->setContentLength(ob_get_length());
                     break;
                 case self::CONTENT_TYPE_IMAGE_GIF:
-                    imagegif($content)
-                        && $this->setContentLength(ob_get_length());
+                    imagegif($content) && $this->setContentLength(ob_get_length());
                     break;
                 default:
                     throw new HttpException("Unimplemented content type '{$contentType}'");
             }
             ob_end_clean();
         }
-    }
-
-    /**
-     * String magic.
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     /**
@@ -245,18 +234,7 @@ final class Body
     // public function isFile(): bool {}
 
     /**
-     * To array.
-     * @return array
-     * @since  3.10
-     */
-    public function toArray(): array
-    {
-        return [$this->contentType, $this->contentCharset, $this->contentLength];
-    }
-
-    /**
-     * To string.
-     * @return string
+     * @inheritDoc froq\util\interfaces\Stringable
      */
     public function toString(): string
     {
@@ -264,26 +242,24 @@ final class Body
         $contentType = $this->contentType;
 
         if ($this->isString()) {
-            return $content;
+            $return = $content;
         } elseif ($this->isImage()) {
+            $return = '';
             switch ($contentType) {
                 case self::CONTENT_TYPE_IMAGE_JPEG:
-                    imagejpeg($content)
-                        && imagedestroy($content);
+                    imagejpeg($content) && imagedestroy($content);
                     break;
                 case self::CONTENT_TYPE_IMAGE_PNG:
-                    imagepng($content)
-                        && imagedestroy($content);
+                    imagepng($content) && imagedestroy($content);
                     break;
                 case self::CONTENT_TYPE_IMAGE_GIF:
-                    imagegif($content)
-                        && imagedestroy($content);
+                    imagegif($content) && imagedestroy($content);
                     break;
                 default:
                     throw new HttpException("Unimplemented content type '{$contentType}'");
             }
         }
 
-        return '';
+        return $return;
     }
 }
