@@ -26,17 +26,29 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\Http;
+use froq\inters\Stringable;
 
 /**
  * Method.
  * @package froq\http\request
  * @object  froq\http\request\Method
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   1.0, 4.0
  */
-final class Method
+final class Method implements Stringable
 {
+    /**
+     * Names.
+     * @const string
+     */
+    public const GET     = 'GET',     POST    = 'POST',
+                 PUT     = 'PUT',     PATCH   = 'PATCH',
+                 DELETE  = 'DELETE',  PURGE   = 'PURGE',
+                 OPTIONS = 'OPTIONS', HEAD    = 'HEAD',
+                 TRACE   = 'TRACE',   CONNECT = 'CONNECT',
+                 COPY    = 'COPY',    MOVE    = 'MOVE',
+                 LINK    = 'LINK',    UNLINK  = 'UNLINK';
+
     /**
      * Name.
      * @var string
@@ -50,15 +62,6 @@ final class Method
     public function __construct(string $name)
     {
         $this->setName($name);
-    }
-
-    /**
-     * String magic.
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toString();
     }
 
     /**
@@ -86,7 +89,7 @@ final class Method
      */
     public function isGet(): bool
     {
-        return ($this->name === Http::METHOD_GET);
+        return $this->name == self::GET;
     }
 
     /**
@@ -95,7 +98,7 @@ final class Method
      */
     public function isPost(): bool
     {
-        return ($this->name === Http::METHOD_POST);
+        return $this->name == self::POST;
     }
 
     /**
@@ -104,7 +107,7 @@ final class Method
      */
     public function isPut(): bool
     {
-        return ($this->name === Http::METHOD_PUT);
+        return $this->name == self::PUT;
     }
 
     /**
@@ -113,7 +116,7 @@ final class Method
      */
     public function isPatch(): bool
     {
-        return ($this->name === Http::METHOD_PATCH);
+        return $this->name == self::PATCH;
     }
 
     /**
@@ -122,7 +125,7 @@ final class Method
      */
     public function isDelete(): bool
     {
-        return ($this->name === Http::METHOD_DELETE);
+        return $this->name == self::DELETE;
     }
 
     /**
@@ -131,7 +134,7 @@ final class Method
      */
     public function isOptions(): bool
     {
-        return ($this->name === Http::METHOD_OPTIONS);
+        return $this->name == self::OPTIONS;
     }
 
     /**
@@ -140,7 +143,7 @@ final class Method
      */
     public function isHead(): bool
     {
-        return ($this->name === Http::METHOD_HEAD);
+        return $this->name == self::HEAD;
     }
 
     /**
@@ -149,7 +152,7 @@ final class Method
      */
     public function isTrace(): bool
     {
-        return ($this->name === Http::METHOD_TRACE);
+        return $this->name == self::TRACE;
     }
 
     /**
@@ -158,7 +161,7 @@ final class Method
      */
     public function isConnect(): bool
     {
-        return ($this->name === Http::METHOD_CONNECT);
+        return $this->name == self::CONNECT;
     }
 
     /**
@@ -167,7 +170,7 @@ final class Method
      */
     public function isCopy(): bool
     {
-        return ($this->name === Http::METHOD_COPY);
+        return $this->name == self::COPY;
     }
 
     /**
@@ -176,7 +179,7 @@ final class Method
      */
     public function isMove(): bool
     {
-        return ($this->name === Http::METHOD_MOVE);
+        return $this->name == self::MOVE;
     }
 
     /**
@@ -187,15 +190,14 @@ final class Method
     {
         return (
             (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && strtoupper($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
             || (isset($_SERVER['HTTP_X_AJAX'])
-                && strtoupper($_SERVER['HTTP_X_AJAX']) === 'true' || $_SERVER['HTTP_X_AJAX'] === '1')
+                && (strtolower($_SERVER['HTTP_X_AJAX']) === 'true' || $_SERVER['HTTP_X_AJAX'] === '1'))
         );
     }
 
     /**
-     * To string.
-     * @return string
+     * @inheritDoc froq\inters\Stringable
      */
     public function toString(): string
     {

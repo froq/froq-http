@@ -26,55 +26,14 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
+use froq\http\HttpException;
+
 /**
- * Files.
+ * Uri exception.
  * @package froq\http\request
- * @object  froq\http\request\Files
+ * @object  froq\http\request\UriException
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0, 4.0
+ * @since   4.0
  */
-final /* static */ class Files
-{
-    /**
-     * All.
-     * @return array
-     * @since  4.0
-     */
-    public static function all(): array
-    {
-        return self::normalizeFiles();
-    }
-
-    /**
-     * Normalize files (two-dims only).
-     * @param  array|null $files
-     * @return array
-     */
-    public static function normalizeFiles(array $files = null): array
-    {
-        $files = $files ?? $_FILES;
-        $return = [];
-
-        foreach ($files as $id => $file) {
-            if (!isset($file['name'])) {
-                continue;
-            }
-            if (!is_array($file['name'])) {
-                $return[] = $file + ['_id' => $id]; // add input name
-                continue;
-            }
-
-            foreach ($file['name'] as $i => $name) {
-                $return[] = [
-                    'name'     => $name,
-                    'type'     => $file['type'][$i],
-                    'tmp_name' => $file['tmp_name'][$i],
-                    'error'    => $file['error'][$i],
-                    'size'     => $file['size'][$i],
-                ] + ['_id' => $id .'['. $i .']']; // add input name
-            }
-        }
-
-        return $return;
-    }
-}
+final class UriException extends HttpException
+{}

@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
+namespace froq\http\response;
 
-use froq\Exception;
+use froq\http\HttpException;
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
+ * Status Exception.
+ * @package froq\http\response
+ * @object  froq\http\response\StatusException
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-class HttpException extends Exception
+final class StatusException extends HttpException
 {}

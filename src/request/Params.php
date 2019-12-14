@@ -33,15 +33,20 @@ use froq\util\Arrays;
  * @package froq\http\request
  * @object  froq\http\request\Params
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   1.0, 4.0
+ * @static
  */
 final class Params
 {
     /**
-     * Constructor.
+     * All.
+     * @return array
+     * @since  4.0
      */
-    public function __construct()
-    {}
+    public static function all(): array
+    {
+        return ['get' => $_GET, 'post' => $_POST, 'cookie' => $_COOKIE];
+    }
 
     /**
      * Get.
@@ -49,7 +54,7 @@ final class Params
      * @param  any    $valueDefault
      * @return any
      */
-    public function get(string $name, $valueDefault = null)
+    public static function get(string $name, $valueDefault = null)
     {
         return Arrays::get($_GET, $name, $valueDefault);
     }
@@ -60,10 +65,39 @@ final class Params
      * @param  any        $valuesDefault
      * @return array
      */
-    public function gets(array $names = null, $valuesDefault = null): array
+    public static function gets(array $names = null, $valuesDefault = null): array
     {
         return ($names == null) ? $_GET // all
             : Arrays::getAll($_GET, $names, $valuesDefault);
+    }
+
+    /**
+     * Has get.
+     * @param  string $name
+     * @return bool
+     */
+    public static function hasGet(string $name): bool
+    {
+        return isset($_GET[$name]);
+    }
+
+    /**
+     * Has gets.
+     * @param  array|null $names
+     * @return bool
+     */
+    public static function hasGets(array $names = null): bool
+    {
+        if ($names == null) {
+            return !empty($_GET);
+        }
+
+        foreach ($names as $name) {
+            if (!isset($_GET[$name])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -72,7 +106,7 @@ final class Params
      * @param  any    $valueDefault
      * @return any
      */
-    public function post(string $name, $valueDefault = null)
+    public static function post(string $name, $valueDefault = null)
     {
         return Arrays::get($_POST, $name, $valueDefault);
     }
@@ -83,10 +117,39 @@ final class Params
      * @param  any        $valueDefaults
      * @return array
      */
-    public function posts(array $names = null, $valueDefaults = null): array
+    public static function posts(array $names = null, $valueDefaults = null): array
     {
         return ($names == null) ? $_POST // all
             : Arrays::getAll($_POST, $names, $valueDefaults);
+    }
+
+    /**
+     * Has post.
+     * @param  string $name
+     * @return bool
+     */
+    public static function hasPost(string $name): bool
+    {
+        return isset($_POST[$name]);
+    }
+
+    /**
+     * Has posts.
+     * @param  array|null $names
+     * @return bool
+     */
+    public static function hasPosts(array $names = null): bool
+    {
+        if ($names == null) {
+            return !empty($_POST);
+        }
+
+        foreach ($names as $name) {
+            if (!isset($_POST[$name])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -95,7 +158,7 @@ final class Params
      * @param  any    $valueDefault
      * @return any
      */
-    public function cookie(string $name, $valueDefault = null)
+    public static function cookie(string $name, $valueDefault = null)
     {
         return Arrays::get($_COOKIE, $name, $valueDefault);
     }
@@ -106,18 +169,38 @@ final class Params
      * @param  any        $valuesDefault
      * @return array
      */
-    public function cookies(array $names = null, $valuesDefault = null): array
+    public static function cookies(array $names = null, $valuesDefault = null): array
     {
         return ($names == null) ? $_COOKIE // all
             : Arrays::getAll($_COOKIE, $names, $valuesDefault);
     }
 
     /**
-     * To array.
-     * @return array.
+     * Has cookie.
+     * @param  string $name
+     * @return bool
      */
-    public function toArray(): array
+    public static function hasCookie(string $name): bool
     {
-        return ['get' => $_GET, 'post' => $_POST, 'cookie' => $_COOKIE];
+        return isset($_COOKIE[$name]);
+    }
+
+    /**
+     * Has cookies.
+     * @param  array|null $names
+     * @return bool
+     */
+    public static function hasCookies(array $names = null): bool
+    {
+        if ($names == null) {
+            return !empty($_COOKIE);
+        }
+
+        foreach ($names as $name) {
+            if (!isset($_COOKIE[$name])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

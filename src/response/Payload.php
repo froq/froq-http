@@ -24,16 +24,19 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
+namespace froq\http\response;
 
-use froq\Exception;
+use froq\http\response\payload\Payload as _Payload;
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
+ * Payload.
+ *
+ * Represents a shortcut to response.payload.Payload from in-service needs.
+ *
+ * @package froq\http\response
+ * @object  froq\http\response\Payload
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-class HttpException extends Exception
+class Payload extends _Payload
 {}

@@ -24,16 +24,39 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
-
-use froq\Exception;
+namespace froq\http\util;
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * Status trait.
+ *
+ * Represents a trait stack that used by Response object, utilizes accessing (to Response) status.
+ *
+ * @package  froq\http\util
+ * @object   froq\http\util\StatusTrait
+ * @author   Kerem Güneş <k-gun@mail.com>
+ * @since    4.0
+ * @internal Used in froq\http only.
  */
-class HttpException extends Exception
-{}
+trait StatusTrait
+{
+    /**
+     * Set status code.
+     * @param  int $code
+     * @return self
+     */
+    public function setStatusCode(int $code): self
+    {
+        $this->status->setCode($code);
+
+        return $this;
+    }
+
+    /**
+     * Get status code.
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return $this->status->getCode();
+    }
+}

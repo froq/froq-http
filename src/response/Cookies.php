@@ -26,27 +26,14 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
+use froq\collection\stack\MapStack;
+
 /**
- * Html response.
+ * Cookies.
  * @package froq\http\response
- * @object  froq\http\response\HtmlResponse
+ * @object  froq\http\response\Cookies
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-final class HtmlResponse extends Response
-{
-    /**
-     * Constructor.
-     * @param  int         $statusCode
-     * @param  any|null    $content
-     * @param  string|null $contentCharset
-     * @param  array|null  $headers
-     * @param  array|null  $cookies
-     */
-    public function __construct(int $statusCode, $content, string $contentCharset = null,
-        array $headers = null, array $cookies = null)
-    {
-        parent::__construct($statusCode, $content, Body::CONTENT_TYPE_HTML, $contentCharset,
-            $headers, $cookies);
-    }
-}
+final class Cookies extends MapStack
+{}

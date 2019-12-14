@@ -26,9 +26,13 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
-use froq\encoding\{Encoder, EncoderException};
-use froq\http\response\{Status, Body, Response as ResponseResponse};
+use froq\app\App;
+use froq\file\Util as FileUtil;
+use froq\encoding\Util as EncodingUtil;
+use froq\http\{Http, Message};
+use froq\http\message\Body;
+use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
+use froq\http\util\CookieException;
 
 /**
  * Response.
@@ -40,34 +44,45 @@ use froq\http\response\{Status, Body, Response as ResponseResponse};
 final class Response extends Message
 {
     /**
+     * Response trait.
+     * @object froq\http\response\ResponseTrait
+     */
+    use ResponseTrait;
+
+    /**
      * Status.
      * @var froq\http\response\Status
      */
-    private $status;
+    protected $status;
 
     /**
-     * Body.
-     * @var froq\http\response\Body
+     * Cookies.
+     * @var froq\http\response\Cookies
      */
-    private $body;
+    protected $cookies;
 
     /**
      * Constructor.
-     * @param froq\App $app
+     * @param froq\app\App $app
      */
     public function __construct(App $app)
     {
-        parent::__construct($app, parent::TYPE_RESPONSE);
+        parent::__construct($app, Message::TYPE_RESPONSE);
 
         $this->status = new Status();
-        $this->body = new Body();
+        $this->cookies = new Cookies();
 
-        $this->setHeaders($this->app->config('headers', []));
-        $this->setCookies($this->app->config('cookies', []));
+        [$headers, $cookies] = $app->config(['headers', 'cookies']);
+        foreach ((array) $headers as $name => $value) {
+            $this->headers->add($name, $value);
+        }
+        foreach ((array) $cookies as $name => $options) {
+            $this->cookies->add($name, Cookie::createFromOptions($name, (array) $options));
+        }
     }
 
     /**
-     * Set/Get status.
+     * Set/get status.
      * @param  ...$arguments
      * @return self|froq\http\response\Status
      */
@@ -77,47 +92,58 @@ final class Response extends Message
     }
 
     /**
-     * Set/get body.
+     * Set/get cookies.
      * @param  ...$arguments
-     * @return self|froq\http\response\Body
+     * @return self|froq\http\response\Cookies
      */
-    public function body(...$arguments)
+    public function cookies(...$arguments)
     {
-        return $arguments ? $this->setBody(...$arguments) : $this->body;
+        return $arguments ? $this->setCookies(...$arguments): $this->cookies;
     }
 
     /**
      * Redirect.
-     * @param  string     $location
+     * @param  string     $to
      * @param  int        $code
      * @param  array|null $headers
      * @param  array|null $cookies
      * @return self
      */
-    public function redirect(string $location, int $code = Status::FOUND, array $headers = null, array $cookies = null): self
+    public function redirect(string $to, int $code = Status::FOUND, array $headers = null,
+        array $cookies = null): self
     {
-        $this->setHeader('Location', trim($location))->setStatus($code);
+        $this->setHeader('Location', trim($to))->setStatus($code);
 
-        if ($headers != null) $this->setHeaders($headers);
-        if ($cookies != null) $this->setCookies($cookies);
+        $headers && $this->setHeaders($headers);
+        $cookies && $this->setCookies($cookies);
 
         return $this;
     }
 
     /**
      * Set status.
-     * @param  int    $code
-     * @param  string $text
+     * @param  int         $code
+     * @param  string|null $text
      * @return self
      */
     public function setStatus(int $code, string $text = null): self
     {
-        if ($text == null) {
-            $text = Status::getTextByCode($code);
-        }
-
         $this->status->setCode($code);
-        $this->status->setText($text);
+        $this->status->setText($text ?? Status::getTextByCode($code));
+
+        return $this;
+    }
+
+    /**
+     * Set cookies.
+     * @param  array $cookies
+     * @return self
+     */
+    public final function setCookies(array $cookies): self
+    {
+        foreach ($cookies as $name => $value) {
+            $this->setCookie($name, $value);
+        }
 
         return $this;
     }
@@ -126,19 +152,18 @@ final class Response extends Message
      * Send header.
      * @param  string  $name
      * @param  ?string $value
+     * @param  bool    $replace
      * @return void
-     * @throws froq\http\HttpException
+     * @throws froq\http\response\ResponseException
      */
     public function sendHeader(string $name, ?string $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
-            throw new HttpException(sprintf("Cannot use '%s()', headers already sent in %s:%s",
+            throw new ResponseException(sprintf('Cannot use %s(), headers already sent in %s:%s',
                 __method__, $file, $line));
         }
 
-        // null means remove
         if ($value === null) {
-            $this->removeHeader($name);
             header_remove($name);
         } else {
             header(sprintf('%s: %s', $name, $value), $replace);
@@ -151,8 +176,8 @@ final class Response extends Message
      */
     public function sendHeaders(): void
     {
-        foreach ((array) $this->headers as $name => $value) {
-            if (is_array($value)) { // @see Message.addHeader()
+        foreach ($this->headers as $name => $value) {
+            if (is_array($value)) {
                 foreach ($value as $value) {
                     $this->sendHeader($name, $value, false);
                 }
@@ -164,30 +189,40 @@ final class Response extends Message
 
     /**
      * Send cookie.
-     * @param  string  $name
-     * @param  ?string $value
-     * @param  int     $expire
-     * @param  string  $path
-     * @param  string  $domain
-     * @param  bool    $secure
-     * @param  bool    $httpOnly
+     * @param  string                                $name
+     * @param  string|froq\http\response\Cookie|null $value
+     * @param  array|null                            $options
      * @return void
-     * @throws froq\http\HttpException
+     * @throws froq\http\response\ResponseException, froq\http\util\CookieException
      */
-    public function sendCookie(string $name, ?string $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): void
+    public function sendCookie(string $name, $value, array $options = null): void
     {
-        // check name
-        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new HttpException("Invalid cookie name '{$name}' given");
+        if (headers_sent($file, $line)) {
+            throw new ResponseException(sprintf('Cannot use %s(), headers already sent in %s:%s',
+                __method__, $file, $line));
         }
 
-        $value = (string) $value;
-        if ($expire < 0) {
-            $value = '';
+        // Check name.
+        if (isset($value->nameChecked)) {
+            // Pass tick from setCookie().
+        } else {
+            if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
+                throw new CookieException('Invalid cookie name '. $name);
+            }
+
+            $session = $this->app->session();
+            if ($session != null && $session->getName() == $name) {
+                throw new CookieException(sprintf('Invalid cookie name %s, name %s reserved as '.
+                    'session name', $name, $name));
+            }
         }
 
-        setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+        $cookie = (
+            $value instanceof Cookie
+                ? $value : new Cookie($name, $value, $options)
+        );
+
+        header('Set-Cookie: '. $cookie->toString(), false);
     }
 
     /**
@@ -196,169 +231,138 @@ final class Response extends Message
      */
     public function sendCookies(): void
     {
-        foreach ((array) $this->cookies as $cookie) {
-            $this->sendCookie($cookie['name'], $cookie['value'], $cookie['expire'],
-                $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httpOnly']);
+        foreach ($this->cookies as $name => $cookie) {
+            $this->sendCookie($name, $cookie);
         }
     }
 
     /**
-     * Set body.
-     * @param  any $body
-     * @param  string|null $contentType
-     * @param  string|null $contentCharset
-     * @return self
-     * @throws froq\http\HttpException, froq\encoding\EncoderException
+     * Send body.
+     * @return void
      */
-    public function setBody($body, string $contentType = null, string $contentCharset = null): self
+    public function sendBody(): void
     {
-        if ($body != null) {
-            if ($body instanceof Response) {
-                $body = $body->getBody();
-            } elseif ($body instanceof ResponseResponse) {
-                $this->setStatus($body->getStatusCode())
-                     ->setHeaders($body->getHeaders())
-                     ->setCookies($body->getCookies());
+        $content = $this->body->getContent();
+        $contentAttributes = $this->body->getContentAttributes();
 
-                $body = new Body(
-                    $body->getContent(),
-                    $body->getContentType() ?? $this->body->getContentType(),
-                    $body->getContentCharset() ?? $this->body->getContentCharset()
-                );
-
-                // override, not needed all the stuff below
-                if ($body->isImage()) {
-                    $this->body = $body;
-
-                    return $this;
-                }
-            }
-
-            // no elseif, could be a Body already
-            if ($body instanceof Body) {
-                $body = $this->body
-                    ->setContent($body->getContent())
-                    ->setContentType($body->getContentType())
-                    ->setContentCharset($body->getContentCharset())
-                    ->getContent();
-            }
+        // Those n/a responses output nothing.
+        if ($this->body->isNone()) {
+            header('Content-Type: n/a');
+            header('Content-Length: 0');
         }
-
-        if ($body !== null) {
-            // json stuff (array/object returns could be encoded if content type is json)
-            $bodyType = gettype($body);
-            if ($bodyType != 'string') {
-                switch ($bodyType) {
-                    case 'array': case 'object':
-                        $jsonOptions = $this->app->config('response.json');
-                        if ($jsonOptions != null // could be emptied by developer to disable json
-                            && preg_match('~[/+]json~i', (string) $this->body->getContentType())
-                        ) {
-                            [$body, $error] = Encoder::jsonEncode($body, $jsonOptions);
-                            if ($error) {
-                                throw new EncoderException($error);
-                            }
-                        }
-                        break;
-                    case 'integer': case 'double':
-                        $body = (string) $body;
-                        break;
-                }
+        // Text contents (html, json, xml etc.).
+        elseif ($this->body->isText()) {
+            $content = ''. $content;
+            $contentType = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
+            $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
+            if ($contentCharset != '' && $contentCharset != Body::CONTENT_CHARSET_NA) {
+                $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
-            // not encoded/converted
-            if (!is_string($body)) {
-                throw new HttpException("Body content must be string, number, array or object".
-                    " (or encoded in invoked service method if froq\\http\\response\\JsonResponse".
-                    " not used, or content type set as application/json or text/json),".
-                    " '{$bodyType}' given");
-            }
-
-            // gzip stuff
-            $bodyLength = strlen($body);
-            if ($bodyLength > 0) { // prevent gzip corruption for 0 byte data
+            // Gzip stuff.
+            $len = strlen($content);
+            if ($len > 0) { // Prevent gzip corruption for 0 byte data.
                 $gzipOptions = $this->app->config('response.gzip');
                 $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
 
-                $canGzip = $gzipOptions != null // could be emptied by developer to disable gzip
-                    && strpos($acceptEncoding, 'gzip') !== false
-                    && $bodyLength >= ($gzipOptions['minlen'] ?? 1);
+                // Gzip options could be emptied by developer to disable gzip using null.
+                if ($gzipOptions != null && $len >= ($gzipOptions['minlen'] ?? 64)
+                    && strpos($acceptEncoding, 'gzip') !== false) {
+                    $content = EncodingUtil::gzipEncode($content, $gzipOptions, $error);
+                    if ($error == null) {
+                        // Cancel php's compression & add required headers.
+                        ini_set('zlib.output_compression', 'off');
 
-                if ($canGzip) {
-                    [$body, $error] = Encoder::gzipEncode($body, $gzipOptions);
-                    if ($error) {
-                        throw new EncoderException($error);
-                    }
+                        header('Vary: Accept-Encoding');
+                        header('Content-Encoding: gzip');
 
-                    // cancel php's compression & add required headers
-                    if (!headers_sent()) {
-                        ini_set('zlib.output_compression', 'Off');
+                        // This part is for debug purposes only.
+                        header('X-Content-Encoding: gzip');
                     }
-                    $this->setHeader('Content-Encoding', 'gzip');
-                    $this->setHeader('Vary', 'Accept-Encoding');
                 }
             }
 
-            // finally..
-            $this->body->setContent($body)
-                       ->setContentLength(strlen($body));
+            header('Content-Type: '. $contentType);
+            header('Content-Length: '. strlen($content));
+
+            print $content;
         }
+        // Image contents (jpeg, png and gif only).
+        elseif ($this->body->isImage()) {
+            [$image, $imageType, $imageModifiedAt] = [$content, $contentAttributes['type'],
+                $contentAttributes['modifiedAt']];
+            $xDimensions = imagesx($image) .'x'. imagesy($image);
 
-        // '' accepted for 'none' responses
-        if ($contentType !== null) {
-            $this->body->setContentType($contentType);
+            // Clean up above..
+            while (ob_get_level()) ob_end_clean();
+
+            ob_start();
+            switch ($imageType) {
+                case Body::CONTENT_TYPE_IMAGE_JPEG:
+                    $jpegQuality = (int) $this->app->config('response.file.jpegQuality', -1);
+                    imagejpeg($image, null, $jpegQuality) && imagedestroy($image);
+                    break;
+                case Body::CONTENT_TYPE_IMAGE_PNG:
+                    imagepng($image) && imagedestroy($image);
+                    break;
+                case Body::CONTENT_TYPE_IMAGE_GIF:
+                    imagegif($image) && imagedestroy($image);
+                    break;
+            }
+            $content = ob_get_clean();
+
+            header('Content-Type: '. $imageType);
+            header('Content-Length: '. strlen($content));
+            if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
+                if (!is_numeric($imageModifiedAt)) {
+                    $imageModifiedAt = strtotime($imageModifiedAt);
+                }
+                header('Last-Modified: '. Http::date($imageModifiedAt));
+            }
+            header('X-Dimensions: '. $xDimensions);
+
+            print $content;
         }
-        if ($contentCharset !== null) {
-            $this->body->setContentCharset($contentCharset);
-        }
+        // File contents (actually file downloads).
+        elseif ($this->body->isFile()) {
+            [$file, $fileType, $fileName, $fileSize, $fileMime, $fileModifiedAt] = [
+                $content, $contentAttributes['type'], $contentAttributes['name'],
+                $contentAttributes['size'], $contentAttributes['mime'], $contentAttributes['modifiedAt']];
 
-        return $this;
-    }
+            // If rate limit is null or -1, than file size will be used as rate limit.
+            $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
+            if ($rateLimit < 1) {
+                $rateLimit = $fileSize;
+            }
+            $rateLimitX = FileUtil::formatBytes($rateLimit);
 
-    /**
-     * Get body.
-     * @return any
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
+            // Clean up above..
+            while (ob_get_level()) ob_end_clean();
 
-    /**
-     * Send.
-     * @return void
-     */
-    public function send(): void
-    {
-        // status
-        if ($this->httpVersion == Http::VERSION_2_0) {
-            header(sprintf('%s %s', $this->httpVersion, $this->status->getCode()));
-        } elseif ($this->httpVersion == Http::VERSION_1_0 || $this->httpVersion == Http::VERSION_1_1) {
-            header(sprintf('%s %s %s', $this->httpVersion, $this->status->getCode(), $this->status->getText()));
-        }
+            header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
+            header('Content-Length: '. $fileSize);
+            header('Content-Disposition: attachment; filename="'. $fileName .'"');
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: no-cache');
+            header('Pragma: no-cache');
+            header('Expires: '. Http::date(0));
+            if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
+                if (!is_numeric($fileModifiedAt)) {
+                    $fileModifiedAt = strtotime($fileModifiedAt);
+                }
+                header('Last-Modified: '. Http::date($fileModifiedAt));
+            }
+            header('X-Rate-Limit: '. $rateLimitX .'/s');
 
-        [$contentType, $contentCharset, $contentLength] = [
-            $this->body->getContentType(), $this->body->getContentCharset(), $this->body->getContentLength()
-        ];
-
-        // content type/charset?/length
-        if ($this->body->isImage()) {
-            $this->sendHeader('Content-Type', $contentType);
-        } elseif ($contentType == '') {
-            $this->sendHeader('Content-Type', Body::CONTENT_TYPE_NA);
-        } elseif ($contentCharset == '' || in_array($contentType, [Body::CONTENT_TYPE_NA, Body::CONTENT_TYPE_NONE])) {
-            $this->sendHeader('Content-Type', $contentType);
+            while (!feof($file) && !connection_aborted()) {
+                print fread($file, $rateLimit);
+                sleep(1); // Apply rate limit.
+            }
+            fclose($file);
         } else {
-            $this->sendHeader('Content-Type', sprintf('%s; charset=%s', $contentType, $contentCharset));
+            // Nope, nothing to print..
         }
-        $this->sendHeader('Content-Length', (string) $contentLength);
-
-        // print it baby!
-        print $this->body->toString();
     }
-
-    // @wait
-    // public function sendFile($file): void {}
 
     /**
      * End.
@@ -366,8 +370,19 @@ final class Response extends Message
      */
     public function end(): void
     {
+        $code = $this->status->getCode();
+        if (!http_response_code($code)) {
+            if (Http::parseVersion($this->httpVersion) > 2.0) {
+                header(sprintf('%s %s', $this->httpVersion, $code));
+            } else {
+                header(sprintf('%s %s %s', $this->httpVersion, $code, $this->status->getText()));
+            }
+        }
+        header('Status: '. $code);
+        header('X-Status: '. $code);
+
         $this->sendHeaders();
         $this->sendCookies();
-        $this->send();
+        $this->sendBody();
     }
 }

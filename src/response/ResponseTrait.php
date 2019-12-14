@@ -24,16 +24,44 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
+namespace froq\http\response;
 
-use froq\Exception;
+use froq\http\util\{HeaderTrait, CookieTrait, ContentTrait, StatusTrait};
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * Response Trait.
+ *
+ * Respresents a trait entry and collects internal traits in that used by http.Response.
+ *
+ * @package  froq\http\response
+ * @object   froq\http\response\ResponseTrait
+ * @author   Kerem Güneş <k-gun@mail.com>
+ * @since    4.0
+ * @internal Used in froq\http only.
  */
-class HttpException extends Exception
-{}
+trait ResponseTrait
+{
+    /**
+     * Header trait.
+     * @object froq\http\util\HeaderTrait
+     */
+    use HeaderTrait;
+
+    /**
+     * Cookie trait.
+     * @object froq\http\util\CookieTrait
+     */
+    use CookieTrait;
+
+    /**
+     * Status trait.
+     * @object froq\http\util\StatusTrait
+     */
+    use StatusTrait;
+
+    /**
+     * Content trait.
+     * @object froq\http\util\ContentTrait
+     */
+    use ContentTrait;
+}

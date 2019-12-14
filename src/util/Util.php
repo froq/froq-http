@@ -24,29 +24,47 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
+namespace froq\http\util;
+
+use Error;
 
 /**
- * Image response.
- * @package froq\http\response
- * @object  froq\http\response\ImageResponse
+ * Util.
+ * @package froq\http\util
+ * @object  froq\http\util\Util
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.9
+ * @since   4.0
+ * @static
  */
-final class ImageResponse extends Response
+final class Util
 {
     /**
-     * Constructor.
-     * @param  int             $statusCode
-     * @param  string|resource $content     Image.
-     * @param  string|null     $contentType Image type.
-     * @param  array|null      $headers
-     * @param  array|null      $cookies
+     * Get headers.
+     * @param  bool $lowerKeys
+     * @return array
      */
-    public function __construct(int $statusCode, $content, string $contentType,
-        array $headers = null, array $cookies = null)
+    public static function getHeaders(bool $lowerKeys = true): array
     {
-        parent::__construct($statusCode, $content, $contentType, '',
-            $headers, $cookies);
+        // buraya client util'i tasiyalim
+
+        // try {
+        //     $headers = (array) getallheaders();
+        // } catch (Error $e) {
+        //     $headers = (function ($ret = []) {
+        //         foreach (($_SERVER ?? []) as $key => $value) {
+        //             if (stripos(strval($key), 'HTTP_') === 0) {
+        //                 $ret[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
+        //             }
+        //         }
+        //         return $ret;
+        //     })();
+        // }
+
+        // // Lowerize keys.
+        // if ($lowerKeys) {
+        //     $headers = array_change_key_case($headers);
+        // }
+
+        // return $headers;
     }
 }

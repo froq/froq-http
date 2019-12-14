@@ -24,29 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
+namespace froq\http\util;
+
+use froq\http\HttpException;
 
 /**
- * Json response.
- * @package froq\http\response
- * @object  froq\http\response\JsonResponse
+ * Header Exception.
+ * @package froq\http\util
+ * @object  froq\http\util\HeaderException
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-final class JsonResponse extends Response
-{
-    /**
-     * Constructor.
-     * @param  int         $statusCode
-     * @param  any|null    $content
-     * @param  string|null $contentCharset
-     * @param  array|null  $headers
-     * @param  array|null  $cookies
-     */
-    public function __construct(int $statusCode, $content, string $contentCharset = null,
-        array $headers = null, array $cookies = null)
-    {
-        parent::__construct($statusCode, $content, Body::CONTENT_TYPE_JSON, $contentCharset,
-            $headers, $cookies);
-    }
-}
+final class HeaderException extends HttpException
+{}

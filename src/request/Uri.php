@@ -26,7 +26,9 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\HttpException;
+use froq\inters\Stringable;
+use froq\collection\ComponentCollection;
+use froq\http\request\UriException;
 
 /**
  * Uri.
@@ -35,27 +37,13 @@ use froq\http\HttpException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   1.0
  */
-final class Uri
+final class Uri extends ComponentCollection implements Stringable
 {
     /**
      * Source.
-     * @var string
+     * @var string|array|null
      */
     private $source;
-
-    /**
-     * Source data.
-     * @var string
-     */
-    private $sourceData;
-
-    /**
-     * Source data keys.
-     * @var array
-     */
-    private $sourceDataKeys = [
-        'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'
-    ];
 
     /**
      * Segments.
@@ -65,94 +53,56 @@ final class Uri
 
     /**
      * Segments root.
-     * @var string
+     * @var ?string
      */
     private $segmentsRoot;
 
     /**
      * Constructor.
-     * @param string|array $source
+     * @param  string|array|null $source
+     * @throws froq\http\request\UriException If invalid source given.
      */
     public function __construct($source = null)
     {
+        // Set component names.
+        parent::__construct(['scheme', 'host', 'port', 'user', 'pass', 'path', 'query',
+            'fragment']);
+
         if ($source != null) {
             $this->source = $source;
-            $sourceType = gettype($source);
-            if ($sourceType == 'string') {
-                $this->sourceData = parse_url($source);
-            } elseif ($sourceType == 'array') {
-                foreach ($source as $key => $value) {
-                    $this->__call('set'. $key, [$value]);
+            if (is_string($source)) {
+                $source = parse_url($source);
+            }
+
+            if (is_array($source)) {
+                foreach ($source as $name => $value) {
+                    $this->set($name, $value);
                 }
             } else {
-                throw new HttpException(sprintf("Only 'string/array' type sources allowed for %s ".
-                    "object '{$sourceType}' given", self::class));
+                throw new UriException(sprintf('Invalid source, string, array and null sources '.
+                    'allowed for %s, %s given', __class__, gettype($source)));
             }
         }
     }
 
     /**
-     * String magic.
-     * @return string
+     * Get source.
+     * @return string|array|null
      */
-    public function __toString()
+    public function getSource()
     {
-        return $this->toString();
-    }
-
-    /**
-     * Call magic.
-     * @param  string     $method
-     * @param  array|null $methodArguments
-     * @return int|string|self
-     * @throws froq\http\HttpException
-     */
-    public function __call(string $method, array $methodArguments = null)
-    {
-        $cmd = substr($method, 0, 3);
-        if ($cmd != 'set' && $cmd != 'get') {
-            throw new HttpException(sprintf("Only 'set/get' methods allowed for %s::__call() magic",
-                self::class));
-        }
-
-        $key = strtolower(substr($method, 3));
-        if (!in_array($key, $this->sourceDataKeys)) {
-            throw new HttpException(sprintf("No field such '%s' exists on %s", $key, self::class));
-        }
-
-        // setters
-        if ($cmd == 'set') {
-            // sorry babe, we love hard..
-            if (!array_key_exists(0, $methodArguments)) {
-                throw new HttpException(sprintf("No argument given for %s::set%s()", self::class, ucfirst($key)));
-            }
-            $value = $methodArguments[0];
-
-            if ($key == 'port' && !is_int($value)) {
-                throw new HttpException(sprintf("'port' field must be an integer for %s", self::class));
-            } elseif ($value !== null && !is_string($value)) {
-                throw new HttpException(sprintf("All fields must be string (except 'port') for %s", self::class));
-            }
-
-            $this->sourceData[$key] = $value;
-
-            return $this;
-        }
-
-        if ($cmd == 'get') { // getters
-            return $this->sourceData[$key] ?? null;
-        }
+        return $this->source;
     }
 
     /**
      * Segment.
      * @param  int $i
-     * @param  any $valueDefault
+     * @param  any $default
      * @return any
      */
-    public function segment(int $i, $valueDefault = null)
+    public function segment(int $i, $default = null)
     {
-        return $this->segments[$i] ?? $valueDefault;
+        return $this->segments[$i] ?? $default;
     }
 
     /**
@@ -185,31 +135,34 @@ final class Uri
 
     /**
      * Generate segments.
-     * @param  string $root
+     * @param  string|null $root
      * @return void
+     * @throws froq\http\request\UriException If URI path does not match with root.
      */
     public function generateSegments(string $root = null): void
     {
-        $path = rawurldecode($this->sourceData['path'] ?? '');
-        if ($path && $path != '/') {
-            // drop root if exists
-            if ($root && $root != '/') {
+        $path = rawurldecode($this->get('path') ?: '');
+        if ($path != '' && $path != '/') {
+            // Drop root if exists.
+            if ($root != '' && $root != '/') {
                 $root = '/'. trim($root, '/'). '/';
-                // prevent wrong generate action
+
+                // Prevent wrong generate action.
                 if (strpos($path, $root) === false) {
-                    throw new HttpException("Uri path '{$path}' has no root such '{$root}'");
+                    throw new UriException(sprintf('Uri path %s has no root such %s', $path,
+                        $root));
                 }
 
                 $path = substr($path, strlen($root));
 
-                // update segments root
+                // Update segments root.
                 $this->segmentsRoot = $root;
             }
 
             $segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
             if ($segments != null) {
-                // push index next
                 foreach ($segments as $i => $segment) {
+                    // Push index next (skip 0), so provide a (1,2,3) array for segments.
                     $this->segments[$i + 1] = $segment;
                 }
             }
@@ -217,42 +170,31 @@ final class Uri
     }
 
     /**
-     * To array.
-     * @return array
+     * @inheritDoc froq\inters\Stringable
      */
-    public function toArray(): array
+    public function toString(): string
     {
-        return $this->sourceData;
-    }
+        $ret = '';
 
-    /**
-     * To string.
-     * @param  array|null $excludedKeys
-     * @return string
-     */
-    public function toString(array $excludedKeys = null): string
-    {
-        $sourceData = $this->sourceData;
-        if ($excludedKeys != null) {
-            $sourceData = array_filter($sourceData, function ($key) use ($excludedKeys) {
-                return !in_array($key, $excludedKeys);
-            }, 2);
+        @ ['scheme' => $scheme, 'host'     => $host, 'port' => $port,
+           'user'   => $user,   'pass'     => $pass, 'path' => $path,
+           'query'  => $query,  'fragment' => $fragment] = $this->toArray();
+
+        if ($scheme != null) {
+            $ret .= $scheme . '://';
+        }
+        if ($user != null || $pass != null) {
+            ($user != null) && $ret .= $user;
+            ($pass != null) && $ret .= ':'. $pass;
+            $ret .= '@';
         }
 
-        $return = '';
+        ($host != null)     && $ret .= $host;
+        ($port != null)     && $ret .= ':'. $port;
+        ($path != null)     && $ret .= $path;
+        ($query != null)    && $ret .= '?'. $query;
+        ($fragment != null) && $ret .= '#'. $fragment;
 
-        !empty($sourceData['scheme']) && $return .= $sourceData['scheme'] . '://';
-        if (!empty($sourceData['user']) || !empty($sourceData['pass'])) {
-            !empty($sourceData['user']) && $return .= $sourceData['user'];
-            !empty($sourceData['pass']) && $return .= ':'. $sourceData['pass'];
-            $return .= '@';
-        }
-        !empty($sourceData['host']) && $return .= $sourceData['host'];
-        !empty($sourceData['port']) && $return .= ':'. $sourceData['port'];
-        !empty($sourceData['path']) && $return .= $sourceData['path'];
-        !empty($sourceData['query']) && $return .= '?'. $sourceData['query'];
-        !empty($sourceData['fragment']) && $return .= '#'. $sourceData['fragment'];
-
-        return $return;
+        return $ret;
     }
 }

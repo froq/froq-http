@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
+namespace froq\http\message;
 
-use froq\Exception;
+use froq\collection\stack\MapStack;
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
+ * Headers.
+ * @package froq\http\message
+ * @object  froq\http\message\Headers
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-class HttpException extends Exception
+final class Headers extends MapStack
 {}

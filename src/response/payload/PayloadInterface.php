@@ -24,16 +24,24 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
-
-use froq\Exception;
+namespace froq\http\response\payload;
 
 /**
- * Http Exception.
- * @package froq\http
- * @object  froq\http\HttpException
+ * Payload Interface.
+ *
+ * Used by child objects only that derived from Payload object.
+ *
+ * @package froq\http\response\payload
+ * @object  froq\http\response\payload\PayloadInterface
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-class HttpException extends Exception
-{}
+interface PayloadInterface
+{
+    /**
+     * Handle.
+     * @return string|resource
+     * @throws froq\http\response\payload\PayloadException
+     */
+    public function handle();
+}

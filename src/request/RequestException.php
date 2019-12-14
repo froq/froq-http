@@ -26,14 +26,14 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
+use froq\http\HttpException;
+
 /**
- * Xml response.
+ * Request Exception.
  * @package froq\http\response
- * @object  froq\http\response\XmlResponse
+ * @object  froq\http\response\RequestException
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
+ * @since   4.0
  */
-final class XmlResponse extends Response
-{
-    // @todo
-}
+class RequestException extends HttpException
+{}

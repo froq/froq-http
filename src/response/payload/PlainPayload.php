@@ -24,57 +24,48 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\request;
+namespace froq\http\response\payload;
+
+use froq\http\Response as Container;
+use froq\http\message\Body;
+use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
 /**
- * Files.
- * @package froq\http\request
- * @object  froq\http\request\Files
+ * Plain Payload.
+ * @package froq\http\response\Payload
+ * @object  froq\http\response\Payload\PlainPayload
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0, 4.0
+ * @since   3.0, 4.0
  */
-final /* static */ class Files
+final class PlainPayload extends Payload implements PayloadInterface
 {
     /**
-     * All.
-     * @return array
-     * @since  4.0
+     * Constructor.
+     * @param int                     $code
+     * @param string                  $content
+     * @param array|null              $attributes
+     * @param froq\http\Response|null $container
      */
-    public static function all(): array
+    public function __construct(int $code, string $content, array $attributes = null,
+        Container $container = null)
     {
-        return self::normalizeFiles();
+        $attributes['type'] = Body::CONTENT_TYPE_TEXT_PLAIN;
+
+        parent::__construct($code, $content, $attributes, $container);
     }
 
     /**
-     * Normalize files (two-dims only).
-     * @param  array|null $files
-     * @return array
+     * @inheritDoc froq\http\response\PayloadInterface
      */
-    public static function normalizeFiles(array $files = null): array
+    public function handle()
     {
-        $files = $files ?? $_FILES;
-        $return = [];
+        $content = $this->getContent();
 
-        foreach ($files as $id => $file) {
-            if (!isset($file['name'])) {
-                continue;
-            }
-            if (!is_array($file['name'])) {
-                $return[] = $file + ['_id' => $id]; // add input name
-                continue;
-            }
-
-            foreach ($file['name'] as $i => $name) {
-                $return[] = [
-                    'name'     => $name,
-                    'type'     => $file['type'][$i],
-                    'tmp_name' => $file['tmp_name'][$i],
-                    'error'    => $file['error'][$i],
-                    'size'     => $file['size'][$i],
-                ] + ['_id' => $id .'['. $i .']']; // add input name
-            }
+        if (!is_null($content) && !is_string($content)) {
+            throw new PayloadException(sprintf('Content must be null or string for plain payloads'.
+                ', %s given', gettype($content)));
         }
 
-        return $return;
+        return $content;
     }
 }

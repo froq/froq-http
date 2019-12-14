@@ -26,27 +26,14 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
+use froq\http\HttpException;
+
 /**
- * Plain response.
+ * Response Exception.
  * @package froq\http\response
- * @object  froq\http\response\PlainResponse
+ * @object  froq\http\response\ResponseException
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.0
+ * @since   4.0
  */
-final class PlainResponse extends Response
-{
-    /**
-     * Constructor.
-     * @param  int         $statusCode
-     * @param  any|null    $content
-     * @param  string|null $contentCharset
-     * @param  array|null  $headers
-     * @param  array|null  $cookies
-     */
-    public function __construct(int $statusCode, $content, string $contentCharset = null,
-        array $headers = null, array $cookies = null)
-    {
-        parent::__construct($statusCode, $content, Body::CONTENT_TYPE_PLAIN, $contentCharset,
-            $headers, $cookies);
-    }
-}
+class ResponseException extends HttpException
+{}

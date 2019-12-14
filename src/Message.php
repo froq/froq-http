@@ -26,7 +26,11 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
+use froq\app\App;
+use froq\util\Util;
+use froq\http\HttpException;
+use froq\http\message\{Headers, Body};
+use froq\http\response\payload\Payload;
 
 /**
  * Message.
@@ -46,7 +50,7 @@ abstract class Message
 
     /**
      * App.
-     * @var froq\App
+     * @var froq\app\App
      */
     protected $app;
 
@@ -64,31 +68,34 @@ abstract class Message
 
     /**
      * Headers.
-     * @var array
+     * @var froq\http\message\Headers
      */
-    protected $headers = [];
+    protected $headers;
 
     /**
-     * Cookies.
-     * @var array
+     * Body.
+     * @var froq\http\message\Body
      */
-    protected $cookies = [];
+    protected $body;
 
     /**
      * Constructor.
-     * @param froq\App $app
-     * @param int      $type
+     * @param froq\app\App $app
+     * @param int          $type
      */
     public function __construct(App $app, int $type)
     {
         $this->app = $app;
         $this->type = $type;
         $this->httpVersion = Http::detectVersion();
+
+        $this->headers = new Headers();
+        $this->body = new Body();
     }
 
     /**
      * Get app.
-     * @return froq\App
+     * @return froq\app\App
      */
     public final function getApp(): App
     {
@@ -99,7 +106,7 @@ abstract class Message
      * Get type.
      * @return int
      */
-    public function getType(): int
+    public final function getType(): int
     {
         return $this->type;
     }
@@ -114,54 +121,23 @@ abstract class Message
     }
 
     /**
-     * Has header.
-     * @param  string $name
-     * @return bool
+     * Set/get headers.
+     * @param  ...$arguments
+     * @return self|froq\http\message\Headers
      */
-    public final function hasHeader(string $name): bool
+    public final function headers(...$arguments)
     {
-        return isset($this->headers[$name]);
+        return $arguments ? $this->setHeaders(...$arguments) : $this->headers;
     }
 
     /**
-     * Add header.
-     * @param string  $name
-     * @param ?string $value
-     * @param bool    $replace
+     * Set/get body.
+     * @param  ...$arguments
+     * @return self|froq\http\message\Body
      */
-    public final function addHeader(string $name, ?string $value, bool $replace = true): self
+    public final function body(...$arguments)
     {
-        if ($this->type == self::TYPE_REQUEST) {
-            throw new HttpException('You cannot modify request headers');
-        }
-
-        if ($replace) {
-            $this->headers[$name] = $value;
-        } else {
-            $this->headers[$name] = (array) ($this->headers[$name] ?? []);
-            $this->headers[$name][] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set header.
-     * @notice All these stored headers should be sent before sending the last output to the client
-     * with self.send() method.
-     * @param  string  $name
-     * @param  ?string $value
-     * @return self
-     */
-    public final function setHeader(string $name, ?string $value): self
-    {
-        if ($this->type == self::TYPE_REQUEST) {
-            throw new HttpException('You cannot modify request headers');
-        }
-
-        $this->headers[$name] = $value;
-
-        return $this;
+        return $arguments ? $this->setBody(...$arguments) : $this->body;
     }
 
     /**
@@ -179,204 +155,123 @@ abstract class Message
     }
 
     /**
-     * Get header.
-     * @param  string  $name
-     * @param  ?string $valueDefault
-     * @return ?string
-     */
-    public final function getHeader(string $name, ?string $valueDefault = null): ?string
-    {
-        if (isset($this->headers[$name])) {
-            return $this->headers[$name];
-        }
-
-        $_name = strtolower($name);
-        foreach ($this->headers as $name => $value) {
-            if ($_name == strtolower($name)) {
-                return $value;
-            }
-        }
-
-        return $valueDefault;
-    }
-
-    /**
      * Get headers.
-     * @return array
+     * @return froq\http\message\Headers
      */
-    public final function getHeaders(): array
+    public final function getHeaders(): Headers
     {
         return $this->headers;
     }
 
     /**
-     * Remove header.
-     * @param  string $name
-     * @param  bool   $defer
-     * @return self
-     */
-    public final function removeHeader(string $name, bool $defer = true): self
-    {
-        if ($this->type == self::TYPE_REQUEST) {
-            throw new HttpException('You cannot modify request headers');
-        }
-
-        unset($this->headers[$name]);
-        if (!$defer) { // remove instantly
-            header_remove($name);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Has cookie.
-     * @param  string $name
-     * @return bool
-     */
-    public final function hasCookie(string $name): bool
-    {
-        return isset($this->cookies[$name]);
-    }
-
-    /**
-     * Set cookie.
-     * @notice All these stored cookies should be sent before sending the last output to the client
-     * with self::send() method.
-     * @param  string            $name
-     * @param  string|array|null $value
-     * @param  int               $expire
-     * @param  string            $path
-     * @param  string            $domain
-     * @param  bool              $secure
-     * @param  bool              $httpOnly
-     * @throws froq\http\HttpException
-     * @return self
-     */
-    public final function setCookie(string $name, $value, int $expire = 0,
-        string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = false): self
-    {
-        if ($this->type == self::TYPE_REQUEST) {
-            throw new HttpException('You cannot modify request cookies');
-        }
-
-        // check name
-        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new HttpException("Invalid cookie name '{$name}' given");
-        }
-
-        if (is_array($value)) {
-            @ [$value, $expire, $path, $domain, $secure, $httpOnly] = $value;
-        }
-
-        $this->cookies[$name] = [
-            'name'   => $name,                'value'    => strval($value),  'expire' => intval($expire),
-            'path'   => strval($path ?? '/'), 'domain'   => strval($domain),
-            'secure' => !!$secure,            'httpOnly' => !!$httpOnly
-        ];
-
-        return $this;
-    }
-
-    /**
-     * Set cookies.
-     * @param  array $cookies
-     * @return self
-     */
-    public final function setCookies(array $cookies): self
-    {
-        foreach ($cookies as $name => $value) {
-            $this->setCookie($name, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get cookie.
-     * @param  string  $name
-     * @param  ?string $valueDefault
-     * @return ?string
-     */
-    public final function getCookie(string $name, ?string $valueDefault = null): ?string
-    {
-        return $this->cookies[$name] ?? $valueDefault;
-    }
-
-    /**
-     * Get cookies.
-     * @return array
-     */
-    public final function getCookies(): array
-    {
-        return $this->cookies;
-    }
-
-    /**
-     * Remove cookie.
-     * @param  string $name
-     * @param  bool   $defer
+     * Set body.
+     * @param  any|null   $content
+     * @param  array|null $contentAttributes
+     * @param  bool|null  $isError @internal
      * @return self
      * @throws froq\http\HttpException
      */
-    public function removeCookie(string $name, bool $defer = false): self
+    public final function setBody($content, array $contentAttributes = null, bool $isError = null): self
     {
-        if ($this->type == self::TYPE_REQUEST) {
-            throw new HttpException('You cannot modify request cookies');
-        }
+        // $isError is an internal option and string content needed here.
+        // @see App.error() and App.endOutputBuffer().
+        if ($isError) {
+            $this->body->setContent($content)
+                       ->setContentAttributes($contentAttributes);
+        } elseif ($this->isRequest()) {
+            if ($content != null) {
+                $this->body->setContent($content)
+                           ->setContentAttributes($contentAttributes);
+            }
+        } elseif ($this->isResponse()) {
+            // Payload contents.
+            if ($content instanceof Payload) {
+                $payload = $content;
+            }
+            // Text contents.
+            elseif (is_string($content)) {
+                // Prepare defaults with type.
+                $contentAttributes = array_merge([
+                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
+                ], (array) $contentAttributes);
 
-        unset($this->cookies[$name]);
-        if (!$defer) { // remove instantly
-            $this->sendCookie($name, null, 0);
+                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
+            }
+            // File/image contents.
+            elseif (is_resource($content)) {
+                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
+            }
+            // All others.
+            else {
+                // Prepare defaults with type.
+                $contentAttributes = array_merge([
+                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
+                ], (array) $contentAttributes);
+
+                $contentType = (string) ($contentAttributes['type'] ?? '');
+                $contentValueType = Util::getType($content, true, true);
+
+                if ($contentValueType == 'array' || $contentValueType == 'object') {
+                    if ($contentType == '') {
+                        throw new HttpException(sprintf('Missing content type for %s type '.
+                            'content value', $contentValueType));
+                    }
+                    if (!preg_match('~(json|xml)~', $contentType)) {
+                        throw new HttpException(sprintf('Invalid content value type for %s type '.
+                            'content, content type must be such type "xxx/json" or "xxx/xml"',
+                            $contentValueType));
+                    }
+                } elseif ($contentValueType != 'null' && $contentValueType != 'scalar') {
+                    throw new HttpException(sprintf('Invalid content value type %s',
+                        $contentValueType));
+                }
+
+                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
+            }
+
+            // @override
+            [$content, $contentAttributes, $responseAttributes] = $payload->process($this);
+
+            // Set original arguments or their overrides, finally..
+            $this->body->setContent($content)
+                       ->setContentAttributes($contentAttributes);
+
+            if (isset($responseAttributes)) {
+                @ [$code, $headers, $cookies] = $responseAttributes;
+
+                $code    && $this->setStatus($code);
+                $headers && $this->setHeaders($headers);
+                $cookies && $this->setCookies($cookies);
+            }
         }
 
         return $this;
-    }
-
-    /**
-     * Header.
-     * @alias of self.getHeader(),self.setHeader(),self.addHeader()
-     */
-    public final function header(string $name, string $value = null, bool $replace = true)
-    {
-        if ($value == null) {
-            return $this->getHeader($name);
-        }
-
-        return $replace ? $this->setHeader($name, $value)
-                        : $this->addHeader($name, $value, false);
-    }
-
-    /**
-     * Headers.
-     * @alias of self.getHeaders(),self.setHeaders()
-     */
-    public final function headers(array $headers = null): array
-    {
-        return ($headers == null) ? $this->getHeaders() : $this->setHeaders($headers);
-    }
-
-    /**
-     * Cookie.
-     * @alias of self.getCookie(),self.setCookie()
-     */
-    public final function cookie(string $name, string $value = null)
-    {
-        return ($value === null) ? $this->getCookie($name) : $this->setCookie($name, $value);
-    }
-
-    /**
-     * Cookies.
-     * @alias of self.getCookies(),self.setCookies()
-     */
-    public final function cookies(array $cookies = null): array
-    {
-        return ($cookies == null) ? $this->getCookies() : $this->getCookies($cookies);
     }
 
     /**
      * Get body.
-     * @return any
+     * @return froq\http\message\Body
      */
-    public abstract function getBody();
+    public final function getBody(): Body
+    {
+        return $this->body;
+    }
+
+    /**
+     * Is request.
+     * @return bool
+     */
+    public final function isRequest(): bool
+    {
+        return $this->type == self::TYPE_REQUEST;
+    }
+
+    /**
+     * Is response.
+     * @return bool
+     */
+    public final function isResponse(): bool
+    {
+        return $this->type == self::TYPE_RESPONSE;
+    }
 }

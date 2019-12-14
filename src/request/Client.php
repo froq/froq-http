@@ -56,15 +56,27 @@ final class Client
     private $language;
 
     /**
+     * User agent.
+     * @var string
+     */
+    private $userAgent;
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
         $this->ip = Util::getClientIp();
 
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $this->locale = str_replace('-', '_', substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5));
-            $this->language = substr($this->locale, 0, 2);
+        $acceptLanguage = trim($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
+        if ($acceptLanguage != '') {
+            $this->locale = substr(str_replace('-', '_', $acceptLanguage), 0, 5);
+            $this->language = substr($acceptLanguage, 0, 2);
+        }
+
+        $userAgent = Util::getClientUserAgent();
+        if ($userAgent != null) {
+            $this->userAgent = substr($userAgent, 0, 250); // far enough for safety
         }
     }
 
@@ -93,5 +105,14 @@ final class Client
     public function getLanguage(): ?string
     {
         return $this->language;
+    }
+
+    /**
+     * Get user agent.
+     * @return ?string
+     */
+    public function getUserAgent(): ?string
+    {
+        return $this->userAgent;
     }
 }

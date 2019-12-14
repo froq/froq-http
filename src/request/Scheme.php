@@ -24,68 +24,74 @@
  */
 declare(strict_types=1);
 
-namespace froq\http;
+namespace froq\http\request;
+
+use froq\inters\Stringable;
 
 /**
- * Http.
- *
- * A static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocol versions both related
- * utility methods.
- *
- * @package froq\http
- * @object  froq\http\Http
+ * Scheme.
+ * @package froq\http\request
+ * @object  froq\http\request\Scheme
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0
- * @static
+ * @since   4.0
  */
-final class Http
+final class Scheme implements Stringable
 {
     /**
-     * Versions.
+     * Names.
      * @const string
      */
-    public const VERSION_1_0     = 'HTTP/1.0',
-                 VERSION_1_1     = 'HTTP/1.1',
-                 VERSION_2_0     = 'HTTP/2.0',
-                 VERSION_DEFAULT = self::VERSION_1_1;
+    public const HTTP  = 'http',
+                 HTTPS = 'https';
 
     /**
-     * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
-     * @const string
+     * Name.
+     * @var string
      */
-    public const DATE_FORMAT = 'D, d M Y H:i:s \G\M\T';
+    private $name;
 
     /**
-     * Detect version.
-     * @return string
+     * Constructor.
+     * @param string $name
      */
-    public static function detectVersion(): string
+    public function __construct(string $name)
     {
-        return $_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT;
+        $this->setName($name);
     }
 
     /**
-     * Parse version.
-     * @param  string $version
-     * @return float
-     * @since  4.0
+     * Set name.
+     * @param  string $name
+     * @return void
      */
-    public static function parseVersion(string $version): float
+    public function setName(string $name): void
     {
-        if (strstr($version, 'HTTP/')) {
-            $version = substr($version, 5, 3);
-        }
-        return (float) $version;
+        $this->name = strtolower($name);
     }
 
     /**
-     * Date.
-     * @param  int|null $time
+     * Get name.
      * @return string
-     * @since  4.0
      */
-    public static function date(int $time = null): string
+    public function getName(): string
     {
-        return gmdate(self::DATE_FORMAT, $time ?? time());
+        return $this->name;
+    }
+
+    /**
+     * Is secure.
+     * @return bool
+     */
+    public function isSecure(): bool
+    {
+        return $this->name == self::HTTPS;
+    }
+
+    /**
+     * @inheritDoc froq\inters\Stringable
+     */
+    public function toString(): string
+    {
+        return $this->name;
     }
 }

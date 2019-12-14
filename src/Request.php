@@ -26,10 +26,12 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
+use froq\app\App;
 use froq\util\Util;
-use froq\http\request\{Method, Uri, Client, Params, Files};
-use froq\http\response\Body;
+use froq\http\Message;
+use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
+use froq\http\util\Util as HttpUtil;
+use Error;
 
 /**
  * Request.
@@ -41,106 +43,69 @@ use froq\http\response\Body;
 final class Request extends Message
 {
     /**
+     * Request trait.
+     * @object froq\http\request\RequestTrait
+     */
+    use RequestTrait;
+
+    /**
      * Method.
      * @var froq\http\request\Method
      */
-    private $method;
+    protected $method;
 
     /**
-     * URI.
-     * @var string
+     * Scheme.
+     * @var froq\http\request\Scheme
      */
-    private $uri;
+    protected $scheme;
 
     /**
-     * Body.
-     * @var string|array
+     * Uri.
+     * @var froq\http\request\Uri
      */
-    private $body;
-
-    /**
-     * Body raw.
-     * @var string
-     */
-    private $bodyRaw;
-
-    /**
-     * Time.
-     * @var int
-     */
-    private $time;
-
-    /**
-     * Request time float.
-     * @var float
-     */
-    private $timeFloat;
+    protected $uri;
 
     /**
      * Client.
      * @var froq\http\request\Client
      */
-    private $client;
-
-    /**
-     * Params.
-     * @var froq\http\request\Params
-     */
-    private $params;
-
-    /**
-     * Files.
-     * @var froq\http\request\Files
-     */
-    private $files;
+    protected $client;
 
     /**
      * Constructor.
-     * @param froq\App
+     * @param froq\app\App
      */
     public function __construct(App $app)
     {
-        parent::__construct($app, parent::TYPE_REQUEST);
+        parent::__construct($app, Message::TYPE_REQUEST);
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
+        $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
 
-        $this->uri = new Uri(sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['SERVER_NAME'],
-            $_SERVER['REQUEST_URI']));
-        $this->uri->generateSegments($this->app->root());
-
-        // fix dotted GET keys
-        $_GET = $this->loadGlobalVar('GET');
-
-        $headers = $this->loadHttpHeaders();
-        foreach ($headers as $name => $value) {
-            $this->headers[$name] = $value;
-        }
-
-        // set/parse body for override methods
-        $body = (string) file_get_contents('php://input');
-        $this->body = $body;
-        $this->bodyRaw = $body;
-
-        if (stripos(trim($headers['Content-Type'] ?? ''), 'application/x-www-form-urlencoded') === 0) {
-            // fix dotted POST keys
-            $this->body = $_POST = $this->loadGlobalVar('POST', $body);
-        } else {
-            $this->body = $_POST;
-        }
-
-        // fix dotted COOKIE keys
-        $cookies = $this->loadGlobalVar('COOKIE');
-        foreach ($cookies as $name => $value) {
-            $this->cookies[$name] = $value;
-        }
-        $_COOKIE = $cookies;
-
-        $this->time = (int) $_SERVER['REQUEST_TIME'];
-        $this->timeFloat = (float) $_SERVER['REQUEST_TIME_FLOAT'];
+        $this->uri = new Uri(Util::getCurrentUrl());
+        $this->uri->generateSegments($app->root());
 
         $this->client = new Client();
-        $this->params = new Params();
-        $this->files = new Files($_FILES);
+
+        $headers = $this->loadHeaders();
+        foreach ($headers as $name => $value) {
+            $this->headers->add($name, $value);
+        }
+
+        // Set/parse body for overriding methods (put, delete etc. or even for get).
+        // Note that 'php://input' is not available with enctype="multipart/form-data".
+        // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
+        $content = file_get_contents('php://input');
+        $contentType = strtolower($headers['content-type'] ?? '');
+
+        $_GET = $this->loadGlobal('GET');
+        if ($content != '' && stripos($contentType, 'multipart/form-data') === false) {
+            $_POST = $this->loadGlobal('POST', $content);
+        }
+        $_COOKIE = $this->loadGlobal('COOKIE');
+
+        $this->setBody($content, ['type' => $contentType]);
     }
 
     /**
@@ -153,48 +118,21 @@ final class Request extends Message
     }
 
     /**
+     * Scheme.
+     * @return froq\http\request\Scheme
+     */
+    public function scheme(): Scheme
+    {
+        return $this->scheme;
+    }
+
+    /**
      * Uri.
      * @return froq\http\request\Uri
      */
     public function uri(): Uri
     {
         return $this->uri;
-    }
-
-    /**
-     * Get body.
-     * @return ?array
-     */
-    public function getBody(): ?array
-    {
-        return $this->body;
-    }
-
-    /**
-     * Get body raw.
-     * @return ?string
-     */
-    public function getBodyRaw(): ?string
-    {
-        return $this->bodyRaw;
-    }
-
-    /**
-     * Get time.
-     * @return int
-     */
-    public function getTime(): int
-    {
-        return $this->time;
-    }
-
-    /**
-     * Get time float.
-     * @return float
-     */
-    public function getTimeFloat(): float
-    {
-        return $this->timeFloat;
     }
 
     /**
@@ -208,127 +146,61 @@ final class Request extends Message
 
     /**
      * Params.
-     * @return froq\http\request\Params
+     * @return array
      */
-    public function params(): Params
+    public function params(): array
     {
-        return $this->params;
+        return Params::all();
     }
 
     /**
      * Files.
-     * @return froq\http\request\Files
-     */
-    public function files(): Files
-    {
-        return $this->files;
-    }
-
-    /**
-     * Get param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
-     */
-    public function getParam(string $name, $valueDefault = null)
-    {
-        return $this->params->get($name, $valueDefault);
-    }
-
-    /**
-     * Get params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
      * @return array
      */
-    public function getParams(array $names = null, $valuesDefault = null): array
+    public function files(): array
     {
-        return $this->params->gets($names, $valuesDefault);
+        return Files::all();
     }
 
     /**
-     * Post param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
-     */
-    public function postParam(string $name, $valueDefault = null)
-    {
-        return $this->params->post($name, $valueDefault);
-    }
-
-    /**
-     * Post params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * Load headers.
      * @return array
      */
-    public function postParams(array $names = null, $valuesDefault = null): array
+    private function loadHeaders(): array
     {
-        return $this->params->posts($names, $valuesDefault);
-    }
-
-    /**
-     * Cookie param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
-     */
-    public function cookieParam(string $name, $valueDefault = null)
-    {
-        return $this->params->cookie($name, $valueDefault);
-    }
-
-    /**
-     * Cookie params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
-     * @return array
-     */
-    public function cookieParams(array $names = null, $valuesDefault = null): array
-    {
-        return $this->params->cookies($names, $valuesDefault);
-    }
-
-    /**
-     * Load http headers.
-     * @return array
-     */
-    private function loadHttpHeaders(): array
-    {
-        if (function_exists('getallheaders')) {
-            $headers = getallheaders(); // apache
-        } else {
+        try {
+            $headers = (array) getallheaders();
+        } catch (Error $e) {
             $headers = [];
-            foreach ($_SERVER as $key => $value) {
-                if (stripos(strval($key), 'HTTP_') === 0) {
-                    $headers[
-                        // normalize key
-                        implode('-', array_map('ucwords', explode('_', strtolower(substr($key, 5)))))
-                    ] = $value;
+            foreach ((array) $_SERVER as $key => $value) {
+                if (strpos((string) $key, 'HTTP_') === 0) {
+                    $headers[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
                 }
             }
         }
 
-        // content issues
+        // Lowerize keys.
+        $headers = array_change_key_case($headers, CASE_LOWER);
+
+        // Content issues.
         if (isset($_SERVER['CONTENT_TYPE'])) {
-            $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
+            $headers['content-type'] = $_SERVER['CONTENT_TYPE'];
         }
         if (isset($_SERVER['CONTENT_LENGTH'])) {
-            $headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
+            $headers['content-length'] = $_SERVER['CONTENT_LENGTH'];
         }
         if (isset($_SERVER['CONTENT_MD5'])) {
-            $headers['Content-MD5'] = $_SERVER['CONTENT_MD5'];
+            $headers['content-md5'] = $_SERVER['CONTENT_MD5'];
         }
 
-        // authorization issues
-        if (!isset($headers['Authorization'])) {
+        // Authorization issues.
+        if (!isset($headers['authorization'])) {
             if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
-                $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+                $headers['authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
             } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
-                $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
+                $headers['authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
             } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
-                $headers['Authorization'] = 'Basic '.
+                $headers['authorization'] = 'Basic '.
                     base64_encode($_SERVER['PHP_AUTH_USER'] .':'. ($_SERVER['PHP_AUTH_PW'] ?? ''));
             }
         }
@@ -337,12 +209,12 @@ final class Request extends Message
     }
 
     /**
-     * Load global var (without changing dotted param keys).
+     * Load global (without changing dotted keys).
      * @param  string $name
      * @param  string $source
      * @return array
      */
-    private function loadGlobalVar(string $name, string $source = ''): array
+    private function loadGlobal(string $name, string $source = ''): array
     {
         $encode = false;
 
@@ -351,7 +223,7 @@ final class Request extends Message
                 $source = $_SERVER['QUERY_STRING'] ?? '';
                 $encode = true;
                 break;
-            case 'POST': // pass
+            case 'POST': // Pass.
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
