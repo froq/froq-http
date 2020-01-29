@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\interfaces\Stringable;
+use froq\common\interfaces\Stringable;
 
 /**
  * Method.
@@ -197,7 +197,7 @@ final class Method implements Stringable
     }
 
     /**
-     * @inheritDoc froq\interfaces\Stringable
+     * @inheritDoc froq\common\interfaces\Stringable
      */
     public function toString(): string
     {
