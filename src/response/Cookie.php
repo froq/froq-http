@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\http\response;
 
 use froq\util\Arrays;
-use froq\inters\Stringable;
+use froq\interfaces\Stringable;
 use froq\collection\ComponentCollection;
 use froq\http\{Http, util\CookieException};
 
@@ -140,7 +140,7 @@ final class Cookie extends ComponentCollection implements Stringable
     }
 
     /**
-     * @inheritDoc froq\inters\Stringable
+     * @inheritDoc froq\interfaces\Stringable
      */
     public function toString(): string
     {
