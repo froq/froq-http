@@ -68,7 +68,7 @@ final class Uri extends ComponentCollection implements Stringable
         parent::__construct(['scheme', 'host', 'port', 'user', 'pass', 'path', 'query',
             'fragment']);
 
-        if ($source != null) {
+        if ($source) {
             $this->source = $source;
             if (is_string($source)) {
                 $source = parse_url($source);
@@ -142,9 +142,9 @@ final class Uri extends ComponentCollection implements Stringable
     public function generateSegments(string $root = null): void
     {
         $path = rawurldecode($this->get('path') ?: '');
-        if ($path != '' && $path != '/') {
+        if ($path && $path != '/') {
             // Drop root if exists.
-            if ($root != '' && $root != '/') {
+            if ($root && $root != '/') {
                 $root = '/'. trim($root, '/'). '/';
 
                 // Prevent wrong generate action.
@@ -159,12 +159,11 @@ final class Uri extends ComponentCollection implements Stringable
                 $this->segmentsRoot = $root;
             }
 
-            $segments = array_map('trim', preg_split('~/+~', $path, -1, PREG_SPLIT_NO_EMPTY));
-            if ($segments != null) {
-                foreach ($segments as $i => $segment) {
-                    // Push index next (skip 0), so provide a (1,2,3) array for segments.
-                    $this->segments[$i + 1] = $segment;
-                }
+            $segments = array_map('trim', preg_split('~/+~', $path, -1, 1));
+
+            foreach ($segments as $i => $segment) {
+                // Push index next (skip 0), so provide a (1,2,3) array for segments.
+                $this->segments[$i + 1] = $segment;
             }
         }
     }
@@ -180,20 +179,20 @@ final class Uri extends ComponentCollection implements Stringable
            'user'   => $user,   'pass'     => $pass, 'path' => $path,
            'query'  => $query,  'fragment' => $fragment] = $this->toArray();
 
-        if ($scheme != null) {
+        if ($scheme) {
             $ret .= $scheme . '://';
         }
-        if ($user != null || $pass != null) {
-            ($user != null) && $ret .= $user;
-            ($pass != null) && $ret .= ':'. $pass;
+        if ($user || $pass) {
+            $user && $ret .= $user;
+            $pass && $ret .= ':'. $pass;
             $ret .= '@';
         }
 
-        ($host != null)     && $ret .= $host;
-        ($port != null)     && $ret .= ':'. $port;
-        ($path != null)     && $ret .= $path;
-        ($query != null)    && $ret .= '?'. $query;
-        ($fragment != null) && $ret .= '#'. $fragment;
+        $host     && $ret .= $host;
+        $port     && $ret .= ':'. $port;
+        $path     && $ret .= $path;
+        $query    && $ret .= '?'. $query;
+        $fragment && $ret .= '#'. $fragment;
 
         return $ret;
     }
