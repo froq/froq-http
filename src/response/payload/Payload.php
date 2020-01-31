@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\traits\AttributeTrait;
+use froq\common\traits\AttributeTrait;
 use froq\file\Mime;
 use froq\http\Response as Container;
 use froq\http\response\payload\{PayloadInterface, JsonPayload, XmlPayload, FilePayload, ImagePayload};
@@ -42,7 +42,8 @@ class Payload
 {
     /**
      * Attribute trait.
-     * @object froq\traits\AttributeTrait
+     *
+     * @see froq\common\traits\AttributeTrait
      */
     use AttributeTrait;
 
