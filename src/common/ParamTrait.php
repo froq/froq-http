@@ -24,18 +24,18 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\common;
 
 use froq\http\request\Params;
-use froq\http\util\ParamException;
+use froq\http\common\ParamException;
 
 /**
- * Param trait.
+ * Param Trait.
  *
  * Represents a trait stack that used by Request object, utilizes accessing (to Request) params.
  *
- * @package  froq\http\util
- * @object   froq\http\util\ParamTrait
+ * @package  froq\http\common
+ * @object   froq\http\common\ParamTrait
  * @author   Kerem Güneş <k-gun@mail.com>
  * @since    4.0
  * @internal Used in froq\http only.
@@ -47,7 +47,7 @@ trait ParamTrait
      * @param  string|array|null $name
      * @param  any|null          $valueDefault
      * @return any|null
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function get($name = null, $valueDefault = null)
     {
@@ -88,7 +88,7 @@ trait ParamTrait
      * Has get.
      * @param  string|array|null $name
      * @return bool
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function hasGet($name = null): bool
     {
@@ -128,7 +128,7 @@ trait ParamTrait
      * @param  string|array|null $name
      * @param  any|null          $valueDefault
      * @return any|null
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function post($name = null, $valueDefault = null)
     {
@@ -169,7 +169,7 @@ trait ParamTrait
      * Has post.
      * @param  string|array|null $name
      * @return bool
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function hasPost($name = null): bool
     {
@@ -209,7 +209,7 @@ trait ParamTrait
      * @param  string|array|null $name
      * @param  any|null          $valueDefault
      * @return any|null
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function cookie($name = null, $valueDefault = null)
     {
@@ -250,7 +250,7 @@ trait ParamTrait
      * Has cookie.
      * @param  string|array|null $name
      * @return bool
-     * @throws froq\http\util\ParamException
+     * @throws froq\http\common\ParamException
      */
     public function hasCookie($name = null): bool
     {

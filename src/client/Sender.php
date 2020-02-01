@@ -24,39 +24,60 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\client;
+
+use froq\http\client\{Client, Response};
+use froq\http\client\curl\{Curl, CurlMulti};
 
 /**
- * Status trait.
- *
- * Represents a trait stack that used by Response object, utilizes accessing (to Response) status.
- *
- * @package  froq\http\util
- * @object   froq\http\util\StatusTrait
- * @author   Kerem Güneş <k-gun@mail.com>
- * @since    4.0
- * @internal Used in froq\http only.
+ * Sender.
+ * @package froq\http\client
+ * @object  froq\http\client\Sender
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0, 4.0 Renamed as Sender from MessageEmitter.
+ * @static
  */
-trait StatusTrait
+final class Sender
 {
     /**
-     * Set status code.
-     * @param  int $code
-     * @return self
+     * Send.
+     * @param  froq\http\client\Client $client
+     * @return froq\http\client\Response
      */
-    public function setStatusCode(int $code): self
+    public static function send(Client $client): Response
     {
-        $this->status->setCode($code);
+        $curl = new Curl($client);
+        $client->setCurl($curl);
 
-        return $this;
+        $runner = $curl;
+        $runner->run();
+
+        $response = $client->getResponse();
+
+        return $response;
     }
 
     /**
-     * Get status code.
-     * @return int
+     * Send async.
+     * @param  array<froq\http\client\Client> $clients
+     * @return array<froq\http\client\Response>
      */
-    public function getStatusCode(): int
+    public static function sendAsync(array $clients): array
     {
-        return $this->status->getCode();
+        foreach ($clients as $client) {
+            $curl = new Curl($client);
+            $client->setCurl($curl);
+        }
+
+        $runner = new CurlMulti($clients);
+        $runner->run();
+
+        $responses = [];
+
+        foreach ($runner->getClients() as $client) {
+            $responses[] = $client->getResponse();
+        }
+
+        return $responses;
     }
 }

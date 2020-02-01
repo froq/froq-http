@@ -157,8 +157,11 @@ final class Body
      */
     public function isImage(): bool
     {
-        return in_array($this->getAttribute('type'), [self::CONTENT_TYPE_IMAGE_JPEG,
-            self::CONTENT_TYPE_IMAGE_PNG, self::CONTENT_TYPE_IMAGE_GIF]);
+        return in_array($this->getAttribute('type'), [
+            self::CONTENT_TYPE_IMAGE_JPEG,
+            self::CONTENT_TYPE_IMAGE_PNG,
+            self::CONTENT_TYPE_IMAGE_GIF
+        ]);
     }
 
     /**
@@ -168,7 +171,9 @@ final class Body
      */
     public function isFile(): bool
     {
-        return in_array($this->getAttribute('type'), [self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
-            self::CONTENT_TYPE_APPLICATION_DOWNLOAD]);
+        return in_array($this->getAttribute('type'), [
+            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
+            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
+        ]);
     }
 }

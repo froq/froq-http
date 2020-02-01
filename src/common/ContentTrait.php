@@ -24,44 +24,61 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
-
-use froq\http\common\{HeaderTrait, CookieTrait, ContentTrait, StatusTrait};
+namespace froq\http\common;
 
 /**
- * Response Trait.
+ * Content Trait.
  *
- * Respresents a trait entry and collects internal traits in that used by http.Response.
+ * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
+ * Request & Response) / modifying (of Response only) body's content type & content charset.
  *
- * @package  froq\http\response
- * @object   froq\http\response\ResponseTrait
+ * @package  froq\http\common
+ * @object   froq\http\common\ContentTrait
  * @author   Kerem Güneş <k-gun@mail.com>
  * @since    4.0
  * @internal Used in froq\http only.
  */
-trait ResponseTrait
+trait ContentTrait
 {
     /**
-     * Header trait.
-     * @see froq\http\common\HeaderTrait
+     * Set content type.
+     * @param  ?string $type
+     * @return self
      */
-    use HeaderTrait;
+    public function setContentType(?string $type): self
+    {
+        $this->body->setAttribute('type', $type);
+
+        return $this;
+    }
 
     /**
-     * Cookie trait.
-     * @see froq\http\common\CookieTrait
+     * Get content type.
+     * @return ?string
      */
-    use CookieTrait;
+    public function getContentType(): ?string
+    {
+        return $this->body->getAttribute('type');
+    }
 
     /**
-     * Status trait.
-     * @see froq\http\common\StatusTrait
+     * Set content charset.
+     * @param  ?string $charset
+     * @return self
      */
-    use StatusTrait;
+    public function setContentCharset(?string $charset): self
+    {
+        $this->body->setAttribute('charset', $charset);
+
+        return $this;
+    }
 
     /**
-     * Content trait.
-     * @see froq\http\common\ContentTrait
+     * Get content charset.
+     * @return ?string
      */
-    use ContentTrait;
+    public function getContentCharset(): ?string
+    {
+        return $this->body->getAttribute('charset');
+    }
 }

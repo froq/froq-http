@@ -29,7 +29,8 @@ namespace froq\http\response;
 use froq\util\Arrays;
 use froq\common\interfaces\Stringable;
 use froq\collection\ComponentCollection;
-use froq\http\{Http, util\CookieException};
+use froq\http\Http;
+use froq\http\common\CookieException;
 
 /**
  * Cookie.
@@ -56,7 +57,7 @@ final class Cookie extends ComponentCollection implements Stringable
      * @param  string      $name
      * @param  scalar|null $value
      * @param  array|null  $options
-     * @throws froq\http\util\CookieException
+     * @throws froq\http\common\CookieException
      */
     public function __construct(string $name, $value, array $options = null)
     {
@@ -173,11 +174,11 @@ final class Cookie extends ComponentCollection implements Stringable
             }
         }
 
-        if ($path != '')     $ret .= '; Path='. $path;
-        if ($domain != '')   $ret .= '; Domain='. $domain;
-        if ($secure)         $ret .= '; Secure';
-        if ($httpOnly)       $ret .= '; HttpOnly';
-        if ($sameSite != '') $ret .= '; SameSite='. $sameSite;
+        $path     && $ret .= '; Path='. $path;
+        $domain   && $ret .= '; Domain='. $domain;
+        $secure   && $ret .= '; Secure';
+        $httpOnly && $ret .= '; HttpOnly';
+        $sameSite && $ret .= '; SameSite='. $sameSite;
 
         return $ret;
     }

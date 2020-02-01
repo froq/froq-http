@@ -32,7 +32,7 @@ use froq\encoding\Util as EncodingUtil;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
-use froq\http\util\CookieException;
+use froq\http\common\CookieException;
 
 /**
  * Response.
@@ -45,7 +45,7 @@ final class Response extends Message
 {
     /**
      * Response trait.
-     * @object froq\http\response\ResponseTrait
+     * @see froq\http\response\ResponseTrait
      */
     use ResponseTrait;
 
@@ -193,13 +193,15 @@ final class Response extends Message
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
-     * @throws froq\http\response\ResponseException, froq\http\util\CookieException
+     * @throws froq\http\response\ResponseException, froq\http\common\CookieException
      */
     public function sendCookie(string $name, $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException(sprintf('Cannot use %s(), headers already sent in %s:%s',
-                __method__, $file, $line));
+            throw new ResponseException(sprintf(
+                'Cannot use %s(), headers already sent in %s:%s',
+                __method__, $file, $line
+            ));
         }
 
         // Check name.

@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\client\curl;
 
-use froq\http\HttpException;
+use froq\http\client\ClientException;
 
 /**
- * Header Exception.
- * @package froq\http\util
- * @object  froq\http\util\HeaderException
+ * Curl Exception.
+ * @package froq\http\client\curl
+ * @object  froq\http\client\curl\CurlException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class HeaderException extends HttpException
+class CurlException extends ClientException
 {}

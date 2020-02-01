@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\common;
 
 use froq\http\HttpException;
 
 /**
  * Param Exception.
- * @package froq\http\util
- * @object  froq\http\util\ParamException
+ * @package froq\http\common
+ * @object  froq\http\common\ParamException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */

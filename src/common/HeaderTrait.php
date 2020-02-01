@@ -24,18 +24,18 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\common;
 
-use froq\http\util\HeaderException;
+use froq\http\common\HeaderException;
 
 /**
- * Header trait.
+ * Header Trait.
  *
  * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
  * Request & Response) / modifying (of Response only) headers.
  *
- * @package  froq\http\util
- * @object   froq\http\util\HeaderTrait
+ * @package  froq\http\common
+ * @object   froq\http\common\HeaderTrait
  * @author   Kerem Güneş <k-gun@mail.com>
  * @since    4.0
  * @internal Used in froq\http only.
@@ -75,7 +75,7 @@ trait HeaderTrait
      * @param  string  $name
      * @param  ?string $value
      * @return self
-     * @throws froq\http\util\HeaderException
+     * @throws froq\http\common\HeaderException
      */
     public function addHeader(string $name, ?string $value): self
     {
@@ -93,7 +93,7 @@ trait HeaderTrait
      * @param  string  $name
      * @param  ?string $value
      * @return self
-     * @throws froq\http\util\HeaderException
+     * @throws froq\http\common\HeaderException
      */
     public function setHeader(string $name, ?string $value): self
     {
@@ -124,7 +124,7 @@ trait HeaderTrait
      * @param  string $name
      * @param  bool   $defer
      * @return self
-     * @throws froq\http\util\HeaderException
+     * @throws froq\http\common\HeaderException
      */
     public function removeHeader(string $name, bool $defer = false): self
     {

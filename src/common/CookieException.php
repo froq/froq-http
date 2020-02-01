@@ -24,47 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\common;
 
-use Error;
+use froq\http\HttpException;
 
 /**
- * Util.
- * @package froq\http\util
- * @object  froq\http\util\Util
+ * Cookie Exception.
+ * @package froq\http\common
+ * @object  froq\http\common\CookieException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
- * @static
  */
-final class Util
-{
-    /**
-     * Get headers.
-     * @param  bool $lowerKeys
-     * @return array
-     */
-    public static function getHeaders(bool $lowerKeys = true): array
-    {
-        // buraya client util'i tasiyalim
-
-        // try {
-        //     $headers = (array) getallheaders();
-        // } catch (Error $e) {
-        //     $headers = (function ($ret = []) {
-        //         foreach (($_SERVER ?? []) as $key => $value) {
-        //             if (stripos(strval($key), 'HTTP_') === 0) {
-        //                 $ret[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
-        //             }
-        //         }
-        //         return $ret;
-        //     })();
-        // }
-
-        // // Lowerize keys.
-        // if ($lowerKeys) {
-        //     $headers = array_change_key_case($headers);
-        // }
-
-        // return $headers;
-    }
-}
+final class CookieException extends HttpException
+{}

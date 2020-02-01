@@ -24,61 +24,88 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
+namespace froq\http\client;
+
+use froq\http\client\Message;
 
 /**
- * Content trait.
- *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
- * Request & Response) / modifying (of Response only) body's content type & content charset.
- *
- * @package  froq\http\util
- * @object   froq\http\util\ContentTrait
- * @author   Kerem Güneş <k-gun@mail.com>
- * @since    4.0
- * @internal Used in froq\http only.
+ * Response.
+ * @package froq\http\client
+ * @object  froq\http\client\Response
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   3.0, 4.0
  */
-trait ContentTrait
+final class Response extends Message
 {
     /**
-     * Set content type.
-     * @param  ?string $type
+     * Status.
+     * @var int
+     */
+    private int $status;
+
+    /**
+     * Parsed body.
+     * @var ?array
+     */
+    private ?array $parsedBody = null;
+
+    /**
+     * Constructor.
+     * @param int         $status
+     * @param string|null $body
+     * @param array|null  $parsedBody
+     * @param array|null  $headers
+     */
+    public function __construct(int $status = 0, string $body = null, array $parsedBody = null,
+        array $headers = null)
+    {
+        $this->setStatus($status);
+
+        isset($parsedBody) && $this->setParsedBody($parsedBody);
+
+        parent::__construct(Message::TYPE_RESPONSE, null, $headers, $body);
+    }
+
+    /**
+     * Set status.
+     * @param  int $status
      * @return self
      */
-    public function setContentType(?string $type): self
+    public function setStatus(int $status): self
     {
-        $this->body->setAttribute('type', $type);
+        $this->status = $status;
 
         return $this;
     }
 
     /**
-     * Get content type.
-     * @return ?string
+     * Get status.
+     * @return int
      */
-    public function getContentType(): ?string
+    public function getStatus(): int
     {
-        return $this->body->getAttribute('type');
+        return $this->status;
     }
 
     /**
-     * Set content charset.
-     * @param  ?string $charset
+     * Set parsed body.
+     * @param  array $parsedBody
      * @return self
      */
-    public function setContentCharset(?string $charset): self
+    public function setParsedBody(array $parsedBody): self
     {
-        $this->body->setAttribute('charset', $charset);
+        $this->parsedBody = $parsedBody;
 
         return $this;
     }
 
     /**
-     * Get content charset.
-     * @return ?string
+     * Get parsed body.
+     * @return ?array
      */
-    public function getContentCharset(): ?string
+    public function getParsedBody(): ?array
     {
-        return $this->body->getAttribute('charset');
+        return $this->parsedBody;
     }
 }
+

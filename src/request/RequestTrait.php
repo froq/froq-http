@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\util\{HeaderTrait, CookieTrait, ParamTrait};
+use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
 
 /**
  * Request Trait.
@@ -43,19 +43,19 @@ trait RequestTrait
 {
     /**
      * Header trait.
-     * @object froq\http\util\HeaderTrait
+     * @see froq\http\common\HeaderTrait
      */
     use HeaderTrait;
 
     /**
      * Cookie trait.
-     * @object froq\http\util\CookieTrait
+     * @see froq\http\common\CookieTrait
      */
     use CookieTrait;
 
     /**
      * Param trait.
-     * @object froq\http\util\ParamTrait
+     * @see froq\http\common\ParamTrait
      */
     use ParamTrait;
 }

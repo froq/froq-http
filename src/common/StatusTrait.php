@@ -24,16 +24,39 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\util;
-
-use froq\http\HttpException;
+namespace froq\http\common;
 
 /**
- * Cookie Exception.
- * @package froq\http\util
- * @object  froq\http\util\CookieException
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   4.0
+ * Status Trait.
+ *
+ * Represents a trait stack that used by Response object, utilizes accessing (to Response) status.
+ *
+ * @package  froq\http\common
+ * @object   froq\http\common\StatusTrait
+ * @author   Kerem Güneş <k-gun@mail.com>
+ * @since    4.0
+ * @internal Used in froq\http only.
  */
-final class CookieException extends HttpException
-{}
+trait StatusTrait
+{
+    /**
+     * Set status code.
+     * @param  int $code
+     * @return self
+     */
+    public function setStatusCode(int $code): self
+    {
+        $this->status->setCode($code);
+
+        return $this;
+    }
+
+    /**
+     * Get status code.
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return $this->status->getCode();
+    }
+}

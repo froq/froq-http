@@ -76,7 +76,7 @@ final class Client
 
         $userAgent = Util::getClientUserAgent();
         if ($userAgent != null) {
-            $this->userAgent = substr($userAgent, 0, 250); // far enough for safety
+            $this->userAgent = substr($userAgent, 0, 250); // Far enough for safety.
         }
     }
 

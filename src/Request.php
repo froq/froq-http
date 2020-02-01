@@ -30,7 +30,6 @@ use froq\app\App;
 use froq\util\Util;
 use froq\http\Message;
 use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
-use froq\http\util\Util as HttpUtil;
 use Error;
 
 /**
