@@ -43,7 +43,7 @@ final class Request extends Message
 {
     /**
      * Request trait.
-     * @object froq\http\request\RequestTrait
+     * @see froq\http\request\RequestTrait
      */
     use RequestTrait;
 
