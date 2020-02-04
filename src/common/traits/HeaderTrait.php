@@ -24,9 +24,9 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\common;
+namespace froq\http\common\traits;
 
-use froq\http\common\HeaderException;
+use froq\http\common\exceptions\HeaderException;
 
 /**
  * Header Trait.
@@ -34,8 +34,8 @@ use froq\http\common\HeaderException;
  * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
  * Request & Response) / modifying (of Response only) headers.
  *
- * @package  froq\http\common
- * @object   froq\http\common\HeaderTrait
+ * @package  froq\http\common\traits
+ * @object   froq\http\common\traits\HeaderTrait
  * @author   Kerem Güneş <k-gun@mail.com>
  * @since    4.0
  * @internal Used in froq\http only.
@@ -75,7 +75,7 @@ trait HeaderTrait
      * @param  string  $name
      * @param  ?string $value
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws froq\http\common\exceptions\HeaderException
      */
     public function addHeader(string $name, ?string $value): self
     {
@@ -93,7 +93,7 @@ trait HeaderTrait
      * @param  string  $name
      * @param  ?string $value
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws froq\http\common\exceptions\HeaderException
      */
     public function setHeader(string $name, ?string $value): self
     {
@@ -114,9 +114,8 @@ trait HeaderTrait
      */
     public function getHeader(string $name, string $valueDefault = null)
     {
-        return $this->headers->get($name)
-            ?? $this->headers->get(strtolower($name))
-            ?? $valueDefault;
+        return $this->headers->get($name, $valueDefault)
+            ?? $this->headers->get(strtolower($name), $valueDefault)
     }
 
     /**
@@ -124,7 +123,7 @@ trait HeaderTrait
      * @param  string $name
      * @param  bool   $defer
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws froq\http\common\exceptions\HeaderException
      */
     public function removeHeader(string $name, bool $defer = false): self
     {

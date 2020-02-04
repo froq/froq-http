@@ -26,13 +26,10 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\common\{HeaderTrait, CookieTrait, ContentTrait, StatusTrait};
+use froq\http\common\traits\{HeaderTrait, CookieTrait};
 
 /**
  * Response Trait.
- *
- * Respresents a trait entry and collects internal traits in that used by http.Response.
- *
  * @package  froq\http\response
  * @object   froq\http\response\ResponseTrait
  * @author   Kerem Güneş <k-gun@mail.com>
@@ -43,25 +40,76 @@ trait ResponseTrait
 {
     /**
      * Header trait.
-     * @see froq\http\common\HeaderTrait
+     * @see froq\http\common\traits\HeaderTrait
      */
     use HeaderTrait;
 
     /**
      * Cookie trait.
-     * @see froq\http\common\CookieTrait
+     * @see froq\http\common\traits\CookieTrait
      */
     use CookieTrait;
 
     /**
-     * Status trait.
-     * @see froq\http\common\StatusTrait
+     * Set status code.
+     * @param  int $code
+     * @return self
      */
-    use StatusTrait;
+    public function setStatusCode(int $code): self
+    {
+        $this->status->setCode($code);
+
+        return $this;
+    }
 
     /**
-     * Content trait.
-     * @see froq\http\common\ContentTrait
+     * Get status code.
+     * @return int
      */
-    use ContentTrait;
+    public function getStatusCode(): int
+    {
+        return $this->status->getCode();
+    }
+
+    /**
+     * Set content type.
+     * @param  ?string $type
+     * @return self
+     */
+    public function setContentType(?string $type): self
+    {
+        $this->body->setAttribute('type', $type);
+
+        return $this;
+    }
+
+    /**
+     * Get content type.
+     * @return ?string
+     */
+    public function getContentType(): ?string
+    {
+        return $this->body->getAttribute('type');
+    }
+
+    /**
+     * Set content charset.
+     * @param  ?string $charset
+     * @return self
+     */
+    public function setContentCharset(?string $charset): self
+    {
+        $this->body->setAttribute('charset', $charset);
+
+        return $this;
+    }
+
+    /**
+     * Get content charset.
+     * @return ?string
+     */
+    public function getContentCharset(): ?string
+    {
+        return $this->body->getAttribute('charset');
+    }
 }

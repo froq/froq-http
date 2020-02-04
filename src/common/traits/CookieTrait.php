@@ -24,10 +24,10 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\common;
+namespace froq\http\common\traits;
 
 use froq\http\response\Cookie;
-use froq\http\common\CookieException;
+use froq\http\common\exceptions\CookieException;
 
 /**
  * Cookie Trait.
@@ -35,8 +35,8 @@ use froq\http\common\CookieException;
  * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
  * Request & Response) / modifying (of Response only) cookies.
  *
- * @package  froq\http\common
- * @object   froq\http\common\CookieTrait
+ * @package  froq\http\common\traits
+ * @object   froq\http\common\traits\CookieTrait
  * @author   Kerem Güneş <k-gun@mail.com>
  * @since    4.0
  * @internal Used in froq\http only.
@@ -83,7 +83,7 @@ trait CookieTrait
      * @param  any|null   $value
      * @param  array|null $options
      * @return self
-     * @throws froq\http\common\CookieException
+     * @throws froq\http\common\exceptions\CookieException
      */
     public function setCookie(string $name, $value, array $options = null): self
     {
@@ -125,7 +125,7 @@ trait CookieTrait
      */
     public function getCookie(string $name, string $valueDefault = null)
     {
-        return $this->cookies->get($name) ?? $valueDefault;
+        return $this->cookies->get($name, $valueDefault);
     }
 
     /**
@@ -133,6 +133,7 @@ trait CookieTrait
      * @param  string $name
      * @param  bool   $defer
      * @return self
+     * @throws froq\http\common\exceptions\CookieException
      */
     public function removeCookie(string $name, bool $defer = false): self
     {

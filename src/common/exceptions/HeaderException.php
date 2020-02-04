@@ -24,39 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\common;
+namespace froq\http\common\exceptions;
+
+use froq\http\HttpException;
 
 /**
- * Status Trait.
- *
- * Represents a trait stack that used by Response object, utilizes accessing (to Response) status.
- *
- * @package  froq\http\common
- * @object   froq\http\common\StatusTrait
- * @author   Kerem Güneş <k-gun@mail.com>
- * @since    4.0
- * @internal Used in froq\http only.
+ * Header Exception.
+ * @package froq\http\common\exceptions
+ * @object  froq\http\common\exceptions\HeaderException
+ * @author  Kerem Güneş <k-gun@mail.com>
+ * @since   4.0
  */
-trait StatusTrait
-{
-    /**
-     * Set status code.
-     * @param  int $code
-     * @return self
-     */
-    public function setStatusCode(int $code): self
-    {
-        $this->status->setCode($code);
-
-        return $this;
-    }
-
-    /**
-     * Get status code.
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->status->getCode();
-    }
-}
+final class HeaderException extends HttpException
+{}

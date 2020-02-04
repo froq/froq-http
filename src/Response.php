@@ -32,7 +32,7 @@ use froq\encoding\Util as EncodingUtil;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
-use froq\http\common\CookieException;
+use froq\http\common\exceptions\CookieException;
 
 /**
  * Response.
@@ -193,7 +193,7 @@ final class Response extends Message
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
-     * @throws froq\http\response\ResponseException, froq\http\common\CookieException
+     * @throws froq\http\response\ResponseException, froq\http\common\exceptions\CookieException
      */
     public function sendCookie(string $name, $value, array $options = null): void
     {

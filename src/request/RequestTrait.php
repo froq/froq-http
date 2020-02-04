@@ -26,13 +26,10 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
+use froq\http\common\traits\{HeaderTrait, CookieTrait, ParamTrait};
 
 /**
  * Request Trait.
- *
- * Respresents a trait entry and collects internal traits in that used by Request object.
- *
  * @package  froq\http\request
  * @object   froq\http\request\RequestTrait
  * @author   Kerem Güneş <k-gun@mail.com>
@@ -43,19 +40,19 @@ trait RequestTrait
 {
     /**
      * Header trait.
-     * @see froq\http\common\HeaderTrait
+     * @see froq\http\common\traits\HeaderTrait
      */
     use HeaderTrait;
 
     /**
      * Cookie trait.
-     * @see froq\http\common\CookieTrait
+     * @see froq\http\common\traits\CookieTrait
      */
     use CookieTrait;
 
     /**
      * Param trait.
-     * @see froq\http\common\ParamTrait
+     * @see froq\http\common\traits\ParamTrait
      */
     use ParamTrait {
         ParamTrait::cookie insteadof CookieTrait;
