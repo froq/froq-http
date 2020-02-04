@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\app\App;
+use froq\App;
 use froq\file\Util as FileUtil;
 use froq\encoding\Util as EncodingUtil;
 use froq\http\{Http, Message};
@@ -63,7 +63,7 @@ final class Response extends Message
 
     /**
      * Constructor.
-     * @param froq\app\App $app
+     * @param froq\App $app
      */
     public function __construct(App $app)
     {

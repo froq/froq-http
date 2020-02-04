@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\app\App;
+use froq\App;
 use froq\util\Util;
 use froq\http\HttpException;
 use froq\http\message\{Headers, Body};
@@ -50,7 +50,7 @@ abstract class Message
 
     /**
      * App.
-     * @var froq\app\App
+     * @var froq\App
      */
     protected $app;
 
@@ -80,22 +80,22 @@ abstract class Message
 
     /**
      * Constructor.
-     * @param froq\app\App $app
-     * @param int          $type
+     * @param froq\App $app
+     * @param int      $type
      */
     public function __construct(App $app, int $type)
     {
-        $this->app = $app;
-        $this->type = $type;
+        $this->app         = $app;
+        $this->type        = $type;
         $this->httpVersion = Http::detectVersion();
 
-        $this->headers = new Headers();
-        $this->body = new Body();
+        $this->headers     = new Headers();
+        $this->body        = new Body();
     }
 
     /**
      * Get app.
-     * @return froq\app\App
+     * @return froq\App
      */
     public final function getApp(): App
     {

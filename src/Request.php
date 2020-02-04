@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\app\App;
+use froq\App;
 use froq\util\Util;
 use froq\http\Message;
 use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
@@ -73,7 +73,7 @@ final class Request extends Message
 
     /**
      * Constructor.
-     * @param froq\app\App
+     * @param froq\App
      */
     public function __construct(App $app)
     {
