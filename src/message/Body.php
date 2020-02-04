@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
-use froq\common\AttributeTrait;
+use froq\common\traits\AttributeTrait;
 
 /**
  * Body.
@@ -40,7 +40,7 @@ final class Body
     /**
      * Attribute trait.
      *
-     * @see froq\common\AttributeTrait
+     * @see froq\common\traits\AttributeTrait
      * @since 4.0
      */
     use AttributeTrait;
