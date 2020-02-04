@@ -31,7 +31,7 @@ use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
 /**
  * Request Trait.
  *
- * Respresents a trait entry and collects internal traits in that used by http.Request.
+ * Respresents a trait entry and collects internal traits in that used by Request object.
  *
  * @package  froq\http\request
  * @object   froq\http\request\RequestTrait
@@ -59,5 +59,6 @@ trait RequestTrait
      */
     use ParamTrait {
         ParamTrait::cookie insteadof CookieTrait;
-    };
+        ParamTrait::hasCookie insteadof CookieTrait;
+    }
 }
