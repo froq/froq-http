@@ -89,7 +89,7 @@ final class Method implements Stringable
      */
     public function isGet(): bool
     {
-        return $this->name == self::GET;
+        return ($this->name == self::GET);
     }
 
     /**
@@ -98,7 +98,7 @@ final class Method implements Stringable
      */
     public function isPost(): bool
     {
-        return $this->name == self::POST;
+        return ($this->name == self::POST);
     }
 
     /**
@@ -107,7 +107,7 @@ final class Method implements Stringable
      */
     public function isPut(): bool
     {
-        return $this->name == self::PUT;
+        return ($this->name == self::PUT);
     }
 
     /**
@@ -116,7 +116,7 @@ final class Method implements Stringable
      */
     public function isPatch(): bool
     {
-        return $this->name == self::PATCH;
+        return ($this->name == self::PATCH);
     }
 
     /**
@@ -125,7 +125,7 @@ final class Method implements Stringable
      */
     public function isDelete(): bool
     {
-        return $this->name == self::DELETE;
+        return ($this->name == self::DELETE);
     }
 
     /**
@@ -134,7 +134,7 @@ final class Method implements Stringable
      */
     public function isOptions(): bool
     {
-        return $this->name == self::OPTIONS;
+        return ($this->name == self::OPTIONS);
     }
 
     /**
@@ -143,7 +143,7 @@ final class Method implements Stringable
      */
     public function isHead(): bool
     {
-        return $this->name == self::HEAD;
+        return ($this->name == self::HEAD);
     }
 
     /**
@@ -152,7 +152,7 @@ final class Method implements Stringable
      */
     public function isTrace(): bool
     {
-        return $this->name == self::TRACE;
+        return ($this->name == self::TRACE);
     }
 
     /**
@@ -161,7 +161,7 @@ final class Method implements Stringable
      */
     public function isConnect(): bool
     {
-        return $this->name == self::CONNECT;
+        return ($this->name == self::CONNECT);
     }
 
     /**
@@ -170,7 +170,7 @@ final class Method implements Stringable
      */
     public function isCopy(): bool
     {
-        return $this->name == self::COPY;
+        return ($this->name == self::COPY);
     }
 
     /**
@@ -179,7 +179,7 @@ final class Method implements Stringable
      */
     public function isMove(): bool
     {
-        return $this->name == self::MOVE;
+        return ($this->name == self::MOVE);
     }
 
     /**
@@ -201,6 +201,6 @@ final class Method implements Stringable
      */
     public function toString(): string
     {
-        return $this->name;
+        return ($this->name);
     }
 }

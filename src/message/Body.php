@@ -136,7 +136,7 @@ final class Body
      */
     public function isNone(): bool
     {
-        return $this->getAttribute('type') == self::CONTENT_TYPE_NA;
+        return ($this->getAttribute('type') == self::CONTENT_TYPE_NA);
     }
 
     /**

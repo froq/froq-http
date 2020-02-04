@@ -84,7 +84,7 @@ final class Scheme implements Stringable
      */
     public function isSecure(): bool
     {
-        return $this->name == self::HTTPS;
+        return ($this->name == self::HTTPS);
     }
 
     /**

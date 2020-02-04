@@ -29,8 +29,8 @@ namespace froq\http\common;
 /**
  * Content Trait.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
- * Request & Response) / modifying (of Response only) body's content type & content charset.
+ * Represents a trait stack that used by Response object, utilizes accessing and modifying Response
+ * body's content type & content charset.
  *
  * @package  froq\http\common
  * @object   froq\http\common\ContentTrait

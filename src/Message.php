@@ -263,7 +263,7 @@ abstract class Message
      */
     public final function isRequest(): bool
     {
-        return $this->type == self::TYPE_REQUEST;
+        return ($this->type == self::TYPE_REQUEST);
     }
 
     /**
@@ -272,6 +272,6 @@ abstract class Message
      */
     public final function isResponse(): bool
     {
-        return $this->type == self::TYPE_RESPONSE;
+        return ($this->type == self::TYPE_RESPONSE);
     }
 }
