@@ -148,7 +148,7 @@ final class Uri extends ComponentCollection implements Stringable
                 $root = '/'. trim($root, '/'). '/';
 
                 // Prevent wrong generate action.
-                if (strpos($path, $root) === false) {
+                if (strpos($path, $root) !== 0) {
                     throw new UriException(sprintf('Uri path %s has no root such %s', $path,
                         $root));
                 }
