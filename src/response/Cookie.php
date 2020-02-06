@@ -55,7 +55,7 @@ final class Cookie extends ComponentCollection implements Stringable
     /**
      * Constructor.
      * @param  string      $name
-     * @param  scalar|null $value
+     * @param  ?scalar     $value
      * @param  array|null  $options
      * @throws froq\http\common\exceptions\CookieException
      */
@@ -65,28 +65,28 @@ final class Cookie extends ComponentCollection implements Stringable
         parent::__construct(['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly',
             'sameSite']);
 
+        // Check name.
+        if (!preg_match('~^[\w][\w\-\.]*$~', $name)) {
+            throw new CookieException(sprintf('Invalid cookie name "%s", a valid name pattern is '.
+                '"[\w][\w\-\.]*"', $name));
+        }
+
         if ($value != null && !is_scalar($value)) {
-            throw new CookieException(sprintf('Invalid value type %s given, scalar or null '.
+            throw new CookieException(sprintf('Invalid value type "%s", scalar or null '.
                 'values accepted only', gettype($value)));
         }
 
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
         if ($options != null) {
-            // Sequential/associative options.
-            if (array_key_exists(0, $options)) {
-                @ [$expires, $path, $domain, $secure, $httpOnly, $sameSite] = $options;
-            } else {
-                @ ['expires' => $expires, 'path'     => $path,     'domain'   => $domain,
-                   'secure'  => $secure,  'httpOnly' => $httpOnly, 'sameSite' => $sameSite
-                  ] = $options;
-            }
+            @ ['expires' => $expires, 'path'     => $path,     'domain'   => $domain,
+               'secure'  => $secure,  'httpOnly' => $httpOnly, 'sameSite' => $sameSite] = $options;
         }
 
         if ($sameSite != '') {
-            $sameSite = ucfirst(strtolower((string) $sameSite));
+            $sameSite = ucfirst(strtolower($sameSite));
             if (!in_array($sameSite, self::$sameSiteValues)) {
-                throw new CookieException(sprintf('Invalid samesite value %s, valid values are '.
-                    '%s', $sameSite, join(', ', self::$sameSiteValues)));
+                throw new CookieException(sprintf('Invalid samesite value "%s", valids are "%s"',
+                    $sameSite, join(', ', self::$sameSiteValues)));
             }
         }
 
@@ -97,47 +97,6 @@ final class Cookie extends ComponentCollection implements Stringable
         ] as $name => $value) {
             $this->set($name, $value);
         }
-    }
-
-    /**
-     * Create.
-     * @param ...$arguments
-     * @return froq\http\response\Cookie
-     */
-    public static function create(...$arguments): Cookie
-    {
-        return new Cookie(...$arguments);
-    }
-
-    /**
-     * Create from options.
-     * @param  string $name
-     * @param  array  $options
-     * @return froq\http\response\Cookie
-     */
-    public static function createFromOptions(string $name, array $options): Cookie
-    {
-        return new Cookie($name, ...self::exportValueAndOptions($options));
-    }
-
-    /**
-     * Export value and options.
-     * @param  array $input
-     * @return array
-     */
-    public static function exportValueAndOptions(array $input): array
-    {
-        $value = null;
-        $options = $input;
-
-        if (array_key_exists(0, $options)) {
-            $value = Arrays::pull($options, 0);
-            $options = array_values($options); // Fix indexes.
-        } elseif (array_key_exists('value', $options)) {
-            $value = Arrays::pull($options, 'value');
-        }
-
-        return [$value, $options];
     }
 
     /**

@@ -91,28 +91,7 @@ trait CookieTrait
             throw new CookieException('Cannot modify request cookies');
         }
 
-        // Check name.
-        if (!preg_match('~^[a-z0-9_\-\.]+$~i', $name)) {
-            throw new CookieException('Invalid cookie name '. $name);
-        }
-
-        $session = $this->app->session();
-        if ($session != null && $session->getName() == $name) {
-            throw new CookieException(sprintf('Invalid cookie name %s, name %s reserved as '.
-                'session name', $name, $name));
-        }
-
-        if (is_array($value)) {
-            [$value, $options] = Cookie::exportValueAndOptions($value);
-        }
-
-        $cookie = (
-            $value instanceof Cookie
-                ? $value : new Cookie($name, $value, $options)
-        );
-        $cookie->nameChecked = true; // Tick to sendCookie().
-
-        $this->cookies->add($name, $cookie);
+        $this->cookies->set($name, new Cookie($name, $value, $options));
 
         return $this;
     }
