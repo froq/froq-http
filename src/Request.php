@@ -81,10 +81,7 @@ final class Request extends Message
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
-
-        $this->uri = new Uri(Util::getCurrentUrl());
-        $this->uri->generateSegments($app->root());
-
+        $this->uri    = new Uri(Util::getCurrentUrl());
         $this->client = new Client();
 
         $headers = $this->loadHeaders();

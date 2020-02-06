@@ -69,16 +69,8 @@ final class Response extends Message
     {
         parent::__construct($app, Message::TYPE_RESPONSE);
 
-        $this->status = new Status();
+        $this->status  = new Status();
         $this->cookies = new Cookies();
-
-        [$headers, $cookies] = $app->config(['headers', 'cookies']);
-        foreach ((array) $headers as $name => $value) {
-            $this->headers->add($name, $value);
-        }
-        foreach ((array) $cookies as $name => $options) {
-            $this->cookies->add($name, Cookie::createFromOptions($name, (array) $options));
-        }
     }
 
     /**
