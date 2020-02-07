@@ -213,16 +213,16 @@ abstract class Message
 
                 if ($contentValueType == 'array' || $contentValueType == 'object') {
                     if ($contentType == '') {
-                        throw new HttpException(sprintf('Missing content type for %s type '.
+                        throw new HttpException(sprintf('Missing content type for "%s" type '.
                             'content value', $contentValueType));
                     }
                     if (!preg_match('~(json|xml)~', $contentType)) {
-                        throw new HttpException(sprintf('Invalid content value type for %s type '.
-                            'content, content type must be such type "xxx/json" or "xxx/xml"',
+                        throw new HttpException(sprintf('Invalid content value type for "%s" '.
+                            'type content, content type must be such type "xxx/json" or "xxx/xml"',
                             $contentValueType));
                     }
                 } elseif ($contentValueType != 'null' && $contentValueType != 'scalar') {
-                    throw new HttpException(sprintf('Invalid content value type %s',
+                    throw new HttpException(sprintf('Invalid content value type "%s"',
                         $contentValueType));
                 }
 
