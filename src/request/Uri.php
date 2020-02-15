@@ -41,47 +41,41 @@ final class Uri extends ComponentCollection implements Stringable
 {
     /**
      * Source.
-     * @var string|array|null
+     * @var string
      */
-    private $source;
+    private string $source;
 
     /**
      * Segments.
      * @var array
      */
-    private $segments = [];
+    private array $segments = [];
 
     /**
      * Segments root.
      * @var ?string
      */
-    private $segmentsRoot;
+    private ?string $segmentsRoot;
 
     /**
      * Constructor.
-     * @param  string|array|null $source
-     * @throws froq\http\request\UriException If invalid source given.
+     * @param  string $source
+     * @throws froq\http\request\UriException
      */
-    public function __construct($source = null)
+    public function __construct(string $source)
     {
         // Set component names.
-        parent::__construct(['scheme', 'host', 'port', 'user', 'pass', 'path', 'query',
-            'fragment']);
+        parent::__construct(['scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment']);
 
-        if ($source) {
-            $this->source = $source;
-            if (is_string($source)) {
-                $source = parse_url($source);
-            }
+        $this->source = $source;
 
-            if (is_array($source)) {
-                foreach ($source as $name => $value) {
-                    $this->set($name, $value);
-                }
-            } else {
-                throw new UriException(sprintf('Invalid source, string, array and null sources '.
-                    'allowed for %s, %s given', __class__, gettype($source)));
-            }
+        $components = parse_url($source);
+        if ($components == null) {
+            throw new UriException('Invalid URI source');
+        }
+
+        foreach ($components as $name => $value) {
+            $this->set($name, $value);
         }
     }
 
