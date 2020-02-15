@@ -154,11 +154,11 @@ class Payload
         $payload = $this;
         $payload->setContainer($container);
 
-        if ($this instanceof PayloadInterface) {
+        if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
             if (!is_string($content) && !is_resource($content)) {
                 throw new PayloadException('Failed to achive resource content from "%s"',
-                    [get_class($this)]);
+                    [get_class($payload)]);
             }
         } else {
             $contentType = $payload->getAttribute('type');
