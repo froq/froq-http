@@ -53,6 +53,12 @@ final class Cookie extends ComponentCollection implements Stringable
     private static $sameSiteValues = ['None', 'Lax', 'Strict'];
 
     /**
+     * Name pattern.
+     * @var string
+     */
+    private static $namePattern = '[\w][\w\-\.]*';
+
+    /**
      * Constructor.
      * @param  string      $name
      * @param  ?scalar     $value
@@ -66,14 +72,14 @@ final class Cookie extends ComponentCollection implements Stringable
             'sameSite']);
 
         // Check name.
-        if (!preg_match('~^[\w][\w\-\.]*$~', $name)) {
-            throw new CookieException(sprintf('Invalid cookie name "%s", a valid name pattern is '.
-                '"[\w][\w\-\.]*"', $name));
+        if (!preg_match('~^'. self::$namePattern .'$~', $name)) {
+            throw new CookieException('Invalid cookie name "%s", a valid name pattern is "%s"',
+                [$name, self::$namePattern]);
         }
 
         if ($value != null && !is_scalar($value)) {
-            throw new CookieException(sprintf('Invalid value type "%s", scalar or null '.
-                'values accepted only', gettype($value)));
+            throw new CookieException('Invalid value type "%s", scalar or null '.
+                'values accepted only', [gettype($value)]);
         }
 
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
@@ -85,7 +91,7 @@ final class Cookie extends ComponentCollection implements Stringable
         if ($sameSite != '') {
             $sameSite = ucfirst(strtolower($sameSite));
             if (!in_array($sameSite, self::$sameSiteValues)) {
-                throw new CookieException(sprintf('Invalid samesite value "%s", valids are "%s"',
+                throw new CookieException(sprintf('Invalid samesite value "%s", valids are: %s',
                     $sameSite, join(', ', self::$sameSiteValues)));
             }
         }
