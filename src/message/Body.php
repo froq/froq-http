@@ -76,10 +76,10 @@ final class Body
 
     /**
      * Constructor.
-     * @param string|null $content
+     * @param any|null    $content
      * @param array|null  $contentAttributes
      */
-    public function __construct(string $content = null, array $contentAttributes = null)
+    public function __construct($content = null, array $contentAttributes = null)
     {
         $this->setContent($content);
         $this->setContentAttributes($contentAttributes);
