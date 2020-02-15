@@ -62,6 +62,11 @@ final class XmlPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
+        if (!is_array($content)) {
+            throw new PayloadException('Content must be "array" for XML payloads, "%s" given',
+                [gettype($content)]);
+        }
+
         $options = null;
         if ($this->container != null) {
             $options = $this->container->getApp()->config('response.xml');
