@@ -87,7 +87,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 $fileSize = filesize($file);
                 $fileSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
-                if ($imageSizeLimit > -10 && $imageSize > $imageSizeLimit) {
+                if ($imageSizeLimit > -1 && $imageSize > $imageSizeLimit) {
                     throw new PayloadException('Too large image, check "ini.memory_limit" option '.
                         '(current ini value: %s)', [ini_get('memory_limit')]);
                 }
