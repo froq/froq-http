@@ -51,7 +51,7 @@ class Payload
      * Code.
      * @var int
      */
-    protected $code;
+    protected int $code;
 
     /**
      * Content.
@@ -64,7 +64,7 @@ class Payload
      * @var froq\http\Response
      * @internal
      */
-    protected $container;
+    protected ?Container $container;
 
     /**
      * Constructor.
@@ -78,8 +78,9 @@ class Payload
     {
         $this->code      = $code;
         $this->content   = $content;
-        $this->setAttributes($attributes ?? []);
         $this->container = $container;
+
+        $this->setAttributes($attributes ?? []);
     }
 
     /**
