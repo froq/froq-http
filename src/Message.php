@@ -52,31 +52,31 @@ abstract class Message
      * App.
      * @var froq\App
      */
-    protected $app;
+    protected App $app;
 
     /**
      * Type.
      * @var int
      */
-    protected $type;
+    protected int $type;
 
     /**
      * HTTP Version.
      * @var string
      */
-    protected $httpVersion;
+    protected string $httpVersion;
 
     /**
      * Headers.
      * @var froq\http\message\Headers
      */
-    protected $headers;
+    protected Headers $headers;
 
     /**
      * Body.
      * @var froq\http\message\Body
      */
-    protected $body;
+    protected Body $body;
 
     /**
      * Constructor.

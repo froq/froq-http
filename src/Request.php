@@ -51,25 +51,25 @@ final class Request extends Message
      * Method.
      * @var froq\http\request\Method
      */
-    protected $method;
+    protected Method $method;
 
     /**
      * Scheme.
      * @var froq\http\request\Scheme
      */
-    protected $scheme;
+    protected Scheme $scheme;
 
     /**
      * Uri.
      * @var froq\http\request\Uri
      */
-    protected $uri;
+    protected Uri $uri;
 
     /**
      * Client.
      * @var froq\http\request\Client
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * Constructor.

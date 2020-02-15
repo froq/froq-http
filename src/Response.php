@@ -53,13 +53,13 @@ final class Response extends Message
      * Status.
      * @var froq\http\response\Status
      */
-    protected $status;
+    protected Status $status;
 
     /**
      * Cookies.
      * @var froq\http\response\Cookies
      */
-    protected $cookies;
+    protected Cookies $cookies;
 
     /**
      * Constructor.
@@ -295,7 +295,7 @@ final class Response extends Message
             header('Content-Type: '. $imageType);
             header('Content-Length: '. strlen($content));
             if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
-                if (!is_numeric($imageModifiedAt)) {
+                if (!is_int($imageModifiedAt)) {
                     $imageModifiedAt = strtotime($imageModifiedAt);
                 }
                 header('Last-Modified: '. Http::date($imageModifiedAt));
@@ -328,7 +328,7 @@ final class Response extends Message
             header('Pragma: no-cache');
             header('Expires: '. Http::date(0));
             if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
-                if (!is_numeric($fileModifiedAt)) {
+                if (!is_int($fileModifiedAt)) {
                     $fileModifiedAt = strtotime($fileModifiedAt);
                 }
                 header('Last-Modified: '. Http::date($fileModifiedAt));
