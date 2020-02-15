@@ -130,7 +130,7 @@ final class Curl
         if ($result !== false) {
             $client->end($result, curl_getinfo($handle), null);
         } else {
-            $client->end(null, null, new CurlError(curl_error($handle), curl_errno($handle)));
+            $client->end(null, null, new CurlError(curl_error($handle), null, curl_errno($handle)));
         }
 
         curl_close($handle);

@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace froq\http\client\curl;
 
 use froq\common\Error;
-use Throwable;
 
 /**
  * Curl Error.
@@ -44,25 +43,13 @@ use Throwable;
 class CurlError extends Error
 {
     /**
-     * Constructor.
-     *
-     * @param string|null    $message
-     * @param int|null       $code
-     * @param Throwable|null $previous
-     */
-    public function __construct(string $message = null, int $code = null, Throwable $previous = null)
-    {
-        parent::__construct((string) $message, [], (int) $code, $previous);
-    }
-
-    /**
      * Checks error is CURLE_URL_MALFORMAT(3).
      *
      * @return bool
      */
     public function isBadUrl(): bool
     {
-        return $this->code == 3;
+        return ($this->code == 3);
     }
 
     /**
@@ -72,7 +59,7 @@ class CurlError extends Error
      */
     public function isBadHost(): bool
     {
-        return $this->code == 6;
+        return ($this->code == 6);
     }
 
     /**
@@ -82,6 +69,6 @@ class CurlError extends Error
      */
     public function isTimeout(): bool
     {
-        return $this->code == 28;
+        return ($this->code == 28);
     }
 }

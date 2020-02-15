@@ -158,7 +158,7 @@ final class CurlMulti
                 if ($result !== false) {
                     $client->end($result, curl_getinfo($handle), null);
                 } else {
-                    $client->end(null, null, new CurlError(curl_error($handle), $info['result']));
+                    $client->end(null, null, new CurlError(curl_error($handle), null, $info['result']));
                 }
 
                 curl_multi_remove_handle($multiHandle, $handle);
