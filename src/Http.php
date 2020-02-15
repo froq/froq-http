@@ -46,8 +46,13 @@ final class Http
      */
     public const VERSION_1_0     = 'HTTP/1.0',
                  VERSION_1_1     = 'HTTP/1.1',
-                 VERSION_2_0     = 'HTTP/2.0',
-                 VERSION_DEFAULT = self::VERSION_1_1;
+                 VERSION_2_0     = 'HTTP/2.0';
+
+    /**
+     * Version default.
+     * @const string
+     */
+    public const VERSION_DEFAULT = 'HTTP/1.1';
 
     /**
      * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
