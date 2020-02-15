@@ -92,8 +92,7 @@ final class FilePayload extends Payload implements PayloadInterface
                         '(current ini value: %s)', [ini_get('memory_limit')]);
                 }
 
-                // Those attributes could be given in attributes (true means auto-set, mime
-                // default is true).
+                // Those attributes may be given in attributes (true means auto-set, mime default is true).
                 $fileMime = (($fileMime ?? true) === true) ? FileUtil::getType($file) : $fileMime;
                 $fileModifiedAt = ($fileModifiedAt === true) ? filemtime($file) : $fileModifiedAt;
 

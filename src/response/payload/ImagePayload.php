@@ -90,8 +90,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                         '(current ini value: %s)', [ini_get('memory_limit')]);
                 }
 
-                // This attribute could be given in attributes (true means auto-set, mime
-                // default is true).
+                // This attribute may be given in attributes (true means auto-set, mime default is true).
                 $imageModifiedAt = ($imageModifiedAt === true) ? filemtime($image) : $imageModifiedAt;
 
                 $image = imagecreatefromstring(file_get_contents($image));
