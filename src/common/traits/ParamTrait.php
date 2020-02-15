@@ -58,8 +58,8 @@ trait ParamTrait
             return $this->getParams($name, $valueDefault);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**
@@ -99,8 +99,8 @@ trait ParamTrait
             return $this->hasGetParams($name);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**
@@ -139,8 +139,8 @@ trait ParamTrait
             return $this->postParams($name, $valueDefault);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**
@@ -180,8 +180,8 @@ trait ParamTrait
             return $this->hasPostParams($name);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**
@@ -220,8 +220,8 @@ trait ParamTrait
             return $this->cookieParams($name, $valueDefault);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**
@@ -261,8 +261,8 @@ trait ParamTrait
             return $this->hasCookieParams($name);
         }
 
-        throw new ParamException(sprintf('Invalid type %s for $name argument, string, array and '.
-            'null accepted only', gettype($name)));
+        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
+            'array, null', [gettype($name)]);
     }
 
     /**

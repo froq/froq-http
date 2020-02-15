@@ -75,8 +75,7 @@ final class Curl
 
         $handle = curl_init();
         if (!$handle) {
-            throw new CurlException(sprintf('Failed to initialize curl session, error[%s]',
-                error_get_last()['message'] ?? 'unknown'));
+            throw new CurlException('Failed to initialize curl session [error: %s]', ['@error']);
         }
 
         $this->client = $client;
@@ -207,10 +206,10 @@ final class Curl
             foreach ($clientOptions['curl'] as $name => $value) {
                 // Check for internal options.
                 if (self::optionCheck($name, $foundName)) {
-                    throw new CurlException(sprintf(
-                        'Not allowed curl option %s given (some options are set internally and '.
+                    throw new CurlException(
+                        'Not allowed cURL option %s given (some options are set internally and '.
                         'not allowed for a proper request/response process, not allowed options'.
-                        ': %s', $foundName, join(', ', array_keys(self::$notAllowedOptions))));
+                        'are: %s)', [$foundName, join(', ', array_keys(self::$notAllowedOptions))]);
                 }
 
                 if (is_array($value)) {
@@ -246,7 +245,7 @@ final class Curl
 
         // Check options if contain search value.
         foreach (self::$notAllowedOptions as $name => $value) {
-            if ($value === $searchValue) {
+            if ($searchValue === $value) {
                 $foundName = $name;
                 break;
             }

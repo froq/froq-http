@@ -67,7 +67,7 @@ final class Status extends StatusCodes
      * Set code.
      * @param  int $code
      * @return void
-     * @throws froq\http\response\StatusException If code is invalid.
+     * @throws froq\http\response\StatusException
      */
     public function setCode(int $code): void
     {

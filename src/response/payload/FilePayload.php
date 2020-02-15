@@ -62,19 +62,18 @@ final class FilePayload extends Payload implements PayloadInterface
     public function handle()
     {
         [$file, $fileName, $fileMime, $fileExtension, $fileModifiedAt] = [
-            $this->getContent(),
-            ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
+            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
         ];
 
         if (!is_string($file) && !is_resource($file)) {
-            throw new PayloadException(sprintf('File content could be a valid & readable file '.
-                'path, binary or stream resource, %s given', gettype($file)));
+            throw new PayloadException('File content could be a valid and readable file path, '.
+                'binary or stream resource, "%s" given', [gettype($file)]);
         }
 
         if ($file == null) {
             throw new PayloadException('File cannot be empty');
         } elseif ($fileName != null && !preg_match('~^[a-zA-Z0-9\+\-\.]+$~', $fileName)) {
-            throw new PayloadException('File name cannot contains non-printable characters');
+            throw new PayloadException('File name cannot contains non-ascii characters');
         }
 
         if (!is_resource($file)) {
@@ -89,7 +88,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $fileSize = filesize($file);
                 $fileSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
                 if ($fileSize > $fileSizeLimit) {
-                    throw new PayloadException('Too large file, check ini.memory_limit option');
+                    throw new PayloadException('Too large file, check "ini.memory_limit" option');
                 }
 
                 // Those attributes could be given in attributes (true means auto-set, mime
@@ -100,7 +99,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $file =@ fopen($file, 'rb');
                 if ($file === false) {
                     throw new PayloadException('Failed to create file resource, file content '.
-                        'could be a valid & readable file path, binary or stream resource');
+                        'could be a valid and readable file path, binary or stream resource');
                 }
                 $fileName = $fileName ?: basename($this->getContent());
             }
@@ -114,7 +113,7 @@ final class FilePayload extends Payload implements PayloadInterface
         }
 
         if (!is_resource($file) || get_resource_type($file) != 'stream') {
-            throw new PayloadException('Invalid file content, file content could be a valid & '.
+            throw new PayloadException('Invalid file content, file content could be a valid and '.
                 'readable file path, binary or stream resource');
         } else {
             $fileSize = fstat($file)['size'];

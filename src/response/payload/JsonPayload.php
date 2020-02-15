@@ -70,7 +70,7 @@ final class JsonPayload extends Payload implements PayloadInterface
         if (!EncodingUtil::isEncoded('json', $content)) {
             $content = EncodingUtil::jsonEncode($content, $options, $error);
             if ($error != null) {
-                throw new PayloadException($error->getMessage(), $error->getCode());
+                throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
         }
 

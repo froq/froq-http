@@ -160,8 +160,8 @@ final class Client
         static $calls = ['head', 'options', 'get', 'post', 'put', 'patch', 'delete'];
 
         if (!in_array($call, $calls)) {
-            throw new ClientException(sprintf('No method %s found (applicable methods: %s)',
-                $call, join(', ', $calls)));
+            throw new ClientException('Invalid method call as "%s", available methods are: %s',
+                [$call, join(', ', $calls)]);
         }
 
         return $this->send($call, ...$callArgs);
@@ -300,9 +300,8 @@ final class Client
         // Reproduce URL structure.
         $tmp = HttpUtil::parseUrl($url);
         if (empty($tmp[0])) {
-            throw new ClientException(sprintf(
-                'No valid URL given, only "http" and "https" URLs are accepted (given url: "%s")',
-                $url));
+            throw new ClientException('No valid URL given, only "http" and "https" URLs are '.
+                'accepted (given url: "%s")', [$url]);
         }
 
         $url = $tmp[0];

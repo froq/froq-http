@@ -62,8 +62,8 @@ final class HtmlPayload extends Payload implements PayloadInterface
         $content = $this->getContent();
 
         if (!is_null($content) && !is_string($content)) {
-            throw new PayloadException(sprintf('Content must be null or string for html payloads'.
-                ', %s given', gettype($content)));
+            throw new PayloadException('Content must be null or string for html payloads, '.
+                '"%s" given', [gettype($content)]);
         }
 
         return $content;

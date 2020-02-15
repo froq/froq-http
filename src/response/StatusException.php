@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\HttpException;
+use froq\http\response\ResponseException;
 
 /**
  * Status Exception.
@@ -35,5 +35,5 @@ use froq\http\HttpException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class StatusException extends HttpException
+final class StatusException extends ResponseException
 {}

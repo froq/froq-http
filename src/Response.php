@@ -150,8 +150,8 @@ final class Response extends Message
     public function sendHeader(string $name, ?string $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException(sprintf('Cannot use "%s()", headers already sent in "%s:%s"',
-                __method__, $file, $line));
+            throw new ResponseException('Cannot use "%s()", headers already sent in "%s:%s"',
+                [__method__, $file, $line]);
         }
 
         if ($value === null) {
@@ -189,16 +189,15 @@ final class Response extends Message
     public function sendCookie(string $name, $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException(sprintf('Cannot use "%s()", headers already sent in "%s:%s"',
-                __method__, $file, $line
-            ));
+            throw new ResponseException('Cannot use "%s()", headers already sent in "%s:%s"',
+                [__method__, $file, $line]);
         }
 
         // Check name.
         $session = $this->app->session();
         if ($session != null && $session->getName() == $name) {
-            throw new CookieException(sprintf('Invalid cookie name "%s", name "%s" reserved as '.
-                'session name', $name, $name));
+            throw new CookieException('Invalid cookie name "%s", name "%s" reserved as '.
+                'session name', [$name, $name]);
         }
 
         $cookie = ($value instanceof Cookie)

@@ -67,9 +67,8 @@ final class CurlMulti
     {
         foreach ($clients as $client) {
             if (!$client instanceof Client) {
-                throw new CurlException(sprintf(
-                    'Each client must be instance of %s, %s given',
-                    Client::class, is_object($client) ? get_class($client) : gettype($client)));
+                throw new CurlException('Each client must be instance of "%s", "%s" given',
+                    [Client::class, is_object($client) ? get_class($client) : gettype($client)]);
             }
 
             $this->clients[] = $client;
@@ -100,8 +99,7 @@ final class CurlMulti
 
         $multiHandle = curl_multi_init();
         if (!$multiHandle) {
-            throw new CurlException(sprintf('Failed to initialize multi-curl session, error[%s]',
-                error_get_last()['message'] ?? 'unknown'));
+            throw new CurlException('Failed to initialize multi-curl session [error: %s]', ['@error']);
         }
 
         $clientStack = [];

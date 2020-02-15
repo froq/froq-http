@@ -32,8 +32,9 @@ namespace froq\http\request;
  * @object  froq\http\request\Files
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   1.0, 4.0
+ * @static
  */
-final /* static */ class Files
+final class Files
 {
     /**
      * All.
@@ -52,7 +53,7 @@ final /* static */ class Files
      */
     public static function normalizeFiles(array $files = null): array
     {
-        $files = $files ?? $_FILES;
+        $files  = $files ?? $_FILES;
         $return = [];
 
         foreach ($files as $id => $file) {
@@ -60,7 +61,7 @@ final /* static */ class Files
                 continue;
             }
             if (!is_array($file['name'])) {
-                $return[] = $file + ['_id' => $id]; // add input name
+                $return[] = $file + ['_id' => $id]; // Add input name.
                 continue;
             }
 
@@ -71,7 +72,7 @@ final /* static */ class Files
                     'tmp_name' => $file['tmp_name'][$i],
                     'error'    => $file['error'][$i],
                     'size'     => $file['size'][$i],
-                ] + ['_id' => $id .'['. $i .']']; // add input name
+                ] + ['_id' => $id .'['. $i .']']; // Add input name.
             }
         }
 

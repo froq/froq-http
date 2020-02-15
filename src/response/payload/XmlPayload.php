@@ -70,7 +70,7 @@ final class XmlPayload extends Payload implements PayloadInterface
         if (!EncodingUtil::isEncoded('xml', $content)) {
             $content = EncodingUtil::xmlEncode($content, $options, $error);
             if ($error != null) {
-                throw new PayloadException($error->getMessage(), $error->getCode());
+                throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
         }
 

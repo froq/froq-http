@@ -59,20 +59,19 @@ final class ImagePayload extends Payload implements PayloadInterface
     public function handle()
     {
         [$image, $imageType, $imageModifiedAt] = [
-            $this->getContent(),
-            ...$this->getAttributes(['type', 'modifiedAt'])
+            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt'])
         ];
 
         if (!is_string($image) && !is_resource($image)) {
-            throw new PayloadException(sprintf('Image content could be a valid & readable file '.
-                'path, binary or gd resource, %s given', gettype($image)));
+            throw new PayloadException('Image content could be a valid and readable file '.
+                'path, binary or gd resource, %s given', [gettype($image)]);
         }
 
         if ($image == null) {
             throw new PayloadException('Image cannot be empty');
         } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif)$~', $imageType)) {
-            throw new PayloadException('Invalid image type '. $imageType .', available types are'.
-                ' image/jpeg, image/png, image/gif');
+            throw new PayloadException('Invalid image type "%s", valids are: image/jpeg, '.
+                'image/png, image/gif', [$imageType]);
         }
 
         if (!is_resource($image)) {
@@ -87,7 +86,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 $imageSize = filesize($image);
                 $imageSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
                 if ($imageSize > $imageSizeLimit) {
-                    throw new PayloadException('Too large image, check ini.memory_limit option');
+                    throw new PayloadException('Too large image, check "ini.memory_limit" option');
                 }
 
                 // This attribute could be given in attributes (true means auto-set, mime
@@ -103,12 +102,12 @@ final class ImagePayload extends Payload implements PayloadInterface
 
             if (!is_resource($image)) {
                 throw new PayloadException('Failed to create image resource, image content could '.
-                    'be a valid & readable file path, binary or gd resource');
+                    'be a valid and readable file path, binary or gd resource');
             }
         }
 
         if (!is_resource($image) || get_resource_type($image) != 'gd') {
-            throw new PayloadException('Invalid image content, image content could be a valid & '.
+            throw new PayloadException('Invalid image content, image content could be a valid and '.
                 'readable file path, binary or gd resource');
         }
 

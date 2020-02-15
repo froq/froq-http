@@ -76,8 +76,8 @@ class Payload
     public function __construct(int $code, $content, array $attributes = null,
         Container $container = null)
     {
-        $this->code = $code;
-        $this->content = $content;
+        $this->code      = $code;
+        $this->content   = $content;
         $this->setAttributes($attributes ?? []);
         $this->container = $container;
     }
@@ -156,13 +156,13 @@ class Payload
         if ($this instanceof PayloadInterface) {
             $content = $payload->handle();
             if (!is_string($content) && !is_resource($content)) {
-                throw new PayloadException('Failed to achive resource content from '.
-                    get_class($this));
+                throw new PayloadException('Failed to achive resource content from "%s"',
+                    [get_class($this)]);
             }
         } else {
             $contentType = $payload->getAttribute('type');
             if ($contentType == null) {
-                throw new PayloadException('Content type cannot be empty');
+                throw new PayloadException('Content type must not be empty');
             }
 
             // Detect content type and process.
@@ -179,31 +179,31 @@ class Payload
                     }
                     break;
                 case 'json': case 'xml':
-                    $payload = $this->createPayload($type, [$payload->getCode(),
-                        $payload->getContent(), $payload->getAttributes(), $container]);
+                    $payload = self::createPayload($type, $payload->getCode(), $payload->getContent(),
+                        $payload->getAttributes(), $container);
 
                     $content = $payload->handle();
                     if (!is_string($content)) {
-                        throw new PayloadException('Failed to achive string content from '.
-                            get_class($payload));
+                        throw new PayloadException('Failed to achive string content from "%s"',
+                            [get_class($payload)]);
                     }
                     break;
                 case 'image': case 'file': case 'download':
-                    $payload = $this->createPayload($type, [$payload->getCode(),
-                        $payload->getContent(), $payload->getAttributes(), $container]);
+                    $payload = self::createPayload($type, $payload->getCode(), $payload->getContent(),
+                        $payload->getAttributes(), $container);
 
                     $content = $payload->handle();
                     if (!is_resource($content)) {
-                        throw new PayloadException('Failed to achive resource content from '.
-                            get_class($payload));
+                        throw new PayloadException('Failed to achive resource content from "%s"',
+                            [get_class($payload)]);
                     }
                     break;
                 default:
-                    throw new PayloadException('Content type cannot be detected');
+                    throw new PayloadException('Invalid content type');
             }
         }
 
-        // Return content, content attributes, response attributes
+        // Return content, content attributes, response attributes.
         return [
             $content,
             $payload->getAttributes(),
@@ -237,17 +237,17 @@ class Payload
                     return 'image';
                 case 'octet-stream':
                     return 'file';
-                default:
-                    // Any type of those trivials download, x-download, force-download etc.
-                    if (substr($contentType, -8) == 'download') {
-                        return 'download';
-                    }
+            }
 
-                    // Any extension with a valid type.
-                    $extension = Mime::getExtensionByType($contentType);
-                    if ($extension != null) {
-                        return 'download';
-                    }
+            // Any type of those trivials download, x-download, force-download etc.
+            if (substr($contentType, -8) == 'download') {
+                return 'download';
+            }
+
+            // Any extension with a valid type.
+            $extension = Mime::getExtensionByType($contentType);
+            if ($extension != null) {
+                return 'download';
             }
         }
 
@@ -258,10 +258,10 @@ class Payload
     /**
      * Create payload.
      * @param  string $type
-     * @param  array  $arguments
+     * @param  ...    $arguments
      * @return froq\http\response\payload\PayloadInterface
      */
-    private final function createPayload(string $type, array $arguments): PayloadInterface
+    private static final function createPayload(string $type, ...$arguments): PayloadInterface
     {
         switch ($type) {
             case 'json':
