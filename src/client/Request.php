@@ -151,7 +151,6 @@ final class Request extends Message
     /**
      * Get uri.
      * @return string
-     * @internal
      */
     protected function getUri(): string
     {
