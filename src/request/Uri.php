@@ -55,7 +55,7 @@ final class Uri extends ComponentCollection implements Stringable
      * Segments root.
      * @var ?string
      */
-    private ?string $segmentsRoot;
+    private ?string $segmentsRoot = null;
 
     /**
      * Constructor.
@@ -81,9 +81,9 @@ final class Uri extends ComponentCollection implements Stringable
 
     /**
      * Get source.
-     * @return string|array|null
+     * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
         return $this->source;
     }
@@ -118,20 +118,10 @@ final class Uri extends ComponentCollection implements Stringable
     }
 
     /**
-     * Segment arguments.
-     * @param  int $offset
-     * @return array
-     */
-    public function segmentArguments(int $offset): array
-    {
-        return array_slice($this->segments, $offset);
-    }
-
-    /**
      * Generate segments.
      * @param  string|null $root
      * @return void
-     * @throws froq\http\request\UriException If URI path does not match with root.
+     * @throws froq\http\request\UriException
      */
     public function generateSegments(string $root = null): void
     {
