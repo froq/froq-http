@@ -28,7 +28,7 @@ namespace froq\http;
 
 use froq\App;
 use froq\file\Util as FileUtil;
-use froq\encoding\Util as EncodingUtil;
+use froq\encoding\Encoder;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
@@ -249,7 +249,7 @@ final class Response extends Message
                 // Gzip options could be emptied by developer to disable gzip using null.
                 if ($gzipOptions != null && $len >= ($gzipOptions['minlen'] ?? 64)
                     && strpos($acceptEncoding, 'gzip') !== false) {
-                    $content = EncodingUtil::gzipEncode($content, $gzipOptions, $error);
+                    $content = Encoder::gzipEncode($content, $gzipOptions, $error);
                     if ($error == null) {
                         // Cancel php's compression & add required headers.
                         ini_set('zlib.output_compression', 'off');

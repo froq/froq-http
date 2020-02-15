@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\encoding\Util as EncodingUtil;
+use froq\encoding\Encoder;
 use froq\http\Response as Container;
 use froq\http\message\Body;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
@@ -67,8 +67,8 @@ final class XmlPayload extends Payload implements PayloadInterface
             $options = $this->container->getApp()->config('response.xml');
         }
 
-        if (!EncodingUtil::isEncoded('xml', $content)) {
-            $content = EncodingUtil::xmlEncode($content, $options, $error);
+        if (!Encoder::isEncoded('xml', $content)) {
+            $content = Encoder::xmlEncode($content, $options, $error);
             if ($error != null) {
                 throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
