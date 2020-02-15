@@ -44,19 +44,19 @@ final class Cookie extends ComponentCollection implements Stringable
      * Special chars.
      * @var string
      */
-    private static $specialChars = "=,; \t\r\n\v\f";
+    private static string $specialChars = "=,; \t\r\n\v\f";
 
     /**
      * Same site values.
      * @var array
      */
-    private static $sameSiteValues = ['None', 'Lax', 'Strict'];
+    private static array $sameSiteValues = ['None', 'Lax', 'Strict'];
 
     /**
      * Name pattern.
      * @var string
      */
-    private static $namePattern = '[\w][\w\-\.]*';
+    private static string $namePattern = '[\w][\w\-\.]*';
 
     /**
      * Constructor.

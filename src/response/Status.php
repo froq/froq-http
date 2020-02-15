@@ -44,13 +44,13 @@ final class Status extends StatusCodes
      * Code.
      * @var int
      */
-    private $code;
+    private int $code;
 
     /**
      * Text.
-     * @var string
+     * @var ?string
      */
-    private $text;
+    private ?string $text;
 
     /**
      * Constructor.

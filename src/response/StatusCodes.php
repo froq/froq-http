@@ -120,7 +120,7 @@ class StatusCodes
      * Statuses.
      * @var array
      */
-    private static $statuses = [
+    private static array $statuses = [
         // Informationals (1xx).
         100 => 'Continue',
         101 => 'Switching Protocols',
