@@ -63,8 +63,8 @@ final class ImagePayload extends Payload implements PayloadInterface
         ];
 
         if (!is_string($image) && !is_resource($image)) {
-            throw new PayloadException('Image content could be a valid and readable file '.
-                'path, binary or gd resource, %s given', [gettype($image)]);
+            throw new PayloadException('Image content could be a valid readable file path, '.
+                'binary or gd resource, %s given', [gettype($image)]);
         }
 
         if ($image == null) {
@@ -102,12 +102,12 @@ final class ImagePayload extends Payload implements PayloadInterface
 
             if (!is_resource($image)) {
                 throw new PayloadException('Failed to create image resource, image content could '.
-                    'be a valid and readable file path, binary or gd resource');
+                    'be a valid readable file path, binary or gd resource');
             }
         }
 
         if (!is_resource($image) || get_resource_type($image) != 'gd') {
-            throw new PayloadException('Invalid image content, image content could be a valid and '.
+            throw new PayloadException('Invalid image content, image content could be a valid '.
                 'readable file path, binary or gd resource');
         }
 
