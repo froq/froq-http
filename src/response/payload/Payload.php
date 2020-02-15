@@ -199,7 +199,8 @@ class Payload
                     }
                     break;
                 default:
-                    throw new PayloadException('Invalid content type');
+                    throw new PayloadException('Invalid payload content type "%s"',
+                        [$type ?? $payload->getAttribute('type')]);
             }
         }
 
