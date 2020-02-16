@@ -132,9 +132,10 @@ trait HeaderTrait
             throw new HeaderException('Cannot modify request headers');
         }
 
-        $header = $this->headers->get($name);
+        $header = $this->getHeader($name);
         if ($header != null) {
-            $this->headers->remove($name);
+               $this->headers->remove($name)
+            || $this->headers->remove(strtolower($name));
 
             // Remove instantly.
             if (!$defer) {

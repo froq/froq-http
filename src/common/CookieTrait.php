@@ -120,7 +120,7 @@ trait CookieTrait
             throw new CookieException('Cannot modify request cookies');
         }
 
-        $cookie = $this->cookies->get($name);
+        $cookie = $this->getCookie($name);
         if ($cookie != null) {
             $this->cookies->remove($name);
 
