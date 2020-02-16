@@ -64,7 +64,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
         if (!is_string($image) && !is_resource($image)) {
             throw new PayloadException('Image content must be a valid readable file path, '.
-                'binary or gd resource, %s given', [gettype($image)]);
+                'binary or gd resource, "%s" given', [gettype($image)]);
         }
 
         if ($image == null) {
@@ -83,7 +83,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                     throw new PayloadException($error->getMessage(), null, $error->getCode());
                 }
 
-                $imageSize = filesize($image);
+                $imageSize      = filesize($image);
                 $imageSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
                 if ($imageSizeLimit > -1 && $imageSize > $imageSizeLimit) {
                     throw new PayloadException('Too large image, check "ini.memory_limit" option '.

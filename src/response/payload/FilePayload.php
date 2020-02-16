@@ -72,7 +72,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
         if ($file == null) {
             throw new PayloadException('File cannot be empty');
-        } elseif ($fileName != null && !preg_match('~^[a-zA-Z0-9\+\-\.]+$~', $fileName)) {
+        } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
             throw new PayloadException('File name cannot contains non-ascii characters');
         }
 
