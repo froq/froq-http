@@ -53,7 +53,7 @@ final class Method implements Stringable
      * Name.
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * Constructor.
@@ -201,6 +201,6 @@ final class Method implements Stringable
      */
     public function toString(): string
     {
-        return ($this->name);
+        return $this->name;
     }
 }

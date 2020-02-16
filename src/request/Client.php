@@ -39,27 +39,27 @@ final class Client
 {
     /**
      * Ip.
-     * @var string
+     * @var ?string
      */
-    private $ip;
+    private ?string $ip = null;
 
     /**
      * Locale.
-     * @var string
+     * @var ?string
      */
-    private $locale;
+    private ?string $locale = null;
 
     /**
      * Language.
-     * @var string
+     * @var ?string
      */
-    private $language;
+    private ?string $language = null;
 
     /**
      * User agent.
-     * @var string
+     * @var ?string
      */
-    private $userAgent;
+    private ?string $userAgent = null;
 
     /**
      * Constructor.

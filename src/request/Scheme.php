@@ -48,7 +48,7 @@ final class Scheme implements Stringable
      * Name.
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * Constructor.
