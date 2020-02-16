@@ -66,7 +66,7 @@ final class FilePayload extends Payload implements PayloadInterface
         ];
 
         if (!is_string($file) && !is_resource($file)) {
-            throw new PayloadException('File content could be a valid readable file path, binary '.
+            throw new PayloadException('File content must be a valid readable file path, binary '.
                 'or stream resource, "%s" given', [gettype($file)]);
         }
 
@@ -99,7 +99,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $file =@ fopen($file, 'rb');
                 if ($file === false) {
                     throw new PayloadException('Failed to create file resource, file content '.
-                        'could be a valid readable file path, binary or stream resource');
+                        'must be a valid readable file path, binary or stream resource');
                 }
                 $fileName = $fileName ?: basename($this->getContent());
             }
@@ -113,7 +113,7 @@ final class FilePayload extends Payload implements PayloadInterface
         }
 
         if (!is_resource($file) || get_resource_type($file) != 'stream') {
-            throw new PayloadException('Invalid file content, file content could be a valid '.
+            throw new PayloadException('Invalid file content, file content must be a valid '.
                 'readable file path, binary or stream resource');
         } else {
             $fileSize = fstat($file)['size'];
