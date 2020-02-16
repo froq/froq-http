@@ -295,10 +295,9 @@ final class Response extends Message
             header('Content-Type: '. $imageType);
             header('Content-Length: '. strlen($content));
             if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
-                if (!is_int($imageModifiedAt)) {
-                    $imageModifiedAt = strtotime($imageModifiedAt);
-                }
-                header('Last-Modified: '. Http::date($imageModifiedAt));
+                header('Last-Modified: '. Http::date(
+                    is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
+                ));
             }
             header('X-Dimensions: '. $xDimensions);
 
@@ -328,10 +327,9 @@ final class Response extends Message
             header('Pragma: no-cache');
             header('Expires: '. Http::date(0));
             if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
-                if (!is_int($fileModifiedAt)) {
-                    $fileModifiedAt = strtotime($fileModifiedAt);
-                }
-                header('Last-Modified: '. Http::date($fileModifiedAt));
+                header('Last-Modified: '. Http::date(
+                    is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
+                ));
             }
             header('X-Rate-Limit: '. $rateLimitX .'/s');
 
