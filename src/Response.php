@@ -32,7 +32,6 @@ use froq\encoding\Encoder;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
-use froq\http\common\exceptions\CookieException;
 
 /**
  * Response.
@@ -184,7 +183,7 @@ final class Response extends Message
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
-     * @throws froq\http\response\ResponseException, froq\http\common\exceptions\CookieException
+     * @throws froq\http\response\ResponseException
      */
     public function sendCookie(string $name, $value, array $options = null): void
     {
@@ -196,7 +195,7 @@ final class Response extends Message
         // Check name.
         $session = $this->app->session();
         if ($session != null && $session->getName() == $name) {
-            throw new CookieException('Invalid cookie name "%s", name "%s" reserved as '.
+            throw new ResponseException('Invalid cookie name "%s", name "%s" reserved as '.
                 'session name', [$name, $name]);
         }
 

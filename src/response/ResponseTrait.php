@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\common\traits\{HeaderTrait, CookieTrait};
+use froq\http\common\{HeaderTrait, CookieTrait};
 
 /**
  * Response Trait.
@@ -40,13 +40,13 @@ trait ResponseTrait
 {
     /**
      * Header trait.
-     * @see froq\http\common\traits\HeaderTrait
+     * @see froq\http\common\HeaderTrait
      */
     use HeaderTrait;
 
     /**
      * Cookie trait.
-     * @see froq\http\common\traits\CookieTrait
+     * @see froq\http\common\CookieTrait
      */
     use CookieTrait;
 

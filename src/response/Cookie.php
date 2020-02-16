@@ -30,7 +30,7 @@ use froq\util\Arrays;
 use froq\common\interfaces\Stringable;
 use froq\collection\ComponentCollection;
 use froq\http\Http;
-use froq\http\common\exceptions\CookieException;
+use froq\http\common\CookieException;
 
 /**
  * Cookie.
@@ -63,7 +63,7 @@ final class Cookie extends ComponentCollection implements Stringable
      * @param  string      $name
      * @param  ?scalar     $value
      * @param  array|null  $options
-     * @throws froq\http\common\exceptions\CookieException
+     * @throws froq\http\common\CookieException
      */
     public function __construct(string $name, $value, array $options = null)
     {

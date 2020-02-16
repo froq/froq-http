@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\common\exceptions;
+namespace froq\http\common;
 
 use froq\http\HttpException;
 
 /**
  * Cookie Exception.
- * @package froq\http\common\exceptions
- * @object  froq\http\common\exceptions\CookieException
+ * @package froq\http\common
+ * @object  froq\http\common\CookieException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */

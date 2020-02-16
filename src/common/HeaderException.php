@@ -24,16 +24,16 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\common\exceptions;
+namespace froq\http\common;
 
 use froq\http\HttpException;
 
 /**
- * Param Exception.
- * @package froq\http\common\exceptions
- * @object  froq\http\common\exceptions\ParamException
+ * Header Exception.
+ * @package froq\http\common
+ * @object  froq\http\common\HeaderException
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class ParamException extends HttpException
+final class HeaderException extends HttpException
 {}
