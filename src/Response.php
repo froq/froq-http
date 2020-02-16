@@ -335,6 +335,7 @@ final class Response extends Message
             }
             header('X-Rate-Limit: '. $xRateLimit .'/s');
 
+            fseek($file, 0);
             while (!feof($file) && !connection_aborted()) {
                 print fread($file, $rateLimit);
                 sleep(1); // Apply rate limit.
