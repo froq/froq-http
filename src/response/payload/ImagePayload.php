@@ -28,7 +28,7 @@ namespace froq\http\response\payload;
 
 use froq\util\Strings;
 use froq\file\Util as FileUtil;
-use froq\http\Response as Container;
+use froq\http\Response;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
 /**
@@ -45,12 +45,12 @@ final class ImagePayload extends Payload implements PayloadInterface
      * @param int                     $code
      * @param string|resource         $content
      * @param array|null              $attributes
-     * @param froq\http\Response|null $container
+     * @param froq\http\Response|null $response
      */
     public function __construct(int $code, $content, array $attributes = null,
-        Container $container = null)
+        Response $response = null)
     {
-        parent::__construct($code, $content, $attributes, $container);
+        parent::__construct($code, $content, $attributes, $response);
     }
 
     /**
@@ -80,7 +80,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             // Check if content is a file.
             if (FileUtil::isFile($image)) {
                 if (FileUtil::errorCheck($image, $error)) {
-                    throw new PayloadException($error->getMessage(), $error->getCode());
+                    throw new PayloadException($error->getMessage(), null, $error->getCode());
                 }
 
                 $imageSize = filesize($image);

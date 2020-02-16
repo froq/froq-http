@@ -27,9 +27,11 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\common\traits\AttributeTrait;
+use froq\util\Arrays;
 use froq\file\Mime;
-use froq\http\Response as Container;
-use froq\http\response\payload\{PayloadInterface, JsonPayload, XmlPayload, FilePayload, ImagePayload};
+use froq\http\Response;
+use froq\http\response\payload\{PayloadInterface, PayloadException,
+    JsonPayload, XmlPayload, FilePayload, ImagePayload};
 
 /**
  * Payload.
@@ -48,48 +50,34 @@ class Payload
     use AttributeTrait;
 
     /**
-     * Code.
-     * @var int
-     */
-    protected int $code;
-
-    /**
      * Content.
      * @var any
      */
     protected $content;
 
     /**
-     * Container.
+     * Response.
      * @var froq\http\Response
      * @internal
      */
-    protected ?Container $container;
+    protected ?Response $response;
 
     /**
      * Constructor.
      * @param int                     $code
      * @param any                     $content
      * @param array|null              $attributes
-     * @param froq\http\Response|null $container
+     * @param froq\http\Response|null $response
      */
     public function __construct(int $code, $content, array $attributes = null,
-        Container $container = null)
+        Response $response = null)
     {
-        $this->code      = $code;
-        $this->content   = $content;
-        $this->container = $container;
+        $this->content  = $content;
+        $this->response = $response;
 
-        $this->setAttributes($attributes ?? []);
-    }
+        $attributes['code'] = $code;
 
-    /**
-     * Get code.
-     * @return int
-     */
-    public final function getCode(): int
-    {
-        return $this->code;
+        $this->setAttributes($attributes);
     }
 
     /**
@@ -102,41 +90,50 @@ class Payload
     }
 
     /**
-     * Get headers.
+     * Set response.
+     * @param  froq\http\Response $response
+     * @return void
+     * @internal
+     */
+    public final function setResponse(Response $response): void
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * Set response.
+     * @return ?froq\http\Response
+     * @internal
+     */
+    public final function getResponse(): ?Response
+    {
+        return $this->response;
+    }
+
+    /**
+     * Get response code.
+     * @return int
+     */
+    public final function getResponseCode(): int
+    {
+        return $this->getAttribute('code');
+    }
+
+    /**
+     * Get response headers.
      * @return array
      */
-    public final function getHeaders(): array
+    public final function getResponseHeaders(): array
     {
         return $this->getAttribute('headers', []);
     }
     /**
-     * Get cookies.
+     * Get response cookies.
      * @return array
      */
-    public final function getCookies(): array
+    public final function getResponseCookies(): array
     {
         return $this->getAttribute('cookies', []);
-    }
-
-    /**
-     * Set container.
-     * @param  froq\http\Response $container
-     * @return void
-     * @internal
-     */
-    public final function setContainer(Container $container): void
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * Set container.
-     * @return ?froq\http\Response
-     * @internal
-     */
-    public final function getContainer(): ?Container
-    {
-        return $this->container;
     }
 
     /**
@@ -146,13 +143,13 @@ class Payload
      * content attributes (mime, size or filename etc.) and response attributes (code, headers,
      * cookies).
      *
-     * @param  froq\http\Response $container
+     * @param  froq\http\Response $response
      * @return array<string|resource, array, array>
      */
-    public final function process(Container $container): array
+    public final function process(Response $response): array
     {
         $payload = $this;
-        $payload->setContainer($container);
+        $payload->setResponse($response);
 
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
@@ -174,14 +171,14 @@ class Payload
                     break;
                 case 'text':
                     $content = $payload->getContent();
-                    if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Content must be null or string for text '.
-                            'responses');
+                    if (!is_string($content)) {
+                        throw new PayloadException('Content must be string for text responses, '.
+                            '"%s" given', [gettype($content)]);
                     }
                     break;
                 case 'json': case 'xml':
-                    $payload = self::createPayload($type, $payload->getCode(), $payload->getContent(),
-                        $payload->getAttributes(), $container);
+                    $payload = self::createPayload($type, $payload->getResponseCode(),
+                        $payload->getContent(), $payload->getAttributes(), $response);
 
                     $content = $payload->handle();
                     if (!is_string($content)) {
@@ -190,8 +187,8 @@ class Payload
                     }
                     break;
                 case 'image': case 'file': case 'download':
-                    $payload = self::createPayload($type, $payload->getCode(), $payload->getContent(),
-                        $payload->getAttributes(), $container);
+                    $payload = self::createPayload($type, $payload->getResponseCode(),
+                        $payload->getContent(), $payload->getAttributes(), $response);
 
                     $content = $payload->handle();
                     if (!is_resource($content)) {
@@ -209,7 +206,7 @@ class Payload
         return [
             $content,
             $payload->getAttributes(),
-            [$payload->getCode(), $payload->getHeaders(), $payload->getCookies()]
+            [$payload->getResponseCode(), $payload->getResponseHeaders(), $payload->getResponseCookies()]
         ];
     }
 

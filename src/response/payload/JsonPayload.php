@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\encoding\Encoder;
-use froq\http\Response as Container;
+use froq\http\Response;
 use froq\http\message\Body;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
@@ -45,14 +45,14 @@ final class JsonPayload extends Payload implements PayloadInterface
      * @param int                     $code
      * @param any                     $content
      * @param array|null              $attributes
-     * @param froq\http\Response|null $container
+     * @param froq\http\Response|null $response
      */
     public function __construct(int $code, $content, array $attributes = null,
-        Container $container = null)
+        Response $response = null)
     {
         $attributes['type'] ??= Body::CONTENT_TYPE_APPLICATION_JSON;
 
-        parent::__construct($code, $content, $attributes, $container);
+        parent::__construct($code, $content, $attributes, $response);
     }
 
     /**
@@ -63,8 +63,8 @@ final class JsonPayload extends Payload implements PayloadInterface
         $content = $this->getContent();
 
         $options = null;
-        if ($this->container != null) {
-            $options = $this->container->getApp()->config('response.json');
+        if ($this->response != null) {
+            $options = $this->response->getApp()->config('response.json');
         }
 
         if (!Encoder::isEncoded('json', $content)) {

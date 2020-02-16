@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\encoding\Encoder;
-use froq\http\Response as Container;
+use froq\http\Response;
 use froq\http\message\Body;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
@@ -43,16 +43,16 @@ final class XmlPayload extends Payload implements PayloadInterface
     /**
      * Constructor.
      * @param int                     $code
-     * @param array|object|string     $content
+     * @param array|string            $content
      * @param array                   $attributes
-     * @param froq\http\Response|null $container
+     * @param froq\http\Response|null $response
      */
     public function __construct(int $code, $content, array $attributes = null,
-        Container $container = null)
+        Response $response = null)
     {
         $attributes['type'] ??= Body::CONTENT_TYPE_APPLICATION_XML;
 
-        parent::__construct($code, $content, $attributes, $container);
+        parent::__construct($code, $content, $attributes, $response);
     }
 
     /**
@@ -62,17 +62,17 @@ final class XmlPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
-        if (!is_array($content)) {
-            throw new PayloadException('Content must be "array" for XML payloads, "%s" given',
-                [gettype($content)]);
-        }
-
         $options = null;
-        if ($this->container != null) {
-            $options = $this->container->getApp()->config('response.xml');
+        if ($this->response != null) {
+            $options = $this->response->getApp()->config('response.xml');
         }
 
         if (!Encoder::isEncoded('xml', $content)) {
+            if (!is_array($content)) {
+                throw new PayloadException('Content must be and "array" for non-encoded XML '.
+                    'payloads, "%s" given', [gettype($content)]);
+            }
+
             $content = Encoder::xmlEncode($content, $options, $error);
             if ($error != null) {
                 throw new PayloadException($error->getMessage(), null, $error->getCode());

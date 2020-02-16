@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\Response as Container;
+use froq\http\Response;
 use froq\http\message\Body;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
@@ -44,14 +44,14 @@ final class HtmlPayload extends Payload implements PayloadInterface
      * @param int                     $code
      * @param string                  $content
      * @param array|null              $attributes
-     * @param froq\http\Response|null $container
+     * @param froq\http\Response|null $response
      */
     public function __construct(int $code, string $content, array $attributes = null,
-        Container $container = null)
+        Response $response = null)
     {
         $attributes['type'] = Body::CONTENT_TYPE_TEXT_HTML;
 
-        parent::__construct($code, $content, $attributes, $container);
+        parent::__construct($code, $content, $attributes, $response);
     }
 
     /**
@@ -61,9 +61,9 @@ final class HtmlPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
-        if (!is_null($content) && !is_string($content)) {
-            throw new PayloadException('Content must be null or string for html payloads, '.
-                '"%s" given', [gettype($content)]);
+        if (!is_string($content)) {
+            throw new PayloadException('Content must be string for html payloads, "%s" given',
+                [gettype($content)]);
         }
 
         return $content;
