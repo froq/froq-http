@@ -44,8 +44,8 @@ trait ParamTrait
 {
     /**
      * Get.
-     * @param  string|array|null $name
-     * @param  any|null          $valueDefault
+     * @param  string|array<string>|null $name
+     * @param  any|null                  $valueDefault
      * @return any|null
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -59,14 +59,14 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
      * Get param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public function getParam(string $name, $valueDefault = null)
     {
@@ -75,8 +75,8 @@ trait ParamTrait
 
     /**
      * Get params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * @param  array<string>|null $names
+     * @param  any|null           $valuesDefault
      * @return array
      */
     public function getParams(array $names = null, $valuesDefault = null): array
@@ -86,7 +86,7 @@ trait ParamTrait
 
     /**
      * Has get.
-     * @param  string|array|null $name
+     * @param  string|array<string>|null $name
      * @return bool
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -100,7 +100,7 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
@@ -115,7 +115,7 @@ trait ParamTrait
 
     /**
      * Has get params.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public function hasGetParams(array $names = null): bool
@@ -125,8 +125,8 @@ trait ParamTrait
 
     /**
      * Post.
-     * @param  string|array|null $name
-     * @param  any|null          $valueDefault
+     * @param  string|array<string>|null $name
+     * @param  any|null                  $valueDefault
      * @return any|null
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -140,14 +140,14 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
      * Post param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public function postParam(string $name, $valueDefault = null)
     {
@@ -156,8 +156,8 @@ trait ParamTrait
 
     /**
      * Post params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * @param  array<string>|null $names
+     * @param  any|null           $valuesDefault
      * @return array
      */
     public function postParams(array $names = null, $valuesDefault = null): array
@@ -167,7 +167,7 @@ trait ParamTrait
 
     /**
      * Has post.
-     * @param  string|array|null $name
+     * @param  string|array<string>|null $name
      * @return bool
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -181,7 +181,7 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
@@ -196,7 +196,7 @@ trait ParamTrait
 
     /**
      * Has post params.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public function hasPostParams(array $names = null): bool
@@ -206,8 +206,8 @@ trait ParamTrait
 
     /**
      * Cookie.
-     * @param  string|array|null $name
-     * @param  any|null          $valueDefault
+     * @param  string|array<string>|null $name
+     * @param  any|null                  $valueDefault
      * @return any|null
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -221,14 +221,14 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
      * Cookie param.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public function cookieParam(string $name, $valueDefault = null)
     {
@@ -237,8 +237,8 @@ trait ParamTrait
 
     /**
      * Cookie params.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * @param  array<string>|null $names
+     * @param  any|null           $valuesDefault
      * @return array
      */
     public function cookieParams(array $names = null, $valuesDefault = null): array
@@ -248,7 +248,7 @@ trait ParamTrait
 
     /**
      * Has cookie.
-     * @param  string|array|null $name
+     * @param  string|array<string>|null $name
      * @return bool
      * @throws froq\http\common\exceptions\ParamException
      */
@@ -262,7 +262,7 @@ trait ParamTrait
         }
 
         throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array, null', [gettype($name)]);
+            'array<string>, null', [gettype($name)]);
     }
 
     /**
@@ -277,7 +277,7 @@ trait ParamTrait
 
     /**
      * Has cookie params.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public function hasCookieParams(array $names = null): bool

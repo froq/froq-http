@@ -45,14 +45,14 @@ final class Params
      */
     public static function all(): array
     {
-        return ['get' => $_GET, 'post' => $_POST, 'cookie' => $_COOKIE];
+        return [$_GET, $_POST, $_COOKIE];
     }
 
     /**
      * Get.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public static function get(string $name, $valueDefault = null)
     {
@@ -61,13 +61,13 @@ final class Params
 
     /**
      * Gets.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * @param  array<string>|null $names
+     * @param  any|null           $valuesDefault
      * @return array
      */
     public static function gets(array $names = null, $valuesDefault = null): array
     {
-        return ($names == null) ? $_GET // all
+        return ($names == null) ? $_GET // All.
             : Arrays::getAll($_GET, $names, $valuesDefault);
     }
 
@@ -83,7 +83,7 @@ final class Params
 
     /**
      * Has gets.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public static function hasGets(array $names = null): bool
@@ -102,9 +102,9 @@ final class Params
 
     /**
      * Post.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public static function post(string $name, $valueDefault = null)
     {
@@ -113,13 +113,13 @@ final class Params
 
     /**
      * Posts.
-     * @param  array|null $names
-     * @param  any        $valueDefaults
+     * @param  array<string>|null $names
+     * @param  any|null           $valueDefaults
      * @return array
      */
     public static function posts(array $names = null, $valueDefaults = null): array
     {
-        return ($names == null) ? $_POST // all
+        return ($names == null) ? $_POST // All.
             : Arrays::getAll($_POST, $names, $valueDefaults);
     }
 
@@ -135,7 +135,7 @@ final class Params
 
     /**
      * Has posts.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public static function hasPosts(array $names = null): bool
@@ -154,9 +154,9 @@ final class Params
 
     /**
      * Cookie.
-     * @param  string $name
-     * @param  any    $valueDefault
-     * @return any
+     * @param  string   $name
+     * @param  any|null $valueDefault
+     * @return any|null
      */
     public static function cookie(string $name, $valueDefault = null)
     {
@@ -165,13 +165,13 @@ final class Params
 
     /**
      * Cookies.
-     * @param  array|null $names
-     * @param  any        $valuesDefault
+     * @param  array<string>|null $names
+     * @param  any|null           $valuesDefault
      * @return array
      */
     public static function cookies(array $names = null, $valuesDefault = null): array
     {
-        return ($names == null) ? $_COOKIE // all
+        return ($names == null) ? $_COOKIE // All.
             : Arrays::getAll($_COOKIE, $names, $valuesDefault);
     }
 
@@ -187,7 +187,7 @@ final class Params
 
     /**
      * Has cookies.
-     * @param  array|null $names
+     * @param  array<string>|null $names
      * @return bool
      */
     public static function hasCookies(array $names = null): bool
