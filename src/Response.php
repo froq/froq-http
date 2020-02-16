@@ -223,7 +223,7 @@ final class Response extends Message
      */
     public function sendBody(): void
     {
-        $content = $this->body->getContent();
+        $content           = $this->body->getContent();
         $contentAttributes = $this->body->getContentAttributes();
 
         // Those n/a responses output nothing.
@@ -233,23 +233,23 @@ final class Response extends Message
         }
         // Text contents (html, json, xml etc.).
         elseif ($this->body->isText()) {
-            $content = ''. $content;
-            $contentType = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
+            $content        = (string) $content;
+            $contentType    = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
             $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
             if ($contentCharset != '' && $contentCharset != Body::CONTENT_CHARSET_NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
             // Gzip stuff.
-            $len = strlen($content);
-            if ($len > 0) { // Prevent gzip corruption for 0 byte data.
-                $gzipOptions = $this->app->config('response.gzip');
-                $acceptEncoding = (string) $this->app->request()->getHeader('Accept-Encoding');
+            $contentLength = strlen($content);
+            if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
+                $gzipOptions    = $this->app->config('response.gzip');
+                $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
 
-                // Gzip options could be emptied by developer to disable gzip using null.
-                if ($gzipOptions != null && $len >= ($gzipOptions['minlen'] ?? 64)
+                // Gzip options may be emptied by developer to disable gzip using null.
+                if ($gzipOptions != null && $contentLength >= ($gzipOptions['minlen'] ?? 64)
                     && strpos($acceptEncoding, 'gzip') !== false) {
-                    $content = Encoder::gzipEncode($content, $gzipOptions, $error);
+                    $content = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
                     if ($error == null) {
                         // Cancel php's compression & add required headers.
                         ini_set('zlib.output_compression', 'off');
@@ -270,8 +270,9 @@ final class Response extends Message
         }
         // Image contents (jpeg, png and gif only).
         elseif ($this->body->isImage()) {
-            [$image, $imageType, $imageModifiedAt] = [$content, $contentAttributes['type'],
-                $contentAttributes['modifiedAt']];
+            [$image, $imageType, $imageModifiedAt] = [
+                $content, $contentAttributes['type'], $contentAttributes['modifiedAt']
+            ];
             $xDimensions = imagesx($image) .'x'. imagesy($image);
 
             // Clean up above..
@@ -307,14 +308,15 @@ final class Response extends Message
         elseif ($this->body->isFile()) {
             [$file, $fileType, $fileName, $fileSize, $fileMime, $fileModifiedAt] = [
                 $content, $contentAttributes['type'], $contentAttributes['name'],
-                $contentAttributes['size'], $contentAttributes['mime'], $contentAttributes['modifiedAt']];
+                $contentAttributes['size'], $contentAttributes['mime'], $contentAttributes['modifiedAt']
+            ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
-            $rateLimitX = FileUtil::formatBytes($rateLimit);
+            $xRateLimit = FileUtil::formatBytes($rateLimit);
 
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
@@ -331,7 +333,7 @@ final class Response extends Message
                     is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
                 ));
             }
-            header('X-Rate-Limit: '. $rateLimitX .'/s');
+            header('X-Rate-Limit: '. $xRateLimit .'/s');
 
             while (!feof($file) && !connection_aborted()) {
                 print fread($file, $rateLimit);
