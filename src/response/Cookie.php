@@ -48,7 +48,7 @@ final class Cookie extends ComponentCollection implements Stringable
 
     /**
      * Same site values.
-     * @var array
+     * @var array<string>
      */
     private static array $sameSiteValues = ['None', 'Lax', 'Strict'];
 
