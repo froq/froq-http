@@ -60,9 +60,9 @@ final class Cookie extends ComponentCollection implements Stringable
 
     /**
      * Constructor.
-     * @param  string      $name
-     * @param  ?scalar     $value
-     * @param  array|null  $options
+     * @param  string     $name
+     * @param  ?scalar    $value
+     * @param  array|null $options
      * @throws froq\http\common\CookieException
      */
     public function __construct(string $name, $value, array $options = null)

@@ -45,16 +45,17 @@ trait CookieTrait
 {
     /**
      * Set/get cookie.
-     * @param  string $name
-     * @param  string $value
+     * @param  string      $name
+     * @param  scalar|null $value
+     * @param  array|null  $options
      * @return self|array|null
      */
-    public function cookie(string $name, string $value = null)
+    public function cookie(string $name, $value = null, array $options = null)
     {
         if (func_num_args() == 1) {
             return $this->getCookie($name);
         }
-        return $this->setCookie($name, $value);
+        return $this->setCookie($name, $value, $options);
     }
 
     /**
@@ -79,7 +80,7 @@ trait CookieTrait
     /**
      * Set cookie.
      * @param  string     $name
-     * @param  any|null   $value
+     * @param  ?scalar    $value
      * @param  array|null $options
      * @return self
      * @throws froq\http\common\CookieException
