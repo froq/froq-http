@@ -197,7 +197,7 @@ abstract class Message
     /**
      * Set header.
      * @param   string       $name
-     * @param   string|array $value
+     * @param   scalar|array $value
      * @return  self
      */
     public final function setHeader(string $name, $value): self
