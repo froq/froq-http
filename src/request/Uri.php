@@ -77,6 +77,7 @@ final class Uri extends ComponentCollection implements Stringable
         foreach ($components as $name => $value) {
             $this->set($name, $value);
         }
+        $this->readOnly(true);
     }
 
     /**
