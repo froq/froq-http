@@ -88,6 +88,7 @@ final class Request extends Message
         foreach ($headers as $name => $value) {
             $this->headers->add($name, $value);
         }
+        $this->headers->readOnly(true);
 
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that 'php://input' is not available with enctype="multipart/form-data".
