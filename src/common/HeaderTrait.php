@@ -51,10 +51,9 @@ trait HeaderTrait
      */
     public function header(string $name, string $value = null, bool $replace = true)
     {
-        if ($value === null) {
+        if (func_num_args() == 1) {
             return $this->getHeader($name);
         }
-
         return $replace ? $this->setHeader($name, $value)
                         : $this->addHeader($name, $value);
     }

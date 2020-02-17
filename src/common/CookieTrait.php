@@ -54,7 +54,6 @@ trait CookieTrait
         if (func_num_args() == 1) {
             return $this->getCookie($name);
         }
-
         return $this->setCookie($name, $value);
     }
 
@@ -100,9 +99,9 @@ trait CookieTrait
      * Get cookie.
      * @param  string      $name
      * @param  string|null $valueDefault
-     * @return string|null
+     * @return ?string
      */
-    public function getCookie(string $name, string $valueDefault = null)
+    public function getCookie(string $name, string $valueDefault = null): ?string
     {
         return $this->cookies->get($name, $valueDefault);
     }
