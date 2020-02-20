@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\util\Arrays;
 use froq\common\interfaces\Stringable;
 use froq\collection\ComponentCollection;
 use froq\http\Http;
