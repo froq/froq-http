@@ -222,16 +222,17 @@ final class Response extends Message
      */
     public function sendBody(): void
     {
-        $content           = $this->body->getContent();
-        $contentAttributes = $this->body->getContentAttributes();
+        $body              = $this->getBody();
+        $content           = $body->getContent();
+        $contentAttributes = $body->getContentAttributes();
 
         // Those n/a responses output nothing.
-        if ($this->body->isNone()) {
+        if ($body->isNone()) {
             header('Content-Type: n/a');
             header('Content-Length: 0');
         }
         // Text contents (html, json, xml etc.).
-        elseif ($this->body->isText()) {
+        elseif ($body->isText()) {
             $content        = (string) $content;
             $contentType    = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
             $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
@@ -268,7 +269,7 @@ final class Response extends Message
             print $content;
         }
         // Image contents (jpeg, png and gif only).
-        elseif ($this->body->isImage()) {
+        elseif ($body->isImage()) {
             [$image, $imageType, $imageModifiedAt] = [
                 $content, $contentAttributes['type'], $contentAttributes['modifiedAt']
             ];
@@ -304,7 +305,7 @@ final class Response extends Message
             print $content;
         }
         // File contents (actually file downloads).
-        elseif ($this->body->isFile()) {
+        elseif ($body->isFile()) {
             [$file, $fileType, $fileName, $fileSize, $fileMime, $fileModifiedAt] = [
                 $content, $contentAttributes['type'], $contentAttributes['name'],
                 $contentAttributes['size'], $contentAttributes['mime'], $contentAttributes['modifiedAt']
