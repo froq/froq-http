@@ -28,8 +28,8 @@ namespace froq\http;
 
 use froq\App;
 use froq\util\Util;
-use froq\http\HttpException;
-use froq\http\message\{Headers, Body};
+use froq\http\MessageException;
+use froq\http\message\{Body, Cookies, Headers};
 use froq\http\response\payload\Payload;
 
 /**
@@ -73,6 +73,12 @@ abstract class Message
     protected Headers $headers;
 
     /**
+     * Cookies.
+     * @var froq\http\message\Cookies
+     */
+    protected Cookies $cookies;
+
+    /**
      * Body.
      * @var froq\http\message\Body
      */
@@ -90,6 +96,7 @@ abstract class Message
         $this->httpVersion = Http::detectVersion();
 
         $this->headers     = new Headers();
+        $this->cookies     = new Cookies();
         $this->body        = new Body();
     }
 
@@ -127,7 +134,34 @@ abstract class Message
      */
     public final function headers(...$arguments)
     {
-        return $arguments ? $this->setHeaders(...$arguments) : $this->headers;
+        if ($arguments) {
+            if ($this->isRequest()) {
+                throw new MessageException('Connot modify request headers');
+            }
+
+            return $this->setHeaders(...$arguments);
+        }
+
+        return $this->headers;
+    }
+
+    /**
+     * Set/get cookies.
+     * @param  ...$arguments
+     * @return self|froq\http\message\Cookies
+     * @throws froq\http\MessageException
+     */
+    public final function cookies(...$arguments)
+    {
+        if ($arguments) {
+            if ($this->isRequest()) {
+                throw new MessageException('Connot modify request cookies');
+            }
+
+            return $this->setCookies(...$arguments);
+        }
+
+        return $this->cookies;
     }
 
     /**
@@ -155,6 +189,20 @@ abstract class Message
     }
 
     /**
+     * Set cookies.
+     * @param  array $cookies
+     * @return self
+     */
+    public function setCookies(array $cookies): self
+    {
+        foreach ($cookies as $name => $value) {
+            $this->setCookie($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get headers.
      * @return froq\http\message\Headers
      */
@@ -169,7 +217,7 @@ abstract class Message
      * @param  array|null $contentAttributes
      * @param  bool|null  $isError @internal
      * @return self
-     * @throws froq\http\HttpException
+     * @throws froq\http\MessageException
      */
     public final function setBody($content, array $contentAttributes = null, bool $isError = null): self
     {
@@ -213,15 +261,15 @@ abstract class Message
 
                 if ($contentValueType == 'array' || $contentValueType == 'object') {
                     if ($contentType == '') {
-                        throw new HttpException('Missing content type for "%s" type content value',
+                        throw new MessageException('Missing content type for "%s" type content value',
                             [$contentValueType]);
                     }
                     if (!preg_match('~(json|xml)~', $contentType)) {
-                        throw new HttpException('Invalid content value type for "%s" type content, '.
+                        throw new MessageException('Invalid content value type for "%s" type content, '.
                             'content type must be such type "xxx/json" or "xxx/xml"', [$contentValueType]);
                     }
                 } elseif ($contentValueType != 'null' && $contentValueType != 'scalar') {
-                    throw new HttpException('Invalid content value type "%s"', [$contentValueType]);
+                    throw new MessageException('Invalid content value type "%s"', [$contentValueType]);
                 }
 
                 $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);

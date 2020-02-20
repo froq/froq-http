@@ -24,14 +24,14 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
+namespace froq\http\message;
 
 use froq\collection\stack\MapStack;
 
 /**
  * Cookies.
- * @package froq\http\response
- * @object  froq\http\response\Cookies
+ * @package froq\http\message
+ * @object  froq\http\message\Cookies
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */

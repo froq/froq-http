@@ -84,12 +84,6 @@ final class Request extends Message
         $this->uri    = new Uri(Util::getCurrentUrl());
         $this->client = new Client();
 
-        $headers = $this->loadHeaders();
-        foreach ($headers as $name => $value) {
-            $this->headers->add($name, $value);
-        }
-        $this->headers->readOnly(true);
-
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
@@ -102,7 +96,22 @@ final class Request extends Message
         }
         $_COOKIE = $this->loadGlobal('COOKIE');
 
+        // Fill body object.
         $this->setBody($content, ['type' => $contentType]);
+
+        [$headers, $cookies] = [$this->loadHeaders(), $_COOKIE];
+
+        // Fill & lock headers and cookies objects.
+        foreach ($headers as $name => $value) {
+            $this->headers->add($name, $value);
+        }
+        $this->headers->readOnly(true);
+
+        foreach ($cookies as $name => $value) {
+            $this->cookies->add($name, $value);
+        }
+        $this->cookies->readOnly(true);
+
     }
 
     /**
@@ -139,16 +148,6 @@ final class Request extends Message
     public function client(): Client
     {
         return $this->client;
-    }
-
-    /**
-     * Cookies.
-     * @return array
-     * @since  4.0
-     */
-    public function cookies(): array
-    {
-        return Params::cookies();
     }
 
     /**

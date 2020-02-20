@@ -55,12 +55,6 @@ final class Response extends Message
     protected Status $status;
 
     /**
-     * Cookies.
-     * @var froq\http\response\Cookies
-     */
-    protected Cookies $cookies;
-
-    /**
      * Constructor.
      * @param froq\App $app
      */
@@ -69,7 +63,6 @@ final class Response extends Message
         parent::__construct($app, Message::TYPE_RESPONSE);
 
         $this->status  = new Status();
-        $this->cookies = new Cookies();
     }
 
     /**
@@ -80,16 +73,6 @@ final class Response extends Message
     public function status(...$arguments)
     {
         return $arguments ? $this->setStatus(...$arguments) : $this->status;
-    }
-
-    /**
-     * Set/get cookies.
-     * @param  ...$arguments
-     * @return self|froq\http\response\Cookies
-     */
-    public function cookies(...$arguments)
-    {
-        return $arguments ? $this->setCookies(...$arguments): $this->cookies;
     }
 
     /**
@@ -120,20 +103,6 @@ final class Response extends Message
     {
         $this->status->setCode($code);
         $this->status->setText($text ?? Status::getTextByCode($code));
-
-        return $this;
-    }
-
-    /**
-     * Set cookies.
-     * @param  array $cookies
-     * @return self
-     */
-    public final function setCookies(array $cookies): self
-    {
-        foreach ($cookies as $name => $value) {
-            $this->setCookie($name, $value);
-        }
 
         return $this;
     }
