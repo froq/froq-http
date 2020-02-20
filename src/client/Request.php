@@ -77,7 +77,7 @@ final class Request extends Message
         static $headersDefault = [
             'accept' => '*/*',
             'accept-encoding' => 'gzip',
-            'user-agent' => 'Froq Http Client (+https://github.com/froq/froq-http-client)',
+            'user-agent' => 'Froq Http Client (+https://github.com/froq/froq-http)',
         ];
 
         $headers = array_replace($headersDefault, $headers ?? []);
