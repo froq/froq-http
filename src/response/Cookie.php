@@ -66,9 +66,11 @@ final class Cookie extends ComponentCollection implements Stringable
      */
     public function __construct(string $name, $value, array $options = null)
     {
-        // Set component names.
-        parent::__construct(['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly',
-            'sameSite']);
+        static $components = ['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly',
+            'sameSite'];
+
+        // Set components.
+        parent::__construct($components);
 
         // Check name.
         if (!preg_match('~^'. self::$namePattern .'$~', $name)) {
@@ -77,14 +79,14 @@ final class Cookie extends ComponentCollection implements Stringable
         }
 
         if ($value != null && !is_scalar($value)) {
-            throw new CookieException('Invalid value type "%s", scalar or null '.
-                'values accepted only', [gettype($value)]);
+            throw new CookieException('Invalid value type "%s", scalar or null values accepted only',
+                [gettype($value)]);
         }
 
+        // Define defaults for component names.
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
         if ($options != null) {
-            @ ['expires' => $expires, 'path'     => $path,     'domain'   => $domain,
-               'secure'  => $secure,  'httpOnly' => $httpOnly, 'sameSite' => $sameSite] = $options;
+            extract($options);
         }
 
         if ($sameSite != '') {
@@ -95,13 +97,7 @@ final class Cookie extends ComponentCollection implements Stringable
             }
         }
 
-        foreach ([
-            'name'    => $name,    'value'    => $value,
-            'expires' => $expires, 'path'     => $path,     'domain'   => $domain,
-            'secure'  => $secure,  'httpOnly' => $httpOnly, 'sameSite' => $sameSite
-        ] as $name => $value) {
-            $this->set($name, $value);
-        }
+        $this->setData(compact($components)); // Store.
     }
 
     /**
@@ -109,16 +105,11 @@ final class Cookie extends ComponentCollection implements Stringable
      */
     public function toString(): string
     {
-        $ret = '';
-
-        @ ['name'    => $name,    'value'    => $value,
-           'expires' => $expires, 'path'     => $path,     'domain'   => $domain,
-           'secure'  => $secure,  'httpOnly' => $httpOnly, 'sameSite' => $sameSite
-          ] = $this->toArray();
+        extract($this->getData()); // Unstore.
 
         $ret = $name .'=';
         if ($value === null || $expires < 0) {
-            $ret .= 'NULL; Expires='. Http::date(0) .'; Max-Age=0';
+            $ret .= sprintf('NULL; Expires=%s; Max-Age=0', Http::date(0));
         } else {
             // String, bool, int or float.
             switch (gettype($value)) {
@@ -129,12 +120,12 @@ final class Cookie extends ComponentCollection implements Stringable
                     $ret .= $value ? 'true' : 'false';
                     break;
                 default:
-                    $ret .= (string) $value;
+                    $ret .= strval($value);
             }
 
+            // Must be given in-seconds format.
             if ($expires != null) {
-                $ret .= '; Expires='. Http::date(time() + $expires) .'; '.
-                    'Max-Age='. $expires;
+                $ret .= sprintf('; Expires=%s; Max-Age=%s', Http::date(time() + $expires), $expires);
             }
         }
 
