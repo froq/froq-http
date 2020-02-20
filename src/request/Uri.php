@@ -74,7 +74,7 @@ final class Uri extends ComponentCollection implements Stringable
 
         $source = parse_url($source);
         if (empty($source['path'])) {
-            throw new UriException('Invalid URI source');
+            throw new UriException('Invalid URI source, path found in');
         }
 
         // Use self component names only.
