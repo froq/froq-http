@@ -142,6 +142,16 @@ final class Request extends Message
     }
 
     /**
+     * Cookies.
+     * @return array
+     * @since  4.0
+     */
+    public function cookies(): array
+    {
+        return Params::cookies();
+    }
+
+    /**
      * Params.
      * @return array
      */
