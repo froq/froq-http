@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\response\RequestException;
+use froq\http\request\RequestException;
 
 /**
  * Uri exception.
