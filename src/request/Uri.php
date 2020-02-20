@@ -65,20 +65,22 @@ final class Uri extends ComponentCollection implements Stringable
      */
     public function __construct(string $source)
     {
-        // Set component names.
-        parent::__construct(['path', 'query', 'fragment']);
+        static $components = ['path', 'query', 'fragment'];
+
+        // Set components.
+        parent::__construct($components);
 
         $this->source = $source;
 
-        $components = parse_url($source);
-        if ($components == null) {
+        $source = parse_url($source);
+        if (empty($source['path'])) {
             throw new UriException('Invalid URI source');
         }
 
         // Use self component names only.
-        $components = Arrays::include($components, $this->names());
+        $source = Arrays::include($source, $components);
 
-        foreach ($components as $name => $value) {
+        foreach ($source as $name => $value) {
             $this->set($name, $value);
         }
 
