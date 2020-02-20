@@ -111,7 +111,6 @@ final class Request extends Message
             $this->cookies->add($name, $value);
         }
         $this->cookies->readOnly(true);
-
     }
 
     /**
