@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
+use froq\util\Arrays;
 use froq\common\interfaces\Stringable;
 use froq\collection\ComponentCollection;
 use froq\http\request\UriException;
@@ -65,7 +66,7 @@ final class Uri extends ComponentCollection implements Stringable
     public function __construct(string $source)
     {
         // Set component names.
-        parent::__construct(['scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment']);
+        parent::__construct(['path', 'query', 'fragment']);
 
         $this->source = $source;
 
@@ -74,9 +75,14 @@ final class Uri extends ComponentCollection implements Stringable
             throw new UriException('Invalid URI source');
         }
 
+        // Use self component names only.
+        $components = Arrays::include($components, $this->names());
+
         foreach ($components as $name => $value) {
             $this->set($name, $value);
         }
+
+        // Lock.
         $this->readOnly(true);
     }
 
