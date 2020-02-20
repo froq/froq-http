@@ -329,7 +329,7 @@ final class Response extends Message
             header('Expires: '. Http::date(0));
             if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
                 header('Last-Modified: '. Http::date(
-                    is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
+                    is_int($fileModifiedAt) ? $fileModifiedAt : strtotime($fileModifiedAt)
                 ));
             }
             header('X-Rate-Limit: '. $xRateLimit .'/s');
