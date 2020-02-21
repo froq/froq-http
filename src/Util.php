@@ -130,14 +130,14 @@ final class Util
     public static function buildQuery(array $input, bool $normalizeArrays = true): string
     {
         // Fix skipped NULL values by http_build_query().
-        static $filter; if ($filter == null) {
-            $filter = function ($input) use (&$filter) {
-                foreach ($input as $key => $value) {
-                    $input[$key] = is_array($value) ? $filter($value) : strval($value);
-                }
-                return $input;
-            };
-        }
+        static $filter; if (!$filter) {
+               $filter = function ($input) use (&$filter) {
+                    foreach ($input as $key => $value) {
+                        $input[$key] = is_array($value) ? $filter($value) : strval($value);
+                    }
+                    return $input;
+               }
+        };
 
         $input = http_build_query($filter($input));
 
