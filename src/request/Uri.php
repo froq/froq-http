@@ -65,7 +65,7 @@ final class Uri extends ComponentCollection implements Stringable
      */
     public function __construct(string $source)
     {
-        static $components = ['path', 'query', 'fragment'];
+        $components = ['path', 'query', 'fragment'];
 
         // Set components.
         parent::__construct($components);
