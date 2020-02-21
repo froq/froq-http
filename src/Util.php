@@ -136,7 +136,7 @@ final class Util
                         $input[$key] = is_array($value) ? $filter($value) : strval($value);
                     }
                     return $input;
-               }
+               };
         };
 
         $input = http_build_query($filter($input));
