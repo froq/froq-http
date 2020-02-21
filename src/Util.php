@@ -123,29 +123,28 @@ final class Util
 
     /**
      * Build query.
-     * @param  array $input
+     * @param  array $data
      * @param  bool  $normalizeArrays
      * @return string
      */
-    public static function buildQuery(array $input, bool $normalizeArrays = true): string
+    public static function buildQuery(array $data, bool $normalizeArrays = true): string
     {
         // Memoize: fix skipped NULL values by http_build_query().
         static $filter; if (!$filter) {
-               $filter = function ($input) use (&$filter) {
-                    foreach ($input as $key => $value) {
-                        $input[$key] = is_array($value) ? $filter($value) : strval($value);
+               $filter = function ($data) use (&$filter) {
+                    foreach ($data as $key => $value) {
+                        $data[$key] = is_array($value) ? $filter($value) : strval($value);
                     }
-                    return $input;
+                    return $data;
                };
         };
 
-        $input = http_build_query($filter($input));
+        $ret = http_build_query($filter($data));
 
         if ($normalizeArrays) {
-            $input = preg_replace('~%5B([\d]+)%5D~simU', '[]', $input);
-            $input = preg_replace('~%5B([\w\.-]+)%5D~simU', '[\1]', $input);
+            $ret = preg_replace('~([\w\.\-]+)%5B([\w\.\-]+)%5D(=)?~iU', '\1[\2]\3', $ret);
         }
 
-        return $input;
+        return $ret;
     }
 }
