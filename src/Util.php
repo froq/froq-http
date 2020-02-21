@@ -129,7 +129,7 @@ final class Util
      */
     public static function buildQuery(array $input, bool $normalizeArrays = true): string
     {
-        // Fix skipped NULL values by http_build_query().
+        // Memoize: fix skipped NULL values by http_build_query().
         static $filter; if (!$filter) {
                $filter = function ($input) use (&$filter) {
                     foreach ($input as $key => $value) {
