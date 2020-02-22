@@ -276,7 +276,7 @@ final class Response extends Message
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
             [$file, $fileType, $fileName, $fileSize, $fileModifiedAt] = [
-                $content, $contentAttributes['type'], $contentAttributes['name'],
+                $content, $contentAttributes['mime'], $contentAttributes['name'],
                           $contentAttributes['size'], $contentAttributes['modifiedAt']
             ];
 
