@@ -154,7 +154,7 @@ class Payload
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
             if (!is_string($content) && !is_resource($content)) {
-                throw new PayloadException('Failed to achive resource content from "%s"',
+                throw new PayloadException('Failed to achive string/resource content from "%s"',
                     [get_class($payload)]);
             }
         } else {
