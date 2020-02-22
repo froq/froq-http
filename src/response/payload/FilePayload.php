@@ -61,8 +61,8 @@ final class FilePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$file, $fileName, $fileMime, $fileExtension, $fileModifiedAt] = [
-            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
+        [$file, $fileName, $fileType, $fileExtension, $fileModifiedAt] = [
+            $this->getContent(), ...$this->getAttributes(['name', 'type', 'extension', 'modifiedAt'])
         ];
 
         if (!is_string($file) && !is_resource($file)) {
@@ -93,7 +93,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 }
 
                 // Those attributes may be given in attributes (true means auto-set, mime default is true).
-                $fileMime       = (($fileMime ?? true) === true) ? FileUtil::getType($file) : $fileMime;
+                $fileType       = (($fileType ?? true) === true) ? FileUtil::getType($file) : $fileType;
                 $fileModifiedAt = ($fileModifiedAt === true) ? filemtime($file) : $fileModifiedAt;
 
                 $file =@ fopen($file, 'r+b');
@@ -104,7 +104,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 }
 
                 $fileName      = $fileName ?: pathinfo($fileContent, PATHINFO_FILENAME);
-                $fileExtension = $fileExtension ?: ($fileMime ? Mime::getExtensionByType($fileMime)
+                $fileExtension = $fileExtension ?: ($fileType ? Mime::getExtensionByType($fileType)
                                                               : Mime::getExtension($fileContent));
             }
             // Convert file to source (binary content accepted).
@@ -113,7 +113,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 fwrite($file, $fileContent);
 
                 $fileName      = $fileName ?: crc32($fileContent);
-                $fileExtension = $fileExtension ?: ($fileMime ? Mime::getExtensionByType($fileMime)
+                $fileExtension = $fileExtension ?: ($fileType ? Mime::getExtensionByType($fileType)
                                                               : Mime::getExtensionByType(mime_content_type($file)));
             }
         }
@@ -126,7 +126,7 @@ final class FilePayload extends Payload implements PayloadInterface
         $fileSize      = $fileSize ?? fstat($file)['size'];
         $fileName      = $fileName ?: pathinfo(stream_get_meta_data($file)['uri'], PATHINFO_FILENAME)
                                    ?: crc32(fread($file, $fileSize));
-        $fileExtension = $fileExtension ?: ($fileMime ? Mime::getExtensionByType($fileMime) : (
+        $fileExtension = $fileExtension ?: ($fileType ? Mime::getExtensionByType($fileType) : (
                                                         Mime::getExtension($fileName) ?:
                                                         Mime::getExtensionByType(mime_content_type($file))));
 
@@ -138,7 +138,7 @@ final class FilePayload extends Payload implements PayloadInterface
         // Update attributes.
         $this->setAttributes([
             'size' => $fileSize, 'name'       => $fileName,
-            'mime' => $fileMime, 'modifiedAt' => $fileModifiedAt
+            'type' => $fileType, 'modifiedAt' => $fileModifiedAt
         ]);
 
         return ($content = $file);

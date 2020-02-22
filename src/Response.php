@@ -275,9 +275,9 @@ final class Response extends Message
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
-            [$file, $fileType, $fileName, $fileSize, $fileMime, $fileModifiedAt] = [
+            [$file, $fileType, $fileName, $fileSize, $fileModifiedAt] = [
                 $content, $contentAttributes['type'], $contentAttributes['name'],
-                $contentAttributes['size'], $contentAttributes['mime'], $contentAttributes['modifiedAt']
+                          $contentAttributes['size'], $contentAttributes['modifiedAt']
             ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
@@ -290,7 +290,7 @@ final class Response extends Message
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
 
-            header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
+            header('Content-Type: '. ($fileType ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
             header('Content-Length: '. $fileSize);
             header('Content-Disposition: attachment; filename="'. $fileName .'"');
             header('Content-Transfer-Encoding: binary');
