@@ -81,7 +81,7 @@ final class Request extends Message
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
-        $this->uri    = new Uri(Util::getCurrentUrl());
+        $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
 
         // Set/parse body for overriding methods (put, delete etc. or even for get).
