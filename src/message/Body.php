@@ -151,6 +151,19 @@ final class Body
     }
 
     /**
+     * Is file.
+     * @return bool
+     * @since  4.0
+     */
+    public function isFile(): bool
+    {
+        return in_array($this->getAttribute('type'), [
+            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
+            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
+        ]);
+    }
+
+    /**
      * Is image.
      * @return bool
      * @since  3.9
@@ -161,19 +174,6 @@ final class Body
             self::CONTENT_TYPE_IMAGE_JPEG,
             self::CONTENT_TYPE_IMAGE_PNG,
             self::CONTENT_TYPE_IMAGE_GIF
-        ]);
-    }
-
-    /**
-     * Is file.
-     * @return bool
-     * @since  4.0
-     */
-    public function isFile(): bool
-    {
-        return in_array($this->getAttribute('type'), [
-            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
-            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
         ]);
     }
 }
