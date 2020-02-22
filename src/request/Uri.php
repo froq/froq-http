@@ -26,9 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\util\Arrays;
-use froq\common\interfaces\Stringable;
-use froq\collection\ComponentCollection;
+use froq\http\{Url, UrlException};
 use froq\http\request\UriException;
 
 /**
@@ -38,14 +36,8 @@ use froq\http\request\UriException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   1.0
  */
-final class Uri extends ComponentCollection implements Stringable
+final class Uri extends Url
 {
-    /**
-     * Source.
-     * @var string
-     */
-    private string $source;
-
     /**
      * Segments.
      * @var array
@@ -56,45 +48,22 @@ final class Uri extends ComponentCollection implements Stringable
      * Segments root.
      * @var ?string
      */
-    private ?string $segmentsRoot = null;
+    private ?string $segmentsRoot;
 
     /**
      * Constructor.
-     * @param  string $source
+     * @param  array|string $source
      * @throws froq\http\request\UriException
      */
-    public function __construct(string $source)
+    public function __construct($source)
     {
-        $components = ['path', 'query', 'fragment'];
-
-        // Set components.
-        parent::__construct($components);
-
-        $this->source = $source;
-
-        $source = parse_url($source);
-        if (empty($source['path'])) {
-            throw new UriException('Invalid URI source, path found in');
+        try {
+            parent::__construct($source, ['path', 'query', 'queryParams', 'fragment']);
+        } catch (UrlException $e) {
+            throw new UriException($e);
         }
 
-        // Use self component names only.
-        $source = Arrays::include($source, $components);
-
-        foreach ($source as $name => $value) {
-            $this->set($name, $value);
-        }
-
-        // Lock.
-        $this->readOnly(true);
-    }
-
-    /**
-     * Get source.
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return $this->source;
+        $this->readOnly(true); // Lock.
     }
 
     /**
@@ -123,7 +92,7 @@ final class Uri extends ComponentCollection implements Stringable
      */
     public function segmentsRoot(): ?string
     {
-        return $this->segmentsRoot;
+        return $this->segmentsRoot ?? null;
     }
 
     /**
@@ -158,34 +127,5 @@ final class Uri extends ComponentCollection implements Stringable
                 $this->segments[$i + 1] = $segment;
             }
         }
-    }
-
-    /**
-     * @inheritDoc froq\common\interfaces\Stringable
-     */
-    public function toString(): string
-    {
-        $ret = '';
-
-        @ ['scheme' => $scheme, 'host'     => $host, 'port' => $port,
-           'user'   => $user,   'pass'     => $pass, 'path' => $path,
-           'query'  => $query,  'fragment' => $fragment] = $this->toArray();
-
-        if ($scheme) {
-            $ret .= $scheme . '://';
-        }
-        if ($user || $pass) {
-            $user && $ret .= $user;
-            $pass && $ret .= ':'. $pass;
-            $ret .= '@';
-        }
-
-        $host     && $ret .= $host;
-        $port     && $ret .= ':'. $port;
-        $path     && $ret .= $path;
-        $query    && $ret .= '?'. $query;
-        $fragment && $ret .= '#'. $fragment;
-
-        return $ret;
     }
 }

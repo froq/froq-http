@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\request\RequestException;
+use froq\http\UrlException;
 
 /**
  * Uri exception.
@@ -35,5 +35,5 @@ use froq\http\request\RequestException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class UriException extends RequestException
+final class UriException extends UrlException
 {}
