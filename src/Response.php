@@ -244,9 +244,6 @@ final class Response extends Message
             ];
             $xDimensions = imagesx($image) .'x'. imagesy($image);
 
-            // Clean up above..
-            while (ob_get_level()) ob_end_clean();
-
             ob_start();
             switch ($imageType) {
                 case Body::CONTENT_TYPE_IMAGE_JPEG:
@@ -261,6 +258,9 @@ final class Response extends Message
                     break;
             }
             $content = ob_get_clean();
+
+            // Clean up above..
+            while (ob_get_level()) ob_end_clean();
 
             header('Content-Type: '. $imageType);
             header('Content-Length: '. strlen($content));
