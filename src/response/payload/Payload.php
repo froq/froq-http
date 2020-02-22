@@ -28,7 +28,7 @@ namespace froq\http\response\payload;
 
 use froq\common\traits\AttributeTrait;
 use froq\util\Arrays;
-use froq\file\Mime;
+use froq\file\mime\Mime;
 use froq\http\Response;
 use froq\http\response\payload\{PayloadInterface, PayloadException,
     JsonPayload, XmlPayload, FilePayload, ImagePayload};

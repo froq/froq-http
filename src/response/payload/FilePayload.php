@@ -27,9 +27,8 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\util\Strings;
-use froq\file\{Util as FileUtil, Mime};
-use froq\http\Response;
-use froq\http\message\Body;
+use froq\file\{Util as FileUtil, File, mime\Mime};
+use froq\http\{Response, message\Body};
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 
 /**
@@ -93,7 +92,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 }
 
                 // Those attributes may be given in attributes (true means auto-set, mime default is true).
-                $fileType       = (($fileType ?? true) === true) ? FileUtil::getType($file) : $fileType;
+                $fileType       = (($fileType ?? true) === true) ? File::getType($file) : $fileType;
                 $fileModifiedAt = ($fileModifiedAt === true) ? filemtime($file) : $fileModifiedAt;
 
                 $file =@ fopen($file, 'r+b');
