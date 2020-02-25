@@ -50,13 +50,19 @@ final class Body
     * @const string
     */
     public const CONTENT_TYPE_NA                       = 'n/a',
+                 // Texts.
                  CONTENT_TYPE_TEXT_HTML                = 'text/html',
                  CONTENT_TYPE_TEXT_PLAIN               = 'text/plain',
+                 CONTENT_TYPE_TEXT_XML                 = 'text/xml',
+                 CONTENT_TYPE_TEXT_JSON                = 'text/json',
+                 CONTENT_TYPE_APPLICATION_XML          = 'application/xml',
+                 CONTENT_TYPE_APPLICATION_JSON         = 'application/json',
+                 // Images.
                  CONTENT_TYPE_IMAGE_JPEG               = 'image/jpeg',
                  CONTENT_TYPE_IMAGE_PNG                = 'image/png',
                  CONTENT_TYPE_IMAGE_GIF                = 'image/gif',
-                 CONTENT_TYPE_APPLICATION_XML          = 'application/xml',
-                 CONTENT_TYPE_APPLICATION_JSON         = 'application/json',
+                 CONTENT_TYPE_IMAGE_WEBP               = 'image/webp',
+                 // Downloads
                  CONTENT_TYPE_APPLICATION_DOWNLOAD     = 'application/download',
                  CONTENT_TYPE_APPLICATION_OCTET_STREAM = 'application/octet-stream';
 
@@ -147,7 +153,7 @@ final class Body
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && (!$this->isNone() && !$this->isFile() && !$this->isImage());
+            && !$this->isNone() && !$this->isFile() && !$this->isImage();
     }
 
     /**
@@ -173,7 +179,8 @@ final class Body
         return in_array($this->getAttribute('type'), [
             self::CONTENT_TYPE_IMAGE_JPEG,
             self::CONTENT_TYPE_IMAGE_PNG,
-            self::CONTENT_TYPE_IMAGE_GIF
+            self::CONTENT_TYPE_IMAGE_GIF,
+            self::CONTENT_TYPE_IMAGE_WEBP
         ]);
     }
 }
