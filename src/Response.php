@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\App;
-use froq\file\Util as FileUtil;
+use froq\file\{FileObject, ImageObject, Util as FileUtil};
 use froq\encoding\Encoder;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
@@ -237,27 +237,15 @@ final class Response extends Message
 
             print $content;
         }
-        // Image contents (jpeg, png and gif only).
+        // Image contents.
         elseif ($body->isImage()) {
-            [$image, $imageType, $imageModifiedAt] = [
-                $content, $contentAttributes['type'], $contentAttributes['modifiedAt']
+            [$image, $imageType, $imageModifiedAt, $imageOptions] = [
+                $content, $contentAttributes['type'], $contentAttributes['modifiedAt'],
+                          $contentAttributes['options'] ?? $this->app->config('response.image')
             ];
-            $xDimensions = imagesx($image) .'x'. imagesy($image);
 
-            ob_start();
-            switch ($imageType) {
-                case Body::CONTENT_TYPE_IMAGE_JPEG:
-                    $jpegQuality = (int) $this->app->config('response.file.jpegQuality', -1);
-                    imagejpeg($image, null, $jpegQuality) && imagedestroy($image);
-                    break;
-                case Body::CONTENT_TYPE_IMAGE_PNG:
-                    imagepng($image) && imagedestroy($image);
-                    break;
-                case Body::CONTENT_TYPE_IMAGE_GIF:
-                    imagegif($image) && imagedestroy($image);
-                    break;
-            }
-            $content = ob_get_clean();
+            $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
+            $content = $image->getContents();
 
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
@@ -269,16 +257,19 @@ final class Response extends Message
                     is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
                 ));
             }
-            header('X-Dimensions: '. $xDimensions);
+            header('X-Dimensions: '. vsprintf('%dx%d', $image->getDimensions()));
 
             print $content;
+
+            $image->free();
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
-            [$file, $fileType, $fileName, $fileSize, $fileModifiedAt] = [
+            [$file, $fileMime, $fileName, $fileSize, $fileModifiedAt] = [
                 $content, $contentAttributes['mime'], $contentAttributes['name'],
                           $contentAttributes['size'], $contentAttributes['modifiedAt']
             ];
+            pre($file,1);
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
@@ -290,7 +281,7 @@ final class Response extends Message
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
 
-            header('Content-Type: '. ($fileType ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
+            header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
             header('Content-Length: '. $fileSize);
             header('Content-Disposition: attachment; filename="'. $fileName .'"');
             header('Content-Transfer-Encoding: binary');
@@ -304,12 +295,16 @@ final class Response extends Message
             }
             header('X-Rate-Limit: '. $xRateLimit .'/s');
 
-            fseek($file, 0);
-            while (!feof($file) && !connection_aborted()) {
-                print fread($file, $rateLimit);
+            $file = FileObject::fromResource($file);
+            $file->rewind();
+
+            do {
+                $content = $file->read($reteLimit);
+                print $content;
                 sleep(1); // Apply rate limit.
-            }
-            fclose($file);
+            } while ($content && !connection_aborted());
+
+            $file->free();
         } else {
             // Nope, nothing to print..
         }

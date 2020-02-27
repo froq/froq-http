@@ -39,7 +39,6 @@ final class Body
 {
     /**
      * Attribute trait.
-     *
      * @see froq\common\traits\AttributeTrait
      * @since 4.0
      */
