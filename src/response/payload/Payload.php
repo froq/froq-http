@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\common\traits\AttributeTrait;
-use froq\util\Arrays;
 use froq\file\mime\Mime;
 use froq\http\Response;
 use froq\http\response\payload\{PayloadInterface, PayloadException,
@@ -233,6 +232,7 @@ class Payload
                 case 'xml':
                     return 'xml';
                 case 'jpeg': case 'png': case 'gif':
+                case 'webp':
                     return 'image';
                 case 'octet-stream':
                     return 'file';

@@ -69,9 +69,9 @@ final class ImagePayload extends Payload implements PayloadInterface
 
         if ($image == null) {
             throw new PayloadException('Image cannot be empty');
-        } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif)$~', $imageType)) {
+        } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
             throw new PayloadException('Invalid image type "%s", valids are: image/jpeg, '.
-                'image/png, image/gif', [$imageType]);
+                'image/png, image/gif, image/webp', [$imageType]);
         }
 
         if (!is_resource($image)) {
