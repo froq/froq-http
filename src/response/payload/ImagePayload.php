@@ -62,13 +62,11 @@ final class ImagePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt'])
         ];
 
-        if (!is_string($image) && !is_resource($image)) {
+        if ($image == null) {
+            throw new PayloadException('Image must not be empty');
+        } elseif (!is_string($image) && !is_resource($image)) {
             throw new PayloadException('Image content must be a valid readable file path, '.
                 'binary or gd resource, "%s" given', [gettype($image)]);
-        }
-
-        if ($image == null) {
-            throw new PayloadException('Image cannot be empty');
         } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
             throw new PayloadException('Invalid image type "%s", valids are: image/jpeg, '.
                 'image/png, image/gif, image/webp', [$imageType]);

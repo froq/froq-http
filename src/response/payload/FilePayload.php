@@ -64,15 +64,13 @@ final class FilePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
         ];
 
-        if (!is_string($file) && !is_resource($file)) {
+        if ($file == null) {
+            throw new PayloadException('File must not be empty');
+        } elseif (!is_string($file) && !is_resource($file)) {
             throw new PayloadException('File content must be a valid readable file path, binary '.
                 'or stream resource, "%s" given', [gettype($file)]);
-        }
-
-        if ($file == null) {
-            throw new PayloadException('File cannot be empty');
         } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
-            throw new PayloadException('File name cannot contains non-ascii characters');
+            throw new PayloadException('File name must not contains non-ascii characters');
         }
 
         if (!is_resource($file)) {
