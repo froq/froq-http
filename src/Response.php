@@ -245,7 +245,7 @@ final class Response extends Message
             ];
 
             $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
-            $content = $image->getContents();
+            $content = $image->toString();
 
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
@@ -269,14 +269,12 @@ final class Response extends Message
                 $content, $contentAttributes['mime'], $contentAttributes['name'],
                           $contentAttributes['size'], $contentAttributes['modifiedAt']
             ];
-            pre($file,1);
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
-            $xRateLimit = FileUtil::formatBytes($rateLimit);
 
             // Clean up above..
             while (ob_get_level()) ob_end_clean();
@@ -293,13 +291,15 @@ final class Response extends Message
                     is_int($fileModifiedAt) ? $fileModifiedAt : strtotime($fileModifiedAt)
                 ));
             }
-            header('X-Rate-Limit: '. $xRateLimit .'/s');
+            if ($rateLimit != $fileSize) {
+                header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
+            }
 
             $file = FileObject::fromResource($file);
             $file->rewind();
 
             do {
-                $content = $file->read($reteLimit);
+                $content = $file->read($rateLimit);
                 print $content;
                 sleep(1); // Apply rate limit.
             } while ($content && !connection_aborted());
