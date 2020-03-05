@@ -120,7 +120,7 @@ final class Uri extends Url
                 $this->segmentsRoot = $root;
             }
 
-            $segments = array_map('trim', preg_split('~/+~', $path, -1, 1));
+            $segments = preg_split('~/+~', $path, -1, 1);
 
             foreach ($segments as $i => $segment) {
                 // Push index next (skip 0), so provide a (1,2,3) array for segments.
