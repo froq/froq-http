@@ -93,7 +93,7 @@ abstract class Message
     {
         $this->app         = $app;
         $this->type        = $type;
-        $this->httpVersion = Http::detectVersion();
+        $this->httpVersion = Http::version();
 
         $this->headers     = new Headers();
         $this->cookies     = new Cookies();

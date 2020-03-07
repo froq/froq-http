@@ -64,23 +64,9 @@ final class Http
      * Detect version.
      * @return string
      */
-    public static function detectVersion(): string
+    public static function version(): string
     {
         return $_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT;
-    }
-
-    /**
-     * Parse version.
-     * @param  string $version
-     * @return float
-     * @since  4.0
-     */
-    public static function parseVersion(string $version): float
-    {
-        if (strstr($version, 'HTTP/')) {
-            $version = substr($version, 5, 3);
-        }
-        return (float) $version;
     }
 
     /**

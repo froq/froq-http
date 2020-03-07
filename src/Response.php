@@ -318,7 +318,7 @@ final class Response extends Message
     {
         $code = $this->status->getCode();
         if (!http_response_code($code)) {
-            if (Http::parseVersion($this->httpVersion) > 2.0) {
+            if (substr($this->httpVersion, -3) >= 2.0) {
                 header(sprintf('%s %s', $this->httpVersion, $code));
             } else {
                 header(sprintf('%s %s %s', $this->httpVersion, $code, $this->status->getText()));
