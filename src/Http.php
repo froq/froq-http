@@ -79,4 +79,16 @@ final class Http
     {
         return gmdate(self::DATE_FORMAT, $time ?? time());
     }
+
+    /**
+     * Date verify.
+     * @param  string $date
+     * @return bool
+     * @since  4.0
+     */
+    public static function dateVerify(string $date): bool
+    {
+        return ($d = date_create_from_format(self::DATE_FORMAT, $date))
+            && ($d->format(self::DATE_FORMAT) === $date);
+    }
 }
