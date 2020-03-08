@@ -62,15 +62,19 @@ final class XmlPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
-        $options = null;
-        if ($this->response != null) {
-            $options = $this->response->getApp()->config('response.xml');
+        if (is_null($content) || is_string($content)) {
+            return $content;
         }
 
         if (!Encoder::isEncoded('xml', $content)) {
             if (!is_array($content)) {
-                throw new PayloadException('Content must be and "array" for non-encoded XML '.
+                throw new PayloadException('Content must be array or null for non-encoded XML '.
                     'payloads, "%s" given', [gettype($content)]);
+            }
+
+            $options = null;
+            if ($this->response != null) {
+                $options = $this->response->getApp()->config('response.xml');
             }
 
             $content = Encoder::xmlEncode($content, $options, $error);

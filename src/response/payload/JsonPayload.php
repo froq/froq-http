@@ -62,12 +62,12 @@ final class JsonPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
-        $options = null;
-        if ($this->response != null) {
-            $options = $this->response->getApp()->config('response.json');
-        }
-
         if (!Encoder::isEncoded('json', $content)) {
+            $options = null;
+            if ($this->response != null) {
+                $options = $this->response->getApp()->config('response.json');
+            }
+
             $content = Encoder::jsonEncode($content, $options, $error);
             if ($error != null) {
                 throw new PayloadException($error->getMessage(), null, $error->getCode());

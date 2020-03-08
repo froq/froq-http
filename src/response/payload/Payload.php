@@ -170,7 +170,7 @@ class Payload
                     break;
                 case 'text':
                     $content = $payload->getContent();
-                    if (!is_string($content)) {
+                    if (!is_null($content) && !is_string($content)) {
                         throw new PayloadException('Content must be string for text responses, '.
                             '"%s" given', [gettype($content)]);
                     }
@@ -180,8 +180,8 @@ class Payload
                         $payload->getContent(), $payload->getAttributes(), $response);
 
                     $content = $payload->handle();
-                    if (!is_string($content)) {
-                        throw new PayloadException('Failed to achive string content from "%s"',
+                    if (!is_null($content) && !is_string($content)) {
+                        throw new PayloadException('Failed to achive handled content from "%s"',
                             [get_class($payload)]);
                     }
                     break;
