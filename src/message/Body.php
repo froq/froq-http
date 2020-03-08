@@ -165,7 +165,7 @@ final class Body
         return in_array($this->getAttribute('type'), [
             self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
             self::CONTENT_TYPE_APPLICATION_DOWNLOAD
-        ]);
+        ], true);
     }
 
     /**
@@ -180,6 +180,6 @@ final class Body
             self::CONTENT_TYPE_IMAGE_PNG,
             self::CONTENT_TYPE_IMAGE_GIF,
             self::CONTENT_TYPE_IMAGE_WEBP
-        ]);
+        ], true);
     }
 }
