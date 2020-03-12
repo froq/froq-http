@@ -152,20 +152,7 @@ final class Body
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && !$this->isNone() && !$this->isFile() && !$this->isImage();
-    }
-
-    /**
-     * Is file.
-     * @return bool
-     * @since  4.0
-     */
-    public function isFile(): bool
-    {
-        return in_array($this->getAttribute('type'), [
-            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
-            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
-        ], true);
+            && !($this->isNone() || $this->isImage() || $this->isFile());
     }
 
     /**
@@ -180,6 +167,19 @@ final class Body
             self::CONTENT_TYPE_IMAGE_PNG,
             self::CONTENT_TYPE_IMAGE_GIF,
             self::CONTENT_TYPE_IMAGE_WEBP
+        ], true);
+    }
+
+    /**
+     * Is file.
+     * @return bool
+     * @since  4.0
+     */
+    public function isFile(): bool
+    {
+        return in_array($this->getAttribute('type'), [
+            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
+            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
         ], true);
     }
 }
