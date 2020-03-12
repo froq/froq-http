@@ -95,9 +95,8 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 $file =@ fopen($file, 'rb');
                 if (!$file) {
-                    throw new PayloadException('Failed to create file resource, file content '.
-                        'must be a valid readable file path, binary or stream resource [error: %s]'
-                        ['@error']);
+                    throw new PayloadException('Failed to create file resource, file content must '.
+                        'be a valid readable file path, binary or stream resource [error: %s]', ['@error']);
                 }
 
                 $fileName      = $fileName ?: pathinfo($fileContent, PATHINFO_FILENAME);
@@ -106,7 +105,7 @@ final class FilePayload extends Payload implements PayloadInterface
             }
             // Convert file to source (binary content accepted).
             elseif (Strings::isBinary($fileContent)) {
-                $file = fopen('php://temp', 'w+b');
+                $file = tmpfile();
                 fwrite($file, $fileContent);
 
                 $fileName      = $fileName ?: crc32($fileContent);
