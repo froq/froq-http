@@ -61,9 +61,9 @@ final class PlainPayload extends Payload implements PayloadInterface
     {
         $content = $this->getContent();
 
-        if (!is_string($content)) {
-            throw new PayloadException('Content must be string for plain payloads, "%s" given',
-                [gettype($content)]);
+        if (!is_null($content) && !is_string($content)) {
+            throw new PayloadException('Content must be string or null for plain payloads, "%s" '.
+                'given', [gettype($content)]);
         }
 
         return $content;

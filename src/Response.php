@@ -205,7 +205,7 @@ final class Response extends Message
             $content        = (string) $content;
             $contentType    = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
             $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
-            if ($contentCharset != '' && $contentCharset != Body::CONTENT_CHARSET_NA) {
+            if ($contentCharset && $contentCharset != Body::CONTENT_CHARSET_NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
@@ -239,10 +239,14 @@ final class Response extends Message
         }
         // Image contents.
         elseif ($body->isImage()) {
+            // Payload may be contain not-modified status with null content.
+            if ($content == null) {
+                return;
+            }
+
             [$image, $imageType, $imageModifiedAt, $imageOptions] = [
                 $content, $contentAttributes['type'], $contentAttributes['modifiedAt'],
-                          $contentAttributes['options'] ?? $this->app->config('response.image')
-            ];
+                          $contentAttributes['options'] ?? $this->app->config('response.image')];
 
             $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
             $content = $image->toString();
@@ -265,10 +269,14 @@ final class Response extends Message
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
+            // Payload may be contain not-modified status with null content.
+            if ($content == null) {
+                return;
+            }
+
             [$file, $fileMime, $fileName, $fileSize, $fileModifiedAt] = [
                 $content, $contentAttributes['mime'], $contentAttributes['name'],
-                          $contentAttributes['size'], $contentAttributes['modifiedAt']
-            ];
+                          $contentAttributes['size'], $contentAttributes['modifiedAt']];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);

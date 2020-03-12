@@ -28,7 +28,7 @@ namespace froq\http\response\payload;
 
 use froq\common\traits\AttributeTrait;
 use froq\file\mime\Mime;
-use froq\http\Response;
+use froq\http\{Response, response\Status};
 use froq\http\response\payload\{PayloadInterface, PayloadException,
     JsonPayload, XmlPayload, FilePayload, ImagePayload};
 
@@ -150,11 +150,21 @@ class Payload
         $payload = $this;
         $payload->setResponse($response);
 
+        // Check for not-modified status.
+        if ($payload->getContent() == null && $payload->getResponseCode() == Status::NOT_MODIFIED) {
+            // Return content, content attributes, response attributes.
+            return [
+                null,
+                $payload->getAttributes(),
+                [$payload->getResponseCode(), $payload->getResponseHeaders(), $payload->getResponseCookies()]
+            ];
+        }
+
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
-            if (!is_string($content) && !is_resource($content)) {
-                throw new PayloadException('Failed to achive string/resource content from "%s"',
-                    [get_class($payload)]);
+            if (!is_null($content) && !is_string($content) && !is_resource($content)) {
+                throw new PayloadException('Failed to achive string/resource content from "%s" '.
+                    'payload object', [get_class($payload)]);
             }
         } else {
             $contentType = $payload->getAttribute('type');
@@ -171,8 +181,8 @@ class Payload
                 case 'text':
                     $content = $payload->getContent();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Content must be string for text responses, '.
-                            '"%s" given', [gettype($content)]);
+                        throw new PayloadException('Content must be string or null for text '.
+                            'responses, "%s" given', [gettype($content)]);
                     }
                     break;
                 case 'json': case 'xml':
