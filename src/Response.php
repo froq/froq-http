@@ -191,6 +191,11 @@ final class Response extends Message
      */
     public function sendBody(): void
     {
+        // Clean up above..
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
         $body              = $this->getBody();
         $content           = $body->getContent();
         $contentAttributes = $body->getContentAttributes();
@@ -251,9 +256,6 @@ final class Response extends Message
             $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
             $content = $image->toString();
 
-            // Clean up above..
-            while (ob_get_level()) ob_end_clean();
-
             header('Content-Type: '. $imageType);
             header('Content-Length: '. strlen($content));
             if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
@@ -283,9 +285,6 @@ final class Response extends Message
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
-
-            // Clean up above..
-            while (ob_get_level()) ob_end_clean();
 
             header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
             header('Content-Length: '. $fileSize);
