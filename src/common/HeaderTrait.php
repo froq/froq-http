@@ -71,18 +71,24 @@ trait HeaderTrait
 
     /**
      * Add header.
-     * @param  string  $name
-     * @param  ?string $value
+     * @param  string                    $name
+     * @param  string|array<string>|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function addHeader(string $name, ?string $value): self
+    public function addHeader(string $name, $value): self
     {
         if ($this->isRequest()) {
             throw new HeaderException('Cannot modify request headers');
         }
 
-        $this->headers->add($name, $value);
+        if (is_array($value)) {
+            foreach ($value as $valu) {
+                $this->headers->add($name, $valu);
+            }
+        } else {
+            $this->headers->add($name, $value);
+        }
 
         return $this;
     }
@@ -107,11 +113,11 @@ trait HeaderTrait
 
     /**
      * Get header.
-     * @param  string      $name
-     * @param  string|null $valueDefault
-     * @return string|array|null
+     * @param  string                    $name
+     * @param  string|array<string>|null $valueDefault
+     * @return string|array<string>|null
      */
-    public function getHeader(string $name, string $valueDefault = null)
+    public function getHeader(string $name, $valueDefault = null)
     {
         return $this->headers->get($name)
             ?? $this->headers->get(strtolower($name))
