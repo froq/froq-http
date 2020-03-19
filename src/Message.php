@@ -176,7 +176,22 @@ abstract class Message
 
     /**
      * Set headers.
-     * @param  array $headers
+     * @param  array<string, any> $headers
+     * @return self
+     * @since  4.0
+     */
+    public final function addHeaders(array $headers): self
+    {
+        foreach ($headers as $name => $value) {
+            $this->addHeader($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set headers.
+     * @param  array<string, any> $headers
      * @return self
      */
     public final function setHeaders(array $headers): self
@@ -190,7 +205,7 @@ abstract class Message
 
     /**
      * Set cookies.
-     * @param  array $cookies
+     * @param  array<string, any> $cookies
      * @return self
      */
     public function setCookies(array $cookies): self
@@ -209,6 +224,16 @@ abstract class Message
     public final function getHeaders(): Headers
     {
         return $this->headers;
+    }
+
+    /**
+     * Get cookies.
+     * @return froq\http\message\Cookies
+     * @since  4.0
+     */
+    public final function getCookies(): Cookies
+    {
+        return $this->cookies;
     }
 
     /**
