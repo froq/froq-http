@@ -82,12 +82,27 @@ trait HeaderTrait
             throw new HeaderException('Cannot modify request headers');
         }
 
+        // Memoize value check/convert function.
+        static $valueOf; if (!$valueOf) {
+            $valueOf = static function ($name, $value) {
+                if (is_null($value) || is_string($value)) {
+                    return $value;
+                }
+
+                if (is_scalar($value)) {
+                    return var_export($value, true);
+                }
+
+                throw new HeaderException('Non-null/scalar value given for "%s" header', [$name]);
+            };
+        }
+
         if (is_array($value)) {
             foreach ($value as $valu) {
-                $this->headers->add($name, $valu);
+                $this->headers->add($name, $valueOf($name, $valu));
             }
         } else {
-            $this->headers->add($name, $value);
+            $this->headers->add($name, $valueOf($name, $value));
         }
 
         return $this;
