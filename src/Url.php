@@ -84,11 +84,16 @@ class Url extends ComponentCollection implements Stringable
 
         if (is_string($source)) {
             $i = 0;
-            // Fix beginning-slashes issue that falsifying parse_url();
+            $colon = strpos($source, ':');
+
+            // Fix beginning-slashes & colons issue that falsifying parse_url();
             if (strpos($source, '//') === 0) {
                 while (($source[++$i] ?? '') === '/');
 
                 $source = '/'. substr($source, $i);
+            }
+            if ($colon) {
+                $source = str_replace(':', '%3A', $source);
             }
 
             $source = parse_url($source);
@@ -96,9 +101,14 @@ class Url extends ComponentCollection implements Stringable
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
 
-            // Put slashes back (to keep source original).
-            if ($i && isset($source['path'])) {
-                $source['path'] = str_repeat('/', $i - 1) . $source['path'];
+            // Put slashes & colons back (to keep source original).
+            if (isset($source['path'])) {
+                if ($i) {
+                    $source['path'] = str_repeat('/', $i - 1) . $source['path'];
+                }
+                if ($colon) {
+                    $source['path'] = str_replace('%3A', ':', $source['path']);
+                }
             }
         }
 
