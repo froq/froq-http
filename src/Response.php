@@ -230,9 +230,6 @@ final class Response extends Message
 
                         header('Vary: Accept-Encoding');
                         header('Content-Encoding: gzip');
-
-                        // This part is for debug purposes only.
-                        header('X-Content-Encoding: gzip');
                     }
                 }
             }
@@ -332,7 +329,6 @@ final class Response extends Message
             }
         }
         header('Status: '. $code);
-        header('X-Status: '. $code);
 
         $this->sendHeaders();
         $this->sendCookies();
