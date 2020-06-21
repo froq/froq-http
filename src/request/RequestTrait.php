@@ -55,7 +55,7 @@ trait RequestTrait
      * @see froq\http\common\ParamTrait
      */
     use ParamTrait {
-        CookieTrait::cookie insteadof ParamTrait;
-        CookieTrait::hasCookie insteadof ParamTrait;
+        ParamTrait::cookie insteadof CookieTrait;
+        ParamTrait::hasCookie insteadof CookieTrait;
     }
 }
