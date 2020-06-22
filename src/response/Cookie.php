@@ -28,6 +28,7 @@ namespace froq\http\response;
 
 use froq\common\interfaces\Stringable;
 use froq\collection\ComponentCollection;
+use froq\util\Arrays;
 use froq\http\Http;
 use froq\http\common\CookieException;
 
@@ -83,19 +84,26 @@ final class Cookie extends ComponentCollection implements Stringable
                 [gettype($value)]);
         }
 
+        $options = ['name' => $name, 'value' => $value] + ($options ?? []);
+
+        // Fix case issues.
+        $options = array_change_key_case($options);
+        Arrays::swap($options, 'httponly', 'httpOnly');
+        Arrays::swap($options, 'samesite', 'sameSite');
+
+        foreach ($options as $name => $value) {
+            $this->set($name, $value);
+        }
+
         // Define defaults for component names.
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
-        if ($options != null) {
-            foreach ($options as $name => $value) {
-                $this->set($name, $value);
-            }
-            extract($options);
-        }
+
+        extract($options);
 
         if ($sameSite != '') {
             $sameSite = ucfirst(strtolower($sameSite));
             if (!in_array($sameSite, self::$sameSiteValues)) {
-                throw new CookieException(sprintf('Invalid samesite value "%s", valids are: %s',
+                throw new CookieException(sprintf('Invalid sameSite value "%s", valids are: %s',
                     $sameSite, join(', ', self::$sameSiteValues)));
             }
         }
