@@ -128,6 +128,11 @@ trait CookieTrait
             if (!$defer) {
                 $this->sendCookie($name, null, $cookie->toArray());
             }
+        } else {
+            // Remove instantly.
+            if (!$defer) {
+                $this->sendCookie($name, null);
+            }
         }
 
         return $this;

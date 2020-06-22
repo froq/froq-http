@@ -120,7 +120,7 @@ final class Cookie extends ComponentCollection implements Stringable
 
         $ret = $name .'=';
         if ($value === null || $expires < 0) {
-            $ret .= sprintf('NULL; Expires=%s; Max-Age=0', Http::date(0));
+            $ret .= sprintf('n/a; Expires=%s; Max-Age=0', Http::date(0));
         } else {
             // String, bool, int or float.
             switch (gettype($value)) {
