@@ -86,6 +86,9 @@ final class Cookie extends ComponentCollection implements Stringable
         // Define defaults for component names.
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
         if ($options != null) {
+            foreach ($options as $name => $value) {
+                $this->set($name, $value);
+            }
             extract($options);
         }
 
