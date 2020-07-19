@@ -27,8 +27,9 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 use froq\common\interfaces\Arrayable;
-use froq\common\exceptions\InvalidKeyException;
+use froq\common\exceptions\{InvalidKeyException, UnsupportedOperationException};
 use froq\{Router, mvc\Controller};
+use ArrayAccess;
 
 /**
  * Segments.
@@ -40,7 +41,7 @@ use froq\{Router, mvc\Controller};
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.1
  */
-final class Segments implements Arrayable
+final class Segments implements Arrayable, ArrayAccess
 {
     /**
      * Root.
@@ -228,5 +229,39 @@ final class Segments implements Arrayable
     public function toArray(): array
     {
         return $this->getStack();
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public final function offsetExists($name)
+    {
+        return isset($this->stack[$name]);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public final function offsetGet($name)
+    {
+        return $this->stack[$name] ?? null;
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     * @throws     froq\common\exceptions\UnsupportedOperationException
+     */
+    public final function offsetSet($name, $value)
+    {
+        throw new UnsupportedOperationException('No set() allowed for "%s"', [self::class]);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     * @throws     froq\common\exceptions\UnsupportedOperationException
+     */
+    public final function offsetUnset($name)
+    {
+        throw new UnsupportedOperationException('No unset() allowed for "%s"', [self::class]);
     }
 }
