@@ -27,7 +27,8 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 use froq\http\{Url, UrlException};
-use froq\http\request\UriException;
+use froq\http\request\{Segments, UriException};
+use Throwable;
 
 /**
  * Uri.
@@ -40,15 +41,9 @@ final class Uri extends Url
 {
     /**
      * Segments.
-     * @var array
+     * @var Segments
      */
-    private array $segments = [];
-
-    /**
-     * Segments root.
-     * @var ?string
-     */
-    private ?string $segmentsRoot;
+    private Segments $segments;
 
     /**
      * Constructor.
@@ -59,7 +54,7 @@ final class Uri extends Url
     {
         try {
             parent::__construct($source, ['path', 'query', 'queryParams', 'fragment']);
-        } catch (UrlException $e) {
+        } catch (Throwable $e) {
             throw new UriException($e);
         }
 
@@ -68,31 +63,32 @@ final class Uri extends Url
 
     /**
      * Segment.
-     * @param  int $i
-     * @param  any $default
-     * @return any
+     * @param  int|string $key
+     * @param  any|null   $valueDefault
+     * @return any|null
+     * @throws froq\http\request\UriException
      */
-    public function segment(int $i, $default = null)
+    public function segment($key, $valueDefault = null)
     {
-        return $this->segments[$i] ?? $default;
+        if (isset($this->segments)) {
+            try {
+                return $this->segments->get($key, $valueDefault);
+            } catch (Throwable $e) {
+                throw new UriException($e);
+            }
+        }
+
+        throw new UriException('Uri.segments property not set yet (method generateSegments() '
+            . 'not called at all)');
     }
 
     /**
      * Segments.
-     * @return array
+     * @return ?froq\http\request\Segments
      */
-    public function segments(): array
+    public function segments(): ?Segments
     {
-        return $this->segments;
-    }
-
-    /**
-     * Get segments root.
-     * @return ?string
-     */
-    public function segmentsRoot(): ?string
-    {
-        return $this->segmentsRoot ?? null;
+        return $this->segments ?? null;
     }
 
     /**
@@ -103,29 +99,32 @@ final class Uri extends Url
      */
     public function generateSegments(string $root = null): void
     {
-        $path = rawurldecode($this->get('path') ?: '');
-        if ($path && $path != '/') {
+        $path = $this->get('path') ?: '';
+
+        [$path, $segments, $segmentsRoot] = [
+            rawurldecode($path), [], Segments::ROOT
+        ];
+
+        if ($path && $path != $segmentsRoot) {
             // Drop root if exists.
-            if ($root && $root != '/') {
-                $root = '/'. trim($root, '/'). '/';
+            if ($root && $root != $segmentsRoot) {
+                $root = '/'. trim($root, '/');
 
                 // Prevent wrong generate action.
                 if (strpos($path, $root) !== 0) {
                     throw new UriException('URI path "%s" has no root such "%s"', [$path, $root]);
                 }
 
+                // Drop root from path.
                 $path = substr($path, strlen($root));
 
                 // Update segments root.
-                $this->segmentsRoot = $root;
+                $segmentsRoot = $root;
             }
 
-            $segments = preg_split('~/+~', $path, -1, 1);
-
-            foreach ($segments as $i => $segment) {
-                // Push index next (skip 0), so provide a (1,2,3) array for segments.
-                $this->segments[$i + 1] = $segment;
-            }
+            $segments = (array) preg_split('~/+~', $path, -1, 1);
         }
+
+        $this->segments = Segments::fromArray($segments, $segmentsRoot);
     }
 }
