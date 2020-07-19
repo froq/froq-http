@@ -92,29 +92,45 @@ final class Segments implements Arrayable, ArrayAccess
 
     /**
      * Get controller.
+     * @param  bool $suffix
      * @return ?string
      */
-    public function getController(): ?string
+    public function getController(bool $suffix = false): ?string
     {
-        return $this->stack['controller'] ?? null;
+        $controller = $this->stack['controller'] ?? null;
+
+        if ($controller && $suffix) {
+            $controller .= Controller::SUFFIX;
+        }
+
+        return $controller;
     }
 
     /**
      * Get action.
+     * @param  bool $suffix
      * @return ?string
      */
-    public function getAction(): ?string
+    public function getAction(bool $suffix = false): ?string
     {
-        return $this->stack['action'] ?? null;
+        $action = $this->stack['action'] ?? null;
+
+        if ($action && $suffix) {
+            $action .= Controller::ACTION_SUFFIX;
+        }
+
+        return $action;
     }
 
     /**
      * Get action params.
+     * @param  bool $list
      * @return ?array
      */
-    public function getActionParams(): ?array
+    public function getActionParams(bool $list = false): ?array
     {
-        return $this->stack['actionParams'] ?? null;
+        return !$list ? $this->stack['actionParams'] ?? null
+                      : $this->stack['actionParamsList'] ?? null;
     }
 
     /**
@@ -128,11 +144,13 @@ final class Segments implements Arrayable, ArrayAccess
 
     /**
      * Get params.
+     * @param  bool $list
      * @return ?array
      */
-    public function getParams(): ?array
+    public function getParams(bool $list = false): ?array
     {
-        return $this->stack['params'] ?? null;
+        return !$list ? $this->stack['params'] ?? null
+                      : $this->stack['paramsList'] ?? null;
     }
 
     /**
