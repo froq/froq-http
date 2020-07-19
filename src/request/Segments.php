@@ -154,7 +154,7 @@ final class Segments implements Arrayable, ArrayAccess
     public function get($key, $valueDefault = null)
     {
         if (is_int($key)) {
-            return $this->stack['paramsList'][$key] ?? $valueDefault;
+            return $this->stack['paramsList'][$key - 1] ?? $valueDefault;
         }
         if (is_string($key)) {
             return $this->stack['params'][$key] ?? $valueDefault;
@@ -173,7 +173,7 @@ final class Segments implements Arrayable, ArrayAccess
     public function getActionParam($key, $valueDefault = null)
     {
         if (is_int($key)) {
-            return $this->stack['actionParamsList'][$key] ?? $valueDefault;
+            return $this->stack['actionParamsList'][$key - 1] ?? $valueDefault;
         }
         if (is_string($key)) {
             return $this->stack['actionParams'][$key] ?? $valueDefault;
@@ -213,9 +213,10 @@ final class Segments implements Arrayable, ArrayAccess
             $stack['actionParams'][$chunk[0]] = $chunk[1] ?? '';
         }
 
+        // @cancel
         // Setting indexes from 1, not 0.
-        array_unshift($paramsList, null);
-        array_unshift($actionParamsList, null);
+        // array_unshift($paramsList, null);
+        // array_unshift($actionParamsList, null);
 
         $stack['paramsList'] = array_filter($paramsList, 'strlen');
         $stack['actionParamsList'] = array_filter($actionParamsList, 'strlen');
