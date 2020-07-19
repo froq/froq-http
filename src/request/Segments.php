@@ -123,26 +123,6 @@ final class Segments implements Arrayable, ArrayAccess
     }
 
     /**
-     * Get action params.
-     * @param  bool $list
-     * @return ?array
-     */
-    public function getActionParams(bool $list = false): ?array
-    {
-        return !$list ? $this->stack['actionParams'] ?? null
-                      : $this->stack['actionParamsList'] ?? null;
-    }
-
-    /**
-     * Get action params list.
-     * @return ?array.
-     */
-    public function getActionParamsList(): ?array
-    {
-        return $this->stack['actionParamsList'] ?? null;
-    }
-
-    /**
      * Get params.
      * @param  bool $list
      * @return ?array
@@ -160,6 +140,26 @@ final class Segments implements Arrayable, ArrayAccess
     public function getParamsList(): ?array
     {
         return $this->stack['paramsList'] ?? null;
+    }
+
+    /**
+     * Get action params.
+     * @param  bool $list
+     * @return ?array
+     */
+    public function getActionParams(bool $list = false): ?array
+    {
+        return !$list ? $this->stack['actionParams'] ?? null
+                      : $this->stack['actionParamsList'] ?? null;
+    }
+
+    /**
+     * Get action params list.
+     * @return ?array.
+     */
+    public function getActionParamsList(): ?array
+    {
+        return $this->stack['actionParamsList'] ?? null;
     }
 
     /**
