@@ -244,7 +244,7 @@ final class Segments implements Arrayable, ArrayAccess
      */
     public final function offsetGet($name)
     {
-        return $this->stack[$name] ?? null;
+        return isset($this->stack[$name]) ? $this->stack[$name] : null;
     }
 
     /**
