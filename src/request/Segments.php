@@ -34,7 +34,7 @@ use ArrayAccess;
 /**
  * Segments.
  *
- * Respresents a segment stack object with some utility methods.
+ * Respresents a read-only segment stack object with some utility methods.
  *
  * @package froq\http\request
  * @object  froq\http\request\Segments
@@ -240,6 +240,26 @@ final class Segments implements Arrayable, ArrayAccess
         $stack['actionParamsList'] = array_filter($actionParamsList, 'strlen');
 
         return new Segments($stack);
+    }
+
+    /**
+     * Empty.
+     * @return bool
+     * @since  4.2
+     */
+    public function empty(): bool
+    {
+        return !$this->getParamsList();
+    }
+
+    /**
+     * To list.
+     * @return array
+     * @since  4.2
+     */
+    public function toList(): array
+    {
+        return (array) $this->getParamsList();
     }
 
     /**
