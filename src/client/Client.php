@@ -364,7 +364,7 @@ final class Client
                           ->setHeaders($headers, true);
 
             // Checker for redirections etc. (for finding final HTTP-Message).
-            $nextCheck = function($body) {
+            $nextCheck = function ($body) {
                 return ($body && strpos($body, 'HTTP/') === 0);
             };
 
