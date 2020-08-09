@@ -58,4 +58,103 @@ trait RequestTrait
         ParamTrait::cookie insteadof CookieTrait;
         ParamTrait::hasCookie insteadof CookieTrait;
     }
+
+    /**
+     * Is get.
+     * @return bool
+     */
+    public function isGet(): bool
+    {
+        return $this->method->isGet();
+    }
+
+    /**
+     * Is post.
+     * @return bool
+     */
+    public function isPost(): bool
+    {
+        return $this->method->isPost();
+    }
+
+    /**
+     * Is put.
+     * @return bool
+     */
+    public function isPut(): bool
+    {
+        return $this->method->isPut();
+    }
+
+    /**
+     * Is patch.
+     * @return bool
+     */
+    public function isPatch(): bool
+    {
+        return $this->method->isPatch();
+    }
+
+    /**
+     * Is delete.
+     * @return bool
+     */
+    public function isDelete(): bool
+    {
+        return $this->method->isDelete();
+    }
+
+    /**
+     * Is options.
+     * @return bool
+     */
+    public function isOptions(): bool
+    {
+        return $this->method->isOptions();
+    }
+
+    /**
+     * Is head.
+     * @return bool
+     */
+    public function isHead(): bool
+    {
+        return $this->method->isHead();
+    }
+
+    /**
+     * Is trace.
+     * @return bool
+     */
+    public function isTrace(): bool
+    {
+        return $this->method->isTrace();
+    }
+
+    /**
+     * Is connect.
+     * @return bool
+     */
+    public function isConnect(): bool
+    {
+        return $this->method->isConnect();
+    }
+
+    /**
+     * Is copy.
+     * @return bool
+     */
+    public function isCopy(): bool
+    {
+        return $this->method->isCopy();
+    }
+
+    /**
+     * Is move.
+     * @return bool
+     */
+    public function isMove(): bool
+    {
+        return $this->method->isMove();
+    }
 }
