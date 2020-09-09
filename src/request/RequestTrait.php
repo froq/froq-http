@@ -62,6 +62,7 @@ trait RequestTrait
     /**
      * Is get.
      * @return bool
+     * @since  4.3
      */
     public function isGet(): bool
     {
@@ -71,6 +72,7 @@ trait RequestTrait
     /**
      * Is post.
      * @return bool
+     * @since  4.3
      */
     public function isPost(): bool
     {
@@ -80,6 +82,7 @@ trait RequestTrait
     /**
      * Is put.
      * @return bool
+     * @since  4.3
      */
     public function isPut(): bool
     {
@@ -89,6 +92,7 @@ trait RequestTrait
     /**
      * Is patch.
      * @return bool
+     * @since  4.3
      */
     public function isPatch(): bool
     {
@@ -98,6 +102,7 @@ trait RequestTrait
     /**
      * Is delete.
      * @return bool
+     * @since  4.3
      */
     public function isDelete(): bool
     {
@@ -107,6 +112,7 @@ trait RequestTrait
     /**
      * Is options.
      * @return bool
+     * @since  4.3
      */
     public function isOptions(): bool
     {
@@ -116,6 +122,7 @@ trait RequestTrait
     /**
      * Is head.
      * @return bool
+     * @since  4.3
      */
     public function isHead(): bool
     {
@@ -125,6 +132,7 @@ trait RequestTrait
     /**
      * Is trace.
      * @return bool
+     * @since  4.3
      */
     public function isTrace(): bool
     {
@@ -134,6 +142,7 @@ trait RequestTrait
     /**
      * Is connect.
      * @return bool
+     * @since  4.3
      */
     public function isConnect(): bool
     {
@@ -143,6 +152,7 @@ trait RequestTrait
     /**
      * Is copy.
      * @return bool
+     * @since  4.3
      */
     public function isCopy(): bool
     {
@@ -152,9 +162,20 @@ trait RequestTrait
     /**
      * Is move.
      * @return bool
+     * @since  4.3
      */
     public function isMove(): bool
     {
         return $this->method->isMove();
+    }
+
+    /**
+     * Is ajax.
+     * @return bool
+     * @since  4.4
+     */
+    public function isAjax(): bool
+    {
+        return $this->method->isAjax();
     }
 }

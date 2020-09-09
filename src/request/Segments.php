@@ -69,7 +69,7 @@ final class Segments implements Arrayable, ArrayAccess
     public function __construct(array $stack = null, string $stackRoot = null)
     {
         $stack && $this->stack = $stack;
-        $stackRoot && $this->stackroot = $stackRoot;
+        $stackRoot && $this->stackRoot = $stackRoot;
     }
 
     /**
