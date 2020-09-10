@@ -41,7 +41,7 @@ final class Uri extends Url
 {
     /**
      * Segments.
-     * @var Segments
+     * @var froq\http\request\Segments
      */
     private Segments $segments;
 
