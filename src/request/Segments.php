@@ -254,12 +254,14 @@ final class Segments implements Arrayable, ArrayAccess
 
     /**
      * To list.
+     * @param  int $offset
      * @return array
      * @since  4.2
      */
-    public function toList(): array
+    public function toList(int $offset = 0): array
     {
-        return (array) $this->getParamsList();
+        return !$offset ? (array) $this->getParamsList()
+            : array_slice((array) $this->getParamsList(), $offset);
     }
 
     /**
