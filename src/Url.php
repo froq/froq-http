@@ -84,7 +84,7 @@ class Url extends ComponentCollection implements Stringable
 
         if (is_string($source)) {
             $i = 0;
-            $colon = strpos($source, ':');
+            // $colon = strpos($source, ':');
 
             // Fix beginning-slashes & colons issue that falsifying parse_url();
             if (strpos($source, '//') === 0) {
@@ -92,9 +92,9 @@ class Url extends ComponentCollection implements Stringable
 
                 $source = '/'. substr($source, $i);
             }
-            if ($colon) {
-                $source = str_replace(':', '%3A', $source);
-            }
+            // if ($colon) {
+            //     $source = str_replace(':', '%3A', $source);
+            // }
 
             $source = parse_url($source);
             if ($source === false) {
@@ -106,9 +106,9 @@ class Url extends ComponentCollection implements Stringable
                 if ($i) {
                     $source['path'] = str_repeat('/', $i - 1) . $source['path'];
                 }
-                if ($colon) {
-                    $source['path'] = str_replace('%3A', ':', $source['path']);
-                }
+                // if ($colon) {
+                //     $source['path'] = str_replace('%3A', ':', $source['path']);
+                // }
             }
         }
 
