@@ -246,17 +246,22 @@ abstract class Message
      */
     public final function setBody($content, array $contentAttributes = null, bool $isError = null): self
     {
+        // @cancel
         // $isError is an internal option and string content needed here.
         // @see App.error() and App.endOutputBuffer().
-        if ($isError) {
-            $this->body->setContent($content)
-                       ->setContentAttributes($contentAttributes);
-        } elseif ($this->isRequest()) {
+        // if (!$isError) {
+        //     $this->body->setContent($content)
+        //                ->setContentAttributes($contentAttributes);
+        //     return $this;
+        // }
+
+        if ($this->isRequest()) {
             if ($content != null) {
                 $this->body->setContent($content)
                            ->setContentAttributes($contentAttributes);
             }
-        } elseif ($this->isResponse()) {
+        }
+        elseif ($this->isResponse()) {
             // Payload contents.
             if ($content instanceof Payload) {
                 $payload = $content;
