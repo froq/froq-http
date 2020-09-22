@@ -84,32 +84,31 @@ final class Request extends Message
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
 
+        $headers = $this->loadHeaders();
+
         // Set/parse body for overriding methods (put, delete etc. or even for get).
-        // Note that 'php://input' is not available with enctype="multipart/form-data".
+        // Note that, 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
-        $content = file_get_contents('php://input');
+        $content = strval(file_get_contents('php://input'));
         $contentType = strtolower($headers['content-type'] ?? '');
 
         $_GET = $this->loadGlobal('GET');
-        if ($content != '' && stripos($contentType, 'multipart/form-data') === false) {
-            $_POST = $this->loadGlobal('POST', $content);
+        if ($content != '' && strpos($contentType, 'multipart/form-data') === false) {
+            $_POST = $this->loadGlobal('POST', $content, strpos($contentType, '/json') !== false);
         }
         $_COOKIE = $this->loadGlobal('COOKIE');
 
         // Fill body object.
         $this->setBody($content, ['type' => $contentType]);
 
-        [$headers, $cookies] = [$this->loadHeaders(), $_COOKIE];
-
         // Fill & lock headers and cookies objects.
         foreach ($headers as $name => $value) {
             $this->headers->add($name, $value);
         }
-        $this->headers->readOnly(true);
-
-        foreach ($cookies as $name => $value) {
+        foreach ($_COOKIE as $name => $value) {
             $this->cookies->add($name, $value);
         }
+        $this->headers->readOnly(true);
         $this->cookies->readOnly(true);
     }
 
@@ -168,6 +167,26 @@ final class Request extends Message
     }
 
     /**
+     * Input.
+     * @return string
+     * @since  4.5
+     */
+    public function input(): string
+    {
+        return (string) file_get_contents('php://input');
+    }
+
+    /**
+     * Input json.
+     * @return array
+     * @since  4.5
+     */
+    public function inputJson(): array
+    {
+        return (array) json_decode(trim($this->input()), true);
+    }
+
+    /**
      * Load headers.
      * @return array
      */
@@ -217,9 +236,10 @@ final class Request extends Message
      * Load global (without changing dotted keys).
      * @param  string $name
      * @param  string $source
+     * @param  bool   $sourceJson
      * @return array
      */
-    private function loadGlobal(string $name, string $source = ''): array
+    private function loadGlobal(string $name, string $source = '', bool $sourceJson = false): array
     {
         $encode = false;
 
@@ -228,7 +248,11 @@ final class Request extends Message
                 $source = $_SERVER['QUERY_STRING'] ?? '';
                 $encode = true;
                 break;
-            case 'POST': // Pass.
+            case 'POST':
+                // This is checked in constructor via content-type header.
+                if ($sourceJson) {
+                    return (array) json_decode(trim($source), true);
+                }
                 break;
             case 'COOKIE':
                 if (isset($_SERVER['HTTP_COOKIE'])) {
