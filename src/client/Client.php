@@ -164,6 +164,13 @@ final class Client
                 [$call, join(', ', $calls)]);
         }
 
+        $callArgs = $callArgs ?: [null];
+
+        // Method is discarded/overriden for such calls eg: get([url: ...]).
+        if (is_array($callArgs[0])) {
+            return $this->send(['method' => $call] + $callArgs[0]);
+        }
+
         return $this->send($call, ...$callArgs);
     }
 
@@ -262,18 +269,34 @@ final class Client
 
     /**
      * Send a request with given arguments. This method is a shortcut method for operations such
-     * send-a-request and get-a-response.
+     * send-a-request then get-a-response.
      *
-     * @param  string      $method
-     * @param  string      $url
-     * @param  array|null  $urlParams
-     * @param  string|null $body
-     * @param  array|null  $headers
+     * @param  string|array|null $method
+     * @param  string|null       $url
+     * @param  array|null        $urlParams
+     * @param  string|null       $body
+     * @param  array|null        $headers
      * @return froq\http\client\Response
      */
-    public function send(string $method, string $url, array $urlParams = null,
+    public function send($method = null, string $url = null, array $urlParams = null,
         string $body = null, array $headers = null): Response
     {
+        // Eg: send([method: GET, url: ..., ]) or get([url: ...]).
+        if (is_array($method)) {
+            @ ['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
+               'body' => $body, 'headers' => $headers] = $method;
+        } elseif (!is_string($method)) {
+            throw new ClientException('Invalid $method argument for %s(), valids are: '.
+                'string, array but %s given', [__method__, gettype($method)]);
+        }
+
+        // May be set via setOption() separately.
+        $method    = $method ?: $this->getOption('method');
+        $url       = $url ?: $this->getOption('url');
+        $urlParams = array_replace_recursive($this->getOption('urlParams', []), $urlParams ?: []);
+        $body      = $body ?: $this->getOption('body');
+        $headers   = array_replace($this->getOption('headers', []), $headers ?: []);
+
         $this->setOptions(['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
             'body' => $body, 'headers' => $headers]);
 
@@ -295,7 +318,7 @@ final class Client
             'urlParams', 'body', 'headers']);
 
         if ($method == null) throw new ClientException('No method given');
-        if ($url == null)    throw new ClientException('No URL given');
+        if ($url == null) throw new ClientException('No URL given');
 
         // Reproduce URL structure.
         $tmp = HttpUtil::parseUrl($url);

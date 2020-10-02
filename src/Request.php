@@ -93,9 +93,12 @@ final class Request extends Message
         $contentType = strtolower($headers['content-type'] ?? '');
 
         $_GET = $this->loadGlobal('GET');
+
+        // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && strpos($contentType, 'multipart/form-data') === false) {
             $_POST = $this->loadGlobal('POST', $content, strpos($contentType, '/json') !== false);
         }
+
         $_COOKIE = $this->loadGlobal('COOKIE');
 
         // Fill body object.
