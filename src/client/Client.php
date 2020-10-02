@@ -295,7 +295,7 @@ final class Client
         $url       = $url ?: $this->getOption('url');
         $urlParams = array_replace_recursive($this->getOption('urlParams', []), $urlParams ?: []);
         $body      = $body ?: $this->getOption('body');
-        $headers   = array_replace($this->getOption('headers', []), $headers ?: []);
+        $headers   = array_replace_recursive($this->getOption('headers', []), $headers ?: []);
 
         $this->setOptions(['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
             'body' => $body, 'headers' => $headers]);

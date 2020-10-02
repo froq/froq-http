@@ -80,7 +80,9 @@ final class Request extends Message
             'user-agent' => 'Froq Http Client (+https://github.com/froq/froq-http)',
         ];
 
-        $headers = array_replace($headersDefault, $headers ?? []);
+        // Merge & normalize headers.
+        $headers = array_replace_recursive($headersDefault, $headers ?? []);
+        $headers = array_change_key_case($headers, CASE_LOWER);
 
         parent::__construct(Message::TYPE_REQUEST, null, $headers, $body);
     }
