@@ -102,7 +102,7 @@ final class Client
      * @var array<string, any>
      */
     private static array $optionsDefault = [
-        'redir'       => true,  'redirMax'       => 3,
+        'redirs'      => true,  'redirsMax'      => 3,
         'timeout'     => 5,     'timeoutConnect' => 3,
         'keepResult'  => true,  'keepResultInfo' => true,
         'method'      => 'GET', 'curl'           => null, // Curl options.

@@ -161,8 +161,8 @@ final class Curl
             CURLINFO_HEADER_OUT       => true,    // For proper request headers split.
             // Mutable (client) options.
             CURLOPT_AUTOREFERER       => true,
-            CURLOPT_FOLLOWLOCATION    => (int) $clientOptions['redir'],
-            CURLOPT_MAXREDIRS         => (int) $clientOptions['redirMax'],
+            CURLOPT_FOLLOWLOCATION    => (bool) $clientOptions['redirs'],
+            CURLOPT_MAXREDIRS         => (int) $clientOptions['redirsMax'],
             CURLOPT_SSL_VERIFYHOST    => false,
             CURLOPT_SSL_VERIFYPEER    => false,
             CURLOPT_DEFAULT_PROTOCOL  => 'http',
