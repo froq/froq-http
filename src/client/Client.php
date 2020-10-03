@@ -102,10 +102,11 @@ final class Client
      * @var array<string, any>
      */
     private static array $optionsDefault = [
-        'redir'      => true,    'redirMax'       => 3,
-        'timeout'    => 5,       'timeoutConnect' => 3,
-        'keepResult' => true,    'keepResultInfo' => true,
-        'method'     => 'GET',   'curl'           => null, // Curl options.
+        'redir'       => true,  'redirMax'       => 3,
+        'timeout'     => 5,     'timeoutConnect' => 3,
+        'keepResult'  => true,  'keepResultInfo' => true,
+        'method'      => 'GET', 'curl'           => null, // Curl options.
+        'throwErrors' => false,
     ];
 
     /**
@@ -135,7 +136,7 @@ final class Client
     {
         // Just as a syntactic sugar, URL is a parameter.
         $options = ['url' => $url] + ($options ?? []);
-        $options = array_merge(self::$optionsDefault, $options);
+        $options = array_replace_recursive(self::$optionsDefault, $options);
         $this->setOptions($options);
 
         $this->events = new Events();
@@ -430,6 +431,11 @@ final class Client
                 }
             }
         } else {
+            // Discards error event below.
+            if ($this->getOption('throwErrors') == true) {
+                throw $error;
+            }
+
             $this->error = $error;
 
             // Call error event if exists.
