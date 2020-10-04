@@ -114,13 +114,13 @@ final class Params
     /**
      * Posts.
      * @param  array<string>|null $names
-     * @param  any|null           $valueDefaults
+     * @param  any|null           $valuesDefault
      * @return array
      */
-    public static function posts(array $names = null, $valueDefaults = null): array
+    public static function posts(array $names = null, $valuesDefault = null): array
     {
         return ($names === null) ? $_POST // All.
-            : Arrays::getAll($_POST, $names, $valueDefaults);
+            : Arrays::getAll($_POST, $names, $valuesDefault);
     }
 
     /**
