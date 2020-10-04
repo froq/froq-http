@@ -67,7 +67,7 @@ final class Params
      */
     public static function gets(array $names = null, $valuesDefault = null): array
     {
-        return ($names == null) ? $_GET // All.
+        return ($names === null) ? $_GET // All.
             : Arrays::getAll($_GET, $names, $valuesDefault);
     }
 
@@ -119,7 +119,7 @@ final class Params
      */
     public static function posts(array $names = null, $valueDefaults = null): array
     {
-        return ($names == null) ? $_POST // All.
+        return ($names === null) ? $_POST // All.
             : Arrays::getAll($_POST, $names, $valueDefaults);
     }
 
@@ -171,7 +171,7 @@ final class Params
      */
     public static function cookies(array $names = null, $valuesDefault = null): array
     {
-        return ($names == null) ? $_COOKIE // All.
+        return ($names === null) ? $_COOKIE // All.
             : Arrays::getAll($_COOKIE, $names, $valuesDefault);
     }
 
