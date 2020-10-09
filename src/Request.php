@@ -72,6 +72,13 @@ final class Request extends Message
     protected Client $client;
 
     /**
+     * Id.
+     * @var string
+     * @since 4.6
+     */
+    private string $id;
+
+    /**
      * Constructor.
      * @param froq\App
      */
@@ -83,6 +90,7 @@ final class Request extends Message
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
+        $this->id     = get_request_id(); // From util.sugars.
 
         $headers = $this->loadHeaders();
 
@@ -149,6 +157,16 @@ final class Request extends Message
     public function client(): Client
     {
         return $this->client;
+    }
+
+    /**
+     * Id.
+     * @return string
+     * @since  4.6
+     */
+    public function id(): string
+    {
+        return $this->id;
     }
 
     /**
