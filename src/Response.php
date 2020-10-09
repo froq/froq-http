@@ -322,10 +322,10 @@ final class Response extends Message
     {
         $code = $this->status->getCode();
         if (!http_response_code($code)) {
-            if (substr($this->httpVersion, -3) >= 2.0) {
-                header(sprintf('%s %s', $this->httpVersion, $code));
+            if ($this->getHttpVersionNumber() >= 2.0) {
+                header(sprintf('%s %s', $this->getHttpVersion(), $code));
             } else {
-                header(sprintf('%s %s %s', $this->httpVersion, $code, $this->status->getText()));
+                header(sprintf('%s %s %s', $this->getHttpVersion(), $code, $this->status->getText()));
             }
         }
         header('Status: '. $code);

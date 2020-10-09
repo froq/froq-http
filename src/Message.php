@@ -128,6 +128,16 @@ abstract class Message
     }
 
     /**
+     * Get http version number.
+     * @return float
+     * @since  4.7
+     */
+    public final function getHttpVersionNumber(): float
+    {
+        return (float) substr($this->httpVersion, 5, 3);
+    }
+
+    /**
      * Set/get headers.
      * @param  ...$arguments
      * @return self|froq\http\message\Headers

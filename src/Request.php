@@ -79,6 +79,13 @@ final class Request extends Message
     private string $id;
 
     /**
+     * Times.
+     * @var array
+     * @since 4.6
+     */
+    private array $times;
+
+    /**
      * Constructor.
      * @param froq\App
      */
@@ -91,6 +98,7 @@ final class Request extends Message
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
         $this->id     = get_request_id(); // From util.sugars.
+        $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
 
         $headers = $this->loadHeaders();
 
@@ -170,6 +178,17 @@ final class Request extends Message
     }
 
     /**
+     * Times.
+     * @param int $i
+     * @return array<int|float>|int|float
+     * @since  4.6
+     */
+    public function times(int $i = null)
+    {
+        return $i ? $this->times[$i] : $this->times;
+    }
+
+    /**
      * Params.
      * @return array
      */
@@ -206,6 +225,37 @@ final class Request extends Message
     {
         return (array) json_decode(trim($this->input()), true);
     }
+
+    /**
+     * Get method.
+     * @return string
+     * @since  4.7
+     */
+    public function getMethod(): string
+    {
+        return $this->method()->getName();
+    }
+
+    /**
+     * Get scheme.
+     * @return string
+     * @since  4.7
+     */
+    public function getScheme(): string
+    {
+        return $this->scheme()->getName();
+    }
+
+    /**
+     * Get uri.
+     * @return string
+     * @since  4.7
+     */
+    public function getUri(): string
+    {
+        return $this->uri()->toString();
+    }
+
 
     /**
      * Load headers.

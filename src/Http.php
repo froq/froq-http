@@ -52,7 +52,7 @@ final class Http
      * Version default.
      * @const string
      */
-    public const VERSION_DEFAULT = 'HTTP/1.1';
+    public const VERSION_DEFAULT = self::VERSION_1_1;
 
     /**
      * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
