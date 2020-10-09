@@ -275,7 +275,7 @@ final class Segments implements Arrayable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public final function offsetExists($name)
+    public function offsetExists($name)
     {
         return isset($this->stack[$name]);
     }
@@ -283,7 +283,7 @@ final class Segments implements Arrayable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public final function offsetGet($name)
+    public function offsetGet($name)
     {
         return isset($this->stack[$name]) ? $this->stack[$name] : null;
     }
@@ -292,7 +292,7 @@ final class Segments implements Arrayable, ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exceptions\UnsupportedOperationException
      */
-    public final function offsetSet($name, $value)
+    public function offsetSet($name, $value)
     {
         throw new UnsupportedOperationException('No set() allowed for "%s"', [self::class]);
     }
@@ -301,7 +301,7 @@ final class Segments implements Arrayable, ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exceptions\UnsupportedOperationException
      */
-    public final function offsetUnset($name)
+    public function offsetUnset($name)
     {
         throw new UnsupportedOperationException('No unset() allowed for "%s"', [self::class]);
     }
