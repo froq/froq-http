@@ -160,13 +160,16 @@ class Payload
             ];
         }
 
+        // Ready to handle (eg: JsonPayload, XmlPayload etc).
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
             if (!is_null($content) && !is_string($content) && !is_resource($content)) {
                 throw new PayloadException('Failed to achive string/resource content from "%s" '.
                     'payload object', [get_class($payload)]);
             }
-        } else {
+        }
+        // Not ready to handle, try to create (eg: Payload).
+        else {
             $contentType = $payload->getAttribute('type');
             if ($contentType == null) {
                 throw new PayloadException('Content type must not be empty');
