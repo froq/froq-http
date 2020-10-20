@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\response\StatusException;
+use froq\http\response\{StatusCodes, StatusException};
 
 /**
  * Status.
