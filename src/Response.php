@@ -31,7 +31,8 @@ use froq\file\{FileObject, ImageObject, Util as FileUtil};
 use froq\encoding\Encoder;
 use froq\http\{Http, Message};
 use froq\http\message\Body;
-use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
+use froq\http\response\{ResponseTrait, ResponseException,
+    Status, StatusException, Cookies, Cookie};
 
 /**
  * Response.
@@ -101,7 +102,12 @@ final class Response extends Message
      */
     public function setStatus(int $code, string $text = null): self
     {
-        $this->status->setCode($code);
+        try {
+            $this->status->setCode($code);
+        } catch (StatusException $e) {
+            $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
+        }
+
         $this->status->setText($text ?? Status::getTextByCode($code));
 
         return $this;
