@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
+use froq\common\objects\StaticClass;
 use froq\util\Arrays;
 
 /**
@@ -36,7 +37,7 @@ use froq\util\Arrays;
  * @since   1.0, 4.0
  * @static
  */
-final class Params
+final class Params extends StaticClass
 {
     /**
      * All.

@@ -233,7 +233,7 @@ final class Request extends Message
      */
     public function getMethod(): string
     {
-        return $this->method()->getName();
+        return $this->method->getName();
     }
 
     /**
@@ -243,7 +243,7 @@ final class Request extends Message
      */
     public function getScheme(): string
     {
-        return $this->scheme()->getName();
+        return $this->scheme->getName();
     }
 
     /**
@@ -253,9 +253,18 @@ final class Request extends Message
      */
     public function getUri(): string
     {
-        return $this->uri()->toString();
+        return $this->uri->toString();
     }
 
+    /**
+     * Get context.
+     * @return string
+     * @since  4.8
+     */
+    public function getContext(): string
+    {
+        return $this->uri->getPath();
+    }
 
     /**
      * Load headers.

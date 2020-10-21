@@ -36,7 +36,6 @@ namespace froq\http\response;
  * @object  froq\http\response\StatusCodes
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
- * @static
  */
 class StatusCodes
 {
