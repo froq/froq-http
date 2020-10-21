@@ -180,12 +180,12 @@ final class Request extends Message
     /**
      * Times.
      * @param int $i
-     * @return array<int|float>|int|float
+     * @return array
      * @since  4.6
      */
-    public function times(int $i = null)
+    public function times(): array
     {
-        return $i ? $this->times[$i] : $this->times;
+        return $this->times;
     }
 
     /**
