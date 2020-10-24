@@ -130,19 +130,17 @@ final class Util
     public static function buildQuery(array $data, bool $normalizeArrays = true): string
     {
         // Memoize: fix skipped NULL values by http_build_query().
-        static $filter; if (!$filter) {
-               $filter = function ($data) use (&$filter) {
-                    foreach ($data as $key => $value) {
-                        $data[$key] = is_array($value) ? $filter($value) : strval($value);
-                    }
-                    return $data;
-               };
+        static $filter; $filter ??= function ($data) use (&$filter) {
+            foreach ($data as $key => $value) {
+                $data[$key] = is_array($value) ? $filter($value) : strval($value);
+            }
+            return $data;
         };
 
         $ret = http_build_query($filter($data));
 
-        if ($normalizeArrays) {
-            $ret = preg_replace('~([\w\.\-]+)%5B([\w\.\-]+)%5D(=)?~iU', '\1[\2]\3', $ret);
+        if ($normalizeArrays && strpos($qs, '%5D')) {
+            $qs = str_replace(['%5B', '%5D'], ['[', ']'], $qs);
         }
 
         return $ret;
