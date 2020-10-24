@@ -210,8 +210,8 @@ final class Segments implements Arrayable, ArrayAccess
         $array = array_values($array);
 
         [$controller, $action] = [
-            Router::prepareControllerName($array[0] ?? Controller::DEFAULT_NAME, false),
-            Router::prepareControllerActionName($array[1] ?? Controller::INDEX_ACTION, false)
+            Router::prepareControllerName($array[0] ?? Controller::DEFAULT_SHORT, false),
+            Router::prepareActionName($array[1] ?? Controller::ACTION_DEFAULT, false)
         ];
 
         $stack = [
