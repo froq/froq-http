@@ -83,19 +83,18 @@ trait HeaderTrait
         }
 
         // Memoize value check/convert function.
-        static $valueOf; if (!$valueOf) {
-            $valueOf = static function ($name, $value) {
-                if (is_null($value) || is_string($value)) {
-                    return $value;
-                }
+        static $valueOf;
+        $valueOf ??= function ($name, $value) {
+            if (is_null($value) || is_string($value)) {
+                return $value;
+            }
 
-                if (is_scalar($value)) {
-                    return var_export($value, true);
-                }
+            if (is_scalar($value)) {
+                return var_export($value, true);
+            }
 
-                throw new HeaderException('Non-null/scalar value given for "%s" header', [$name]);
-            };
-        }
+            throw new HeaderException('Non-null/scalar value given for "%s" header', [$name]);
+        };
 
         if (is_array($value)) {
             foreach ($value as $valu) {
