@@ -29,7 +29,7 @@ namespace froq\http\request;
 use froq\common\interfaces\Arrayable;
 use froq\common\exceptions\{InvalidKeyException, UnsupportedOperationException};
 use froq\{Router, mvc\Controller};
-use ArrayAccess;
+use Countable, ArrayAccess;
 
 /**
  * Segments.
@@ -41,7 +41,7 @@ use ArrayAccess;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.1
  */
-final class Segments implements Arrayable, ArrayAccess
+final class Segments implements Arrayable, Countable, ArrayAccess
 {
     /**
      * Root.
@@ -245,11 +245,11 @@ final class Segments implements Arrayable, ArrayAccess
     /**
      * Empty.
      * @return bool
-     * @since  4.2
+     * @since  4.2, 4.9 Renamed from empty().
      */
-    public function empty(): bool
+    public function isEmpty(): bool
     {
-        return !$this->getParamsList();
+        return empty($this->getParamsList());
     }
 
     /**
@@ -260,8 +260,7 @@ final class Segments implements Arrayable, ArrayAccess
      */
     public function toList(int $offset = 0): array
     {
-        return !$offset ? (array) $this->getParamsList()
-            : array_slice((array) $this->getParamsList(), $offset);
+        return array_slice((array) $this->getParamsList(), $offset);
     }
 
     /**
@@ -270,6 +269,15 @@ final class Segments implements Arrayable, ArrayAccess
     public function toArray(): array
     {
         return $this->getStack();
+    }
+
+    /**
+     * @inheritDoc Countable
+     * @since 4.9
+     */
+    public function count(): int
+    {
+        return count((array) $this->getParamsList());
     }
 
     /**
