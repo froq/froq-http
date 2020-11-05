@@ -273,7 +273,7 @@ class Payload
      * @param  ...    $arguments
      * @return froq\http\response\payload\PayloadInterface
      */
-    private static final function createPayload(string $type, ...$arguments): PayloadInterface
+    private static function createPayload(string $type, ...$arguments): PayloadInterface
     {
         switch ($type) {
             case 'json':
