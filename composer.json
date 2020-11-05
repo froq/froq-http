@@ -10,7 +10,6 @@
     "require": {
         "php": "^7.4",
         "froq/froq-common": "^4.0",
-        "froq/froq-util": "^4.0",
         "froq/froq": "^4.0",
         "froq/froq-file": "^4.0",
         "froq/froq-encoding": "^4.0"
