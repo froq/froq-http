@@ -1,36 +1,17 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 <https://opensource.org/licenses/apache-2.0>
  */
 declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\common\traits\OptionTrait;
-use froq\event\Events;
 use froq\http\client\{ClientException, Request, Response};
 use froq\http\client\curl\{Curl, CurlError};
+use froq\common\traits\OptionTrait;
 use froq\http\Util as HttpUtil;
+use froq\event\Events;
 
 /**
  * Client.
@@ -42,7 +23,7 @@ use froq\http\Util as HttpUtil;
  * @package froq\http\client
  * @object  froq\http\client\Client
  * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.0, 4.0
+ * @since   3.0
  */
 final class Client
 {

@@ -1,41 +1,23 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 <https://opensource.org/licenses/apache-2.0>
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
+use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
+use froq\http\message\Body;
+use froq\http\{Message, Http};
 use froq\file\{FileObject, ImageObject, Util as FileUtil};
 use froq\encoding\Encoder;
-use froq\http\{Http, Message};
-use froq\http\message\Body;
-use froq\http\response\{ResponseTrait, ResponseException,
-    Status, StatusException, Cookies, Cookie};
+use froq\App;
+use Exception;
 
 /**
  * Response.
+ *
  * @package froq\http
  * @object  froq\http\Response
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -104,7 +86,7 @@ final class Response extends Message
     {
         try {
             $this->status->setCode($code);
-        } catch (StatusException $e) {
+        } catch (Exception $e) {
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 
