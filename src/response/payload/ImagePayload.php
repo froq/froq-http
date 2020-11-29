@@ -29,8 +29,7 @@ final class ImagePayload extends Payload implements PayloadInterface
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null,
-        Response $response = null)
+    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
     {
         parent::__construct($code, $content, $attributes, $response);
     }

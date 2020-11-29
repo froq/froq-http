@@ -10,7 +10,7 @@ namespace froq\http;
 use froq\App;
 use froq\util\Util;
 use froq\http\MessageException;
-use froq\http\message\{Body, Cookies, Headers};
+use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
 
 /**
@@ -262,7 +262,7 @@ abstract class Message
             elseif (is_string($content)) {
                 // Prepare defaults with type.
                 $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
+                    'type' => $this->getContentType() ?? ContentType::TEXT_HTML,
                 ], (array) $contentAttributes);
 
                 $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
@@ -275,7 +275,7 @@ abstract class Message
             else {
                 // Prepare defaults with type.
                 $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
+                    'type' => $this->getContentType() ?? ContentType::TEXT_HTML,
                 ], (array) $contentAttributes);
 
                 $contentType = (string) ($contentAttributes['type'] ?? '');

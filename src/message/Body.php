@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use froq\http\message\ContentType;
 use froq\common\traits\AttributeTrait;
 
 /**
@@ -27,35 +28,6 @@ final class Body
     use AttributeTrait;
 
     /**
-    * Content types.
-    * @const string
-    */
-    public const CONTENT_TYPE_NA                       = 'n/a',
-                 // Texts.
-                 CONTENT_TYPE_TEXT_HTML                = 'text/html',
-                 CONTENT_TYPE_TEXT_PLAIN               = 'text/plain',
-                 CONTENT_TYPE_TEXT_XML                 = 'text/xml',
-                 CONTENT_TYPE_TEXT_JSON                = 'text/json',
-                 CONTENT_TYPE_APPLICATION_XML          = 'application/xml',
-                 CONTENT_TYPE_APPLICATION_JSON         = 'application/json',
-                 // Images.
-                 CONTENT_TYPE_IMAGE_JPEG               = 'image/jpeg',
-                 CONTENT_TYPE_IMAGE_PNG                = 'image/png',
-                 CONTENT_TYPE_IMAGE_GIF                = 'image/gif',
-                 CONTENT_TYPE_IMAGE_WEBP               = 'image/webp',
-                 // Downloads
-                 CONTENT_TYPE_APPLICATION_DOWNLOAD     = 'application/download',
-                 CONTENT_TYPE_APPLICATION_OCTET_STREAM = 'application/octet-stream';
-
-    /**
-     * Content charsets.
-     * @const string
-     */
-    public const CONTENT_CHARSET_NA                    = 'n/a',
-                 CONTENT_CHARSET_UTF_8                 = 'utf-8',
-                 CONTENT_CHARSET_ISO_8859_1            = 'iso-8859-1';
-
-    /**
      * Content.
      * @var ?any
      */
@@ -63,8 +35,8 @@ final class Body
 
     /**
      * Constructor.
-     * @param any|null    $content
-     * @param array|null  $contentAttributes
+     * @param any|null   $content
+     * @param array|null $contentAttributes
      */
     public function __construct($content = null, array $contentAttributes = null)
     {
@@ -123,7 +95,7 @@ final class Body
      */
     public function isNone(): bool
     {
-        return ($this->getAttribute('type') == self::CONTENT_TYPE_NA);
+        return ($this->getAttribute('type') == ContentType::NA);
     }
 
     /**
@@ -145,10 +117,8 @@ final class Body
     public function isImage(): bool
     {
         return in_array($this->getAttribute('type'), [
-            self::CONTENT_TYPE_IMAGE_JPEG,
-            self::CONTENT_TYPE_IMAGE_PNG,
-            self::CONTENT_TYPE_IMAGE_GIF,
-            self::CONTENT_TYPE_IMAGE_WEBP
+            ContentType::IMAGE_JPEG, ContentType::IMAGE_PNG,
+            ContentType::IMAGE_GIF, ContentType::IMAGE_WEBP
         ], true);
     }
 
@@ -160,8 +130,8 @@ final class Body
     public function isFile(): bool
     {
         return in_array($this->getAttribute('type'), [
-            self::CONTENT_TYPE_APPLICATION_OCTET_STREAM,
-            self::CONTENT_TYPE_APPLICATION_DOWNLOAD
+            ContentType::APPLICATION_OCTET_STREAM,
+            ContentType::APPLICATION_DOWNLOAD
         ], true);
     }
 }

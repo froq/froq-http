@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
-use froq\http\message\Body;
+use froq\http\message\{ContentType, ContentCharset};
 use froq\http\{Message, Http};
 use froq\file\{FileObject, ImageObject, Util as FileUtil};
 use froq\encoding\Encoder;
@@ -184,8 +184,8 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        $body              = $this->getBody();
-        $content           = $body->getContent();
+        $body = $this->getBody();
+        $content = $body->getContent();
         $contentAttributes = $body->getContentAttributes();
 
         // Those n/a responses output nothing.
@@ -195,17 +195,17 @@ final class Response extends Message
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
-            $content        = (string) $content;
-            $contentType    = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
-            $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
-            if ($contentCharset && $contentCharset != Body::CONTENT_CHARSET_NA) {
+            $content = (string) $content;
+            $contentType = $contentAttributes['type'] ?? ContentType::TEXT_HTML; // @default
+            $contentCharset = $contentAttributes['charset'] ?? ContentCharset::UTF_8; // @default
+            if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
             // Gzip stuff.
             $contentLength = strlen($content);
             if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
-                $gzipOptions    = $this->app->config('response.gzip');
+                $gzipOptions = $this->app->config('response.gzip');
                 $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
 
                 // Gzip options may be emptied by developer to disable gzip using null.
@@ -225,7 +225,7 @@ final class Response extends Message
             header('Content-Type: '. $contentType);
             header('Content-Length: '. strlen($content));
 
-            print $content;
+            echo $content;
         }
         // Image contents.
         elseif ($body->isImage()) {
@@ -238,7 +238,7 @@ final class Response extends Message
                 $content, $contentAttributes['type'], $contentAttributes['modifiedAt'],
                           $contentAttributes['options'] ?? $this->app->config('response.image')];
 
-            $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
+            $image = ImageObject::fromResource($image, $imageType, $imageOptions);
             $content = $image->toString();
 
             header('Content-Type: '. $imageType);
@@ -250,7 +250,7 @@ final class Response extends Message
             }
             header('X-Dimensions: '. vsprintf('%dx%d', $image->getDimensions()));
 
-            print $content;
+            echo $content;
 
             $image->free();
         }
@@ -271,7 +271,7 @@ final class Response extends Message
                 $rateLimit = $fileSize;
             }
 
-            header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
+            header('Content-Type: '. ($fileMime ?: ContentType::APPLICATION_OCTET_STREAM));
             header('Content-Length: '. $fileSize);
             header('Content-Disposition: attachment; filename="'. $fileName .'"');
             header('Content-Transfer-Encoding: binary');
@@ -292,7 +292,7 @@ final class Response extends Message
 
             do {
                 $content = $file->read($rateLimit);
-                print $content;
+                echo $content;
                 sleep(1); // Apply rate limit.
             } while ($content && !connection_aborted());
 

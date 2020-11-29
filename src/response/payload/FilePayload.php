@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\{Response, message\Body};
+use froq\http\{Response, message\ContentType};
 use froq\file\{Util as FileUtil, File, mime\Mime};
 use froq\util\Strings;
 
@@ -29,10 +29,9 @@ final class FilePayload extends Payload implements PayloadInterface
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null,
-        Response $response = null)
+    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
     {
-        $attributes['type'] = Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM;
+        $attributes['type'] = ContentType::APPLICATION_OCTET_STREAM;
 
         parent::__construct($code, $content, $attributes, $response);
     }

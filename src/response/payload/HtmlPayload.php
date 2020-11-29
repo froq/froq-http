@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\message\Body;
+use froq\http\message\ContentType;
 use froq\http\Response;
 
 /**
@@ -28,10 +28,9 @@ final class HtmlPayload extends Payload implements PayloadInterface
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, string $content, array $attributes = null,
-        Response $response = null)
+    public function __construct(int $code, string $content, array $attributes = null, Response $response = null)
     {
-        $attributes['type'] = Body::CONTENT_TYPE_TEXT_HTML;
+        $attributes['type'] = ContentType::TEXT_HTML;
 
         parent::__construct($code, $content, $attributes, $response);
     }
