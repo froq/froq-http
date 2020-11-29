@@ -7,10 +7,10 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
-use froq\http\MessageException;
 use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
+use froq\http\MessageException;
+use froq\App;
 
 /**
  * Message.

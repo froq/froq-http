@@ -7,11 +7,10 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\common\interfaces\Stringable;
+use froq\http\{Http, common\CookieException};
 use froq\collection\ComponentCollection;
+use froq\common\interfaces\Stringable;
 use froq\util\Arrays;
-use froq\http\Http;
-use froq\http\common\CookieException;
 
 /**
  * Cookie.

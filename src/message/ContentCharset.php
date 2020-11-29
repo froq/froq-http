@@ -22,7 +22,7 @@ final class ContentCharset
     * Names.
     * @const string
     */
-    public const NA         = 'n/a',
-                 UTF_8      = 'utf-8',
-                 UTF_16     = 'utf-16';
+    public const NA     = 'n/a',
+                 UTF_8  = 'utf-8',
+                 UTF_16 = 'utf-16';
 }

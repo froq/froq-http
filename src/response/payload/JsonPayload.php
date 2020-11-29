@@ -8,8 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\message\ContentType;
-use froq\http\Response;
+use froq\http\{Response, message\ContentType};
 use froq\encoding\Encoder;
 
 /**

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 use froq\http\request\{Segments, UriException};
-use froq\http\{Url, UrlException};
+use froq\http\Url;
 use Throwable;
 
 /**
@@ -94,7 +94,7 @@ final class Uri extends Url
 
                 // Prevent wrong generate action.
                 if (strpos($path, $root) !== 0) {
-                    throw new UriException('URI path "%s" has no root such "%s"', [$path, $root]);
+                    throw new UriException("URI path '%s' has no root such '%s'", [$path, $root]);
                 }
 
                 // Drop root from path.

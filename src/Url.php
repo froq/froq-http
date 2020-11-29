@@ -7,10 +7,10 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interfaces\Stringable;
-use froq\collection\ComponentCollection;
-use froq\util\{Util, Arrays};
 use froq\http\UrlException;
+use froq\collection\ComponentCollection;
+use froq\common\interfaces\Stringable;
+use froq\util\{Util, Arrays};
 
 /**
  * Url.

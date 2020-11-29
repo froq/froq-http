@@ -9,8 +9,7 @@ namespace froq\http;
 
 use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
 use froq\http\Message;
-use froq\util\Util;
-use froq\App;
+use froq\{App, util\Util};
 use Error;
 
 /**

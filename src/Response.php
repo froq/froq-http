@@ -9,10 +9,9 @@ namespace froq\http;
 
 use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
 use froq\http\message\{ContentType, ContentCharset};
-use froq\http\{Message, Http};
+use froq\http\{Http, Message};
 use froq\file\{FileObject, ImageObject, Util as FileUtil};
-use froq\encoding\Encoder;
-use froq\App;
+use froq\{App, encoding\Encoder};
 use Exception;
 
 /**
