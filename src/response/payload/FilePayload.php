@@ -48,8 +48,8 @@ final class FilePayload extends Payload implements PayloadInterface
         if ($file == null) {
             throw new PayloadException('File must not be empty');
         } elseif (!is_string($file) && !is_resource($file)) {
-            throw new PayloadException('File content must be a valid readable file path, binary '.
-                'or stream resource, "%s" given', [gettype($file)]);
+            throw new PayloadException('File content must be a valid readable file path, binary '
+                . 'or stream resource, "%s" given', [gettype($file)]);
         } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
             throw new PayloadException('File name must not contains non-ascii characters');
         }
@@ -66,8 +66,8 @@ final class FilePayload extends Payload implements PayloadInterface
                 $fileSize      = filesize($file);
                 $fileSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
                 if ($fileSizeLimit > -1 && $fileSize > $fileSizeLimit) {
-                    throw new PayloadException('Too large file, check "ini.memory_limit" option '.
-                        '(current ini value: %s)', [ini_get('memory_limit')]);
+                    throw new PayloadException('Too large file, check "ini.memory_limit" option '
+                        . '(current ini value: %s)', [ini_get('memory_limit')]);
                 }
 
                 // Those attributes may be given in attributes (true means auto-set, mime default is true).
@@ -76,8 +76,8 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 $file = fopen($file, 'rb');
                 if (!$file) {
-                    throw new PayloadException('Failed to create file resource, file content must '.
-                        'be a valid readable file path, binary or stream resource [error: %s]', ['@error']);
+                    throw new PayloadException('Failed to create file resource, file content must '
+                        . 'be a valid readable file path, binary or stream resource [error: %s]', '@error');
                 }
 
                 $fileName      = $fileName ?: pathinfo($fileContent, PATHINFO_FILENAME);
@@ -96,8 +96,8 @@ final class FilePayload extends Payload implements PayloadInterface
         }
 
         if (!is_resource($file) || get_resource_type($file) != 'stream') {
-            throw new PayloadException('Invalid file content, file content must be a valid '.
-                'readable file path, binary or stream resource');
+            throw new PayloadException('Invalid file content, file content must be a valid '
+                . 'readable file path, binary or stream resource');
         }
 
         $fileSize      = $fileSize ?? fstat($file)['size'];

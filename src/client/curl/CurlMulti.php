@@ -80,7 +80,7 @@ final class CurlMulti
 
         $multiHandle = curl_multi_init();
         if (!$multiHandle) {
-            throw new CurlException('Failed to initialize multi-curl session [error: %s]', ['@error']);
+            throw new CurlException('Failed to initialize multi-curl session [error: %s]', '@error');
         }
 
         $clientStack = [];

@@ -56,7 +56,7 @@ final class Curl
 
         $handle = curl_init();
         if (!$handle) {
-            throw new CurlException('Failed to initialize curl session [error: %s]', ['@error']);
+            throw new CurlException('Failed to initialize curl session [error: %s]', '@error');
         }
 
         $this->client = $client;
