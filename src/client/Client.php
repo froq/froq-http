@@ -303,14 +303,14 @@ final class Client
         if ($url == null) throw new ClientException('No URL given');
 
         // Reproduce URL structure.
-        $tmp = HttpUtil::parseUrl($url);
-        if (empty($tmp[0])) {
+        $temp = HttpUtil::parseUrl($url);
+        if (empty($temp[0])) {
             throw new ClientException('No valid URL given, only "http" and "https" URLs are '.
                 'accepted (given url: "%s")', [$url]);
         }
 
-        $url = $tmp[0];
-        $urlParams = array_replace_recursive(($tmp[1] ?? []), ($urlParams ?? []));
+        $url = $temp[0];
+        $urlParams = array_replace_recursive(($temp[1] ?? []), ($urlParams ?? []));
         if ($urlParams != null) {
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
         }
@@ -335,7 +335,7 @@ final class Client
         if ($error == null) {
             // Finalize request headers.
             $headers = HttpUtil::parseHeaders($resultInfo['request_header'], true);
-            if (empty($headers[0])) {
+            if (empty($headers) || empty($headers[0])) {
                 return;
             }
 
@@ -350,18 +350,21 @@ final class Client
                 // Add url stuff.
                 $resultInfo['finalUrl'] = $resultInfo['url'];
                 $resultInfo['refererUrl'] = $headers['referer'] ?? null;
+                $resultInfo['contentType'] = $resultInfo['contentCharset'] = null;
 
                 // Add content stuff.
-                @ sscanf(''. $resultInfo['content_type'], '%[^;];%[^=]=%[^$]',
-                    $contentType, $_, $contentCharset);
+                if (isset($resultInfo['content_type'])) {
+                    sscanf(''. $resultInfo['content_type'], '%[^;];%[^=]=%[^$]',
+                        $contentType, $_, $contentCharset);
 
-                $resultInfo['contentType'] = $contentType;
-                $resultInfo['contentCharset'] = $contentCharset ? strtolower($contentCharset) : null;
+                    $resultInfo['contentType'] = $contentType;
+                    $resultInfo['contentCharset'] = $contentCharset ? strtolower($contentCharset) : null;
+                }
 
                 $this->resultInfo = $resultInfo;
             }
 
-            @ sscanf(''. $headers[0], '%s %s %[^$]', $_, $_, $httpVersion);
+            sscanf($headers[0], '%s %s %[^$]', $_, $_, $httpVersion);
 
             // Http version can be modified with CURLOPT_HTTP_VERSION, so here we update to provide
             // an accurate result for viewing or dumping purposes (eg: echo $client->getRequest()).
@@ -381,11 +384,11 @@ final class Client
             }
 
             $headers = HttpUtil::parseHeaders($headers, true);
-            if (empty($headers[0])) {
+            if (empty($headers) || empty($headers[0])) {
                 return;
             }
 
-            @ sscanf(''. $headers[0], '%s %d', $httpVersion, $status);
+            sscanf($headers[0], '%s %d', $httpVersion, $status);
 
             $this->response->setHttpVersion($httpVersion)
                            ->setHeaders($headers)
