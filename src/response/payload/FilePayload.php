@@ -74,7 +74,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $fileMime       = (($fileMime ?? true) === true) ? File::getType($file) : $fileMime;
                 $fileModifiedAt = ($fileModifiedAt === true) ? filemtime($file) : $fileModifiedAt;
 
-                $file =@ fopen($file, 'rb');
+                $file = fopen($file, 'rb');
                 if (!$file) {
                     throw new PayloadException('Failed to create file resource, file content must '.
                         'be a valid readable file path, binary or stream resource [error: %s]', ['@error']);
