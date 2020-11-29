@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\App;
-use froq\util\Util;
 use froq\http\MessageException;
 use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
@@ -279,19 +278,17 @@ abstract class Message
                 ], (array) $contentAttributes);
 
                 $contentType = (string) ($contentAttributes['type'] ?? '');
-                $contentValueType = Util::getType($content, true, true);
 
-                if ($contentValueType == 'array' || $contentValueType == 'object') {
+                if (is_array($content)) {
                     if ($contentType == '') {
-                        throw new MessageException('Missing content type for "%s" type content value',
-                            [$contentValueType]);
+                        throw new MessageException("Missing content type for 'array' type content");
                     }
                     if (!preg_match('~(json|xml)~', $contentType)) {
-                        throw new MessageException('Invalid content value type for "%s" type content, '.
-                            'content type must be such type "xxx/json" or "xxx/xml"', [$contentValueType]);
+                        throw new MessageException("Invalid content value type for 'array' type content, "
+                            . "content type must be such type 'xxx/json' or 'xxx/xml'");
                     }
-                } elseif ($contentValueType != 'null' && $contentValueType != 'scalar') {
-                    throw new MessageException('Invalid content value type "%s"', [$contentValueType]);
+                } elseif ($content !== null && !is_scalar($content)) {
+                    throw new MessageException('Invalid content value type "%s"', gettype($content));
                 }
 
                 $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
