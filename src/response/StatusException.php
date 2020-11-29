@@ -17,5 +17,5 @@ use froq\http\response\ResponseException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class StatusException extends ResponseException
+class StatusException extends ResponseException
 {}

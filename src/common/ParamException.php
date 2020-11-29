@@ -17,5 +17,5 @@ use froq\http\HttpException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class ParamException extends HttpException
+class ParamException extends HttpException
 {}

@@ -17,5 +17,5 @@ use froq\http\UrlException;
  * @author  Kerem Güneş <k-gun@mail.com>
  * @since   4.0
  */
-final class UriException extends UrlException
+class UriException extends UrlException
 {}
