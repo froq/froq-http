@@ -142,7 +142,7 @@ final class Client
         static $calls = ['head', 'options', 'get', 'post', 'put', 'patch', 'delete'];
 
         if (!in_array($call, $calls)) {
-            throw new ClientException('Invalid method call as "%s", valids are: %s',
+            throw new ClientException("Invalid method call as '%s', valids are: %s",
                 [$call, join(', ', $calls)]);
         }
 
@@ -268,8 +268,8 @@ final class Client
             @ ['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
                'body' => $body, 'headers' => $headers] = $method;
         } elseif (!is_string($method)) {
-            throw new ClientException('Invalid $method argument for %s(), valids are: '.
-                'string, array but %s given', [__method__, gettype($method)]);
+            throw new ClientException("Invalid \$method argument for '%s()', valids are: ".
+                "string, array but '%s' given", [__method__, gettype($method)]);
         }
 
         // May be set via setOption() separately.
@@ -305,7 +305,7 @@ final class Client
         // Reproduce URL structure.
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
-            throw new ClientException('No valid URL given, only "http" and "https" URLs are '.
+            throw new ClientException("No valid URL given, only 'http' and 'https' URLs are ".
                 'accepted (given url: "%s")', [$url]);
         }
 

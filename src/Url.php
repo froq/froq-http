@@ -40,15 +40,15 @@ class Url extends ComponentCollection implements Stringable
 
     /**
      * Constructor.
-     * @param   array|string $source
-     * @param   array|null   $components
+     * @param   array|string|null $source
+     * @param   array|null        $components
      * @@throws froq\http\UrlException
      */
     public function __construct($source = null, array $components = null)
     {
         if ($source && !is_array($source) && !is_string($source)) {
-            throw new UrlException('Invalide source type "%s" given, valids are: string, array',
-                [gettype($source)]);
+            throw new UrlException("Invalid source type '%s' given, valids are: string, array",
+                gettype($source));
         }
 
         $components = $components ?: self::$components;
@@ -96,8 +96,7 @@ class Url extends ComponentCollection implements Stringable
         if (isset($source['query'])) {
             $query = Arrays::pull($source, 'query');
             if ($query != null) {
-                $source += ['query' => $query,
-                            'queryParams' => Util::parseQueryString($query)];
+                $source += ['query' => $query, 'queryParams' => Util::parseQueryString($query)];
             }
         }
 
@@ -143,7 +142,7 @@ class Url extends ComponentCollection implements Stringable
 
     /**
      * Get source.
-     * @return array|string
+     * @return array|string|null
      */
     public function getSource()
     {
@@ -164,7 +163,7 @@ class Url extends ComponentCollection implements Stringable
         // Syntax Components: https://tools.ietf.org/html/rfc3986#section-3
         if ($scheme) {
             $ret .= $scheme;
-            $ret .= $authority ? '://'. $authority : ':';
+            $ret .= $authority ? '://' . $authority : ':';
         } elseif ($authority) {
             $ret .= $authority;
         }
@@ -174,8 +173,8 @@ class Url extends ComponentCollection implements Stringable
         }
 
         $path     && $ret .= $path;
-        $query    && $ret .= '?'. $query;
-        $fragment && $ret .= '#'. $fragment;
+        $query    && $ret .= '?' . $query;
+        $fragment && $ret .= '#' . $fragment;
 
         return $ret;
     }

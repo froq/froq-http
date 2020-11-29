@@ -39,8 +39,8 @@ trait ParamTrait
             return $this->getParams($name, $valueDefault);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**
@@ -80,8 +80,8 @@ trait ParamTrait
             return $this->hasGetParams($name);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**
@@ -120,8 +120,8 @@ trait ParamTrait
             return $this->postParams($name, $valueDefault);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**
@@ -161,8 +161,8 @@ trait ParamTrait
             return $this->hasPostParams($name);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**
@@ -201,8 +201,8 @@ trait ParamTrait
             return $this->cookieParams($name, $valueDefault);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**
@@ -242,8 +242,8 @@ trait ParamTrait
             return $this->hasCookieParams($name);
         }
 
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
+            "array<string>, null", gettype($name));
     }
 
     /**

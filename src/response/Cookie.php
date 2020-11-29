@@ -31,7 +31,7 @@ final class Cookie extends ComponentCollection implements Stringable
      * Same site values.
      * @var array<string>
      */
-    private static array $sameSiteValues = ['None', 'Lax', 'Strict'];
+    private static array $sameSiteValues = ['none', 'lax', 'strict'];
 
     /**
      * Name pattern.
@@ -48,27 +48,26 @@ final class Cookie extends ComponentCollection implements Stringable
      */
     public function __construct(string $name, $value, array $options = null)
     {
-        static $components = ['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly',
-            'sameSite'];
+        static $components = ['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly', 'sameSite'];
 
         // Set components.
         parent::__construct($components);
 
         // Check name.
         if (!preg_match('~^'. self::$namePattern .'$~', $name)) {
-            throw new CookieException('Invalid cookie name "%s", a valid name pattern is "%s"',
+            throw new CookieException("Invalid cookie name '%s', a valid name pattern is '%s'",
                 [$name, self::$namePattern]);
         }
 
         if ($value != null && !is_scalar($value)) {
-            throw new CookieException('Invalid value type "%s", scalar or null values accepted only',
-                [gettype($value)]);
+            throw new CookieException("Invalid value type '%s', scalar or null values accepted only",
+                gettype($value));
         }
 
         $options = ['name' => $name, 'value' => $value] + ($options ?? []);
 
         // Fix case issues.
-        $options = array_change_key_case($options);
+        $options = array_change_key_case($options, CASE_LOWER);
         Arrays::swap($options, 'httponly', 'httpOnly');
         Arrays::swap($options, 'samesite', 'sameSite');
 
@@ -82,9 +81,9 @@ final class Cookie extends ComponentCollection implements Stringable
         extract($options);
 
         if ($sameSite != '') {
-            $sameSite = ucfirst(strtolower($sameSite));
+            $sameSite = strtolower($sameSite);
             if (!in_array($sameSite, self::$sameSiteValues)) {
-                throw new CookieException(sprintf('Invalid sameSite value "%s", valids are: %s',
+                throw new CookieException(sprintf("Invalid sameSite value '%s', valids are: %s",
                     $sameSite, join(', ', self::$sameSiteValues)));
             }
         }
@@ -100,7 +99,9 @@ final class Cookie extends ComponentCollection implements Stringable
         extract($this->getData()); // Unstore.
 
         $ret = $name .'=';
+
         if ($value === null || $expires < 0) {
+            // Remove.
             $ret .= sprintf('n/a; Expires=%s; Max-Age=0', Http::date(0));
         } else {
             // String, bool, int or float.

@@ -159,7 +159,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
             return $this->stack['params'][$key] ?? $valueDefault;
         }
 
-        throw new InvalidKeyException('Key type must be int|string, "%s" given', [gettype($key)]);
+        throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));
     }
 
     /**
@@ -178,7 +178,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
             return $this->stack['actionParams'][$key] ?? $valueDefault;
         }
 
-        throw new InvalidKeyException('Key type must be int|string, "%s" given', [gettype($key)]);
+        throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));
     }
 
     /**
@@ -274,7 +274,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function offsetGet($name)
     {
-        return isset($this->stack[$name]) ? $this->stack[$name] : null;
+        return $this->stack[$name] ?? null;
     }
 
     /**
@@ -283,7 +283,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function offsetSet($name, $value)
     {
-        throw new UnsupportedOperationException('No set() allowed for "%s"', [self::class]);
+        throw new UnsupportedOperationException("No set() allowed for '%s' object", self::class);
     }
 
     /**
@@ -292,6 +292,6 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function offsetUnset($name)
     {
-        throw new UnsupportedOperationException('No unset() allowed for "%s"', [self::class]);
+        throw new UnsupportedOperationException("No unset() allowed for '%s' object", self::class);
     }
 }

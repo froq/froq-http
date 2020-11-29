@@ -288,7 +288,7 @@ abstract class Message
                             . "content type must be such type 'xxx/json' or 'xxx/xml'");
                     }
                 } elseif ($content !== null && !is_scalar($content)) {
-                    throw new MessageException('Invalid content value type "%s"', gettype($content));
+                    throw new MessageException("Invalid content value type '%s'", gettype($content));
                 }
 
                 $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);

@@ -146,8 +146,8 @@ class Payload
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
             if (!is_null($content) && !is_string($content) && !is_resource($content)) {
-                throw new PayloadException('Failed to achive string/resource content from "%s" '.
-                    'payload object', [get_class($payload)]);
+                throw new PayloadException("Failed to achive string/resource content from '%s' payload object",
+                    get_class($payload));
             }
         }
         // Not ready to handle, try to create (eg: Payload).
@@ -166,8 +166,8 @@ class Payload
                 case 'text':
                     $content = $payload->getContent();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Content must be string or null for text '.
-                            'responses, "%s" given', [gettype($content)]);
+                        throw new PayloadException("Content must be string|null for text responses, '%s' given",
+                            gettype($content));
                     }
                     break;
                 case 'json': case 'xml':
@@ -176,8 +176,7 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Failed to achive handled content from "%s"',
-                            [get_class($payload)]);
+                        throw new PayloadException("Failed to achive string content from '%s'", get_class($payload));
                     }
                     break;
                 case 'image': case 'file': case 'download':
@@ -186,13 +185,11 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_resource($content)) {
-                        throw new PayloadException('Failed to achive resource content from "%s"',
-                            [get_class($payload)]);
+                        throw new PayloadException("Failed to achive resource content from '%s'", get_class($payload));
                     }
                     break;
                 default:
-                    throw new PayloadException('Invalid payload content type "%s"',
-                        [$type ?? $payload->getAttribute('type')]);
+                    throw new PayloadException("Invalid payload content type '%s'", $type ?? $payload->getAttribute('type'));
             }
         }
 
@@ -226,8 +223,8 @@ class Payload
                     return 'json';
                 case 'xml':
                     return 'xml';
-                case 'jpeg': case 'png': case 'gif':
-                case 'webp':
+                case 'jpeg': case 'webp':
+                case 'png': case 'gif':
                     return 'image';
                 case 'octet-stream':
                     return 'file';
@@ -264,8 +261,7 @@ class Payload
                 return new XmlPayload(...$arguments);
             case 'image':
                 return new ImagePayload(...$arguments);
-            case 'file':
-            case 'download':
+            case 'file': case 'download':
                 return new FilePayload(...$arguments);
         }
     }

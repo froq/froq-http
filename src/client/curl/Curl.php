@@ -180,7 +180,7 @@ final class Curl
             //        && $clientOptions['curl'][CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0) {
             //     // HTTP/2 requires a https scheme.
             //     if (strpos($url, 'https') !== 0) {
-            //         throw new CurlException('URL scheme must be "https" for HTTP/2 requests');
+            //         throw new CurlException("URL scheme must be 'https' for HTTP/2 requests");
             //     }
             // }
 
