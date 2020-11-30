@@ -51,11 +51,11 @@ trait CookieTrait
 
     /**
      * Add cookie.
-     * @aliasOf setCookie()
+     * @alias of setCookie()
      */
-    public function addCookie(...$arguments)
+    public function addCookie(...$_)
     {
-        return $this->setCookie(...$arguments);
+        return $this->setCookie(...$_);
     }
 
     /**
