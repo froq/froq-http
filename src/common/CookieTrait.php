@@ -53,9 +53,9 @@ trait CookieTrait
      * Add cookie.
      * @alias of setCookie()
      */
-    public function addCookie(...$_)
+    public function addCookie(...$arguments)
     {
-        return $this->setCookie(...$_);
+        return $this->setCookie(...$arguments);
     }
 
     /**
