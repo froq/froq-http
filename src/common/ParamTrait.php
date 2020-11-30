@@ -26,17 +26,17 @@ trait ParamTrait
     /**
      * Get.
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function get($name = null, $valueDefault = null)
+    public function get($name = null, $default = null)
     {
         if (is_string($name)) {
-            return $this->getParam($name, $valueDefault);
+            return $this->getParam($name, $default);
         }
         if ($name === null || is_array($name)) {
-            return $this->getParams($name, $valueDefault);
+            return $this->getParams($name, $default);
         }
 
         throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
@@ -46,23 +46,23 @@ trait ParamTrait
     /**
      * Get param.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function getParam(string $name, $valueDefault = null)
+    public function getParam(string $name, $default = null)
     {
-        return Params::get($name, $valueDefault);
+        return Params::get($name, $default);
     }
 
     /**
      * Get params.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function getParams(array $names = null, $valuesDefault = null): array
+    public function getParams(array $names = null, $default = null): array
     {
-        return Params::gets($names, $valuesDefault);
+        return Params::gets($names, $default);
     }
 
     /**
@@ -107,17 +107,17 @@ trait ParamTrait
     /**
      * Post.
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function post($name = null, $valueDefault = null)
+    public function post($name = null, $default = null)
     {
         if (is_string($name)) {
-            return $this->postParam($name, $valueDefault);
+            return $this->postParam($name, $default);
         }
         if ($name === null || is_array($name)) {
-            return $this->postParams($name, $valueDefault);
+            return $this->postParams($name, $default);
         }
 
         throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
@@ -127,23 +127,23 @@ trait ParamTrait
     /**
      * Post param.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function postParam(string $name, $valueDefault = null)
+    public function postParam(string $name, $default = null)
     {
-        return Params::post($name, $valueDefault);
+        return Params::post($name, $default);
     }
 
     /**
      * Post params.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function postParams(array $names = null, $valuesDefault = null): array
+    public function postParams(array $names = null, $default = null): array
     {
-        return Params::posts($names, $valuesDefault);
+        return Params::posts($names, $default);
     }
 
     /**
@@ -188,17 +188,17 @@ trait ParamTrait
     /**
      * Cookie.
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function cookie($name = null, $valueDefault = null)
+    public function cookie($name = null, $default = null)
     {
         if (is_string($name)) {
-            return $this->cookieParam($name, $valueDefault);
+            return $this->cookieParam($name, $default);
         }
         if ($name === null || is_array($name)) {
-            return $this->cookieParams($name, $valueDefault);
+            return $this->cookieParams($name, $default);
         }
 
         throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
@@ -208,23 +208,23 @@ trait ParamTrait
     /**
      * Cookie param.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function cookieParam(string $name, $valueDefault = null)
+    public function cookieParam(string $name, $default = null)
     {
-        return Params::cookie($name, $valueDefault);
+        return Params::cookie($name, $default);
     }
 
     /**
      * Cookie params.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function cookieParams(array $names = null, $valuesDefault = null): array
+    public function cookieParams(array $names = null, $default = null): array
     {
-        return Params::cookies($names, $valuesDefault);
+        return Params::cookies($names, $default);
     }
 
     /**

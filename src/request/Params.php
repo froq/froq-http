@@ -34,24 +34,24 @@ final class Params extends StaticClass
     /**
      * Get.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function get(string $name, $valueDefault = null)
+    public static function get(string $name, $default = null)
     {
-        return Arrays::get($_GET, $name, $valueDefault);
+        return Arrays::get($_GET, $name, $default);
     }
 
     /**
      * Gets.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function gets(array $names = null, $valuesDefault = null): array
+    public static function gets(array $names = null, $default = null): array
     {
         return ($names === null) ? $_GET // All.
-             : Arrays::getAll($_GET, $names, $valuesDefault);
+             : Arrays::getAll($_GET, $names, $default);
     }
 
     /**
@@ -86,24 +86,24 @@ final class Params extends StaticClass
     /**
      * Post.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function post(string $name, $valueDefault = null)
+    public static function post(string $name, $default = null)
     {
-        return Arrays::get($_POST, $name, $valueDefault);
+        return Arrays::get($_POST, $name, $default);
     }
 
     /**
      * Posts.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function posts(array $names = null, $valuesDefault = null): array
+    public static function posts(array $names = null, $default = null): array
     {
         return ($names === null) ? $_POST // All.
-             : Arrays::getAll($_POST, $names, $valuesDefault);
+             : Arrays::getAll($_POST, $names, $default);
     }
 
     /**
@@ -138,24 +138,24 @@ final class Params extends StaticClass
     /**
      * Cookie.
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function cookie(string $name, $valueDefault = null)
+    public static function cookie(string $name, $default = null)
     {
-        return Arrays::get($_COOKIE, $name, $valueDefault);
+        return Arrays::get($_COOKIE, $name, $default);
     }
 
     /**
      * Cookies.
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function cookies(array $names = null, $valuesDefault = null): array
+    public static function cookies(array $names = null, $default = null): array
     {
         return ($names === null) ? $_COOKIE // All.
-             : Arrays::getAll($_COOKIE, $names, $valuesDefault);
+             : Arrays::getAll($_COOKIE, $names, $default);
     }
 
     /**

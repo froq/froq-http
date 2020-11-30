@@ -109,14 +109,14 @@ trait HeaderTrait
     /**
      * Get header.
      * @param  string                    $name
-     * @param  string|array<string>|null $valueDefault
+     * @param  string|array<string>|null $default
      * @return string|array<string>|null
      */
-    public function getHeader(string $name, $valueDefault = null)
+    public function getHeader(string $name, $default = null)
     {
         return $this->headers->get($name)
             ?? $this->headers->get(strtolower($name))
-            ?? $valueDefault;
+            ?? $default;
     }
 
     /**

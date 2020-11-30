@@ -80,12 +80,12 @@ trait CookieTrait
     /**
      * Get cookie.
      * @param  string      $name
-     * @param  string|null $valueDefault
+     * @param  string|null $default
      * @return ?string
      */
-    public function getCookie(string $name, string $valueDefault = null): ?string
+    public function getCookie(string $name, string $default = null): ?string
     {
-        return $this->cookies->get($name, $valueDefault);
+        return $this->cookies->get($name, $default);
     }
 
     /**

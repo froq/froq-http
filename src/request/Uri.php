@@ -46,15 +46,15 @@ final class Uri extends Url
     /**
      * Segment.
      * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * @param  any|null   $default
      * @return any|null
      * @throws froq\http\request\UriException
      */
-    public function segment($key, $valueDefault = null)
+    public function segment($key, $default = null)
     {
         if (isset($this->segments)) {
             try {
-                return $this->segments->get($key, $valueDefault);
+                return $this->segments->get($key, $default);
             } catch (Throwable $e) {
                 throw new UriException($e);
             }

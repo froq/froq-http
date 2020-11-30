@@ -24,55 +24,55 @@ final class Param extends StaticClass
     /**
      * Get.
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
      * @return any
      */
-    public static function get($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function get($name, $default = null, callable $map = null, callable $filter = null)
     {
-        $values = Params::gets((array) $name, $valueDefault);
+        $values = Params::gets((array) $name, $default);
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
      * Get.
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
      * @return any
      */
-    public static function post($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function post($name, $default = null, callable $map = null, callable $filter = null)
     {
-        $values = Params::posts((array) $name, $valueDefault);
+        $values = Params::posts((array) $name, $default);
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
      * Cookie.
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
      * @return any
      */
-    public static function cookie($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function cookie($name, $default = null, callable $map = null, callable $filter = null)
     {
-        $values = Params::cookies((array) $name, $valueDefault);
+        $values = Params::cookies((array) $name, $default);
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**

@@ -146,17 +146,17 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     /**
      * Get.
      * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * @param  any|null   $default
      * @return any|null
      * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function get($key, $valueDefault = null)
+    public function get($key, $default = null)
     {
         if (is_int($key)) {
-            return $this->stack['paramsList'][$key - 1] ?? $valueDefault;
+            return $this->stack['paramsList'][$key - 1] ?? $default;
         }
         if (is_string($key)) {
-            return $this->stack['params'][$key] ?? $valueDefault;
+            return $this->stack['params'][$key] ?? $default;
         }
 
         throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));
@@ -165,17 +165,17 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     /**
      * Get.
      * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * @param  any|null   $default
      * @return any|null
      * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function getActionParam($key, $valueDefault = null)
+    public function getActionParam($key, $default = null)
     {
         if (is_int($key)) {
-            return $this->stack['actionParamsList'][$key - 1] ?? $valueDefault;
+            return $this->stack['actionParamsList'][$key - 1] ?? $default;
         }
         if (is_string($key)) {
-            return $this->stack['actionParams'][$key] ?? $valueDefault;
+            return $this->stack['actionParams'][$key] ?? $default;
         }
 
         throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));

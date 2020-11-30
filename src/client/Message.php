@@ -198,14 +198,14 @@ abstract class Message
     /**
      * Get header.
      * @param  string      $name
-     * @param  string|null $valueDefault
+     * @param  string|null $default
      * @return string|array|null
      */
-    public final function getHeader(string $name, string $valueDefault = null)
+    public final function getHeader(string $name, string $default = null)
     {
         return $this->headers[$name]
             ?? $this->headers[strtolower($name)]
-            ?? $valueDefault;
+            ?? $default;
     }
 
     /**
