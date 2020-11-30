@@ -44,17 +44,17 @@ final class Response extends Message
     {
         parent::__construct($app, Message::TYPE_RESPONSE);
 
-        $this->status  = new Status();
+        $this->status = new Status();
     }
 
     /**
      * Set/get status.
-     * @param  ...$arguments
+     * @param  ... $args
      * @return self|froq\http\response\Status
      */
-    public function status(...$arguments)
+    public function status(...$args)
     {
-        return $arguments ? $this->setStatus(...$arguments) : $this->status;
+        return $args ? $this->setStatus(...$args) : $this->status;
     }
 
     /**

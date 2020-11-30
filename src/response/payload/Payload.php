@@ -249,20 +249,20 @@ class Payload
     /**
      * Create payload.
      * @param  string $type
-     * @param  ...    $arguments
+     * @param  ...    $args
      * @return froq\http\response\payload\PayloadInterface
      */
-    private static function createPayload(string $type, ...$arguments): PayloadInterface
+    private static function createPayload(string $type, ...$args): PayloadInterface
     {
         switch ($type) {
             case 'json':
-                return new JsonPayload(...$arguments);
+                return new JsonPayload(...$args);
             case 'xml':
-                return new XmlPayload(...$arguments);
+                return new XmlPayload(...$args);
             case 'image':
-                return new ImagePayload(...$arguments);
+                return new ImagePayload(...$args);
             case 'file': case 'download':
-                return new FilePayload(...$arguments);
+                return new FilePayload(...$args);
         }
     }
 }

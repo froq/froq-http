@@ -120,17 +120,17 @@ abstract class Message
 
     /**
      * Set/get headers.
-     * @param  ...$arguments
+     * @param  ... $args
      * @return self|froq\http\message\Headers
      */
-    public final function headers(...$arguments)
+    public final function headers(...$args)
     {
-        if ($arguments) {
+        if ($args) {
             if ($this->isRequest()) {
                 throw new MessageException('Connot modify request headers');
             }
 
-            return $this->setHeaders(...$arguments);
+            return $this->setHeaders(...$args);
         }
 
         return $this->headers;
@@ -138,18 +138,18 @@ abstract class Message
 
     /**
      * Set/get cookies.
-     * @param  ...$arguments
+     * @param  ...$args
      * @return self|froq\http\message\Cookies
      * @throws froq\http\MessageException
      */
-    public final function cookies(...$arguments)
+    public final function cookies(...$args)
     {
-        if ($arguments) {
+        if ($args) {
             if ($this->isRequest()) {
                 throw new MessageException('Connot modify request cookies');
             }
 
-            return $this->setCookies(...$arguments);
+            return $this->setCookies(...$args);
         }
 
         return $this->cookies;
@@ -157,12 +157,12 @@ abstract class Message
 
     /**
      * Set/get body.
-     * @param  ...$arguments
+     * @param  ...$args
      * @return self|froq\http\message\Body
      */
-    public final function body(...$arguments)
+    public final function body(...$args)
     {
-        return $arguments ? $this->setBody(...$arguments) : $this->body;
+        return $args ? $this->setBody(...$args) : $this->body;
     }
 
     /**
