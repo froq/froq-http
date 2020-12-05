@@ -7,12 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\response\{ResponseTrait, ResponseException, Status, Cookies, Cookie};
+use froq\http\response\{ResponseTrait, ResponseException, Status, StatusException, Cookie, Cookies};
 use froq\http\message\{ContentType, ContentCharset};
 use froq\http\{Http, Message};
-use froq\file\{FileObject, ImageObject, Util as FileUtil};
+use froq\file\{object\FileObject, object\ImageObject, Util as FileUtil};
 use froq\{App, encoding\Encoder};
-use Exception;
 
 /**
  * Response.
@@ -85,7 +84,7 @@ final class Response extends Message
     {
         try {
             $this->status->setCode($code);
-        } catch (Exception $e) {
+        } catch (StatusException $e) {
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 
