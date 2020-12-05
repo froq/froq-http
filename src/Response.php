@@ -203,16 +203,19 @@ final class Response extends Message
             $contentLength = strlen($content);
             if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
                 $gzipOptions = $this->app->config('response.gzip');
+                $gzipOptionsMinlen = $gzipOptions ? $gzipOptions['minlen'] ?? 64 : null;
                 $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
 
                 // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions != null && $contentLength >= ($gzipOptions['minlen'] ?? 64)
-                    && strpos($acceptEncoding, 'gzip') !== false) {
-                    $content = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
-                    if ($error == null) {
-                        // Cancel php's compression & add required headers.
+                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && stristr($acceptEncoding, 'gzip')) {
+                    $temp = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
+                    if ($temp && $error == null) {
+                        [$content, $temp] = [$temp, null];
+
+                        // Cancel PHP compression.
                         ini_set('zlib.output_compression', 'off');
 
+                        // Add required headers.
                         header('Vary: Accept-Encoding');
                         header('Content-Encoding: gzip');
                     }
@@ -250,6 +253,7 @@ final class Response extends Message
             echo $content;
 
             $image->free();
+            $image = null;
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
@@ -294,6 +298,7 @@ final class Response extends Message
             } while ($content && !connection_aborted());
 
             $file->free();
+            $file = null;
         } else {
             // Nope, nothing to print..
         }
