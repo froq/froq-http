@@ -181,9 +181,9 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        $body = $this->getBody();
+        $body = $this->body;
         $content = $body->getContent();
-        $contentAttributes = $body->getContentAttributes();
+        $attributes = $body->getAttributes();
 
         // Those n/a responses output nothing.
         if ($body->isNone()) {
@@ -193,8 +193,8 @@ final class Response extends Message
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
             $content = (string) $content;
-            $contentType = $contentAttributes['type'] ?? ContentType::TEXT_HTML; // @default
-            $contentCharset = $contentAttributes['charset'] ?? ContentCharset::UTF_8; // @default
+            $contentType = $attributes['type'] ?? ContentType::TEXT_HTML; // @default
+            $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8; // @default
             if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
@@ -234,21 +234,21 @@ final class Response extends Message
                 return;
             }
 
-            [$image, $imageType, $imageModifiedAt, $imageOptions] = [
-                $content, $contentAttributes['type'], $contentAttributes['modifiedAt'],
-                          $contentAttributes['options'] ?? $this->app->config('response.image')];
+            [$image, $imageType, $modifiedAt, $options] = [
+                $content, $attributes['type'], $attributes['modifiedAt'],
+                          $attributes['options'] ?? $this->app->config('response.image')];
 
-            $image = ImageObject::fromResource($image, $imageType, $imageOptions);
+            $image = ImageObject::fromResource($image, $imageType, $options);
             $content = $image->toString();
 
             header('Content-Type: '. $imageType);
             header('Content-Length: '. strlen($content));
-            if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
+            if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 header('Last-Modified: '. Http::date(
-                    is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
+                    is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
                 ));
             }
-            header('X-Dimensions: '. vsprintf('%dx%d', $image->getDimensions()));
+            header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
 
             echo $content;
 
@@ -262,9 +262,9 @@ final class Response extends Message
                 return;
             }
 
-            [$file, $fileMime, $fileName, $fileSize, $fileModifiedAt] = [
-                $content, $contentAttributes['mime'], $contentAttributes['name'],
-                          $contentAttributes['size'], $contentAttributes['modifiedAt']];
+            [$file, $fileMime, $fileName, $fileSize, $modifiedAt] = [
+                $content, $attributes['mime'], $attributes['name'],
+                          $attributes['size'], $attributes['modifiedAt']];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
@@ -278,10 +278,10 @@ final class Response extends Message
             header('Content-Transfer-Encoding: binary');
             header('Cache-Control: no-cache');
             header('Pragma: no-cache');
-            header('Expires: '. Http::date(0));
-            if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
+            header('Expires: 0');
+            if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 header('Last-Modified: '. Http::date(
-                    is_int($fileModifiedAt) ? $fileModifiedAt : strtotime($fileModifiedAt)
+                    is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
                 ));
             }
             if ($rateLimit != $fileSize) {
@@ -302,6 +302,9 @@ final class Response extends Message
         } else {
             // Nope, nothing to print..
         }
+
+        // Free.
+        $body->setContent(null);
     }
 
     /**
