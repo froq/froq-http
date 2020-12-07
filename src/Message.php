@@ -230,56 +230,37 @@ abstract class Message
     /**
      * Set body.
      * @param  any|null   $content
-     * @param  array|null $contentAttributes
+     * @param  array|null $attributes
      * @param  bool|null  $isError @internal
      * @return self
      * @throws froq\http\MessageException
      */
-    public final function setBody($content, array $contentAttributes = null, bool $isError = null): self
+    public final function setBody($content, array $attributes = null, bool $isError = null): self
     {
         // @cancel
         // $isError is an internal option and string content needed here.
         // @see App.error() and App.endOutputBuffer().
         // if (!$isError) {
         //     $this->body->setContent($content)
-        //                ->setContentAttributes($contentAttributes);
+        //                ->setAttributes($attributes);
         //     return $this;
         // }
 
         if ($this->isRequest()) {
-            if ($content != null) {
-                $this->body->setContent($content)
-                           ->setContentAttributes($contentAttributes);
-            }
+            $this->body->setContent($content)
+                       ->setAttributes($attributes);
         }
         elseif ($this->isResponse()) {
             // Payload contents.
             if ($content instanceof Payload) {
                 $payload = $content;
-            }
-            // Text contents.
-            elseif (is_string($content)) {
+            } else {
                 // Prepare defaults with type.
-                $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? ContentType::TEXT_HTML,
-                ], (array) $contentAttributes);
-
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
-            }
-            // File/image contents.
-            elseif (is_resource($content)) {
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
-            }
-            // All others.
-            else {
-                // Prepare defaults with type.
-                $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? ContentType::TEXT_HTML,
-                ], (array) $contentAttributes);
-
-                $contentType = (string) ($contentAttributes['type'] ?? '');
+                $attributes = array_merge(['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
+                    (array) $attributes);
 
                 if (is_array($content)) {
+                    $contentType = trim($attributes['type'] ?? '');
                     if ($contentType == '') {
                         throw new MessageException("Missing content type for 'array' type content");
                     }
@@ -287,27 +268,24 @@ abstract class Message
                         throw new MessageException("Invalid content value type for 'array' type content, "
                             . "content type must be such type 'xxx/json' or 'xxx/xml'");
                     }
-                } elseif ($content !== null && !is_scalar($content)) {
-                    throw new MessageException("Invalid content value type '%s'", gettype($content));
+                } elseif (!is_null($content) && !is_scalar($content)) {
+                    throw new MessageException("Invalid content value type '%s'", get_type($content));
                 }
 
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
+                $payload = new Payload($this->getStatusCode(), $content, $attributes);
             }
 
             // @override
-            [$content, $contentAttributes, $responseAttributes] = $payload->process($this);
+            $result = $payload->process($this);
 
             // Set original arguments or their overrides, finally..
-            $this->body->setContent($content)
-                       ->setContentAttributes($contentAttributes);
+            $this->body->setContent($result[0])->setAttributes($result[1]);
 
-            if (isset($responseAttributes)) {
-                @ [$code, $headers, $cookies] = $responseAttributes;
-
-                $code    && $this->setStatus($code);
-                $headers && $this->setHeaders($headers);
-                $cookies && $this->setCookies($cookies);
-            }
+            // Set response attributes
+            [$code, $headers, $cookies] = $result[2];
+            $code    && $this->setStatus($code);
+            $headers && $this->setHeaders($headers);
+            $cookies && $this->setCookies($cookies);
         }
 
         return $this;
