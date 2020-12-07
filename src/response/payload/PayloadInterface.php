@@ -10,7 +10,7 @@ namespace froq\http\response\payload;
 /**
  * Payload Interface.
  *
- * Used by child objects only that derived from Payload object.
+ * Used by child classes only that derived from Payload object.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\PayloadInterface
@@ -21,7 +21,8 @@ interface PayloadInterface
 {
     /**
      * Handle.
-     * @return string|resource
+     *
+     * @return null|string|resource|GDImage
      * @throws froq\http\response\payload\PayloadException
      */
     public function handle();

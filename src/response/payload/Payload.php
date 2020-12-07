@@ -10,7 +10,7 @@ namespace froq\http\response\payload;
 use froq\http\response\payload\{PayloadInterface, PayloadException,
     JsonPayload, XmlPayload, FilePayload, ImagePayload};
 use froq\http\{Response, response\Status};
-use froq\file\mime\Mime;
+use froq\file\{Util as FileUtil, mime\Mime};
 use froq\common\traits\AttributeTrait;
 
 /**
@@ -25,35 +25,27 @@ class Payload
 {
     /**
      * Attribute trait.
-     *
      * @see froq\common\traits\AttributeTrait
      */
     use AttributeTrait;
 
-    /**
-     * Content.
-     * @var any
-     */
+    /** @var any */
     protected $content;
 
-    /**
-     * Response.
-     * @var froq\http\Response
-     * @internal
-     */
-    protected ?Response $response;
+    /** @var froq\http\Response|null */
+    protected Response|null $response;
 
     /**
      * Constructor.
+     *
      * @param int                     $code
      * @param any                     $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null,
-        Response $response = null)
+    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
     {
-        $this->content  = $content;
+        $this->content = $content;
         $this->response = $response;
 
         $attributes['code'] = $code;
@@ -63,6 +55,7 @@ class Payload
 
     /**
      * Get content.
+     *
      * @return any
      */
     public final function getContent()
@@ -71,7 +64,8 @@ class Payload
     }
 
     /**
-     * Set response.
+     * Set owner response.
+     *
      * @param  froq\http\Response $response
      * @return void
      * @internal
@@ -82,17 +76,19 @@ class Payload
     }
 
     /**
-     * Set response.
-     * @return ?froq\http\Response
+     * Get owner response.
+     *
+     * @return froq\http\Response|null
      * @internal
      */
-    public final function getResponse(): ?Response
+    public final function getResponse(): Response|null
     {
         return $this->response;
     }
 
     /**
-     * Get response code.
+     * Get response code attribute.
+     *
      * @return int
      */
     public final function getResponseCode(): int
@@ -101,7 +97,8 @@ class Payload
     }
 
     /**
-     * Get response headers.
+     * Get response headers attribute.
+     *
      * @return array
      */
     public final function getResponseHeaders(): array
@@ -109,7 +106,8 @@ class Payload
         return $this->getAttribute('headers', []);
     }
     /**
-     * Get response cookies.
+     * Get response cookies attribute.
+     *
      * @return array
      */
     public final function getResponseCookies(): array
@@ -120,12 +118,12 @@ class Payload
     /**
      * Process.
      *
-     * Detects payload content type, processes over and returns array that contains content,
+     * Detect payload content type, processes over and return an array which contains content,
      * content attributes (mime, size or filename etc.) and response attributes (code, headers,
      * cookies).
      *
      * @param  froq\http\Response $response
-     * @return array<string|resource, array, array>
+     * @return array
      */
     public final function process(Response $response): array
     {
@@ -133,21 +131,25 @@ class Payload
         $payload->setResponse($response);
 
         // Check for not-modified status.
-        if ($payload->getContent() == null && $payload->getResponseCode() == Status::NOT_MODIFIED) {
+        if ($payload->getContent() == null
+            && $payload->getResponseCode() == Status::NOT_MODIFIED) {
             // Return content, content attributes, response attributes.
             return [
                 null,
                 $payload->getAttributes(),
-                [$payload->getResponseCode(), $payload->getResponseHeaders(), $payload->getResponseCookies()]
+                [$payload->getResponseCode(),
+                 $payload->getResponseHeaders(),
+                 $payload->getResponseCookies()]
             ];
         }
 
         // Ready to handle (eg: JsonPayload, XmlPayload etc).
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
-            if (!is_null($content) && !is_string($content) && !is_resource($content)) {
-                throw new PayloadException("Failed to achive string/resource content from '%s' payload object",
-                    get_class($payload));
+            if (!is_null($content) && !is_string($content)
+                && !is_image($content) && !is_stream($content)) {
+                throw new PayloadException("Failed to achive string/resource content from '%s' '
+                    . 'payload object", $payload::class);
             }
         }
         // Not ready to handle, try to create (eg: Payload).
@@ -158,16 +160,15 @@ class Payload
             }
 
             // Detect content type and process.
-            $type = self::sniffContentType($contentType);
-            switch ($type) {
+            switch ($type = self::sniffContentType($contentType)) {
                 case 'n/a':
                     $content = '';
                     break;
                 case 'text':
                     $content = $payload->getContent();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException("Content must be string|null for text responses, '%s' given",
-                            gettype($content));
+                        throw new PayloadException("Content must be string|null for text responses, "
+                            . "'%s' given", get_type($content));
                     }
                     break;
                 case 'json': case 'xml':
@@ -176,7 +177,8 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException("Failed to achive string content from '%s'", get_class($payload));
+                        throw new PayloadException("Failed getting string content from '%s' object",
+                            $payload::class);
                     }
                     break;
                 case 'image': case 'file': case 'download':
@@ -184,12 +186,14 @@ class Payload
                         $payload->getContent(), $payload->getAttributes(), $response);
 
                     $content = $payload->handle();
-                    if (!is_resource($content)) {
-                        throw new PayloadException("Failed to achive resource content from '%s'", get_class($payload));
+                    if (!is_image($content) && !is_stream($content)) {
+                        throw new PayloadException("Failed getting resource content from '%s' object",
+                            $payload::class);
                     }
                     break;
                 default:
-                    throw new PayloadException("Invalid payload content type '%s'", $type ?? $payload->getAttribute('type'));
+                    throw new PayloadException("Invalid payload type '%s'", $type ??
+                        $payload->getAttribute('type'));
             }
         }
 
@@ -197,72 +201,107 @@ class Payload
         return [
             $content,
             $payload->getAttributes(),
-            [$payload->getResponseCode(), $payload->getResponseHeaders(), $payload->getResponseCookies()]
+            [$payload->getResponseCode(),
+             $payload->getResponseHeaders(),
+             $payload->getResponseCookies()]
         ];
     }
 
     /**
-     * Sniff content type.
-     * @param  ?string $contentType
-     * @return ?string
+     * Get "modified at" option as timestamp.
+     *
+     * @param  string $file
+     * @param  any    $option
+     * @return int|string|null
+     * @since  5.0
      */
-    private static function sniffContentType(?string $contentType): ?string
+    protected static function getModifiedAt(string $file, $option): int|string|null
     {
-        $contentType = (string) $contentType;
+        // Disable directive.
+        if ($option === false) {
+            return null;
+        }
+        // Now directive.
+        if ($option === 0) {
+            return time();
+        }
+        // When manually given.
+        if (is_int($option) || is_string($option)) {
+            return $option;
+        }
+
+        return $file ? filemtime($file) : null;
+    }
+
+    /**
+     * Get "memory limit" directive as converted.
+     *
+     * @param  string|null &$limit
+     * @return int
+     * @since  5.0
+     */
+    protected static function getMemoryLimit(string &$limit = null): int
+    {
+        $limit = (string) ini_get('memory_limit');
+
+        return FileUtil::convertBytes($limit);
+    }
+
+    /**
+     * Sniff given content type, return a pseudo type.
+     *
+     * @param  string $contentType
+     * @return string|null
+     */
+    private static function sniffContentType(string $contentType): string|null
+    {
         if ($contentType == 'n/a') {
             return 'n/a';
         }
 
         // Eg: text/html, image/jpeg, application/json.
         if (preg_match('~/(?:.*?(\w+)$)?~i', $contentType, $match)) {
-            switch ($match[1]) {
-                case 'html': case 'plain':
-                case 'javascript': case 'css':
-                    return 'text';
-                case 'json':
-                    return 'json';
-                case 'xml':
-                    return 'xml';
-                case 'jpeg': case 'webp':
-                case 'png': case 'gif':
-                    return 'image';
-                case 'octet-stream':
-                    return 'file';
+            $match = match ($match[1]) {
+                'json' => 'json', 'xml' => 'xml',
+                'jpeg', 'webp', 'png', 'gif' => 'image',
+                'html', 'plain', 'css', 'javascript' => 'text',
+                'octet-stream' => 'file',
+                default => null,
+            };
+
+            // Any matches above.
+            if ($match) {
+                return $match;
             }
 
             // Any type of those trivials download, x-download, force-download etc.
-            if (substr($contentType, -8) == 'download') {
+            if (strsfx($contentType, 'download')) {
                 return 'download';
             }
 
             // Any extension with a valid type.
-            $extension = Mime::getExtensionByType($contentType);
-            if ($extension != null) {
+            if (Mime::getExtensionByType($contentType)) {
                 return 'download';
             }
         }
 
-        // Invalid content type.
-        return null;
+        return null; // Invalid.
     }
 
     /**
-     * Create payload.
+     * Create a payload object by given pseudo type.
+     *
      * @param  string $type
      * @param  ...    $args
      * @return froq\http\response\payload\PayloadInterface
      */
     private static function createPayload(string $type, ...$args): PayloadInterface
     {
-        switch ($type) {
-            case 'json':
-                return new JsonPayload(...$args);
-            case 'xml':
-                return new XmlPayload(...$args);
-            case 'image':
-                return new ImagePayload(...$args);
-            case 'file': case 'download':
-                return new FilePayload(...$args);
-        }
+        return match ($type) {
+            'json'             => new JsonPayload(...$args),
+            'xml'              => new XmlPayload(...$args),
+            'image'            => new ImagePayload(...$args),
+            'file', 'download' => new FilePayload(...$args),
+        };
     }
 }

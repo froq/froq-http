@@ -29,24 +29,24 @@ final class Body
 
     /**
      * Content.
-     * @var ?any
+     * @var any|null
      */
     private $content;
 
     /**
      * Constructor.
      * @param any|null   $content
-     * @param array|null $contentAttributes
+     * @param array|null $attributes
      */
-    public function __construct($content = null, array $contentAttributes = null)
+    public function __construct($content = null, array $attributes = null)
     {
-        $this->setContent($content);
-        $this->setContentAttributes($contentAttributes);
+        $this->content = $content;
+        $this->attributes = $attributes ?? [];
     }
 
     /**
      * Set content.
-     * @param  ?any $content
+     * @param  any|null $content
      * @return self
      */
     public function setContent($content): self
@@ -66,36 +66,13 @@ final class Body
     }
 
     /**
-     * Set content attributes.
-     * @param  array|null $contentAttributes
-     * @return self
-     * @since  4.0
-     */
-    public function setContentAttributes(array $contentAttributes = null): self
-    {
-        $this->setAttributes($contentAttributes ?? []);
-
-        return $this;
-    }
-
-    /**
-     * Get content attributes.
-     * @return array
-     * @since  4.0
-     */
-    public function getContentAttributes(): array
-    {
-        return $this->getAttributes();
-    }
-
-    /**
      * Is none.
      * @return bool
      * @since  4.0
      */
     public function isNone(): bool
     {
-        return ($this->getAttribute('type') == ContentType::NA);
+        return $this->getAttribute('type') === ContentType::NA;
     }
 
     /**

@@ -8,8 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\message\ContentType;
-use froq\http\Response;
+use froq\http\{Response, message\ContentType};
 
 /**
  * Html Payload.
@@ -44,7 +43,7 @@ final class HtmlPayload extends Payload implements PayloadInterface
 
         if (!is_null($content) && !is_string($content)) {
             throw new PayloadException("Content must be string|null for html payloads, '%s' given",
-                gettype($content));
+                get_type($content));
         }
 
         return $content;
