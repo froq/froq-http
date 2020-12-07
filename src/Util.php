@@ -121,8 +121,8 @@ final class Util
 
         $ret = http_build_query($filter($data));
 
-        if ($normalizeArrays && strpos($qs, '%5D')) {
-            $qs = str_replace(['%5B', '%5D'], ['[', ']'], $qs);
+        if ($normalizeArrays && strpos($ret, '%5D')) {
+            $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
         }
 
         return $ret;
