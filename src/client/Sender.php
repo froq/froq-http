@@ -22,7 +22,8 @@ use froq\http\client\curl\{Curl, CurlMulti};
 final class Sender
 {
     /**
-     * Send.
+     * Send a request with a single client.
+     *
      * @param  froq\http\client\Client $client
      * @return froq\http\client\Response
      */
@@ -31,32 +32,29 @@ final class Sender
         $curl = new Curl($client);
         $client->setCurl($curl);
 
-        $runner = $curl;
-        $runner->run();
+        $curl->run();
 
-        $response = $client->getResponse();
-
-        return $response;
+        return $client->getResponse();
     }
 
     /**
-     * Send async.
+     * Send an async request with multi clients.
+     *
      * @param  array<froq\http\client\Client> $clients
      * @return array<froq\http\client\Response>
      */
     public static function sendAsync(array $clients): array
     {
         foreach ($clients as $client) {
-            $curl = new Curl($client);
-            $client->setCurl($curl);
+            $client->setCurl(new Curl($client));
         }
 
-        $runner = new CurlMulti($clients);
-        $runner->run();
+        $curlm = new CurlMulti($clients);
+        $curlm->run();
 
         $responses = [];
 
-        foreach ($runner->getClients() as $client) {
+        foreach ($curlm->getClients() as $client) {
             $responses[] = $client->getResponse();
         }
 

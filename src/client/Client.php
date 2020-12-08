@@ -28,82 +28,42 @@ use froq\event\Events;
 final class Client
 {
     /**
-     * Option trait.
-     *
      * @see froq\common\traits\OptionTrait
      * @since 4.0
      */
     use OptionTrait;
 
-    /**
-     * Request, simply an HTTP-Message object that filled after send calls.
-     *
-     * @var froq\http\client\Request
-     */
+    /** @var froq\http\client\Request */
     private Request $request;
 
-    /**
-     * Response, simply an HTTP-Message object that filled after send calls.
-     *
-     * @var froq\http\client\Response
-     */
+    /** @var froq\http\client\Response */
     private Response $response;
 
-    /**
-     * Curl object that runs cURL operations.
-     *
-     * @var froq\http\client\curl\Curl
-     */
+    /** @var froq\http\client\curl\Curl */
     private Curl $curl;
 
-    /**
-     * Error that will be set if any cURL error occurs.
-     *
-     * @var froq\http\client\curl\CurlError
-     */
+    /** @var froq\http\client\curl\CurlError */
     private CurlError $error;
 
-    /**
-     * Result that will be filled after cURL requests (if `options.keepResult` true).
-     *
-     * @var ?string
-     */
+    /** @var ?string */
     private ?string $result = null;
 
-    /**
-     * Result info that will be filled after cURL requests (if `options.keepResultInfo` true).
-     *
-     * @var ?array<string, any>
-     */
+    /** @var ?array<string, any> */
     private ?array $resultInfo = null;
 
-    /**
-     * Default options.
-     *
-     * @var array<string, any>
-     */
+    /** @var array<string, any> */
     private static array $optionsDefault = [
         'redirs'      => true,  'redirsMax'      => 3,
         'timeout'     => 5,     'timeoutConnect' => 3,
         'keepResult'  => true,  'keepResultInfo' => true,
+        'httpVersion' => null,  'throwErrors'    => false,
         'method'      => 'GET', 'curl'           => null, // Curl options.
-        'throwErrors' => false,
     ];
 
-    /**
-     * Events that can be fired for end, error or abort states.
-     *
-     * @var froq\event\Events
-     * @since 4.0
-     */
+    /** @var froq\event\Events */
     private Events $events;
 
-    /**
-     * Tick for only multi (async) requests to break the client queue, @see `CurlMulti.run()`.
-     *
-     * @var bool
-     * @since 4.0
-     */
+    /** @var bool */
     public bool $aborted = false;
 
     /**
@@ -260,16 +220,14 @@ final class Client
      * @param  array|null        $headers
      * @return froq\http\client\Response
      */
-    public function send($method = null, string $url = null, array $urlParams = null,
+    public function send(string|array $method = null, string $url = null, array $urlParams = null,
         string $body = null, array $headers = null): Response
     {
         // Eg: send([method: GET, url: ..., ]) or get([url: ...]).
         if (is_array($method)) {
-            @ ['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
-               'body' => $body, 'headers' => $headers] = $method;
-        } elseif (!is_string($method)) {
-            throw new ClientException("Invalid \$method argument for '%s()', valids are: "
-                . "string, array but '%s' given", [__method__, gettype($method)]);
+            [$method, $url, $urlParams, $body, $headers] = array_select($method, [
+                'method', 'url', 'urlParams', 'body', 'headers'
+            ]);
         }
 
         // May be set via setOption() separately.
@@ -296,8 +254,9 @@ final class Client
      */
     public function prepare(): void
     {
-        [$method, $url, $urlParams, $body, $headers] = $this->getOptions(['method', 'url',
-            'urlParams', 'body', 'headers']);
+        [$method, $url, $urlParams, $body, $headers] = $this->getOptions(
+            ['method', 'url', 'urlParams', 'body', 'headers']
+        );
 
         if ($method == null) throw new ClientException('No method given');
         if ($url == null) throw new ClientException('No URL given');
@@ -306,7 +265,7 @@ final class Client
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
             throw new ClientException("No valid URL given, only 'http' and 'https' URLs are "
-                . "accepted (given url: '%s')", $url);
+                . "accepted (given url: %s)", $url);
         }
 
         $url = $temp[0];
@@ -335,7 +294,7 @@ final class Client
         if ($error == null) {
             // Finalize request headers.
             $headers = HttpUtil::parseHeaders($resultInfo['request_header'], true);
-            if (empty($headers) || empty($headers[0])) {
+            if (empty($headers[0])) {
                 return;
             }
 
@@ -364,7 +323,9 @@ final class Client
                 $this->resultInfo = $resultInfo;
             }
 
-            sscanf($headers[0], '%s %s %[^$]', $_, $_, $httpVersion);
+            if (sscanf($headers[0], '%s %s %[^$]', $_, $_, $httpVersion) != 3) {
+                return;
+            }
 
             // Http version can be modified with CURLOPT_HTTP_VERSION, so here we update to provide
             // an accurate result for viewing or dumping purposes (eg: echo $client->getRequest()).
@@ -372,9 +333,7 @@ final class Client
                           ->setHeaders($headers, true);
 
             // Checker for redirections etc. (for finding final HTTP-Message).
-            $nextCheck = function ($body) {
-                return ($body && strpos($body, 'HTTP/') === 0);
-            };
+            $nextCheck = fn($body) => $body && str_starts_with($body, 'HTTP/');
 
             @ [$headers, $body] = explode("\r\n\r\n", $result, 2);
             if ($nextCheck($body)) {
@@ -384,29 +343,30 @@ final class Client
             }
 
             $headers = HttpUtil::parseHeaders($headers, true);
-            if (empty($headers) || empty($headers[0])) {
+            if (empty($headers[0])) {
                 return;
             }
 
-            sscanf($headers[0], '%s %d', $httpVersion, $status);
+            if (sscanf($headers[0], '%s %d', $httpVersion, $status) != 2) {
+                return;
+            }
 
             $this->response->setHttpVersion($httpVersion)
                            ->setHeaders($headers)
                            ->setStatus($status);
 
             if ($body != null) {
-                @ ['content-encoding' => $contentEncoding,
-                   'content-type'     => $contentType] = $headers;
-
                 // Decode gzip (if gzip'ed).
-                if ($contentEncoding == 'gzip') {
+                if (isset($headers['content-encoding'])
+                    && str_contains($headers['content-encoding'], 'gzip')) {
                     $body = gzdecode($body);
                 }
 
                 $this->response->setBody($body);
 
                 // Decode JSON (if json'ed).
-                if ($contentType && strpos($contentType, 'json')) {
+                if (isset($headers['content-type'])
+                    && str_contains($headers['content-type'], 'json')) {
                     $parsedBody = json_decode($body, null, 512, JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
 
                     if ($parsedBody !== null) {
@@ -416,7 +376,7 @@ final class Client
             }
         } else {
             // Discards error event below.
-            if ($this->getOption('throwErrors') == true) {
+            if ($this->options['throwErrors']) {
                 throw $error;
             }
 
@@ -441,13 +401,12 @@ final class Client
      *
      * @param  string $name
      * @return void
+     * @since  4.0
      * @internal
      */
     public function fireEvent(string $name): void
     {
         $event = $this->events->get($name);
-        if ($event != null) {
-            $event($this);
-        }
+        $event && $event($this);
     }
 }

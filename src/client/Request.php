@@ -59,7 +59,7 @@ final class Request extends Message
         static $headersDefault = [
             'accept' => '*/*',
             'accept-encoding' => 'gzip',
-            'user-agent' => 'Froq Http Client (+https://github.com/froq/froq-http)',
+            'user-agent' => 'Froq HTTP Client (+https://github.com/froq/froq-http)',
         ];
 
         // Merge & normalize headers.

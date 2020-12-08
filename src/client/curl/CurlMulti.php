@@ -7,10 +7,13 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\{Client, CurlException};
+use froq\http\client\curl\{CurlError, CurlException};
+use froq\http\client\Client;
+use CurlHandle;
 
 /**
  * Curl Multi.
+ *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlMulti
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -18,88 +21,80 @@ use froq\http\client\{Client, CurlException};
  */
 final class CurlMulti
 {
-    /**
-     * Clients.
-     * @var array<froq\http\client\Client>
-     */
+    /** @var array<froq\http\client\Client> */
     protected array $clients;
 
     /**
      * Constructor.
-     * @param  array<froq\http\client\Client>|null $clients
-     * @throws froq\http\client\CurlException
+     *
+     * @param array<froq\http\client\Client>|null $clients
      */
     public function __construct(array $clients = null)
     {
-        if (!extension_loaded('curl')) {
-            throw new CurlException('curl module not loaded');
-        }
-
         $clients && $this->setClients($clients);
     }
 
     /**
      * Set clients.
+     *
      * @param  array<froq\http\client\Client> $clients
-     * @return self
-     * @throws froq\http\client\CurlException
+     * @return void
+     * @throws froq\http\client\curl\CurlException
      */
-    public function setClients(array $clients): self
+    public function setClients(array $clients): void
     {
         foreach ($clients as $client) {
             if (!$client instanceof Client) {
                 throw new CurlException("Each client must be instance of '%s', '%s' given",
-                    [Client::class, is_object($client) ? get_class($client) : gettype($client)]);
+                    [Client::class, get_type($client)]);
             }
 
             $this->clients[] = $client;
         }
-
-        return $this;
     }
 
     /**
      * Get clients.
-     * @return ?array<froq\http\client\Client>
+     *
+     * @return array<froq\http\client\Client>|null
      */
-    public function getClients(): ?array
+    public function getClients(): array|null
     {
         return $this->clients ?? null;
     }
 
     /**
-     * Run.
+     * Run a multi cURL request.
+     *
      * @return void
+     * @throws froq\http\client\curl\CurlException
      */
     public function run(): void
     {
-        $clients = $this->clients;
-        if (empty($clients)) {
-            throw new CurlException('No clients initiated yet to process');
-        }
+        $clients = $this->getClients();
+        $clients || throw new CurlException('No clients initiated yet to process');
 
         $multiHandle = curl_multi_init();
-        if (!$multiHandle) {
-            throw new CurlException('Failed to initialize multi-curl session [error: %s]', '@error');
-        }
+        $multiHandle || throw new CurlException('Failed multi-curl session [error: %s]', '@error');
 
-        $clientStack = [];
+        $stack = [];
 
         foreach ($clients as $client) {
             $client->prepare();
 
             $curl = $client->getCurl();
-            $curl->applyOptions();
+            $handle = $curl->init(true);
 
-            $handle = $curl->getHandle();
 
             $result = curl_multi_add_handle($multiHandle, $handle);
             if ($result != CURLM_OK) {
                 throw new CurlException(curl_multi_strerror($result), $result);
             }
 
-            // Tick.
-            $clientStack[(int) $handle] = $client;
+            // Tick for check & drop.
+            $curl->handle =& $handle;
+
+            $stack[(int) $handle] = [$client, $curl];
         }
 
         // Exec wrapper (http://php.net/curl_multi_select#108928).
@@ -121,19 +116,18 @@ final class CurlMulti
             $exec($multiHandle, $running);
 
             while ($info = curl_multi_info_read($multiHandle)) {
-                // Check tick.
-                $client = $clientStack[(int) $info['handle']];
-                if ($client == null) {
-                    continue;
-                }
+                $id = (int) $info['handle'];
 
-                $handle = $info['handle'];
-                if ($handle != $client->getCurl()->getHandle()) {
+                @ [$client, $curl] = $stack[$id];
+
+                // Check tick.
+                if (!$client || $curl->handle != $info['handle']) {
                     continue;
                 }
 
                 // Check status.
                 $ok = ($info['result'] == CURLE_OK && $info['msg'] == CURLMSG_DONE);
+                $handle = $info['handle'];
 
                 $result = $ok ? curl_multi_getcontent($handle) : false;
                 if ($result !== false) {
@@ -143,26 +137,27 @@ final class CurlMulti
                 }
 
                 curl_multi_remove_handle($multiHandle, $handle);
-                curl_close($handle);
+                unset($curl->handle, $stack[$id]);
 
                 // This can be set true to break the queue.
                 if ($client->aborted) {
                     $client->fireEvent('abort');
 
-                    break 2; // Break parent loop.
+                    // Break upper loop.
+                    break 2;
                 }
             }
         } while ($running);
 
-        // Close handles if exist any more (which might be not closed due to client abort).
-        foreach ($clientStack as $client) {
-            $handle = $client->getCurl()->getHandle();
-            if (is_resource($handle)) {
-                curl_multi_remove_handle($multiHandle, $handle);
-                curl_close($handle);
+        // Drop handles if any more, those might be not closed due to client abort.
+        foreach ($stack as $id => [, $curl]) {
+            if (isset($curl->handle) && $curl->handle instanceof CurlHandle) {
+                curl_multi_remove_handle($multiHandle, $curl->handle);
+                unset($curl->handle, $stack[$id]);
             }
         }
 
-        curl_multi_close($multiHandle);
+        // Drop handle.
+        $multiHandle = null;
     }
 }
