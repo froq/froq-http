@@ -41,9 +41,8 @@ final class Response extends Message
     public function __construct(int $status = 0, string $body = null, array $parsedBody = null,
         array $headers = null)
     {
-        $this->setStatus($status);
-
-        isset($parsedBody) && $this->setParsedBody($parsedBody);
+        $this->setStatus($status)
+             ->setParsedBody($parsedBody);
 
         parent::__construct(Message::TYPE_RESPONSE, null, $headers, $body);
     }
@@ -71,10 +70,10 @@ final class Response extends Message
 
     /**
      * Set parsed body.
-     * @param  array $parsedBody
+     * @param  ?array $parsedBody
      * @return self
      */
-    public function setParsedBody(array $parsedBody): self
+    public function setParsedBody(?array $parsedBody): self
     {
         $this->parsedBody = $parsedBody;
 

@@ -48,12 +48,9 @@ final class Request extends Message
     public function __construct(string $method, string $url, array $urlParams = null,
         string $body = null, array $headers = null)
     {
-        $this->setMethod($method);
-
-        $this->setUrl($url);
-        if ($urlParams != null) {
-            $this->setUrlParams($urlParams);
-        }
+        $this->setMethod($method)
+             ->setUrl($url)
+             ->setUrlParams($urlParams);
 
         // Default headers.
         static $headersDefault = [
@@ -113,10 +110,10 @@ final class Request extends Message
 
     /**
      * Set url params.
-     * @param  array $urlParams
+     * @param  ?array $urlParams
      * @return self
      */
-    public function setUrlParams(array $urlParams): self
+    public function setUrlParams(?array $urlParams): self
     {
         $this->urlParams = $urlParams;
 
