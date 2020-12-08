@@ -66,11 +66,11 @@ final class Util
 
     /**
      * Parse headers.
-     * @param  string    $headers
-     * @param  bool|null $lower
+     * @param  string $headers
+     * @param  bool   $lower
      * @return array
      */
-    public static function parseHeaders(string $headers, bool $lower = null): array
+    public static function parseHeaders(string $headers, bool $lower = true): array
     {
         $ret = [];
 
@@ -82,6 +82,7 @@ final class Util
             foreach ($headers as $header) {
                 @ [$name, $value] = explode(':', $header, 2);
                 if ($name === null) {
+                    error_clear(2);
                     continue;
                 }
 
