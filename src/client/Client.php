@@ -77,8 +77,8 @@ final class Client
     {
         // Just as a syntactic sugar, URL is a parameter.
         $options = ['url' => $url] + ($options ?? []);
-        $options = array_replace_recursive(self::$optionsDefault, $options);
-        $this->setOptions($options);
+
+        $this->setOptions($options, self::$optionsDefault);
 
         $this->events = new Events();
         if ($events != null) {
