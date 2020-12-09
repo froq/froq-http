@@ -105,7 +105,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
         // Ensure all needed stuff.
         $info = finfo($file);
-        $fileName = $fileName ?: file_name($info['meta']['uri'] ?? '') ?: crc32(freadall($file));
+        $fileName = $fileName ?: file_name($info['meta']['uri'] ?? '') ?: crc32(freads($file));
         $fileMime = $fileMime ?: mime_content_type($file);
         $fileSize = $fileSize ?: $info['size'];
 
