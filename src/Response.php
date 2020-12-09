@@ -84,7 +84,7 @@ final class Response extends Message
     {
         try {
             $this->status->setCode($code);
-        } catch (StatusException $e) {
+        } catch (StatusException) {
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 

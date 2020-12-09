@@ -255,7 +255,7 @@ final class Request extends Message
     {
         try {
             $headers = (array) getallheaders();
-        } catch (Error $e) {
+        } catch (Error) {
             $headers = [];
             foreach ((array) $_SERVER as $key => $value) {
                 if (strpos((string) $key, 'HTTP_') === 0) {
