@@ -262,14 +262,14 @@ abstract class Message
                 if (is_array($content)) {
                     $contentType = trim($attributes['type'] ?? '');
                     if ($contentType == '') {
-                        throw new MessageException("Missing content type for 'array' type content");
+                        throw new MessageException('Missing content type for `array` type content');
                     }
                     if (!preg_match('~(json|xml)~', $contentType)) {
-                        throw new MessageException("Invalid content value type for 'array' type content, "
-                            . "content type must be such type 'xxx/json' or 'xxx/xml'");
+                        throw new MessageException('Invalid content value type for `array` type content, '
+                            . 'content type must be such type `xxx/json` or `xxx/xml`');
                     }
                 } elseif (!is_null($content) && !is_scalar($content)) {
-                    throw new MessageException("Invalid content value type '%s'", get_type($content));
+                    throw new MessageException('Invalid content value type `%s`', get_type($content));
                 }
 
                 $payload = new Payload($this->getStatusCode(), $content, $attributes);
