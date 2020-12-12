@@ -236,7 +236,8 @@ final class Response extends Message
 
             [$image, $imageType, $modifiedAt, $options] = [
                 $content, $attributes['type'], $attributes['modifiedAt'],
-                          $attributes['options'] ?? $this->app->config('response.image')];
+                          $attributes['options'] ?? $this->app->config('response.image')
+            ];
 
             $image = ImageObject::fromResource($image, $imageType, $options);
             $content = $image->toString();
@@ -264,7 +265,8 @@ final class Response extends Message
 
             [$file, $fileMime, $fileName, $fileSize, $modifiedAt] = [
                 $content, $attributes['mime'], $attributes['name'],
-                          $attributes['size'], $attributes['modifiedAt']];
+                          $attributes['size'], $attributes['modifiedAt']
+            ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
             $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);

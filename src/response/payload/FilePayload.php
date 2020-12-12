@@ -40,9 +40,8 @@ final class FilePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$file, $fileName, $fileMime, $fileExtension, $modifiedAt] = [
-            $this->getContent(),
-            ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
+        [$file, $fileName, $fileMime, $modifiedAt] = [
+            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
         ];
 
         if ($file == null) {
@@ -100,17 +99,17 @@ final class FilePayload extends Payload implements PayloadInterface
         if ($fileName != null) {
             $name = $fileName;
             $fileName = file_name($name);
-            $fileExtension = strstr($name, '.') ? file_extension($name) : $fileExtension;
+            strstr($name, '.') && $fileExtension = file_extension($name);
         }
 
+        $finfo = finfo($file);
+
         // Ensure all needed stuff.
-        $info = finfo($file);
-        $fileName = $fileName ?: file_name($info['meta']['uri'] ?? '') ?: crc32(freads($file));
-        $fileMime = $fileMime ?: mime_content_type($file);
-        $fileSize = $fileSize ?: $info['size'];
+        $fileMime = $fileMime ?? file_mime($finfo['meta']['uri']);
+        $fileSize = $fileSize ?? $finfo['size'];
 
         // Add extension to file name.
-        $fileName = $fileName .'.'. ($fileExtension ?: (
+        $fileName = $fileName .'.'. ($fileExtension ?? (
             $fileMime ? Mime::getExtensionByType($fileMime)
                       : Mime::getExtension($fileName)
         ));

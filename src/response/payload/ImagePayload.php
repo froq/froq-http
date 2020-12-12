@@ -41,8 +41,7 @@ final class ImagePayload extends Payload implements PayloadInterface
     public function handle()
     {
         [$image, $imageType, $modifiedAt] = [
-            $this->getContent(),
-            ...$this->getAttributes(['type', 'modifiedAt'])
+            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt'])
         ];
 
         if ($image == null) {
@@ -96,7 +95,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
         // Update attributes.
         $this->setAttributes([
-            'size' => $imageSize, 'modifiedAt' => $modifiedAt
+            'modifiedAt' => $modifiedAt
         ]);
 
         return ($content = $image);
