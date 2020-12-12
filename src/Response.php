@@ -253,8 +253,7 @@ final class Response extends Message
 
             echo $content;
 
-            $image->free();
-            $image = null;
+            unset($image); // Free.
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
@@ -299,8 +298,7 @@ final class Response extends Message
                 sleep(1); // Apply rate limit.
             } while ($content && !connection_aborted());
 
-            $file->free();
-            $file = null;
+            unset($file); // Free.
         } else {
             // Nope, nothing to print..
         }
