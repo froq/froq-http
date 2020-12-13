@@ -102,11 +102,9 @@ final class FilePayload extends Payload implements PayloadInterface
             strstr($name, '.') && $fileExtension = file_extension($name);
         }
 
-        $finfo = finfo($file);
-
         // Ensure all needed stuff.
-        $fileMime = $fileMime ?? file_mime($finfo['meta']['uri']);
-        $fileSize = $fileSize ?? $finfo['size'];
+        $fileMime = $fileMime ?? file_mime(fmeta($file)['uri']);
+        $fileSize = $fileSize ?? fstat($file)['size'];
 
         // Add extension to file name.
         $fileName = $fileName .'.'. ($fileExtension ?? (
