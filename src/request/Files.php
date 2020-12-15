@@ -25,7 +25,7 @@ final class Files
      */
     public static function all(): array
     {
-        return self::normalizeFiles();
+        return self::normalizeFiles($_FILES);
     }
 
     /**
@@ -33,22 +33,21 @@ final class Files
      * @param  array|null $files
      * @return array
      */
-    public static function normalizeFiles(array $files = null): array
+    public static function normalizeFiles(array $files): array
     {
-        $files  = $files ?? $_FILES;
-        $return = [];
+        $ret = [];
 
         foreach ($files as $id => $file) {
             if (!isset($file['name'])) {
                 continue;
             }
             if (!is_array($file['name'])) {
-                $return[] = $file + ['_id' => $id]; // Add input name.
+                $ret[] = $file + ['_id' => $id]; // Add input name.
                 continue;
             }
 
             foreach ($file['name'] as $i => $name) {
-                $return[] = [
+                $ret[] = [
                     'name'     => $name,
                     'type'     => $file['type'][$i],
                     'tmp_name' => $file['tmp_name'][$i],
@@ -58,6 +57,6 @@ final class Files
             }
         }
 
-        return $return;
+        return $ret;
     }
 }
