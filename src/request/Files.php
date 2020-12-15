@@ -30,7 +30,7 @@ final class Files
 
     /**
      * Normalize files (two-dims only).
-     * @param  array|null $files
+     * @param  array $files
      * @return array
      */
     public static function normalizeFiles(array $files): array
