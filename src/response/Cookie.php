@@ -105,16 +105,11 @@ final class Cookie extends ComponentCollection implements Stringable
             $ret .= sprintf('n/a; Expires=%s; Max-Age=0', Http::date(0));
         } else {
             // String, bool, int or float.
-            switch (gettype($value)) {
-                case 'string':
-                    $ret .= strpbrk($value, self::$specialChars) ? rawurlencode($value) : $value;
-                    break;
-                case 'boolean':
-                    $ret .= $value ? 'true' : 'false';
-                    break;
-                default:
-                    $ret .= strval($value);
-            }
+            $ret .= match (get_type($value)) {
+                'string' => rawurlencode($value),
+                'bool'   => $value ? 'true' : 'false',
+                default  => strval($value)
+            };
 
             // Must be given in-seconds format.
             if ($expires != null) {

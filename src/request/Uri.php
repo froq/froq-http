@@ -32,7 +32,7 @@ final class Uri extends Url
      * @param  array|string $source
      * @throws froq\http\request\UriException
      */
-    public function __construct($source)
+    public function __construct(array|string $source)
     {
         try {
             parent::__construct($source, ['path', 'query', 'queryParams', 'fragment']);
@@ -50,7 +50,7 @@ final class Uri extends Url
      * @return any|null
      * @throws froq\http\request\UriException
      */
-    public function segment($key, $default = null)
+    public function segment(int|string $key, $default = null)
     {
         if (isset($this->segments)) {
             try {
@@ -66,9 +66,9 @@ final class Uri extends Url
 
     /**
      * Segments.
-     * @return ?froq\http\request\Segments
+     * @return froq\http\request\Segments|null
      */
-    public function segments(): ?Segments
+    public function segments(): Segments|null
     {
         return $this->segments ?? null;
     }
