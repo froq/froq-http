@@ -30,17 +30,10 @@ trait ParamTrait
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function get($name = null, $default = null)
+    public function get(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->getParam($name, $default);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->getParams($name, $default);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->getParam($name, $default)
+                                : $this->getParams($name, $default);
     }
 
     /**
@@ -71,17 +64,10 @@ trait ParamTrait
      * @return bool
      * @throws froq\http\common\ParamException
      */
-    public function hasGet($name = null): bool
+    public function hasGet(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasGetParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasGetParams($name);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->hasGetParam($name)
+                                : $this->hasGetParams($name);
     }
 
     /**
@@ -111,17 +97,10 @@ trait ParamTrait
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function post($name = null, $default = null)
+    public function post(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->postParam($name, $default);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->postParams($name, $default);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->postParam($name, $default)
+                                : $this->postParams($name, $default);
     }
 
     /**
@@ -152,17 +131,10 @@ trait ParamTrait
      * @return bool
      * @throws froq\http\common\ParamException
      */
-    public function hasPost($name = null): bool
+    public function hasPost(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasPostParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasPostParams($name);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->hasPostParam($name)
+                                : $this->hasPostParams($name);
     }
 
     /**
@@ -192,17 +164,10 @@ trait ParamTrait
      * @return any|null
      * @throws froq\http\common\ParamException
      */
-    public function cookie($name = null, $default = null)
+    public function cookie(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->cookieParam($name, $default);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->cookieParams($name, $default);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->cookieParam($name, $default)
+                                : $this->cookieParams($name, $default);
     }
 
     /**
@@ -233,17 +198,10 @@ trait ParamTrait
      * @return bool
      * @throws froq\http\common\ParamException
      */
-    public function hasCookie($name = null): bool
+    public function hasCookie(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasCookieParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasCookieParams($name);
-        }
-
-        throw new ParamException("Invalid type '%s' for \$name argument, valids are: string, ".
-            "array<string>, null", gettype($name));
+        return is_string($name) ? $this->hasCookieParam($name)
+                                : $this->hasCookieParams($name);
     }
 
     /**
