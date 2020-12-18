@@ -39,6 +39,10 @@ final class Cookie extends ComponentCollection implements Stringable
      */
     private static string $namePattern = '[\w][\w\-\.]*';
 
+    /** @var array */
+    private static array $components = ['name', 'value', 'expires', 'path', 'domain', 'secure',
+        'httpOnly', 'sameSite'];
+
     /**
      * Constructor.
      * @param  string     $name
@@ -48,10 +52,8 @@ final class Cookie extends ComponentCollection implements Stringable
      */
     public function __construct(string $name, $value, array $options = null)
     {
-        static $components = ['name', 'value', 'expires', 'path', 'domain', 'secure', 'httpOnly', 'sameSite'];
-
         // Set components.
-        parent::__construct($components);
+        parent::__construct(self::$components);
 
         // Check name.
         if (!preg_match('~^'. self::$namePattern .'$~', $name)) {
