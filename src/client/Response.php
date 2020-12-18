@@ -38,8 +38,7 @@ final class Response extends Message
      * @param array|null  $parsedBody
      * @param array|null  $headers
      */
-    public function __construct(int $status = 0, string $body = null, array $parsedBody = null,
-        array $headers = null)
+    public function __construct(int $status = 0, string $body = null, array $parsedBody = null, array $headers = null)
     {
         $this->setStatus($status)
              ->setParsedBody($parsedBody);

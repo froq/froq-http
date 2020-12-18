@@ -45,8 +45,7 @@ final class Request extends Message
      * @param string|null $body
      * @param array|null  $headers
      */
-    public function __construct(string $method, string $url, array $urlParams = null,
-        string $body = null, array $headers = null)
+    public function __construct(string $method, string $url, array $urlParams = null, string $body = null, array $headers = null)
     {
         $this->setMethod($method)
              ->setUrl($url)

@@ -148,9 +148,9 @@ final class Client
     /**
      * Gets the error if any failure was occured while cURL execution.
      *
-     * @return ?froq\http\client\curl\CurlError
+     * @return froq\http\client\curl\CurlError|null
      */
-    public function getError(): ?CurlError
+    public function getError(): CurlError|null
     {
         return $this->error ?? null;
     }
@@ -191,9 +191,9 @@ final class Client
      * Gets result that filled after send calls. If any error occurs after calls or
      * `options.keepResult` is false returns null.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getResult(): ?string
+    public function getResult(): string|null
     {
         return $this->result;
     }
@@ -202,9 +202,9 @@ final class Client
      * Gets result info that filled after send calls. If any error occurs after calls or
      * `options.keepResultInfo` is false returns null.
      *
-     * @return ?array
+     * @return array|null
      */
-    public function getResultInfo(): ?array
+    public function getResultInfo(): array|null
     {
         return $this->resultInfo;
     }
@@ -221,7 +221,7 @@ final class Client
      * @return froq\http\client\Response
      */
     public function send(string|array $method = null, string $url = null, array $urlParams = null,
-        string $body = null, array $headers = null): Response
+        string|array $body = null, array $headers = null): Response
     {
         // Eg: send([method: GET, url: ..., ]) or get([url: ...]).
         if (is_array($method)) {
@@ -244,38 +244,47 @@ final class Client
     }
 
     /**
-     * Prepare is an internal method and called by `Curl` and `CurlMulti` before cURL operations
-     * starts in `run()` method, for both single and multi (async) clients. Throws a `ClientException`
-     * if no method, no URL or an invalid URL given.
+     * Setup is an internal method and called by `Curl` and `CurlMulti` before cURL operations starts
+     * in `run()` method, for both single and multi (async) clients. Throws a `ClientException` if no
+     * method, no URL or an invalid URL given.
      *
      * @return void
      * @throws froq\http\client\ClientException
      * @internal
      */
-    public function prepare(): void
+    public function setup(): void
     {
         [$method, $url, $urlParams, $body, $headers] = $this->getOptions(
             ['method', 'url', 'urlParams', 'body', 'headers']
         );
 
-        if ($method == null) throw new ClientException('No method given');
-        if ($url == null) throw new ClientException('No URL given');
+        $method || throw new ClientException('No method given');
+        $url    || throw new ClientException('No URL given');
 
         // Reproduce URL structure.
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
-            throw new ClientException("No valid URL given, only 'http' and 'https' URLs are "
-                . "accepted (given url: %s)", $url);
+            throw new ClientException('No valid URL given, only http and https URLs are accepted'
+                . ' (given url: %s)', $url);
         }
 
-        $url = $temp[0];
-        $urlParams = array_replace_recursive(($temp[1] ?? []), ($urlParams ?? []));
+        $url       = $temp[0];
+        $urlParams = array_replace_recursive($temp[1] ?? [], $urlParams ?? []);
         if ($urlParams != null) {
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
         }
 
+        // Encode body if needed.
+        if ($body != null && is_array($body)) {
+            if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
+                $body = json_encode($body);
+            } else {
+                $bool = http_build_query($body);
+            }
+        }
+
         // Create message objects.
-        $this->request = new Request($method, $url, $urlParams, $body, $headers);
+        $this->request  = new Request($method, $url, $urlParams, $body, $headers);
         $this->response = new Response();
     }
 
@@ -365,9 +374,8 @@ final class Client
                 $this->response->setBody($body);
 
                 // Decode JSON (if json'ed).
-                if (isset($headers['content-type'])
-                    && str_contains($headers['content-type'], 'json')) {
-                    $parsedBody = json_decode($body, null, 512, JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+                if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
+                    $parsedBody = json_decode($body, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
 
                     if ($parsedBody !== null) {
                         $this->response->setParsedBody($parsedBody);

@@ -55,10 +55,9 @@ abstract class Message
      * @param array|null  $headers
      * @param string|null $body
      */
-    public function __construct(int $type, string $httpVersion = null, array $headers = null,
-        string $body = null)
+    public function __construct(int $type, string $httpVersion = null, array $headers = null, string $body = null)
     {
-        $this->type = $type;
+        $this->type        = $type;
         $this->httpVersion = $httpVersion ?? ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
 
         isset($headers) && $this->setHeaders($headers);

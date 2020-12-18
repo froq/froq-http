@@ -77,7 +77,7 @@ final class Curl
         $client = $this->getClient();
         $client || throw new CurlException('No client initiated yet to process');
 
-        $client->prepare();
+        $client->setup();
 
         $handle =& $this->init();
 
@@ -105,13 +105,12 @@ final class Curl
         $handle = curl_init();
         $handle || throw new CurlException('Failed curl session [error: %s]', '@error');
 
-        $clientOptions = $client->getOptions();
-
         $request = $client->getRequest();
 
-        [$method, $url, $headers, $body] = [
+        [$method, $url, $headers, $body, $clientOptions] = [
             $request->getMethod(), $request->getUrl(),
-            $request->getHeaders(), $request->getBody()
+            $request->getHeaders(), $request->getBody(),
+            $client->getOptions()
         ];
 
         $options = [
@@ -124,7 +123,7 @@ final class Curl
             // Mutable (client) options.
             CURLOPT_AUTOREFERER       => true,
             CURLOPT_FOLLOWLOCATION    => (bool) $clientOptions['redirs'],
-            CURLOPT_MAXREDIRS         => (int) $clientOptions['redirsMax'],
+            CURLOPT_MAXREDIRS         => (int)  $clientOptions['redirsMax'],
             CURLOPT_SSL_VERIFYHOST    => false,
             CURLOPT_SSL_VERIFYPEER    => false,
             CURLOPT_DEFAULT_PROTOCOL  => 'http',
@@ -150,9 +149,10 @@ final class Curl
 
         // Extra cURL options.
         $clientOptionsCurl = null;
+
         if (isset($clientOptions['curl'])) {
             is_array($clientOptions['curl']) || throw new CurlException(
-                'Options \'curl\' field must be array|null, %s given', get_type($clientOptions['curl'])
+                'Options `curl` field must be array|null, %s given', get_type($clientOptions['curl'])
             );
             $clientOptionsCurl = $clientOptions['curl'];
         }
@@ -168,7 +168,7 @@ final class Curl
                 '2', '2.0' => CURL_HTTP_VERSION_2_0,
                 '1.1'      => CURL_HTTP_VERSION_1_1,
                 '1.0'      => CURL_HTTP_VERSION_1_0,
-                default    => throw new CurlException('Invalid \'httpVersion\' option %s, valids are: '
+                default    => throw new CurlException('Invalid `httpVersion` option %s, valids are: '
                     . '2, 2.0, 1.1, 1.0', $clientOptions['httpVersion'])
             };
         }

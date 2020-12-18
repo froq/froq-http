@@ -45,7 +45,7 @@ final class CurlMulti
     {
         foreach ($clients as $client) {
             if (!$client instanceof Client) {
-                throw new CurlException("Each client must be instance of '%s', '%s' given",
+                throw new CurlException('Each client must be instance of %s, %s given',
                     [Client::class, get_type($client)]);
             }
 
@@ -80,7 +80,7 @@ final class CurlMulti
         $stack = [];
 
         foreach ($clients as $client) {
-            $client->prepare();
+            $client->setup();
 
             $curl = $client->getCurl();
             $handle = $curl->init(true);
