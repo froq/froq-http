@@ -44,14 +44,9 @@ class Url extends ComponentCollection implements Stringable
      * @param   array|null        $components
      * @@throws froq\http\UrlException
      */
-    public function __construct($source = null, array $components = null)
+    public function __construct(array|string $source = null, array $components = null)
     {
-        if ($source && !is_array($source) && !is_string($source)) {
-            throw new UrlException("Invalid source type '%s' given, valids are: string, array",
-                gettype($source));
-        }
-
-        $components = $components ?: self::$components;
+        $components ??= self::$components;
 
         // Set components.
         parent::__construct($components);

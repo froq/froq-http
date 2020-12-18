@@ -55,13 +55,13 @@ final class Cookie extends ComponentCollection implements Stringable
 
         // Check name.
         if (!preg_match('~^'. self::$namePattern .'$~', $name)) {
-            throw new CookieException("Invalid cookie name '%s', a valid name pattern is '%s'",
+            throw new CookieException('Invalid cookie name `%s`, a valid name pattern is `%s`',
                 [$name, self::$namePattern]);
         }
 
         if ($value != null && !is_scalar($value)) {
-            throw new CookieException("Invalid value type '%s', scalar or null values accepted only",
-                gettype($value));
+            throw new CookieException('Invalid value type `%s`, scalar or null values accepted only',
+                get_type($value));
         }
 
         $options = ['name' => $name, 'value' => $value] + ($options ?? []);
