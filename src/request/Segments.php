@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\exceptions\{InvalidKeyException, UnsupportedOperationException};
+use froq\common\exceptions\UnsupportedOperationException;
 use froq\common\interfaces\Arrayable;
 use froq\{Router, mvc\Controller};
 use Countable, ArrayAccess;
@@ -49,7 +49,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function __construct(array $stack = null, string $stackRoot = null)
     {
-        $stack && $this->stack = $stack;
+        $stack     && $this->stack     = $stack;
         $stackRoot && $this->stackRoot = $stackRoot;
     }
 
@@ -148,18 +148,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      * @param  int|string $key
      * @param  any|null   $default
      * @return any|null
-     * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function get($key, $default = null)
+    public function get(int|string $key, $default = null)
     {
-        if (is_int($key)) {
-            return $this->stack['paramsList'][$key - 1] ?? $default;
-        }
-        if (is_string($key)) {
-            return $this->stack['params'][$key] ?? $default;
-        }
-
-        throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));
+        return is_int($key) ? $this->stack['paramsList'][$key - 1] ?? $default
+                            : $this->stack['params'][$key] ?? $default;
     }
 
     /**
@@ -167,18 +160,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      * @param  int|string $key
      * @param  any|null   $default
      * @return any|null
-     * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function getActionParam($key, $default = null)
+    public function getActionParam(int|string $key, $default = null)
     {
-        if (is_int($key)) {
-            return $this->stack['actionParamsList'][$key - 1] ?? $default;
-        }
-        if (is_string($key)) {
-            return $this->stack['actionParams'][$key] ?? $default;
-        }
-
-        throw new InvalidKeyException("Key type must be int|string, '%s' given", gettype($key));
+        return is_int($key) ? $this->stack['actionParamsList'][$key - 1] ?? $default
+                            : $this->stack['actionParams'][$key] ?? $default;
     }
 
     /**
