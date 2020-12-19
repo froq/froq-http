@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\util\Arrays;
 use froq\common\objects\StaticClass;
 
 /**
@@ -39,7 +38,7 @@ final class Params extends StaticClass
      */
     public static function get(string $name, $default = null)
     {
-        return Arrays::get($_GET, $name, $default);
+        return array_fetch($_GET, $name, $default);
     }
 
     /**
@@ -51,7 +50,7 @@ final class Params extends StaticClass
     public static function gets(array $names = null, $default = null): array
     {
         return ($names === null) ? $_GET // All.
-             : Arrays::getAll($_GET, $names, $default);
+            : array_fetch($_GET, $names, $default);
     }
 
     /**
@@ -61,7 +60,7 @@ final class Params extends StaticClass
      */
     public static function hasGet(string $name): bool
     {
-        return isset($_GET[$name]);
+        return self::get($name) !== null;
     }
 
     /**
@@ -71,12 +70,12 @@ final class Params extends StaticClass
      */
     public static function hasGets(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_GET);
+        if ($names === null) {
+            return !!$_GET;
         }
 
         foreach ($names as $name) {
-            if (!isset($_GET[$name])) {
+            if (!self::hasGet($name)) {
                 return false;
             }
         }
@@ -91,7 +90,7 @@ final class Params extends StaticClass
      */
     public static function post(string $name, $default = null)
     {
-        return Arrays::get($_POST, $name, $default);
+        return array_fetch($_POST, $name, $default);
     }
 
     /**
@@ -103,7 +102,7 @@ final class Params extends StaticClass
     public static function posts(array $names = null, $default = null): array
     {
         return ($names === null) ? $_POST // All.
-             : Arrays::getAll($_POST, $names, $default);
+            : array_fetch($_POST, $names, $default);
     }
 
     /**
@@ -113,7 +112,7 @@ final class Params extends StaticClass
      */
     public static function hasPost(string $name): bool
     {
-        return isset($_POST[$name]);
+        return self::post($name) !== null;
     }
 
     /**
@@ -123,12 +122,12 @@ final class Params extends StaticClass
      */
     public static function hasPosts(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_POST);
+        if ($names === null) {
+            return !!$_POST;
         }
 
         foreach ($names as $name) {
-            if (!isset($_POST[$name])) {
+            if (!self::hasPost($name)) {
                 return false;
             }
         }
@@ -143,7 +142,7 @@ final class Params extends StaticClass
      */
     public static function cookie(string $name, $default = null)
     {
-        return Arrays::get($_COOKIE, $name, $default);
+        return array_fetch($_COOKIE, $name, $default);
     }
 
     /**
@@ -155,7 +154,7 @@ final class Params extends StaticClass
     public static function cookies(array $names = null, $default = null): array
     {
         return ($names === null) ? $_COOKIE // All.
-             : Arrays::getAll($_COOKIE, $names, $default);
+            : array_fetch($_COOKIE, $names, $default);
     }
 
     /**
@@ -165,7 +164,7 @@ final class Params extends StaticClass
      */
     public static function hasCookie(string $name): bool
     {
-        return isset($_COOKIE[$name]);
+        return self::cookie($name) !== null;
     }
 
     /**
@@ -175,12 +174,12 @@ final class Params extends StaticClass
      */
     public static function hasCookies(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_COOKIE);
+        if ($names === null) {
+            return !!$_COOKIE;
         }
 
         foreach ($names as $name) {
-            if (!isset($_COOKIE[$name])) {
+            if (!self::hasCookie($name)) {
                 return false;
             }
         }
