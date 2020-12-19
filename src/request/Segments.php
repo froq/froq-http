@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\exceptions\UnsupportedOperationException;
+use froq\common\exception\UnsupportedOperationException;
 use froq\common\interfaces\Arrayable;
 use froq\{Router, mvc\Controller};
 use Countable, ArrayAccess;
@@ -265,19 +265,19 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exceptions\UnsupportedOperationException
+     * @throws     froq\common\exception\UnsupportedOperationException
      */
     public function offsetSet($name, $value)
     {
-        throw new UnsupportedOperationException("No set() allowed for '%s' object", self::class);
+        throw new UnsupportedOperationException('No set() allowed for %s object', self::class);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exceptions\UnsupportedOperationException
+     * @throws     froq\common\exception\UnsupportedOperationException
      */
     public function offsetUnset($name)
     {
-        throw new UnsupportedOperationException("No unset() allowed for '%s' object", self::class);
+        throw new UnsupportedOperationException('No unset() allowed for %s object', self::class);
     }
 }
