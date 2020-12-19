@@ -85,8 +85,8 @@ final class Cookie extends ComponentCollection implements Stringable
         if ($sameSite != '') {
             $sameSite = strtolower($sameSite);
             if (!in_array($sameSite, self::$sameSiteValues)) {
-                throw new CookieException(sprintf("Invalid sameSite value '%s', valids are: %s",
-                    $sameSite, join(', ', self::$sameSiteValues)));
+                throw new CookieException('Invalid `sameSite` value `%s`, valids are: %s',
+                    [$sameSite, join(', ', self::$sameSiteValues)]);
             }
         }
 

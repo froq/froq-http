@@ -104,7 +104,7 @@ final class Response extends Message
     public function sendHeader(string $name, ?string $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException("Cannot use %s(), headers already sent at '%s:%s'",
+            throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
@@ -143,14 +143,14 @@ final class Response extends Message
     public function sendCookie(string $name, $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException("Cannot use %s(), headers already sent at '%s:%s'",
+            throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
         // Check name.
         $session = $this->app->session();
         if ($session != null && $session->getName() == $name) {
-            throw new ResponseException("Invalid cookie name '%s', name is reserved as session name", $name);
+            throw new ResponseException('Invalid cookie name `%s`, name is reserved as session name', $name);
         }
 
         $cookie = ($value instanceof Cookie)

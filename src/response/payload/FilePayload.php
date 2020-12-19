@@ -47,10 +47,10 @@ final class FilePayload extends Payload implements PayloadInterface
         if ($file == null) {
             throw new PayloadException('File must not be empty');
         } elseif (!is_string($file) && !is_stream($file)) {
-            throw new PayloadException('File content must be a valid readable file path, '
-                . 'binary string or stream, `%s` given', get_type($file));
+            throw new PayloadException('File content must be a valid readable file path,'
+                . ' binary string or stream, `%s` given', get_type($file));
         } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
-            throw new PayloadException('File name must not contains non-ascii characters');
+            throw new PayloadException('File name must not contain non-ascii characters');
         }
 
         if (is_string($file)) {
@@ -62,21 +62,21 @@ final class FilePayload extends Payload implements PayloadInterface
                     throw new PayloadException($error->getMessage(), null, $error->getCode());
                 }
 
-                $fileSize = filesize($file);
+                $fileSize    = filesize($file);
                 $memoryLimit = self::getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration '
-                        . 'value (%s)', $limit);
+                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
+                        . ' value (%s)', $limit);
                 }
 
                 try {
                     $file = fopen($file, 'rb');
                 } catch (Error) { $file = null; }
 
-                $file || throw new PayloadException('Failed creating file resource, file content must be a  '
-                    . 'valid readable file path');
+                $file || throw new PayloadException('Failed creating file resource, file content must be a'
+                    . ' valid readable file path');
 
-                $fileName = $fileName ?: file_name($temp);
+                $fileName   = $fileName ?: file_name($temp);
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
             // Convert file to source.
@@ -88,7 +88,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 $file || throw new PayloadException('Failed creating file resource, cannot write temp-file');
 
-                $fileName = strval($fileName ?: crc32($temp));
+                $fileName   = strval($fileName ?: crc32($temp));
                 $modifiedAt = self::getModifiedAt('', $modifiedAt);
             }
 
@@ -97,7 +97,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
         // Extract file name & extension.
         if ($fileName != null) {
-            $name = $fileName;
+            $name     = $fileName;
             $fileName = file_name($name);
             strstr($name, '.') && $fileExtension = file_extension($name);
         }
@@ -114,7 +114,7 @@ final class FilePayload extends Payload implements PayloadInterface
 
         // Update attributes.
         $this->setAttributes([
-            'name' => $fileName, 'mime' => $fileMime,
+            'name' => $fileName, 'mime'       => $fileMime,
             'size' => $fileSize, 'modifiedAt' => $modifiedAt
         ]);
 

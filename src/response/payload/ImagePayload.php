@@ -47,11 +47,11 @@ final class ImagePayload extends Payload implements PayloadInterface
         if ($image == null) {
             throw new PayloadException('Image must not be empty');
         } elseif (!is_string($image) && !is_image($image)) {
-            throw new PayloadException('Image content must be a valid readable file path, '
-                . 'binary string or GdImage, `%s` given', get_type($image));
+            throw new PayloadException('Image content must be a valid readable file path,'
+                . ' binary string or GdImage, `%s` given', get_type($image));
         } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
-            throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg, '
-                . 'image/png, image/gif, image/webp', $imageType ?: 'null');
+            throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg,'
+                . ' image/png, image/gif, image/webp', $imageType ?: 'null');
         }
 
         if (is_string($image)) {
@@ -63,19 +63,19 @@ final class ImagePayload extends Payload implements PayloadInterface
                     throw new PayloadException($error->getMessage(), null, $error->getCode());
                 }
 
-                $imageSize = filesize($image);
+                $imageSize   = filesize($image);
                 $memoryLimit = self::getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration '
-                        . 'value (%s)', $limit);
+                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
+                        . ' value (%s)', $limit);
                 }
 
                 try {
                     $image = imagecreatefromstring(file_get_contents($image));
                 } catch (Error) { $image = null; }
 
-                $image || throw new PayloadException('Failed creating image source, invalid file contents in '
-                    . '%s file', $temp);
+                $image || throw new PayloadException('Failed creating image source, invalid file contents in'
+                    . ' %s file', $temp);
 
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }

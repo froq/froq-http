@@ -63,7 +63,7 @@ class Url extends ComponentCollection implements Stringable
             // $colon = strpos($source, ':');
 
             // Fix beginning-slashes & colons issue that falsifying parse_url();
-            if (strpos($source, '//') === 0) {
+            if (str_starts_with($source, '//')) {
                 while (($source[++$i] ?? '') === '/');
 
                 $source = '/'. substr($source, $i);
@@ -96,7 +96,7 @@ class Url extends ComponentCollection implements Stringable
         }
 
         if (isset($source['authority'])) {
-            $authority = parse_url('scheme://'. $source['authority']);
+            $authority = parse_url('scheme://' . $source['authority']);
             if ($authority === false) {
                 throw new UrlException('Invalid authority, parsing failed');
             }
@@ -109,7 +109,7 @@ class Url extends ComponentCollection implements Stringable
             $authority = $userInfo = '';
 
             isset($source['user']) && $authority .= $source['user'];
-            isset($source['pass']) && $authority .= ':'. $source['pass'];
+            isset($source['pass']) && $authority .= ':' . $source['pass'];
 
             $userInfo = $authority;
 
@@ -120,7 +120,7 @@ class Url extends ComponentCollection implements Stringable
             }
 
             isset($source['host']) && $authority .= $source['host'];
-            isset($source['port']) && $authority .= ':'. $source['port'];
+            isset($source['port']) && $authority .= ':' . $source['port'];
 
             if ($authority != '') {
                 $source['authority'] = $authority;
@@ -149,9 +149,8 @@ class Url extends ComponentCollection implements Stringable
      */
     public function toString(): string
     {
-        @ ['scheme' => $scheme, 'authority'   => $authority,   'path'      => $path,
-           'query'  => $query,  'queryParams' => $queryParams, 'fragment'  => $fragment
-          ] = $this->toArray();
+        [$scheme, $authority, $path, $query, $queryParams, $fragment] = array_select(
+            $this->toArray(), ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']);
 
         $ret = '';
 

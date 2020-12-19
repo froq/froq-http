@@ -64,8 +64,7 @@ trait HeaderTrait
         }
 
         // Memoize value check/convert function.
-        static $toValue;
-        $toValue ??= function ($name, $value) {
+        static $toValue; $toValue ??= function ($name, $value) {
             if (is_null($value) || is_string($value)) {
                 return $value;
             }
@@ -74,7 +73,7 @@ trait HeaderTrait
                 return var_export($value, true);
             }
 
-            throw new HeaderException("Non-null/scalar value given for '%s' header", $name);
+            throw new HeaderException('Non-null/scalar value given for `%s` header', $name);
         };
 
         if (is_array($value)) {

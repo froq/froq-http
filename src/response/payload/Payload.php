@@ -147,8 +147,8 @@ class Payload
             $content = $payload->handle();
             if (!is_null($content) && !is_string($content)
                 && !is_image($content) && !is_stream($content)) {
-                throw new PayloadException('Failed to achive string/resource content from `%s` '
-                    . 'payload object', $payload::class);
+                throw new PayloadException('Failed to achive string/resource content from payload %s',
+                    $payload::class);
             }
         }
         // Not ready to handle, try to create (eg: Payload).
@@ -166,8 +166,8 @@ class Payload
                 case 'text':
                     $content = $payload->getContent();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Content must be string|null for text responses, '
-                            . '`%s` given', get_type($content));
+                        throw new PayloadException('Content must be string|null for text responses,'
+                            . ' %s given', get_type($content));
                     }
                     break;
                 case 'json': case 'xml':
@@ -176,7 +176,7 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Failed getting string content from `%s` object',
+                        throw new PayloadException('Failed getting string content from payload %s',
                             $payload::class);
                     }
                     break;
@@ -186,13 +186,12 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_image($content) && !is_stream($content)) {
-                        throw new PayloadException('Failed getting resource content from `%s` object',
+                        throw new PayloadException('Failed getting resource content from payload %s',
                             $payload::class);
                     }
                     break;
                 default:
-                    throw new PayloadException('Invalid payload type `%s`', $type ??
-                        $payload->getAttribute('type'));
+                    throw new PayloadException('Invalid payload type `%s`', $type ?? $payload->getAttribute('type'));
             }
         }
 

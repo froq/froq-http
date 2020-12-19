@@ -48,7 +48,7 @@ final class XmlPayload extends Payload implements PayloadInterface
 
         if (!Encoder::isEncoded('xml', $content)) {
             if (!is_array($content)) {
-                throw new PayloadException('Content must be array for non-encoded XML payloads, `%s` given',
+                throw new PayloadException('Content must be array for non-encoded XML payloads, %s given',
                     get_type($content));
             }
 

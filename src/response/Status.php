@@ -53,7 +53,7 @@ final class Status extends StatusCodes
     public function setCode(int $code): void
     {
         if (!self::validate($code)) {
-            throw new StatusException('Invalid code '. $code);
+            throw new StatusException('Invalid code ' . $code);
         }
 
         $this->code = $code;

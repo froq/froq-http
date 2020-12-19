@@ -60,8 +60,8 @@ final class Uri extends Url
             }
         }
 
-        throw new UriException('Uri.segments property not set yet (method generateSegments() '
-            . 'not called at all)');
+        throw new UriException('Uri.segments property not set yet [tip: method generateSegments()'
+            . ' not called yet]');
     }
 
     /**
@@ -93,8 +93,8 @@ final class Uri extends Url
                 $root = '/'. trim($root, '/');
 
                 // Prevent wrong generate action.
-                if (strpos($path, $root) !== 0) {
-                    throw new UriException("URI path '%s' has no root such '%s'", [$path, $root]);
+                if (!str_starts_with($path, $root)) {
+                    throw new UriException('URI path `%s` has no root such `%s`', [$path, $root]);
                 }
 
                 // Drop root from path.

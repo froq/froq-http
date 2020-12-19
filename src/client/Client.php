@@ -102,7 +102,7 @@ final class Client
         static $calls = ['head', 'options', 'get', 'post', 'put', 'patch', 'delete'];
 
         if (!in_array($call, $calls)) {
-            throw new ClientException("Invalid method call as '%s', valids are: %s",
+            throw new ClientException('Invalid method call as `%s`, valids are: %s',
                 [$call, join(', ', $calls)]);
         }
 
@@ -265,7 +265,7 @@ final class Client
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
             throw new ClientException('No valid URL given, only http and https URLs are accepted'
-                . ' (given url: %s)', $url);
+                . ' [given url: %s]', $url);
         }
 
         $url       = $temp[0];

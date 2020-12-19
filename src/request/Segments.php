@@ -181,9 +181,9 @@ final class Segments implements Arrayable, Countable, ArrayAccess
         ];
 
         $stack = [
-            'params'       => [], 'paramsList' => [],
             'controller'   => $controller,
             'action'       => $action,
+            'params'       => [], 'paramsList' => [],
             'actionParams' => [], 'actionParamsList' => [],
         ];
 
@@ -268,7 +268,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function offsetSet($name, $value)
     {
-        throw new UnsupportedOperationException('No set() allowed for %s object', self::class);
+        throw new UnsupportedOperationException('No set() allowed for object' . self::class);
     }
 
     /**
@@ -277,6 +277,6 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public function offsetUnset($name)
     {
-        throw new UnsupportedOperationException('No unset() allowed for %s object', self::class);
+        throw new UnsupportedOperationException('No unset() allowed for object' . self::class);
     }
 }

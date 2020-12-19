@@ -168,7 +168,7 @@ final class Curl
                 '2', '2.0' => CURL_HTTP_VERSION_2_0,
                 '1.1'      => CURL_HTTP_VERSION_1_1,
                 '1.0'      => CURL_HTTP_VERSION_1_0,
-                default    => throw new CurlException('Invalid `httpVersion` option %s, valids are: '
+                default    => throw new CurlException('Invalid `httpVersion` option `%s`, valids are: '
                     . '2, 2.0, 1.1, 1.0', $clientOptions['httpVersion'])
             };
         }
@@ -179,21 +179,21 @@ final class Curl
             // if (isset($clientOptionsCurl[CURLOPT_HTTP_VERSION])
             //     && $clientOptionsCurl[CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0
             //     && !str_starts_with($url, 'https')) {
-            //     throw new CurlException('URL scheme must be \'https\' for HTTP/2 requests');
+            //     throw new CurlException('URL scheme must be `https` for HTTP/2 requests');
             // }
 
             foreach ($clientOptionsCurl as $name => $value) {
                 // Check constant name.
                 if (!$name || !is_int($name)) {
-                    throw new CurlException('Invalid cURL constant %s', [$name]);
+                    throw new CurlException('Invalid cURL constant `%s`', $name);
                 }
 
                 // Check for internal options.
                 if (self::optionCheck($name, $foundName)) {
                     throw new CurlException(
-                        'Not allowed cURL option %s given (some options are set internally and '.
-                        'not allowed for a proper request/response process, not allowed options '.
-                        'are: %s)', [$foundName, join(', ', array_keys(self::BLOCKED_OPTIONS))]
+                        'Not allowed cURL option %s given [tip: some options are set internally and '.
+                        'not allowed for a proper request/response process, not allowed options are: '.
+                        '%s]', [$foundName, join(', ', array_keys(self::BLOCKED_OPTIONS))]
                     );
                 }
 
