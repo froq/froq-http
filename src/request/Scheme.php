@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\interfaces\Stringable;
+use froq\common\interface\Stringable;
 
 /**
  * Scheme.
@@ -70,7 +70,7 @@ final class Scheme implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      */
     public function toString(): string
     {

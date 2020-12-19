@@ -7,8 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\exception\UnsupportedOperationException;
-use froq\common\interfaces\Arrayable;
+use froq\common\{interface\Arrayable, exception\UnsupportedOperationException};
 use froq\{Router, mvc\Controller};
 use Countable, ArrayAccess;
 
@@ -231,7 +230,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Arrayable
+     * @inheritDoc froq\common\interface\Arrayable
      */
     public function toArray(): array
     {

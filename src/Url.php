@@ -9,7 +9,7 @@ namespace froq\http;
 
 use froq\http\UrlException;
 use froq\collection\ComponentCollection;
-use froq\common\interfaces\Stringable;
+use froq\common\interface\Stringable;
 use froq\util\{Util, Arrays};
 
 /**
@@ -145,7 +145,7 @@ class Url extends ComponentCollection implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      */
     public function toString(): string
     {
