@@ -11,7 +11,7 @@ use froq\http\response\payload\{PayloadInterface, PayloadException,
     JsonPayload, XmlPayload, FilePayload, ImagePayload};
 use froq\http\{Response, response\Status};
 use froq\file\{Util as FileUtil, mime\Mime};
-use froq\common\traits\AttributeTrait;
+use froq\common\trait\AttributeTrait;
 
 /**
  * Payload.
@@ -24,8 +24,7 @@ use froq\common\traits\AttributeTrait;
 class Payload
 {
     /**
-     * Attribute trait.
-     * @see froq\common\traits\AttributeTrait
+     * @see froq\common\trait\AttributeTrait
      */
     use AttributeTrait;
 

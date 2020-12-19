@@ -9,7 +9,7 @@ namespace froq\http\client;
 
 use froq\http\client\{ClientException, Request, Response};
 use froq\http\client\curl\{Curl, CurlError};
-use froq\common\traits\OptionTrait;
+use froq\common\trait\OptionTrait;
 use froq\http\Util as HttpUtil;
 use froq\event\Events;
 
@@ -28,7 +28,7 @@ use froq\event\Events;
 final class Client
 {
     /**
-     * @see froq\common\traits\OptionTrait
+     * @see froq\common\trait\OptionTrait
      * @since 4.0
      */
     use OptionTrait;
