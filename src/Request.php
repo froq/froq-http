@@ -86,14 +86,14 @@ final class Request extends Message
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that, 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
-        $content = strval(file_get_contents('php://input'));
+        $content     = strval(file_get_contents('php://input'));
         $contentType = strtolower($headers['content-type'] ?? '');
 
         $_GET = $this->loadGlobal('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
-        if ($content != '' && strpos($contentType, 'multipart/form-data') === false) {
-            $_POST = $this->loadGlobal('POST', $content, strpos($contentType, '/json') !== false);
+        if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
+            $_POST = $this->loadGlobal('POST', $content, !!str_contains($contentType, '/json'));
         }
 
         $_COOKIE = $this->loadGlobal('COOKIE');
@@ -257,8 +257,8 @@ final class Request extends Message
             $headers = (array) getallheaders();
         } catch (Error) {
             $headers = [];
-            foreach ((array) $_SERVER as $key => $value) {
-                if (strpos((string) $key, 'HTTP_') === 0) {
+            foreach ($_SERVER as $key => $value) {
+                if (strpfx((string) $key, 'HTTP_')) {
                     $headers[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
                 }
             }

@@ -28,7 +28,7 @@ final class Util extends StaticClass
     public static function parseUrl(string $url): ?array
     {
         // Ensure scheme is http (or https).
-        if (strpos($url, 'http') !== 0) {
+        if (!str_starts_with($url, 'http')) {
             return null;
         }
 
@@ -37,7 +37,7 @@ final class Util extends StaticClass
             return null;
         }
 
-        @ [$authority, $user, $pass] = ['', $parsedUrl['user'], $parsedUrl['pass']];
+        [$authority, $user, $pass] = ['', $parsedUrl['user'] ?? null, $parsedUrl['pass'] ?? null];
         if ($user != null || $pass != null) {
             $authority = $user;
             if ($pass != null) {
@@ -51,7 +51,8 @@ final class Util extends StaticClass
             $host .= ':'. $port;
         }
 
-        $query = $parsedUrl['query'] ?? null;
+        $query    = $parsedUrl['query'] ?? null;
+        $fragment = $parsedUrl['fragment'] ?? null;
         if ($query != null) {
             parse_str($query, $query);
         }
@@ -60,10 +61,7 @@ final class Util extends StaticClass
         $url = sprintf('%s://%s%s%s', $parsedUrl['scheme'], $authority, $host,
             $parsedUrl['path'] ?? '/');
 
-        $urlParams = $query;
-        $urlFragment = $parsedUrl['fragment'] ?? null;
-
-        return [$url, $urlParams, $urlFragment, $parsedUrl];
+        return [$url, $query, $fragment, $parsedUrl];
     }
 
     /**
@@ -79,7 +77,7 @@ final class Util extends StaticClass
         $headers = explode("\r\n", trim($headers));
         if ($headers != null) {
             // Pick status line.
-            $ret[0] = trim(array_shift($headers));
+            $ret[0] = trim((string) array_shift($headers));
 
             foreach ($headers as $header) {
                 @ [$name, $value] = explode(':', $header, 2);
@@ -88,7 +86,7 @@ final class Util extends StaticClass
                     continue;
                 }
 
-                $name = trim((string) $name);
+                $name  = trim((string) $name);
                 $value = trim((string) $value);
                 if ($lower) {
                     $name = strtolower($name);
@@ -124,7 +122,7 @@ final class Util extends StaticClass
 
         $ret = http_build_query($filter($data));
 
-        if ($normalizeArrays && strpos($ret, '%5D')) {
+        if ($normalizeArrays && str_contains($ret, '%5D')) {
             $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
         }
 
