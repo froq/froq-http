@@ -258,7 +258,7 @@ final class Request extends Message
         } catch (Error) {
             $headers = [];
             foreach ($_SERVER as $key => $value) {
-                if (strpfx((string) $key, 'HTTP_')) {
+                if (str_starts_with((string) $key, 'HTTP_')) {
                     $headers[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
                 }
             }
