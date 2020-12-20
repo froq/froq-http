@@ -14,7 +14,7 @@ use Countable, ArrayAccess;
 /**
  * Segments.
  *
- * Respresents a read-only segment stack object with some utility methods.
+ * Represents a read-only segment stack object with some utility methods.
  *
  * @package froq\http\request
  * @object  froq\http\request\Segments
