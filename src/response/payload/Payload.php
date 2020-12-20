@@ -273,7 +273,7 @@ class Payload
             }
 
             // Any type of those trivials download, x-download, force-download etc.
-            if (strsfx($contentType, 'download')) {
+            if (str_ends_with($contentType, 'download')) {
                 return 'download';
             }
 
