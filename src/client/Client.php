@@ -89,35 +89,7 @@ final class Client
     }
 
     /**
-     * Call magic (proxy) for only send() method that provides shortcuts to the HTTP-methods such
-     * get, post, put etc. Throws a `ClientException` if no applicable methods given.
-     *
-     * @param  string $call
-     * @param  array  $callArgs
-     * @return froq\http\client\Response
-     * @throws froq\http\client\ClientException
-     */
-    public function __call(string $call, array $callArgs): Response
-    {
-        static $calls = ['head', 'options', 'get', 'post', 'put', 'patch', 'delete'];
-
-        if (!in_array($call, $calls)) {
-            throw new ClientException('Invalid method call as `%s`, valids are: %s',
-                [$call, join(', ', $calls)]);
-        }
-
-        $callArgs = $callArgs ?: [null];
-
-        // Method is discarded/overriden for such calls eg: get([url: ...]).
-        if (is_array($callArgs[0])) {
-            return $this->send(['method' => $call] + $callArgs[0]);
-        }
-
-        return $this->send($call, ...$callArgs);
-    }
-
-    /**
-     * Sets the Curl object created by Sender object.
+     * Set curl object created by sender object.
      *
      * @param  froq\http\client\curl\Curl
      * @return self
@@ -130,8 +102,8 @@ final class Client
     }
 
     /**
-     * Gets the Curl object created by Sender object. This method should not be called before
-     * send calls, otherwise a `ClientException` will be thrown.
+     * Get curl object created by sender object. This method should not be called before send calls,
+     * otherwise a `ClientException` will be thrown.
      *
      * @return froq\http\client\curl\Curl
      * @throws froq\http\client\ClientException
@@ -146,7 +118,7 @@ final class Client
     }
 
     /**
-     * Gets the error if any failure was occured while cURL execution.
+     * Get error if any failure was occured while cURL execution.
      *
      * @return froq\http\client\curl\CurlError|null
      */
@@ -156,7 +128,7 @@ final class Client
     }
 
     /**
-     * Gets the request object filled after send calls. This method should not be called before
+     * Get request object filled after send calls. This method should not be called before
      * send calls, otherwise a `ClientException` will be thrown.
      *
      * @return froq\http\client\Request
@@ -172,7 +144,7 @@ final class Client
     }
 
     /**
-     * Gets the response object filled after send calls. This method should not be called before
+     * Get response object filled after send calls. This method should not be called before
      * send calls, otherwise a `ClientException` will be thrown.
      *
      * @return froq\http\client\Response
@@ -188,7 +160,7 @@ final class Client
     }
 
     /**
-     * Gets result that filled after send calls. If any error occurs after calls or
+     * Get that filled after send calls. If any error occurs after calls or
      * `options.keepResult` is false returns null.
      *
      * @return string|null
@@ -199,7 +171,7 @@ final class Client
     }
 
     /**
-     * Gets result info that filled after send calls. If any error occurs after calls or
+     * Get info that filled after send calls. If any error occurs after calls or
      * `options.keepResultInfo` is false returns null.
      *
      * @return array|null
@@ -210,42 +182,90 @@ final class Client
     }
 
     /**
+     * Send a "HEAD" request.
+     *
+     * @see send()
+     * @since 5.0
+     */
+    public function head(...$args)
+    {
+        return $this->send('HEAD', ...$args);
+    }
+
+    /**
+     * Send a "GET" request.
+     *
+     * @see send()
+     * @since 5.0
+     */
+    public function get(...$args)
+    {
+        return $this->send('GET', ...$args);
+    }
+
+    /**
+     * Send a "POST" request.
+     *
+     * @see send()
+     * @since 5.0
+     */
+    public function post(...$args)
+    {
+        return $this->send('POST', ...$args);
+    }
+
+    /**
+     * Send a "PUT" request.
+     *
+     * @see send()
+     * @since 5.0
+     */
+    public function put(...$args)
+    {
+        return $this->send('PUT', ...$args);
+    }
+
+    /**
+     * Send a "DELETE" request.
+     *
+     * @see send()
+     * @since 5.0
+     */
+    public function delete(...$args)
+    {
+        return $this->send('DELETE', ...$args);
+    }
+
+    /**
      * Send a request with given arguments. This method is a shortcut method for operations such
      * send-a-request then get-a-response.
      *
-     * @param  string|array|null $method
-     * @param  string|null       $url
-     * @param  array|null        $urlParams
-     * @param  string|null       $body
-     * @param  array|null        $headers
+     * @param  string|null $method
+     * @param  string|null $url
+     * @param  array|null  $urlParams
+     * @param  string|null $body
+     * @param  array|null  $headers
      * @return froq\http\client\Response
      */
-    public function send(string|array $method = null, string $url = null, array $urlParams = null,
+    public function send(string $method = null, string $url = null, array $urlParams = null,
         string|array $body = null, array $headers = null): Response
     {
-        // Eg: send([method: GET, url: ..., ]) or get([url: ...]).
-        if (is_array($method)) {
-            [$method, $url, $urlParams, $body, $headers] = array_select($method, [
-                'method', 'url', 'urlParams', 'body', 'headers'
-            ]);
-        }
-
-        // May be set via setOption() separately.
+        // May be set via setOption().
         $method    = $method ?: $this->getOption('method');
-        $url       = $url ?: $this->getOption('url');
+        $url       = $url    ?: $this->getOption('url');
         $urlParams = array_replace_recursive($this->getOption('urlParams', []), $urlParams ?: []);
-        $body      = $body ?: $this->getOption('body');
+        $body      = $body   ?: $this->getOption('body');
         $headers   = array_replace_recursive($this->getOption('headers', []), $headers ?: []);
 
-        $this->setOptions(['method' => $method, 'url' => $url, 'urlParams' => $urlParams,
-            'body' => $body, 'headers' => $headers]);
+        $this->setOptions(['method' => $method, 'url' => $url, 'urlParams' => $urlParams, 'body' => $body,
+            'headers' => $headers]);
 
         return Sender::send($this);
     }
 
     /**
      * Setup is an internal method and called by `Curl` and `CurlMulti` before cURL operations starts
-     * in `run()` method, for both single and multi (async) clients. Throws a `ClientException` if no
+     * in `run()` method, for both single and multi (async) clients. Throw a `ClientException` if no
      * method, no URL or an invalid URL given.
      *
      * @return void
@@ -265,7 +285,7 @@ final class Client
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
             throw new ClientException('No valid URL given, only http and https URLs are accepted'
-                . ' [given url: %s]', $url);
+                . ' [given: %s]', $url);
         }
 
         $url       = $temp[0];
@@ -316,8 +336,8 @@ final class Client
 
             if ($keepResultInfo) {
                 // Add url stuff.
-                $resultInfo['finalUrl'] = $resultInfo['url'];
-                $resultInfo['refererUrl'] = $headers['referer'] ?? null;
+                $resultInfo['finalUrl']    = $resultInfo['url'];
+                $resultInfo['refererUrl']  = $headers['referer'] ?? null;
                 $resultInfo['contentType'] = $resultInfo['contentCharset'] = null;
 
                 // Add content stuff.
@@ -325,7 +345,7 @@ final class Client
                     sscanf(''. $resultInfo['content_type'], '%[^;];%[^=]=%[^$]',
                         $contentType, $_, $contentCharset);
 
-                    $resultInfo['contentType'] = $contentType;
+                    $resultInfo['contentType']    = $contentType;
                     $resultInfo['contentCharset'] = $contentCharset ? strtolower($contentCharset) : null;
                 }
 
@@ -374,9 +394,9 @@ final class Client
                 $this->response->setBody($body);
 
                 // Decode JSON (if json'ed).
-                if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
+                if (isset($headers['content-type'])
+                    && str_contains($headers['content-type'], 'json')) {
                     $parsedBody = json_decode($body, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
-
                     if ($parsedBody !== null) {
                         $this->response->setParsedBody($parsedBody);
                     }
