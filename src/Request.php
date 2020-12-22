@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
+use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\http\Message;
 use froq\{App, util\Util};
 use Error;
@@ -242,6 +242,32 @@ final class Request extends Message
     }
 
     /**
+     * Get a URI segment.
+     *
+     * @param  string   $key
+     * @param  any|null $default
+     * @return any|null
+     * @since  5.0
+     */
+    public function getSegment(int|string $key, $default = null)
+    {
+        return $this->uri->segment($key, $default);
+    }
+
+    /**
+     * Get all/many URI segments.
+     *
+     * @param  array|null $keys
+     * @param  any|null   $default
+     * @return froq\http\request\Segments|array
+     * @since  5.0
+     */
+    public function getSegments(array $keys = null, $default = null): Segments|array
+    {
+        return $this->uri->segments($keys, $default);
+    }
+
+    /**
      * Load headers.
      *
      * @return array
@@ -260,7 +286,7 @@ final class Request extends Message
             }
         }
 
-        // Lowerize keys.
+        // Lowerize names.
         $headers = array_change_key_case($headers, CASE_LOWER);
 
         // Content issues.
@@ -290,7 +316,7 @@ final class Request extends Message
     }
 
     /**
-     * Load global (without changing dotted keys).
+     * Load global (without changing dotted names).
      *
      * @param  string $name
      * @param  string $source
