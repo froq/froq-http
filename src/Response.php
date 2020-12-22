@@ -156,7 +156,7 @@ final class Response extends Message
 
         // Check name.
         $session = $this->app->session();
-        if ($session != null && $session->getName() == $name) {
+        if ($session != null && $session->name() == $name) {
             throw new ResponseException('Invalid cookie name `%s`, name is reserved as session name', $name);
         }
 
