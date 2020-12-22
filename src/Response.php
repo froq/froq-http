@@ -190,8 +190,8 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        $body = $this->body;
-        $content = $body->getContent();
+        $body       = $this->body;
+        $content    = $body->getContent();
         $attributes = $body->getAttributes();
 
         // Those n/a responses output nothing.
