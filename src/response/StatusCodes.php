@@ -72,6 +72,8 @@ class StatusCodes
         UNSUPPORTED_MEDIA_TYPE          = 415,
         RANGE_NOT_SATISFIABLE           = 416,
         EXPECTATION_FAILED              = 417,
+        I_M_A_TEAPOT                    = 418,
+        ENHANCE_YOUR_CALM               = 420,
         MISDIRECTED_REQUEST             = 421,
         UNPROCESSABLE_ENTITY            = 422,
         LOCKED                          = 423,
@@ -81,7 +83,10 @@ class StatusCodes
         PRECONDITION_REQUIRED           = 428,
         TOO_MANY_REQUESTS               = 429,
         REQUEST_HEADER_FIELDS_TOO_LARGE = 431,
+        NO_RESPONSE                     = 444,
+        RETRY_WITH                      = 449,
         UNAVAILABLE_FOR_LEGAL_REASONS   = 451,
+        CLIENT_CLOSED_REQUEST           = 499,
 
         // Server errors (5xx).
         INTERNAL_SERVER_ERROR           = 500,
@@ -93,8 +98,11 @@ class StatusCodes
         VARIANT_ALSO_NEGOTIATES         = 506,
         INSUFFICIENT_STORAGE            = 507,
         LOOP_DETECTED                   = 508,
+        BANDWIDTH_LIMIT_EXCEEDED        = 509,
         NOT_EXTENDED                    = 510,
-        NETWORK_AUTHENTICATION_REQUIRED = 511;
+        NETWORK_AUTHENTICATION_REQUIRED = 511,
+        NETWORK_READ_TIMEOUT_ERROR      = 598,
+        NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
 
     /**
      * Statuses.
@@ -148,6 +156,8 @@ class StatusCodes
         415 => 'Unsupported Media Type',
         416 => 'Range Not Satisfiable',
         417 => 'Expectation Failed',
+        418 => 'I\'m a teapot',
+        420 => 'Enhance Your Calm',
         421 => 'Misdirected Request',
         422 => 'Unprocessable Entity',
         423 => 'Locked',
@@ -157,7 +167,10 @@ class StatusCodes
         428 => 'Precondition Required',
         429 => 'Too Many Requests',
         431 => 'Request Header Fields Too Large',
+        444 => 'No Response',
+        449 => 'Retry With',
         451 => 'Unavailable For Legal Reasons',
+        499 => 'Client Closed Request',
 
         // Server errors (5xx).
         500 => 'Internal Server Error',
@@ -169,8 +182,11 @@ class StatusCodes
         506 => 'Variant Also Negotiates',
         507 => 'Insufficient Storage',
         508 => 'Loop Detected',
+        509 => 'Bandwidth Limit Exceeded',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
+        598 => 'Network Read Timeout Error',
+        599 => 'Network Connect Timeout Error',
     ];
 
     /**
@@ -189,6 +205,7 @@ class StatusCodes
      */
     public static final function validate(int $code): bool
     {
+        // @cancel
         // Since only IANA-defined codes are here, do not use $statuses.
         // return array_key_exists($code, self::$statuses);
 
