@@ -80,7 +80,7 @@ final class Request extends Message
         $_COOKIE = $this->loadGlobal('COOKIE');
 
         // Fill body object.
-        $this->setBody($content, ['type' => $contentType]);
+        $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
 
         // Fill & lock headers and cookies objects.
         foreach ($headers as $name => $value) {
