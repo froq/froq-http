@@ -22,18 +22,18 @@ namespace froq\http;
 final class Http
 {
     /**
-     * Versions.
+     * Protocols.
      * @const string
      */
-    public const VERSION_1_0     = 'HTTP/1.0',
-                 VERSION_1_1     = 'HTTP/1.1',
-                 VERSION_2_0     = 'HTTP/2.0';
+    public const PROTOCOL_1_0     = 'HTTP/1.0',
+                 PROTOCOL_1_1     = 'HTTP/1.1',
+                 PROTOCOL_2_0     = 'HTTP/2.0';
 
     /**
      * Version default.
      * @const string
      */
-    public const VERSION_DEFAULT = self::VERSION_1_1;
+    public const PROTOCOL_DEFAULT = self::PROTOCOL_1_1;
 
     /**
      * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
@@ -42,13 +42,25 @@ final class Http
     public const DATE_FORMAT = 'D, d M Y H:i:s \G\M\T';
 
     /**
-     * Detect version.
+     * Get protocol.
      *
      * @return string
+     * @since  5.0 Derived from version().
      */
-    public static function version(): string
+    public static function protocol(): string
     {
-        return ($_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT);
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::PROTOCOL_DEFAULT);
+    }
+
+    /**
+     * Get version.
+     *
+     * @return float
+     * @since  5.0 Changed to float return.
+     */
+    public static function version(): float
+    {
+        return (float) substr(self::protocol(), 5, 3);
     }
 
     /**

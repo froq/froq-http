@@ -39,7 +39,10 @@ abstract class Message
     protected int $type;
 
     /** @var string */
-    protected string $httpVersion;
+    protected string $httpProtocol;
+
+    /** @var float */
+    protected float $httpVersion;
 
     /** @var froq\http\message\Headers */
     protected Headers $headers;
@@ -58,13 +61,15 @@ abstract class Message
      */
     public function __construct(App $app, int $type)
     {
-        $this->app         = $app;
-        $this->type        = $type;
-        $this->httpVersion = Http::version();
+        $this->app          = $app;
+        $this->type         = $type;
 
-        $this->headers     = new Headers();
-        $this->cookies     = new Cookies();
-        $this->body        = new Body();
+        $this->httpProtocol = Http::protocol();
+        $this->httpVersion  = Http::version();
+
+        $this->headers      = new Headers();
+        $this->cookies      = new Cookies();
+        $this->body         = new Body();
     }
 
     /**
@@ -88,24 +93,25 @@ abstract class Message
     }
 
     /**
-     * Get HTTP version.
+     * Get HTTP protocol.
      *
      * @return string
+     * @since  5.0 Replaced with getHttpVersion().
      */
-    public final function getHttpVersion(): string
+    public final function getHttpProtocol(): string
     {
-        return $this->httpVersion;
+        return $this->httpProtocol;
     }
 
     /**
-     * Get HTTP version number.
+     * Get HTTP version.
      *
      * @return float
-     * @since  4.7
+     * @since  4.7, 5.0 Replaced with getHttpVersionNumber().
      */
-    public final function getHttpVersionNumber(): float
+    public final function getHttpVersion(): float
     {
-        return (float) substr($this->httpVersion, 5, 3);
+        return $this->httpVersion;
     }
 
     /**

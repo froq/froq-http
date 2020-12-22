@@ -89,6 +89,11 @@ final class Response extends Message
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 
+        // Not needed for HTTP/2 version.
+        if ($this->httpVersion < 2.0) {
+            $this->status->setText($text ?? Status::getTextByCode($code));
+        }
+
         return $this;
     }
 
@@ -322,10 +327,10 @@ final class Response extends Message
         $code = $this->status->getCode();
 
         if (!http_response_code($code)) {
-            if ($this->getHttpVersionNumber() >= 2.0) {
-                header(sprintf('%s %s', $this->getHttpVersion(), $code));
+            if ($this->httpVersion >= 2.0) {
+                header(sprintf('%s %s', $this->httpProtocol, $code));
             } else {
-                header(sprintf('%s %s %s', $this->getHttpVersion(), $code, $this->status->getText()));
+                header(sprintf('%s %s %s', $this->httpProtocol, $code, $this->status->getText()));
             }
         }
 
