@@ -21,10 +21,7 @@ use Throwable;
  */
 final class Uri extends Url
 {
-    /**
-     * Segments.
-     * @var froq\http\request\Segments
-     */
+    /** @var froq\http\request\Segments */
     private Segments $segments;
 
     /**
@@ -44,7 +41,8 @@ final class Uri extends Url
     }
 
     /**
-     * Segment.
+     * Get a segment.
+     *
      * @param  int|string $key
      * @param  any|null   $default
      * @return any|null
@@ -53,31 +51,45 @@ final class Uri extends Url
     public function segment(int|string $key, $default = null)
     {
         if (isset($this->segments)) {
-            try {
-                return $this->segments->get($key, $default);
-            } catch (Throwable $e) {
-                throw new UriException($e);
-            }
+            return $this->segments->get($key, $default);
         }
 
-        throw new UriException('Uri.segments property not set yet [tip: method generateSegments()'
+        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
             . ' not called yet]');
     }
 
     /**
-     * Segments.
-     * @return froq\http\request\Segments|null
+     * Get segments.
+     *
+     * @param  array|null $keys
+     * @param  any|null   $default
+     * @return froq\http\request\Segments|array
      */
-    public function segments(): Segments|null
+    public function segments(array $keys = null, $default = null): Segments|array
     {
-        return $this->segments ?? null;
+        if (isset($this->segments)) {
+            if ($keys === null) {
+                return $this->segments;
+            }
+
+            $ret = [];
+            foreach ($keys as $key) {
+                $ret[] = $this->segments->get($key, $default);
+            }
+            return $ret;
+        }
+
+        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
+            . ' not called yet]');
     }
 
     /**
      * Generate segments.
+     *
      * @param  string|null $root
      * @return void
      * @throws froq\http\request\UriException
+     * @internal
      */
     public function generateSegments(string $root = null): void
     {
