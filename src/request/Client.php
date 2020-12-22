@@ -40,8 +40,15 @@ final class Client
 
         $acceptLanguage = trim($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
         if ($acceptLanguage != '') {
-            $this->locale   = substr(str_replace('-', '_', $acceptLanguage), 0, 5);
-            $this->language = substr($acceptLanguage, 0, 2);
+            $language = substr($acceptLanguage, 0, 2);
+
+            if (str_contains($acceptLanguage, '-')) {
+                $this->locale = str_replace('-', '_', substr($acceptLanguage, 0, 5));
+            } else {
+                $this->locale = $language .'_'. $language;
+            }
+
+            $this->language = $language;
         }
 
         $userAgent = Util::getClientUserAgent();
