@@ -126,7 +126,7 @@ final class Util extends StaticClass
 
         $ret = http_build_query($filter($data));
 
-        if ($normalizeArrays && str_contains($ret, '%5D')) {
+        if ($normalizeArrays && str_contains($ret, '%5D=')) {
             $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
         }
 
