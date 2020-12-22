@@ -19,33 +19,26 @@ use froq\http\client\Message;
  */
 final class Request extends Message
 {
-    /**
-     * Methods.
-     * @var string
-     */
+    /** @var string */
     private string $method;
 
-    /**
-     * Url.
-     * @var string
-     */
+    /** @var string */
     private string $url;
 
-    /**
-     * Url.
-     * @var ?array
-     */
+    /** @var ?array */
     private ?array $urlParams = null;
 
     /**
      * Constructor.
+     *
      * @param string      $method
      * @param string      $url
      * @param array|null  $urlParams
      * @param string|null $body
      * @param array|null  $headers
      */
-    public function __construct(string $method, string $url, array $urlParams = null, string $body = null, array $headers = null)
+    public function __construct(string $method, string $url, array $urlParams = null, string $body = null,
+        array $headers = null)
     {
         $this->setMethod($method)
              ->setUrl($url)
@@ -67,6 +60,7 @@ final class Request extends Message
 
     /**
      * Set method.
+     *
      * @param  string $method
      * @return self
      */
@@ -79,6 +73,7 @@ final class Request extends Message
 
     /**
      * Get method.
+     *
      * @return string
      */
     public function getMethod(): string
@@ -88,6 +83,7 @@ final class Request extends Message
 
     /**
      * Set url.
+     *
      * @param  string $url
      * @return self
      */
@@ -100,6 +96,7 @@ final class Request extends Message
 
     /**
      * Get url.
+     *
      * @return string
      */
     public function getUrl(): string
@@ -109,10 +106,11 @@ final class Request extends Message
 
     /**
      * Set url params.
-     * @param  ?array $urlParams
+     *
+     * @param  array|null $urlParams
      * @return self
      */
-    public function setUrlParams(?array $urlParams): self
+    public function setUrlParams(array|null $urlParams): self
     {
         $this->urlParams = $urlParams;
 
@@ -121,16 +119,19 @@ final class Request extends Message
 
     /**
      * Get url params.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public function getUrlParams(): ?array
+    public function getUrlParams(): array|null
     {
         return $this->urlParams;
     }
 
     /**
      * Get uri.
+     *
      * @return string
+     * @internal
      */
     protected function getUri(): string
     {

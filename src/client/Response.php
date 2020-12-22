@@ -19,26 +19,22 @@ use froq\http\client\Message;
  */
 final class Response extends Message
 {
-    /**
-     * Status.
-     * @var int
-     */
+    /** @var int */
     private int $status;
 
-    /**
-     * Parsed body.
-     * @var ?array
-     */
+    /** @var ?array */
     private ?array $parsedBody = null;
 
     /**
      * Constructor.
+     *
      * @param int         $status
      * @param string|null $body
      * @param array|null  $parsedBody
      * @param array|null  $headers
      */
-    public function __construct(int $status = 0, string $body = null, array $parsedBody = null, array $headers = null)
+    public function __construct(int $status = 0, string $body = null, array $parsedBody = null,
+        array $headers = null)
     {
         $this->setStatus($status)
              ->setParsedBody($parsedBody);
@@ -48,6 +44,7 @@ final class Response extends Message
 
     /**
      * Set status.
+     *
      * @param  int $status
      * @return self
      */
@@ -60,6 +57,7 @@ final class Response extends Message
 
     /**
      * Get status.
+     *
      * @return int
      */
     public function getStatus(): int
@@ -69,10 +67,11 @@ final class Response extends Message
 
     /**
      * Set parsed body.
-     * @param  ?array $parsedBody
+     *
+     * @param  array|null $parsedBody
      * @return self
      */
-    public function setParsedBody(?array $parsedBody): self
+    public function setParsedBody(array|null $parsedBody): self
     {
         $this->parsedBody = $parsedBody;
 
@@ -81,9 +80,10 @@ final class Response extends Message
 
     /**
      * Get parsed body.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public function getParsedBody(): ?array
+    public function getParsedBody(): array|null
     {
         return $this->parsedBody;
     }

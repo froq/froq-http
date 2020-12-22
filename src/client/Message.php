@@ -26,32 +26,21 @@ abstract class Message
     public const TYPE_REQUEST  = 1,
                  TYPE_RESPONSE = 2;
 
-    /**
-    * Type.
-    * @var int
-    */
+    /** @var int */
     protected int $type;
 
-    /**
-     * Http version.
-     * @var string
-     */
+    /** @var string */
     protected string $httpProtocol;
 
-    /**
-    * Headers.
-    * @var ?array
-    */
+    /** @var ?array */
     protected ?array $headers = null;
 
-    /**
-    * Body.
-    * @var ?string
-    */
+    /** @var ?string */
     protected ?string $body = null;
 
     /**
      * Constructor.
+     *
      * @param int         $type
      * @param string|null $httpProtocol
      * @param array|null  $headers
@@ -67,7 +56,8 @@ abstract class Message
     }
 
     /**
-     * To string.
+     * Magic string.
+     *
      * @return string
      */
     public final function __toString()
@@ -109,6 +99,7 @@ abstract class Message
 
     /**
      * Get type.
+     *
      * @return int
      */
     public final function getType(): int
@@ -118,6 +109,7 @@ abstract class Message
 
     /**
      * Set http protocol.
+     *
      * @param  string $httpProtocol
      * @return self
      */
@@ -130,6 +122,7 @@ abstract class Message
 
     /**
      * Get http protocol.
+     *
      * @return string
      */
     public final function getHttpProtocol(): string
@@ -139,6 +132,7 @@ abstract class Message
 
     /**
      * Set headers.
+     *
      * @param  array     $headers
      * @param  bool|null $reset @internal
      * @return self
@@ -158,15 +152,17 @@ abstract class Message
 
     /**
      * Get headers.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public final function getHeaders(): ?array
+    public final function getHeaders(): array|null
     {
         return $this->headers;
     }
 
     /**
-     * Has header.
+     * Check a header existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -176,7 +172,8 @@ abstract class Message
     }
 
     /**
-     * Set header.
+     * Set a header.
+     *
      * @param   string       $name
      * @param   scalar|array $value
      * @return  self
@@ -197,7 +194,8 @@ abstract class Message
     }
 
     /**
-     * Get header.
+     * Get a header.
+     *
      * @param  string      $name
      * @param  string|null $default
      * @return string|array|null
@@ -211,6 +209,7 @@ abstract class Message
 
     /**
      * Set body.
+     *
      * @param  string $body
      * @return self
      */
@@ -223,9 +222,10 @@ abstract class Message
 
     /**
      * Get body.
-     * @return ?string
+     *
+     * @return string|null
      */
-    public final function getBody(): ?string
+    public final function getBody(): string|null
     {
         return $this->body;
     }

@@ -82,7 +82,7 @@ final class CurlMulti
         foreach ($clients as $client) {
             $client->setup();
 
-            $curl = $client->getCurl();
+            $curl   = $client->getCurl();
             $handle = $curl->init(true);
 
 
@@ -126,7 +126,7 @@ final class CurlMulti
                 }
 
                 // Check status.
-                $ok = ($info['result'] == CURLE_OK && $info['msg'] == CURLMSG_DONE);
+                $ok     = $info['result'] == CURLE_OK && $info['msg'] == CURLMSG_DONE;
                 $handle = $info['handle'];
 
                 $result = $ok ? curl_multi_getcontent($handle) : false;
