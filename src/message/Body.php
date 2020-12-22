@@ -31,17 +31,19 @@ final class Body
 
     /**
      * Constructor.
+     *
      * @param any|null   $content
      * @param array|null $attributes
      */
     public function __construct($content = null, array $attributes = null)
     {
-        $this->content = $content;
+        $this->content    = $content;
         $this->attributes = $attributes ?? [];
     }
 
     /**
      * Set content.
+     *
      * @param  any|null $content
      * @return self
      */
@@ -54,7 +56,8 @@ final class Body
 
     /**
      * Get content.
-     * @return ?any
+     *
+     * @return any|null
      */
     public function getContent()
     {
@@ -63,40 +66,30 @@ final class Body
 
     /**
      * Is none.
+     *
      * @return bool
      * @since  4.0
      */
     public function isNone(): bool
     {
-        return $this->getAttribute('type') === ContentType::NA;
+        return $this->getAttribute('type') == ContentType::NA;
     }
 
     /**
      * Is text.
+     *
      * @return bool
      * @since  4.0
      */
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && !($this->isNone() || $this->isImage() || $this->isFile());
-    }
-
-    /**
-     * Is image.
-     * @return bool
-     * @since  3.9
-     */
-    public function isImage(): bool
-    {
-        return in_array($this->getAttribute('type'), [
-            ContentType::IMAGE_JPEG, ContentType::IMAGE_PNG,
-            ContentType::IMAGE_GIF, ContentType::IMAGE_WEBP
-        ], true);
+            && !($this->isNone() || $this->isFile() || $this->isImage());
     }
 
     /**
      * Is file.
+     *
      * @return bool
      * @since  4.0
      */
@@ -105,6 +98,20 @@ final class Body
         return in_array($this->getAttribute('type'), [
             ContentType::APPLICATION_OCTET_STREAM,
             ContentType::APPLICATION_DOWNLOAD
-        ], true);
+        ]);
+    }
+
+    /**
+     * Is image.
+     *
+     * @return bool
+     * @since  3.9
+     */
+    public function isImage(): bool
+    {
+        return in_array($this->getAttribute('type'), [
+            ContentType::IMAGE_JPEG, ContentType::IMAGE_PNG,
+            ContentType::IMAGE_GIF, ContentType::IMAGE_WEBP
+        ]);
     }
 }

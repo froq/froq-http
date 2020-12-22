@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\ParamException;
 use froq\http\request\Params;
 
 /**
@@ -24,11 +23,11 @@ use froq\http\request\Params;
 trait ParamTrait
 {
     /**
-     * Get.
+     * Get one/many "GET" param.
+     *
      * @param  string|array<string>|null $name
      * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
     public function get(string|array $name = null, $default = null)
     {
@@ -37,7 +36,8 @@ trait ParamTrait
     }
 
     /**
-     * Get param.
+     * Get one "GET" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -48,7 +48,8 @@ trait ParamTrait
     }
 
     /**
-     * Get params.
+     * Get many "GET" param.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -59,10 +60,10 @@ trait ParamTrait
     }
 
     /**
-     * Has get.
+     * Check one/many "GET" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
     public function hasGet(string|array $name = null): bool
     {
@@ -71,7 +72,8 @@ trait ParamTrait
     }
 
     /**
-     * Has get param.
+     * Check one "GET" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -81,7 +83,8 @@ trait ParamTrait
     }
 
     /**
-     * Has get params.
+     * Check many "GET" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -91,11 +94,11 @@ trait ParamTrait
     }
 
     /**
-     * Post.
+     * Get one/many "POST" param.
+     *
      * @param  string|array<string>|null $name
      * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
     public function post(string|array $name = null, $default = null)
     {
@@ -104,7 +107,8 @@ trait ParamTrait
     }
 
     /**
-     * Post param.
+     * Get one "POST" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -115,7 +119,8 @@ trait ParamTrait
     }
 
     /**
-     * Post params.
+     * Get many "POST" param.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -126,10 +131,10 @@ trait ParamTrait
     }
 
     /**
-     * Has post.
+     * Check one/many "POST" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
     public function hasPost(string|array $name = null): bool
     {
@@ -138,7 +143,8 @@ trait ParamTrait
     }
 
     /**
-     * Has post param.
+     * Check one "POST" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -148,7 +154,8 @@ trait ParamTrait
     }
 
     /**
-     * Has post params.
+     * Check many "POST" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -158,11 +165,11 @@ trait ParamTrait
     }
 
     /**
-     * Cookie.
+     * Get one/many "COOKIE" param.
+     *
      * @param  string|array<string>|null $name
      * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
     public function cookie(string|array $name = null, $default = null)
     {
@@ -171,7 +178,8 @@ trait ParamTrait
     }
 
     /**
-     * Cookie param.
+     * Get one "COOKIE" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -182,7 +190,8 @@ trait ParamTrait
     }
 
     /**
-     * Cookie params.
+     * Get many "COOKIE" param.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -193,10 +202,10 @@ trait ParamTrait
     }
 
     /**
-     * Has cookie.
+     * Check one/many "COOKIE" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
     public function hasCookie(string|array $name = null): bool
     {
@@ -205,7 +214,8 @@ trait ParamTrait
     }
 
     /**
-     * Has cookie param.
+     * Get one "COOKIE" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -215,7 +225,8 @@ trait ParamTrait
     }
 
     /**
-     * Has cookie params.
+     * Get many "COOKIE" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */

@@ -25,7 +25,8 @@ use froq\http\response\Cookie;
 trait CookieTrait
 {
     /**
-     * Set/get cookie.
+     * Set/get a cookie.
+     *
      * @param  string      $name
      * @param  scalar|null $value
      * @param  array|null  $options
@@ -40,7 +41,8 @@ trait CookieTrait
     }
 
     /**
-     * Has cookie.
+     * Check a cookie existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -50,7 +52,8 @@ trait CookieTrait
     }
 
     /**
-     * Add cookie.
+     * Add a cookie.
+     *
      * @alias of setCookie()
      */
     public function addCookie(...$args)
@@ -59,18 +62,17 @@ trait CookieTrait
     }
 
     /**
-     * Set cookie.
-     * @param  string     $name
-     * @param  ?scalar    $value
-     * @param  array|null $options
+     * Set a cookie.
+     *
+     * @param  string      $name
+     * @param  scalar|null $value
+     * @param  array|null  $options
      * @return self
      * @throws froq\http\common\CookieException
      */
     public function setCookie(string $name, $value, array $options = null): self
     {
-        if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
-        }
+        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
 
         $this->cookies->set($name, new Cookie($name, $value, $options));
 
@@ -78,18 +80,20 @@ trait CookieTrait
     }
 
     /**
-     * Get cookie.
+     * Get a cookie.
+     *
      * @param  string      $name
      * @param  string|null $default
-     * @return ?string
+     * @return string|null
      */
-    public function getCookie(string $name, string $default = null): ?string
+    public function getCookie(string $name, string $default = null): string|null
     {
         return $this->cookies->get($name, $default);
     }
 
     /**
-     * Remove cookie.
+     * Remove a cookie.
+     *
      * @param  string $name
      * @param  bool   $defer
      * @return self
@@ -97,23 +101,17 @@ trait CookieTrait
      */
     public function removeCookie(string $name, bool $defer = false): self
     {
-        if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
-        }
+        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
 
         $cookie = $this->getCookie($name);
         if ($cookie != null) {
             $this->cookies->remove($name);
 
             // Remove instantly.
-            if (!$defer) {
-                $this->sendCookie($name, null, $cookie->toArray());
-            }
+            $defer || $this->sendCookie($name, null, $cookie->toArray());
         } else {
             // Remove instantly.
-            if (!$defer) {
-                $this->sendCookie($name, null);
-            }
+            $defer || $this->sendCookie($name, null);
         }
 
         return $this;

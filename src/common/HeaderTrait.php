@@ -24,7 +24,8 @@ use froq\http\common\HeaderException;
 trait HeaderTrait
 {
     /**
-     * Set/get/add header.
+     * Set/get/add a header.
+     *
      * @param  string      $name
      * @param  string|null $value
      * @param  bool        $replace
@@ -40,7 +41,8 @@ trait HeaderTrait
     }
 
     /**
-     * Has header.
+     * Check a header existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -51,7 +53,8 @@ trait HeaderTrait
     }
 
     /**
-     * Add header.
+     * Add a header.
+     *
      * @param  string                    $name
      * @param  string|array<string>|null $value
      * @return self
@@ -59,9 +62,7 @@ trait HeaderTrait
      */
     public function addHeader(string $name, $value): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         // Memoize value check/convert function.
         static $toValue; $toValue ??= function ($name, $value) {
@@ -88,17 +89,16 @@ trait HeaderTrait
     }
 
     /**
-     * Set header.
-     * @param  string  $name
-     * @param  ?string $value
+     * Set a header.
+     *
+     * @param  string      $name
+     * @param  string|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function setHeader(string $name, ?string $value): self
+    public function setHeader(string $name, string|null $value): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         $this->headers->set($name, $value);
 
@@ -106,12 +106,13 @@ trait HeaderTrait
     }
 
     /**
-     * Get header.
+     * Get a header.
+     *
      * @param  string                    $name
      * @param  string|array<string>|null $default
      * @return string|array<string>|null
      */
-    public function getHeader(string $name, $default = null)
+    public function getHeader(string $name, $default = null): string|array|null
     {
         return $this->headers->get($name)
             ?? $this->headers->get(strtolower($name))
@@ -119,7 +120,8 @@ trait HeaderTrait
     }
 
     /**
-     * Remove header.
+     * Remove a header.
+     *
      * @param  string $name
      * @param  bool   $defer
      * @return self
@@ -127,9 +129,7 @@ trait HeaderTrait
      */
     public function removeHeader(string $name, bool $defer = false): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         $header = $this->getHeader($name);
         if ($header != null) {
@@ -137,9 +137,7 @@ trait HeaderTrait
             || $this->headers->remove(strtolower($name));
 
             // Remove instantly.
-            if (!$defer) {
-                $this->sendHeader($name, null);
-            }
+            $defer || $this->sendHeader($name, null);
         }
 
         return $this;
