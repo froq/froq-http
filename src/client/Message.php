@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
+use froq\http\Http;
+
 /**
  * Message.
  *
@@ -34,7 +36,7 @@ abstract class Message
      * Http version.
      * @var string
      */
-    protected string $httpVersion;
+    protected string $httpProtocol;
 
     /**
     * Headers.
@@ -51,17 +53,17 @@ abstract class Message
     /**
      * Constructor.
      * @param int         $type
-     * @param string|null $httpVersion
+     * @param string|null $httpProtocol
      * @param array|null  $headers
      * @param string|null $body
      */
-    public function __construct(int $type, string $httpVersion = null, array $headers = null, string $body = null)
+    public function __construct(int $type, string $httpProtocol = null, array $headers = null, string $body = null)
     {
-        $this->type        = $type;
-        $this->httpVersion = $httpVersion ?? ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
+        $this->type         = $type;
+        $this->httpProtocol = $httpProtocol ?? Http::protocol();
 
-        isset($headers) && $this->setHeaders($headers);
-        isset($body)    && $this->setBody($body);
+        isset($headers)     && $this->setHeaders($headers);
+        isset($body)        && $this->setBody($body);
     }
 
     /**
@@ -71,9 +73,9 @@ abstract class Message
     public final function __toString()
     {
         if ($this->type == self::TYPE_REQUEST) {
-            $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpVersion());
+            $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());
         } elseif ($this->type == self::TYPE_RESPONSE) {
-            $ret = sprintf("%s %s\r\n", $this->getHttpVersion(), $this->getStatus());
+            $ret = sprintf("%s %s\r\n", $this->getHttpProtocol(), $this->getStatus());
         }
 
         $headers = $this->getHeaders();
@@ -115,24 +117,24 @@ abstract class Message
     }
 
     /**
-     * Set http version.
-     * @param  string $httpVersion
+     * Set http protocol.
+     * @param  string $httpProtocol
      * @return self
      */
-    public final function setHttpVersion(string $httpVersion): self
+    public final function setHttpProtocol(string $httpProtocol): self
     {
-        $this->httpVersion = $httpVersion;
+        $this->httpProtocol = $httpProtocol;
 
         return $this;
     }
 
     /**
-     * Get http version.
+     * Get http protocol.
      * @return string
      */
-    public final function getHttpVersion(): string
+    public final function getHttpProtocol(): string
     {
-        return $this->httpVersion;
+        return $this->httpProtocol;
     }
 
     /**

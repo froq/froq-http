@@ -352,13 +352,13 @@ final class Client
                 $this->resultInfo = $resultInfo;
             }
 
-            if (sscanf($headers[0], '%s %s %[^$]', $_, $_, $httpVersion) != 3) {
+            if (sscanf($headers[0], '%s %s %[^$]', $_, $_, $httpProtocol) != 3) {
                 return;
             }
 
             // Http version can be modified with CURLOPT_HTTP_VERSION, so here we update to provide
             // an accurate result for viewing or dumping purposes (eg: echo $client->getRequest()).
-            $this->request->setHttpVersion($httpVersion)
+            $this->request->setHttpProtocol($httpProtocol)
                           ->setHeaders($headers, true);
 
             // Checker for redirections etc. (for finding final HTTP-Message).
@@ -376,11 +376,11 @@ final class Client
                 return;
             }
 
-            if (sscanf($headers[0], '%s %d', $httpVersion, $status) != 2) {
+            if (sscanf($headers[0], '%s %d', $httpProtocol, $status) != 2) {
                 return;
             }
 
-            $this->response->setHttpVersion($httpVersion)
+            $this->response->setHttpProtocol($httpProtocol)
                            ->setHeaders($headers)
                            ->setStatus($status);
 
