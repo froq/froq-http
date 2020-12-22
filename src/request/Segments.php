@@ -29,20 +29,15 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public const ROOT = '/';
 
-    /**
-     * Stack.
-     * @var array
-     */
+    /** @var array */
     private array $stack = [];
 
-    /**
-     * Stack root.
-     * @var string
-     */
-    private string $stackRoot = '/';
+    /** @var string */
+    private string $stackRoot = self::ROOT;
 
     /**
      * Constructor.
+     *
      * @param array|null  $stack
      * @param string|null $stackRoot
      */
@@ -53,29 +48,32 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * Get stack.
+     * Get stack property.
+     *
      * @return array
      */
-    public function getStack(): array
+    public function stack(): array
     {
         return $this->stack;
     }
 
     /**
-     * Get stack root.
+     * Get stack-root property.
+     *
      * @return string
      */
-    public function getStackRoot(): string
+    public function stackRoot(): string
     {
         return $this->stackRoot;
     }
 
     /**
      * Get controller.
+     *
      * @param  bool $suffix
-     * @return ?string
+     * @return string|null
      */
-    public function getController(bool $suffix = false): ?string
+    public function getController(bool $suffix = false): string|null
     {
         $controller = $this->stack['controller'] ?? null;
 
@@ -88,10 +86,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get action.
+     *
      * @param  bool $suffix
-     * @return ?string
+     * @return string|null
      */
-    public function getAction(bool $suffix = false): ?string
+    public function getAction(bool $suffix = false): string|null
     {
         $action = $this->stack['action'] ?? null;
 
@@ -104,10 +103,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get params.
+     *
      * @param  bool $list
-     * @return ?array
+     * @return array|null
      */
-    public function getParams(bool $list = false): ?array
+    public function getParams(bool $list = false): array|null
     {
         return !$list ? $this->stack['params'] ?? null
                       : $this->stack['paramsList'] ?? null;
@@ -115,19 +115,21 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get params list.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public function getParamsList(): ?array
+    public function getParamsList(): array|null
     {
         return $this->stack['paramsList'] ?? null;
     }
 
     /**
      * Get action params.
+     *
      * @param  bool $list
-     * @return ?array
+     * @return array|null
      */
-    public function getActionParams(bool $list = false): ?array
+    public function getActionParams(bool $list = false): array|null
     {
         return !$list ? $this->stack['actionParams'] ?? null
                       : $this->stack['actionParamsList'] ?? null;
@@ -135,15 +137,17 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get action params list.
-     * @return ?array.
+     *
+     * @return array|null.
      */
-    public function getActionParamsList(): ?array
+    public function getActionParamsList(): array|null
     {
         return $this->stack['actionParamsList'] ?? null;
     }
 
     /**
-     * Get.
+     * Get a segment param.
+     *
      * @param  int|string $key
      * @param  any|null   $default
      * @return any|null
@@ -155,7 +159,8 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * Get.
+     * Get an action param.
+     *
      * @param  int|string $key
      * @param  any|null   $default
      * @return any|null
@@ -168,6 +173,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * From array.
+     *
      * @param  array $array
      * @return froq\http\request\Segments
      */
@@ -202,14 +208,15 @@ final class Segments implements Arrayable, Countable, ArrayAccess
         // array_unshift($paramsList, null);
         // array_unshift($actionParamsList, null);
 
-        $stack['paramsList'] = array_filter($paramsList, 'strlen');
+        $stack['paramsList']       = array_filter($paramsList, 'strlen');
         $stack['actionParamsList'] = array_filter($actionParamsList, 'strlen');
 
         return new Segments($stack);
     }
 
     /**
-     * Empty.
+     * Check whether param list empty.
+     *
      * @return bool
      * @since  4.2, 4.9 Renamed from empty().
      */
@@ -219,7 +226,8 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * To list.
+     * Conver params to list.
+     *
      * @param  int $offset
      * @return array
      * @since  4.2
