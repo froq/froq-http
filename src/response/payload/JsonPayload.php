@@ -23,6 +23,7 @@ final class JsonPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.
+     *
      * @param int                     $code
      * @param any                     $content
      * @param array|null              $attributes

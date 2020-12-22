@@ -21,20 +21,15 @@ use froq\http\response\{StatusCodes, StatusException};
  */
 final class Status extends StatusCodes
 {
-    /**
-     * Code.
-     * @var int
-     */
+    /** @var int */
     private int $code;
 
-    /**
-     * Text.
-     * @var string
-     */
+    /** @var string */
     private string $text;
 
     /**
      * Constructor.
+     *
      * @param int         $code
      * @param string|null $text
      */
@@ -49,6 +44,7 @@ final class Status extends StatusCodes
 
     /**
      * Set code.
+     *
      * @param  int $code
      * @return void
      * @throws froq\http\response\StatusException
@@ -62,6 +58,7 @@ final class Status extends StatusCodes
 
     /**
      * Get code.
+     *
      * @return int
      */
     public function getCode(): int
@@ -71,6 +68,7 @@ final class Status extends StatusCodes
 
     /**
      * Set text.
+     *
      * @param  string $text
      * @return void
      */
@@ -81,6 +79,7 @@ final class Status extends StatusCodes
 
     /**
      * Get text.
+     *
      * @param  int $code
      * @return string|null
      */

@@ -22,12 +22,13 @@ final class PlainPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.
+     *
      * @param int                     $code
-     * @param string                  $content
+     * @param string|null             $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, string $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, string|null $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] = ContentType::TEXT_PLAIN;
 

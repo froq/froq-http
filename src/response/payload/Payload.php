@@ -44,8 +44,8 @@ class Payload
      */
     public function __construct(int $code, $content, array $attributes = null, Response $response = null)
     {
-        $this->content = $content;
-        $this->response = $response;
+        $this->content      = $content;
+        $this->response     = $response;
 
         $attributes['code'] = $code;
 
@@ -171,8 +171,10 @@ class Payload
                     }
                     break;
                 case 'json': case 'xml':
-                    $payload = self::createPayload($type, $payload->getResponseCode(),
-                        $payload->getContent(), $payload->getAttributes(), $response);
+                    $payload = self::createPayload($type, [
+                        $payload->getResponseCode(), $payload->getContent(),
+                        $payload->getAttributes(),   $response
+                    ]);
 
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
@@ -181,8 +183,10 @@ class Payload
                     }
                     break;
                 case 'image': case 'file': case 'download':
-                    $payload = self::createPayload($type, $payload->getResponseCode(),
-                        $payload->getContent(), $payload->getAttributes(), $response);
+                    $payload = self::createPayload($type, [
+                        $payload->getResponseCode(), $payload->getContent(),
+                        $payload->getAttributes(),   $response
+                    ]);
 
                     $content = $payload->handle();
                     if (!is_image($content) && !is_stream($content)) {
@@ -246,10 +250,11 @@ class Payload
     }
 
     /**
-     * Sniff given content type, return a pseudo type.
+     * Sniff given content type and return a pseudo type if valid.
      *
      * @param  string $contentType
      * @return string|null
+     * @internal
      */
     private static function sniffContentType(string $contentType): string|null
     {
@@ -290,10 +295,11 @@ class Payload
      * Create a payload object by given pseudo type.
      *
      * @param  string $type
-     * @param  ...    $args
+     * @param  array  $args
      * @return froq\http\response\payload\PayloadInterface
+     * @internal
      */
-    private static function createPayload(string $type, ...$args): PayloadInterface
+    private static function createPayload(string $type, array $args): PayloadInterface
     {
         return match ($type) {
             'json'             => new JsonPayload(...$args),

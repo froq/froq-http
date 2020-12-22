@@ -11,6 +11,7 @@ use froq\http\common\{HeaderTrait, CookieTrait};
 
 /**
  * Response Trait.
+ *
  * @package  froq\http\response
  * @object   froq\http\response\ResponseTrait
  * @author   Kerem Güneş <k-gun@mail.com>
@@ -19,20 +20,15 @@ use froq\http\common\{HeaderTrait, CookieTrait};
  */
 trait ResponseTrait
 {
-    /**
-     * Header trait.
-     * @see froq\http\common\HeaderTrait
-     */
+    /** @see froq\http\common\HeaderTrait */
     use HeaderTrait;
 
-    /**
-     * Cookie trait.
-     * @see froq\http\common\CookieTrait
-     */
+    /** @see froq\http\common\CookieTrait */
     use CookieTrait;
 
     /**
      * Set status code.
+     *
      * @param  int $code
      * @return self
      */
@@ -45,6 +41,7 @@ trait ResponseTrait
 
     /**
      * Get status code.
+     *
      * @return int
      */
     public function getStatusCode(): int
@@ -54,6 +51,7 @@ trait ResponseTrait
 
     /**
      * Set content type.
+     *
      * @param  ?string $type
      * @return self
      */
@@ -66,6 +64,7 @@ trait ResponseTrait
 
     /**
      * Get content type.
+     *
      * @return ?string
      */
     public function getContentType(): ?string
@@ -75,6 +74,7 @@ trait ResponseTrait
 
     /**
      * Set content charset.
+     *
      * @param  ?string $charset
      * @return self
      */
@@ -87,6 +87,7 @@ trait ResponseTrait
 
     /**
      * Get content charset.
+     *
      * @return ?string
      */
     public function getContentCharset(): ?string

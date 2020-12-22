@@ -23,6 +23,7 @@ final class FilePayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.
+     *
      * @param int                     $code
      * @param string|resource         $content
      * @param array|null              $attributes

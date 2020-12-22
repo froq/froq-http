@@ -21,22 +21,13 @@ use froq\util\Arrays;
  */
 final class Cookie extends ComponentCollection implements Stringable
 {
-    /**
-     * Special chars.
-     * @var string
-     */
+    /** @var string */
     private static string $specialChars = "=,; \t\r\n\v\f";
 
-    /**
-     * Same site values.
-     * @var array<string>
-     */
+    /** @var array<string> */
     private static array $sameSiteValues = ['none', 'lax', 'strict'];
 
-    /**
-     * Name pattern.
-     * @var string
-     */
+    /** @var string */
     private static string $namePattern = '[\w][\w\-\.]*';
 
     /** @var array */
@@ -45,6 +36,7 @@ final class Cookie extends ComponentCollection implements Stringable
 
     /**
      * Constructor.
+     *
      * @param  string      $name
      * @param  scalar|null $value
      * @param  array|null  $options

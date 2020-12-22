@@ -22,7 +22,7 @@ interface PayloadInterface
     /**
      * Handle.
      *
-     * @return null|string|resource|GdImage
+     * @return string|resource|GdImage|null
      * @throws froq\http\response\payload\PayloadException
      */
     public function handle();

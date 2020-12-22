@@ -105,7 +105,7 @@ class StatusCodes
         NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
 
     /**
-     * Statuses.
+     * Statuses map.
      * @var array
      */
     private static array $statuses = [
@@ -190,7 +190,8 @@ class StatusCodes
     ];
 
     /**
-     * All.
+     * Get all statuses.
+     *
      * @return array
      */
     public static final function all(): array
@@ -199,7 +200,8 @@ class StatusCodes
     }
 
     /**
-     * Validate.
+     * Validate given status code.
+     *
      * @param  int $code
      * @return bool
      */
@@ -214,20 +216,22 @@ class StatusCodes
 
     /**
      * Get code by text.
+     *
      * @param  string $text
-     * @return ?int
+     * @return int|null
      */
-    public static final function getCodeByText(string $text): ?int
+    public static final function getCodeByText(string $text): int|null
     {
         return array_flip(self::$statuses)[$text] ?? null;
     }
 
     /**
      * Get text by code.
+     *
      * @param  int $code
-     * @return ?string
+     * @return string|null
      */
-    public static final function getTextByCode(int $code): ?string
+    public static final function getTextByCode(int $code): string|null
     {
         return self::$statuses[$code] ?? null;
     }

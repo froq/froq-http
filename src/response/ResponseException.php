@@ -11,6 +11,7 @@ use froq\http\MessageException;
 
 /**
  * Response Exception.
+ *
  * @package froq\http\response
  * @object  froq\http\response\ResponseException
  * @author  Kerem Güneş <k-gun@mail.com>
