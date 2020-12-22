@@ -16,6 +16,9 @@ use froq\{App, encoding\Encoder};
 /**
  * Response.
  *
+ * Represents a HTTP response entity which extends `Message` class and mainly deals with Froq! application and
+ * controllers.
+ *
  * @package froq\http
  * @object  froq\http\Response
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -23,20 +26,15 @@ use froq\{App, encoding\Encoder};
  */
 final class Response extends Message
 {
-    /**
-     * Response trait.
-     * @see froq\http\response\ResponseTrait
-     */
+    /** @see froq\http\response\ResponseTrait */
     use ResponseTrait;
 
-    /**
-     * Status.
-     * @var froq\http\response\Status
-     */
+    /** @var froq\http\response\Status */
     protected Status $status;
 
     /**
      * Constructor.
+     *
      * @param froq\App $app
      */
     public function __construct(App $app)
@@ -48,6 +46,7 @@ final class Response extends Message
 
     /**
      * Set/get status.
+     *
      * @param  ... $args
      * @return self|froq\http\response\Status
      */
@@ -57,7 +56,8 @@ final class Response extends Message
     }
 
     /**
-     * Redirect.
+     * Redirect client to given location with/without given headers and cookies.
+     *
      * @param  string     $to
      * @param  int        $code
      * @param  array|null $headers
@@ -75,7 +75,8 @@ final class Response extends Message
     }
 
     /**
-     * Set status.
+     * Set status code and optionally status text.
+     *
      * @param  int         $code
      * @param  string|null $text
      * @return self
@@ -88,20 +89,19 @@ final class Response extends Message
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 
-        $this->status->setText($text ?? Status::getTextByCode($code));
-
         return $this;
     }
 
     /**
-     * Send header.
-     * @param  string  $name
-     * @param  ?string $value
-     * @param  bool    $replace
+     * Send a header.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @param  bool        $replace
      * @return void
      * @throws froq\http\response\ResponseException
      */
-    public function sendHeader(string $name, ?string $value, bool $replace = true): void
+    public function sendHeader(string $name, string|null $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
@@ -116,7 +116,8 @@ final class Response extends Message
     }
 
     /**
-     * Send headers.
+     * Send all holding headers.
+     *
      * @return void
      */
     public function sendHeaders(): void
@@ -133,14 +134,15 @@ final class Response extends Message
     }
 
     /**
-     * Send cookie.
+     * Send a cookie.
+     *
      * @param  string                                $name
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
      * @throws froq\http\response\ResponseException
      */
-    public function sendCookie(string $name, $value, array $options = null): void
+    public function sendCookie(string $name, string|null|Cookie $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
@@ -160,7 +162,8 @@ final class Response extends Message
     }
 
     /**
-     * Send cookies.
+     * Send all holding cookies.
+     *
      * @return void
      */
     public function sendCookies(): void
@@ -172,6 +175,7 @@ final class Response extends Message
 
     /**
      * Send body.
+     *
      * @return void
      */
     public function sendBody(): void
@@ -192,8 +196,8 @@ final class Response extends Message
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
-            $content = (string) $content;
-            $contentType = $attributes['type'] ?? ContentType::TEXT_HTML; // @default
+            $content        = (string) $content;
+            $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
             $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8; // @default
             if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
@@ -202,12 +206,13 @@ final class Response extends Message
             // Gzip stuff.
             $contentLength = strlen($content);
             if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
-                $gzipOptions = $this->app->config('response.gzip');
-                $gzipOptionsMinlen = $gzipOptions ? $gzipOptions['minlen'] ?? 64 : null;
-                $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
+                $gzipOptions       = $this->app->config('response.gzip');
+                $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
 
                 // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && stristr($acceptEncoding, 'gzip')) {
+                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && str_contains(
+                    $this->app->request()->getHeader('Accept-Encoding', ''), 'gzip'
+                )) {
                     $temp = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
                     if ($temp && $error == null) {
                         [$content, $temp] = [$temp, null];
@@ -239,7 +244,7 @@ final class Response extends Message
                           $attributes['options'] ?? $this->app->config('response.image')
             ];
 
-            $image = ImageObject::fromResource($image, $imageType, $options);
+            $image   = ImageObject::fromResource($image, $imageType, $options);
             $content = $image->toString();
 
             header('Content-Type: '. $imageType);
@@ -309,11 +314,13 @@ final class Response extends Message
 
     /**
      * End.
+     *
      * @return void
      */
     public function end(): void
     {
         $code = $this->status->getCode();
+
         if (!http_response_code($code)) {
             if ($this->getHttpVersionNumber() >= 2.0) {
                 header(sprintf('%s %s', $this->getHttpVersion(), $code));
@@ -321,6 +328,7 @@ final class Response extends Message
                 header(sprintf('%s %s %s', $this->getHttpVersion(), $code, $this->status->getText()));
             }
         }
+
         header('Status: '. $code);
 
         $this->sendHeaders();

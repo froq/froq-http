@@ -15,6 +15,9 @@ use Error;
 /**
  * Request.
  *
+ * Represents a HTTP request entity which extends `Message` class and mainly deals with Froq! application
+ * and controllers.
+ *
  * @package froq\http
  * @object  froq\http\Request
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -22,52 +25,30 @@ use Error;
  */
 final class Request extends Message
 {
-    /**
-     * Request trait.
-     * @see froq\http\request\RequestTrait
-     */
+    /** @see froq\http\request\RequestTrait */
     use RequestTrait;
 
-    /**
-     * Method.
-     * @var froq\http\request\Method
-     */
+    /** @var froq\http\request\Method */
     protected Method $method;
 
-    /**
-     * Scheme.
-     * @var froq\http\request\Scheme
-     */
+    /** @var froq\http\request\Scheme */
     protected Scheme $scheme;
 
-    /**
-     * Uri.
-     * @var froq\http\request\Uri
-     */
+    /** @var froq\http\request\Uri */
     protected Uri $uri;
 
-    /**
-     * Client.
-     * @var froq\http\request\Client
-     */
+    /** @var froq\http\request\Client */
     protected Client $client;
 
-    /**
-     * Id.
-     * @var string
-     * @since 4.6
-     */
+    /** @var string @since 4.6 */
     private string $id;
 
-    /**
-     * Times.
-     * @var array
-     * @since 4.6
-     */
+    /** @var array *@since 4.6 */
     private array $times;
 
     /**
      * Constructor.
+     *
      * @param froq\App
      */
     public function __construct(App $app)
@@ -86,8 +67,8 @@ final class Request extends Message
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that, 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
-        $content     = strval(file_get_contents('php://input'));
-        $contentType = strtolower($headers['content-type'] ?? '');
+        $content     = $this->input();
+        $contentType = $headers['content-type'] ?? '';
 
         $_GET = $this->loadGlobal('GET');
 
@@ -113,7 +94,8 @@ final class Request extends Message
     }
 
     /**
-     * Method.
+     * Get method property.
+     *
      * @return froq\http\request\Method
      */
     public function method(): Method
@@ -122,7 +104,8 @@ final class Request extends Message
     }
 
     /**
-     * Scheme.
+     * Get scheme property.
+     *
      * @return froq\http\request\Scheme
      */
     public function scheme(): Scheme
@@ -131,7 +114,8 @@ final class Request extends Message
     }
 
     /**
-     * Uri.
+     * Get uri property.
+     *
      * @return froq\http\request\Uri
      */
     public function uri(): Uri
@@ -140,7 +124,8 @@ final class Request extends Message
     }
 
     /**
-     * Client.
+     * Get client property.
+     *
      * @return froq\http\request\Client
      */
     public function client(): Client
@@ -149,7 +134,8 @@ final class Request extends Message
     }
 
     /**
-     * Id.
+     * Get id property.
+     *
      * @return string
      * @since  4.6
      */
@@ -159,8 +145,8 @@ final class Request extends Message
     }
 
     /**
-     * Times.
-     * @param int $i
+     * Get times property.
+     *
      * @return array
      * @since  4.6
      */
@@ -170,7 +156,8 @@ final class Request extends Message
     }
 
     /**
-     * Params.
+     * Get all params by GPC sort.
+     *
      * @return array
      */
     public function params(): array
@@ -179,7 +166,8 @@ final class Request extends Message
     }
 
     /**
-     * Files.
+     * Get all uploaded files.
+     *
      * @return array
      */
     public function files(): array
@@ -188,7 +176,8 @@ final class Request extends Message
     }
 
     /**
-     * Input.
+     * Get PHP input.
+     *
      * @return string
      * @since  4.5
      */
@@ -198,17 +187,19 @@ final class Request extends Message
     }
 
     /**
-     * Input json.
+     * Get PHP input as JSON array.
+     *
      * @return array
      * @since  4.5
      */
-    public function inputJson(): array
+    public function json(): array
     {
-        return (array) json_decode(trim($this->input()), true);
+        return (array) json_decode($this->input(), flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
     }
 
     /**
-     * Get method.
+     * Get method name.
+     *
      * @return string
      * @since  4.7
      */
@@ -218,7 +209,8 @@ final class Request extends Message
     }
 
     /**
-     * Get scheme.
+     * Get scheme name.
+     *
      * @return string
      * @since  4.7
      */
@@ -228,7 +220,8 @@ final class Request extends Message
     }
 
     /**
-     * Get uri.
+     * Get URI.
+     *
      * @return string
      * @since  4.7
      */
@@ -238,7 +231,8 @@ final class Request extends Message
     }
 
     /**
-     * Get context.
+     * Get context, aka URI path.
+     *
      * @return string
      * @since  4.8
      */
@@ -249,7 +243,9 @@ final class Request extends Message
 
     /**
      * Load headers.
+     *
      * @return array
+     * @internal
      */
     private function loadHeaders(): array
     {
@@ -295,12 +291,14 @@ final class Request extends Message
 
     /**
      * Load global (without changing dotted keys).
+     *
      * @param  string $name
      * @param  string $source
-     * @param  bool   $sourceJson
+     * @param  bool   $json
      * @return array
+     * @internal
      */
-    private function loadGlobal(string $name, string $source = '', bool $sourceJson = false): array
+    private function loadGlobal(string $name, string $source = '', bool $json = false): array
     {
         $encode = false;
 
@@ -311,8 +309,8 @@ final class Request extends Message
                 break;
             case 'POST':
                 // This is checked in constructor via content-type header.
-                if ($sourceJson) {
-                    return (array) json_decode(trim($source), true);
+                if ($json) {
+                    return (array) json_decode($source, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
                 }
                 break;
             case 'COOKIE':

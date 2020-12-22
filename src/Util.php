@@ -21,11 +21,12 @@ use froq\common\object\StaticClass;
 final class Util extends StaticClass
 {
     /**
-     * Parse url.
+     * Parse given URL.
+     *
      * @param  string $url
-     * @return ?array
+     * @return array|null
      */
-    public static function parseUrl(string $url): ?array
+    public static function parseUrl(string $url): array|null
     {
         // Ensure scheme is http (or https).
         if (!str_starts_with($url, 'http')) {
@@ -65,7 +66,8 @@ final class Util extends StaticClass
     }
 
     /**
-     * Parse headers.
+     * Parse given headers.
+     *
      * @param  string $headers
      * @param  bool   $lower
      * @return array
@@ -88,6 +90,7 @@ final class Util extends StaticClass
 
                 $name  = trim((string) $name);
                 $value = trim((string) $value);
+
                 if ($lower) {
                     $name = strtolower($name);
                 }
@@ -105,7 +108,8 @@ final class Util extends StaticClass
     }
 
     /**
-     * Build query.
+     * Build a query string.
+     *
      * @param  array $data
      * @param  bool  $normalizeArrays
      * @return string

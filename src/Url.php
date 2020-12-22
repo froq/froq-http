@@ -25,21 +25,16 @@ use froq\util\{Util, Arrays};
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /**
-     * Source.
-     * @var array|string
-     */
-    protected $source;
+    /** @var array|string */
+    protected array|string $source;
 
-    /**
-     * Components.
-     * @var array
-     */
+    /** @var array */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
         'query', 'queryParams', 'fragment', 'authority', 'userInfo'];
 
     /**
      * Constructor.
+     *
      * @param   array|string|null $source
      * @param   array|null        $components
      * @@throws froq\http\UrlException
@@ -68,6 +63,7 @@ class Url extends ComponentCollection implements Stringable
 
                 $source = '/'. substr($source, $i);
             }
+
             // if ($colon) {
             //     $source = str_replace(':', '%3A', $source);
             // }
@@ -82,6 +78,7 @@ class Url extends ComponentCollection implements Stringable
                 if ($i) {
                     $source['path'] = str_repeat('/', $i - 1) . $source['path'];
                 }
+
                 // if ($colon) {
                 //     $source['path'] = str_replace('%3A', ':', $source['path']);
                 // }
@@ -136,10 +133,11 @@ class Url extends ComponentCollection implements Stringable
     }
 
     /**
-     * Get source.
+     * Get source property.
+     *
      * @return array|string|null
      */
-    public function getSource()
+    public function source(): array|string|null
     {
         return $this->source ?? null;
     }

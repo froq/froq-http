@@ -10,7 +10,7 @@ namespace froq\http;
 /**
  * Http.
  *
- * A static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocol versions both related
+ * Represents a static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocol versions both related
  * utility methods.
  *
  * @package froq\http
@@ -43,15 +43,17 @@ final class Http
 
     /**
      * Detect version.
+     *
      * @return string
      */
     public static function version(): string
     {
-        return $_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT;
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT);
     }
 
     /**
-     * Date.
+     * Format a time as HTTP date.
+     *
      * @param  int|null $time
      * @return string
      * @since  4.0
@@ -62,7 +64,8 @@ final class Http
     }
 
     /**
-     * Date verify.
+     * Verify a date by HTTP format.
+     *
      * @param  string $date
      * @return bool
      * @since  4.0

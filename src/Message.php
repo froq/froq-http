@@ -15,6 +15,9 @@ use froq\App;
 /**
  * Message.
  *
+ * Represents an abstract HTTP message entity which is used by `Request/Response` classes and mainly deals with
+ * Froq! application and controllers.
+ *
  * @package froq\http
  * @object  froq\http\Message
  * @author  Kerem Güneş <k-gun@mail.com>
@@ -29,44 +32,27 @@ abstract class Message
     public const TYPE_REQUEST  = 1,
                  TYPE_RESPONSE = 2;
 
-    /**
-     * App.
-     * @var froq\App
-     */
+    /** @var froq\App */
     protected App $app;
 
-    /**
-     * Type.
-     * @var int
-     */
+    /** @var int */
     protected int $type;
 
-    /**
-     * HTTP Version.
-     * @var string
-     */
+    /** @var string */
     protected string $httpVersion;
 
-    /**
-     * Headers.
-     * @var froq\http\message\Headers
-     */
+    /** @var froq\http\message\Headers */
     protected Headers $headers;
 
-    /**
-     * Cookies.
-     * @var froq\http\message\Cookies
-     */
+    /** @var froq\http\message\Cookies */
     protected Cookies $cookies;
 
-    /**
-     * Body.
-     * @var froq\http\message\Body
-     */
+    /** @var froq\http\message\Body */
     protected Body $body;
 
     /**
      * Constructor.
+     *
      * @param froq\App $app
      * @param int      $type
      */
@@ -83,6 +69,7 @@ abstract class Message
 
     /**
      * Get app.
+     *
      * @return froq\App
      */
     public final function getApp(): App
@@ -92,6 +79,7 @@ abstract class Message
 
     /**
      * Get type.
+     *
      * @return int
      */
     public final function getType(): int
@@ -100,7 +88,8 @@ abstract class Message
     }
 
     /**
-     * Get http version.
+     * Get HTTP version.
+     *
      * @return string
      */
     public final function getHttpVersion(): string
@@ -109,7 +98,8 @@ abstract class Message
     }
 
     /**
-     * Get http version number.
+     * Get HTTP version number.
+     *
      * @return float
      * @since  4.7
      */
@@ -119,16 +109,16 @@ abstract class Message
     }
 
     /**
-     * Set/get headers.
+     * Set/get headers, set for only Response.
+     *
      * @param  ... $args
-     * @return self|froq\http\message\Headers
+     * @return static|froq\http\message\Headers
+     * @throws froq\http\MessageException
      */
-    public final function headers(...$args)
+    public final function headers(...$args): static|Headers
     {
         if ($args) {
-            if ($this->isRequest()) {
-                throw new MessageException('Connot modify request headers');
-            }
+            $this->isRequest() && throw new MessageException('Connot modify request headers');
 
             return $this->setHeaders(...$args);
         }
@@ -137,17 +127,16 @@ abstract class Message
     }
 
     /**
-     * Set/get cookies.
+     * Set/get cookies, set for only Response.
+     *
      * @param  ...$args
-     * @return self|froq\http\message\Cookies
+     * @return static|froq\http\message\Cookies
      * @throws froq\http\MessageException
      */
-    public final function cookies(...$args)
+    public final function cookies(...$args): static|Cookies
     {
         if ($args) {
-            if ($this->isRequest()) {
-                throw new MessageException('Connot modify request cookies');
-            }
+            $this->isRequest() && throw new MessageException('Connot modify request cookies');
 
             return $this->setCookies(...$args);
         }
@@ -157,21 +146,23 @@ abstract class Message
 
     /**
      * Set/get body.
+     *
      * @param  ...$args
-     * @return self|froq\http\message\Body
+     * @return static|froq\http\message\Body
      */
-    public final function body(...$args)
+    public final function body(...$args): static|Body
     {
         return $args ? $this->setBody(...$args) : $this->body;
     }
 
     /**
-     * Set headers.
+     * Add headers.
+     *
      * @param  array<string, any> $headers
-     * @return self
+     * @return static
      * @since  4.0
      */
-    public final function addHeaders(array $headers): self
+    public final function addHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -182,10 +173,11 @@ abstract class Message
 
     /**
      * Set headers.
+     *
      * @param  array<string, any> $headers
-     * @return self
+     * @return static
      */
-    public final function setHeaders(array $headers): self
+    public final function setHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
@@ -196,10 +188,11 @@ abstract class Message
 
     /**
      * Set cookies.
+     *
      * @param  array<string, any> $cookies
-     * @return self
+     * @return static
      */
-    public function setCookies(array $cookies): self
+    public function setCookies(array $cookies): static
     {
         foreach ($cookies as $name => $value) {
             $this->setCookie($name, $value);
@@ -210,6 +203,7 @@ abstract class Message
 
     /**
      * Get headers.
+     *
      * @return froq\http\message\Headers
      */
     public final function getHeaders(): Headers
@@ -219,6 +213,7 @@ abstract class Message
 
     /**
      * Get cookies.
+     *
      * @return froq\http\message\Cookies
      * @since  4.0
      */
@@ -229,6 +224,7 @@ abstract class Message
 
     /**
      * Set body.
+     *
      * @param  any|null   $content
      * @param  array|null $attributes
      * @param  bool|null  $isError @internal
@@ -293,6 +289,7 @@ abstract class Message
 
     /**
      * Get body.
+     *
      * @return froq\http\message\Body
      */
     public final function getBody(): Body
@@ -301,7 +298,8 @@ abstract class Message
     }
 
     /**
-     * Is request.
+     * Get whether message is request.
+     *
      * @return bool
      */
     public final function isRequest(): bool
@@ -310,7 +308,8 @@ abstract class Message
     }
 
     /**
-     * Is response.
+     * Get whether message is response.
+     *
      * @return bool
      */
     public final function isResponse(): bool
