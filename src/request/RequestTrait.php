@@ -20,22 +20,13 @@ use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
  */
 trait RequestTrait
 {
-    /**
-     * Header trait.
-     * @see froq\http\common\HeaderTrait
-     */
+    /** @see froq\http\common\HeaderTrait */
     use HeaderTrait;
 
-    /**
-     * Cookie trait.
-     * @see froq\http\common\CookieTrait
-     */
+    /** @see froq\http\common\CookieTrait */
     use CookieTrait;
 
-    /**
-     * Param trait.
-     * @see froq\http\common\ParamTrait
-     */
+    /** @see froq\http\common\ParamTrait */
     use ParamTrait {
         ParamTrait::cookie insteadof CookieTrait;
         ParamTrait::hasCookie insteadof CookieTrait;
@@ -43,6 +34,7 @@ trait RequestTrait
 
     /**
      * Is get.
+     *
      * @return bool
      * @since  4.3
      */
@@ -53,6 +45,7 @@ trait RequestTrait
 
     /**
      * Is post.
+     *
      * @return bool
      * @since  4.3
      */
@@ -63,6 +56,7 @@ trait RequestTrait
 
     /**
      * Is put.
+     *
      * @return bool
      * @since  4.3
      */
@@ -73,6 +67,7 @@ trait RequestTrait
 
     /**
      * Is patch.
+     *
      * @return bool
      * @since  4.3
      */
@@ -83,6 +78,7 @@ trait RequestTrait
 
     /**
      * Is delete.
+     *
      * @return bool
      * @since  4.3
      */
@@ -93,6 +89,7 @@ trait RequestTrait
 
     /**
      * Is options.
+     *
      * @return bool
      * @since  4.3
      */
@@ -103,6 +100,7 @@ trait RequestTrait
 
     /**
      * Is head.
+     *
      * @return bool
      * @since  4.3
      */
@@ -113,6 +111,7 @@ trait RequestTrait
 
     /**
      * Is trace.
+     *
      * @return bool
      * @since  4.3
      */
@@ -123,6 +122,7 @@ trait RequestTrait
 
     /**
      * Is connect.
+     *
      * @return bool
      * @since  4.3
      */
@@ -133,6 +133,7 @@ trait RequestTrait
 
     /**
      * Is copy.
+     *
      * @return bool
      * @since  4.3
      */
@@ -143,6 +144,7 @@ trait RequestTrait
 
     /**
      * Is move.
+     *
      * @return bool
      * @since  4.3
      */
@@ -153,6 +155,7 @@ trait RequestTrait
 
     /**
      * Is ajax.
+     *
      * @return bool
      * @since  4.4
      */

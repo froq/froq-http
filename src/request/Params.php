@@ -21,7 +21,8 @@ use froq\common\object\StaticClass;
 final class Params extends StaticClass
 {
     /**
-     * All.
+     * Get all params by GPC sort.
+     *
      * @return array
      * @since  4.0
      */
@@ -31,7 +32,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get.
+     * Get a "$_GET" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -42,7 +44,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Gets.
+     * Get all/many "$_GET" params.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -50,11 +53,12 @@ final class Params extends StaticClass
     public static function gets(array $names = null, $default = null): array
     {
         return ($names === null) ? $_GET // All.
-            : array_fetch($_GET, $names, $default);
+             : array_fetch($_GET, $names, $default);
     }
 
     /**
-     * Has get.
+     * Check a "$_GET" param.
+     *
      * @param  string $name
      * @return bool
      */
@@ -64,7 +68,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Has gets.
+     * Check all/many "$_GET" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -83,7 +88,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Post.
+     * Get a "$_POST" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -94,7 +100,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Posts.
+     * Get all/many "$_POST" params.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -102,11 +109,12 @@ final class Params extends StaticClass
     public static function posts(array $names = null, $default = null): array
     {
         return ($names === null) ? $_POST // All.
-            : array_fetch($_POST, $names, $default);
+             : array_fetch($_POST, $names, $default);
     }
 
     /**
-     * Has post.
+     * Check a "$_POST" param.
+     *
      * @param  string $name
      * @return bool
      */
@@ -116,7 +124,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Has posts.
+     * Check all/many "$_POST" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -135,7 +144,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Cookie.
+     * Get a "$_COOKIE" param.
+     *
      * @param  string   $name
      * @param  any|null $default
      * @return any|null
@@ -146,7 +156,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Cookies.
+     * Get all/many "$_COOKIE" params.
+     *
      * @param  array<string>|null $names
      * @param  any|null           $default
      * @return array
@@ -154,11 +165,12 @@ final class Params extends StaticClass
     public static function cookies(array $names = null, $default = null): array
     {
         return ($names === null) ? $_COOKIE // All.
-            : array_fetch($_COOKIE, $names, $default);
+             : array_fetch($_COOKIE, $names, $default);
     }
 
     /**
-     * Has cookie.
+     * Check a "$_COOKIE" param.
+     *
      * @param  string $name
      * @return bool
      */
@@ -168,7 +180,8 @@ final class Params extends StaticClass
     }
 
     /**
-     * Has cookies.
+     * Check all/many "$_COOKIE" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */

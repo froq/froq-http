@@ -19,28 +19,16 @@ use froq\util\Util;
  */
 final class Client
 {
-    /**
-     * Ip.
-     * @var ?string
-     */
+    /** @var ?string */
     private ?string $ip = null;
 
-    /**
-     * Locale.
-     * @var ?string
-     */
+    /** @var ?string */
     private ?string $locale = null;
 
-    /**
-     * Language.
-     * @var ?string
-     */
+    /** @var ?string */
     private ?string $language = null;
 
-    /**
-     * User agent.
-     * @var ?string
-     */
+    /** @var ?string */
     private ?string $userAgent = null;
 
     /**
@@ -52,7 +40,7 @@ final class Client
 
         $acceptLanguage = trim($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
         if ($acceptLanguage != '') {
-            $this->locale = substr(str_replace('-', '_', $acceptLanguage), 0, 5);
+            $this->locale   = substr(str_replace('-', '_', $acceptLanguage), 0, 5);
             $this->language = substr($acceptLanguage, 0, 2);
         }
 
@@ -64,6 +52,7 @@ final class Client
 
     /**
      * Get ip.
+     *
      * @return ?string
      */
     public function getIp(): ?string
@@ -73,6 +62,7 @@ final class Client
 
     /**
      * Get locale.
+     *
      * @return ?string
      */
     public function getLocale(): ?string
@@ -82,6 +72,7 @@ final class Client
 
     /**
      * Get language.
+     *
      * @return ?string
      */
     public function getLanguage(): ?string
@@ -91,6 +82,7 @@ final class Client
 
     /**
      * Get user agent.
+     *
      * @return ?string
      */
     public function getUserAgent(): ?string

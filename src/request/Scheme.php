@@ -26,14 +26,12 @@ final class Scheme implements Stringable
     public const HTTP  = 'http',
                  HTTPS = 'https';
 
-    /**
-     * Name.
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
     /**
      * Constructor.
+     *
      * @param string $name
      */
     public function __construct(string $name)
@@ -43,6 +41,7 @@ final class Scheme implements Stringable
 
     /**
      * Set name.
+     *
      * @param  string $name
      * @return void
      */
@@ -53,6 +52,7 @@ final class Scheme implements Stringable
 
     /**
      * Get name.
+     *
      * @return string
      */
     public function getName(): string
@@ -62,6 +62,7 @@ final class Scheme implements Stringable
 
     /**
      * Is secure.
+     *
      * @return bool
      */
     public function isSecure(): bool

@@ -31,14 +31,12 @@ final class Method implements Stringable
                  COPY    = 'COPY',    MOVE    = 'MOVE',
                  LINK    = 'LINK',    UNLINK  = 'UNLINK';
 
-    /**
-     * Name.
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
     /**
      * Constructor.
+     *
      * @param string $name
      */
     public function __construct(string $name)
@@ -48,6 +46,7 @@ final class Method implements Stringable
 
     /**
      * Set name.
+     *
      * @param  string $name
      * @return void
      */
@@ -58,6 +57,7 @@ final class Method implements Stringable
 
     /**
      * Get name.
+     *
      * @return string
      */
     public function getName(): string
@@ -67,6 +67,7 @@ final class Method implements Stringable
 
     /**
      * Is get.
+     *
      * @return bool
      */
     public function isGet(): bool
@@ -76,6 +77,7 @@ final class Method implements Stringable
 
     /**
      * Is post.
+     *
      * @return bool
      */
     public function isPost(): bool
@@ -85,6 +87,7 @@ final class Method implements Stringable
 
     /**
      * Is put.
+     *
      * @return bool
      */
     public function isPut(): bool
@@ -94,6 +97,7 @@ final class Method implements Stringable
 
     /**
      * Is patch.
+     *
      * @return bool
      */
     public function isPatch(): bool
@@ -103,6 +107,7 @@ final class Method implements Stringable
 
     /**
      * Is delete.
+     *
      * @return bool
      */
     public function isDelete(): bool
@@ -112,6 +117,7 @@ final class Method implements Stringable
 
     /**
      * Is options.
+     *
      * @return bool
      */
     public function isOptions(): bool
@@ -121,6 +127,7 @@ final class Method implements Stringable
 
     /**
      * Is head.
+     *
      * @return bool
      */
     public function isHead(): bool
@@ -130,6 +137,7 @@ final class Method implements Stringable
 
     /**
      * Is trace.
+     *
      * @return bool
      */
     public function isTrace(): bool
@@ -139,6 +147,7 @@ final class Method implements Stringable
 
     /**
      * Is connect.
+     *
      * @return bool
      */
     public function isConnect(): bool
@@ -148,6 +157,7 @@ final class Method implements Stringable
 
     /**
      * Is copy.
+     *
      * @return bool
      */
     public function isCopy(): bool
@@ -157,6 +167,7 @@ final class Method implements Stringable
 
     /**
      * Is move.
+     *
      * @return bool
      */
     public function isMove(): bool
@@ -166,6 +177,7 @@ final class Method implements Stringable
 
     /**
      * Is ajax.
+     *
      * @return bool
      */
     public function isAjax(): bool

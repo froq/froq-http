@@ -19,7 +19,8 @@ namespace froq\http\request;
 final class Files
 {
     /**
-     * All.
+     * Get normalizing all files.
+     *
      * @return array
      * @since  4.0
      */
@@ -30,6 +31,7 @@ final class Files
 
     /**
      * Normalize files (two-dims only).
+     *
      * @param  array $files
      * @return array
      */

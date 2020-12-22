@@ -59,7 +59,7 @@ final class Uri extends Url
     }
 
     /**
-     * Get segments.
+     * Get segments property or params.
      *
      * @param  array|null $keys
      * @param  any|null   $default
