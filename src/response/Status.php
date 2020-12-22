@@ -29,9 +29,9 @@ final class Status extends StatusCodes
 
     /**
      * Text.
-     * @var ?string
+     * @var string
      */
-    private ?string $text;
+    private string $text;
 
     /**
      * Constructor.
@@ -41,7 +41,10 @@ final class Status extends StatusCodes
     public function __construct(int $code = self::OK, string $text = null)
     {
         $this->setCode($code);
-        $this->setText($text ?? self::getTextByCode($code));
+
+        if ($text !== null) {
+            $this->setText($text);
+        }
     }
 
     /**
@@ -52,9 +55,7 @@ final class Status extends StatusCodes
      */
     public function setCode(int $code): void
     {
-        if (!self::validate($code)) {
-            throw new StatusException('Invalid code ' . $code);
-        }
+        self::validate($code) || throw new StatusException('Invalid code ' . $code);
 
         $this->code = $code;
     }
@@ -70,10 +71,10 @@ final class Status extends StatusCodes
 
     /**
      * Set text.
-     * @param  ?string $text
+     * @param  string $text
      * @return void
      */
-    public function setText(?string $text): void
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
@@ -81,10 +82,10 @@ final class Status extends StatusCodes
     /**
      * Get text.
      * @param  int $code
-     * @return ?string
+     * @return string|null
      */
-    public function getText(): ?string
+    public function getText(): string|null
     {
-        return $this->text;
+        return $this->text ?? null;
     }
 }
