@@ -60,29 +60,16 @@ trait HeaderTrait
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function addHeader(string $name, $value): self
+    public function addHeader(string $name, string|array|null $value): self
     {
         $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
-        // Memoize value check/convert function.
-        static $toValue; $toValue ??= function ($name, $value) {
-            if (is_null($value) || is_string($value)) {
-                return $value;
-            }
-
-            if (is_scalar($value)) {
-                return var_export($value, true);
-            }
-
-            throw new HeaderException('Non-null/scalar value given for `%s` header', $name);
-        };
-
         if (is_array($value)) {
             foreach ($value as $valu) {
-                $this->headers->add($name, $toValue($name, $valu));
+                $this->headers->add($name, $valu);
             }
         } else {
-            $this->headers->add($name, $toValue($name, $value));
+            $this->headers->add($name, $value);
         }
 
         return $this;
@@ -112,7 +99,7 @@ trait HeaderTrait
      * @param  string|array<string>|null $default
      * @return string|array<string>|null
      */
-    public function getHeader(string $name, $default = null): string|array|null
+    public function getHeader(string $name, string|array $default = null): string|array|null
     {
         return $this->headers->get($name)
             ?? $this->headers->get(strtolower($name))
