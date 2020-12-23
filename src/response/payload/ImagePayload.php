@@ -48,7 +48,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             throw new PayloadException('Image must not be empty');
         } elseif (!is_string($image) && !is_image($image)) {
             throw new PayloadException('Image content must be a valid readable file path,'
-                . ' binary string or GdImage, `%s` given', get_type($image));
+                . ' binary string or GdImage, %s given', get_type($image));
         } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
             throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg,'
                 . ' image/png, image/gif, image/webp', $imageType ?: 'null');

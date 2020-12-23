@@ -147,7 +147,7 @@ final class Response extends Message
      * @return void
      * @throws froq\http\response\ResponseException
      */
-    public function sendCookie(string $name, string|null|Cookie $value, array $options = null): void
+    public function sendCookie(string $name, string|Cookie|null $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',

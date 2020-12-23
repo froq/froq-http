@@ -53,7 +53,7 @@ final class Cookie extends ComponentCollection implements Stringable
                 [$name, self::$namePattern]);
         }
 
-        if ($value != null && !is_scalar($value)) {
+        if ($value !== null && !is_scalar($value)) {
             throw new CookieException('Invalid value type `%s`, scalar or null values accepted only',
                 get_type($value));
         }

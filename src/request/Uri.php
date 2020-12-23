@@ -26,6 +26,7 @@ final class Uri extends Url
 
     /**
      * Constructor.
+     *
      * @param  array|string $source
      * @throws froq\http\request\UriException
      */

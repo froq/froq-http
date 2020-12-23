@@ -49,7 +49,7 @@ final class FilePayload extends Payload implements PayloadInterface
             throw new PayloadException('File must not be empty');
         } elseif (!is_string($file) && !is_stream($file)) {
             throw new PayloadException('File content must be a valid readable file path,'
-                . ' binary string or stream, `%s` given', get_type($file));
+                . ' binary string or stream, %s given', get_type($file));
         } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
             throw new PayloadException('File name must not contain non-ascii characters');
         }
