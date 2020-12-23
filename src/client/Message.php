@@ -175,18 +175,15 @@ abstract class Message
      * Set a header.
      *
      * @param   string       $name
-     * @param   scalar|array $value
+     * @param   string|array $value
      * @return  self
      */
-    public final function setHeader(string $name, $value): self
+    public final function setHeader(string $name, string|array $value): self
     {
         // Null means remove.
         if ($value === null) {
             unset($this->headers[$name]);
         } else {
-            if (is_scalar($value)) {
-                $value = (string) $value;
-            }
             $this->headers[$name] = $value;
         }
 
