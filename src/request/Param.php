@@ -50,7 +50,7 @@ final class Param extends StaticClass
      * @param  callable|null $filter
      * @return any
      */
-    public static function post($name, $default = null, callable $map = null, callable $filter = null)
+    public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null)
     {
         $values = Params::posts((array) $name, $default);
 
@@ -70,7 +70,7 @@ final class Param extends StaticClass
      * @param  callable|null $filter
      * @return any
      */
-    public static function cookie($name, $default = null, callable $map = null, callable $filter = null)
+    public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null)
     {
         $values = Params::cookies((array) $name, $default);
         if ($map || $filter) {
