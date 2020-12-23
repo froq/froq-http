@@ -160,8 +160,7 @@ final class Response extends Message
             throw new ResponseException('Invalid cookie name `%s`, name is reserved as session name', $name);
         }
 
-        $cookie = ($value instanceof Cookie)
-            ? $value : new Cookie($name, $value, $options);
+        $cookie = ($value instanceof Cookie) ? $value : new Cookie($name, $value, $options);
 
         header('Set-Cookie: ' . $cookie->toString(), false);
     }
