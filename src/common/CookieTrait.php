@@ -28,11 +28,11 @@ trait CookieTrait
      * Set/get a cookie.
      *
      * @param  string      $name
-     * @param  scalar|null $value
+     * @param  string|null $value
      * @param  array|null  $options
      * @return self|array|null
      */
-    public function cookie(string $name, $value = null, array $options = null)
+    public function cookie(string $name, string $value = null, array $options = null)
     {
         if (func_num_args() == 1) {
             return $this->getCookie($name);
@@ -65,12 +65,12 @@ trait CookieTrait
      * Set a cookie.
      *
      * @param  string      $name
-     * @param  scalar|null $value
+     * @param  string|null $value
      * @param  array|null  $options
      * @return self
      * @throws froq\http\common\CookieException
      */
-    public function setCookie(string $name, $value, array $options = null): self
+    public function setCookie(string $name, string|null $value, array $options = null): self
     {
         $this->isRequest() && throw new CookieException('Cannot modify request cookies');
 
