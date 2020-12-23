@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (c) 2015 · Kerem Güneş
- * Apache License 2.0 <https://opensource.org/licenses/apache-2.0>
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -15,7 +15,7 @@ use froq\http\client\curl\{Curl, CurlMulti};
  *
  * @package froq\http\client
  * @object  froq\http\client\Sender
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   3.0, 4.0 Renamed from MessageEmitter.
  * @static
  */

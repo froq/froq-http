@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright (c) 2015 · Kerem Güneş
- * Apache License 2.0 <https://opensource.org/licenses/apache-2.0>
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -17,7 +17,7 @@ use froq\util\Arrays;
  *
  * @package froq\http\response
  * @object  froq\http\response\Cookie
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  */
 final class Cookie extends ComponentCollection implements Stringable
 {
