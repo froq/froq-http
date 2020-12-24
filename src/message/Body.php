@@ -65,12 +65,12 @@ final class Body
     }
 
     /**
-     * Is none.
+     * Is na.
      *
      * @return bool
      * @since  4.0
      */
-    public function isNone(): bool
+    public function isNa(): bool
     {
         return $this->getAttribute('type') == ContentType::NA;
     }
@@ -84,7 +84,7 @@ final class Body
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && !($this->isNone() || $this->isFile() || $this->isImage());
+            && !$this->isNa() && !$this->isFile() !$this->isImage();
     }
 
     /**

@@ -194,7 +194,7 @@ final class Response extends Message
         $attributes = $body->getAttributes();
 
         // Those n/a responses output nothing.
-        if ($body->isNone()) {
+        if ($body->isNa()) {
             header('Content-Type: n/a');
             header('Content-Length: 0');
         }
