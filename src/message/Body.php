@@ -84,7 +84,7 @@ final class Body
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && !$this->isNa() && !$this->isFile() !$this->isImage();
+            && !$this->isNa() && !$this->isFile() && !$this->isImage();
     }
 
     /**
