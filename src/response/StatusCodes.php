@@ -59,6 +59,7 @@ class StatusCodes
         PAYMENT_REQUIRED                = 402,
         FORBIDDEN                       = 403,
         NOT_FOUND                       = 404,
+        NOT_ALLOWED                     = 405, // @alias
         METHOD_NOT_ALLOWED              = 405,
         NOT_ACCEPTABLE                  = 406,
         PROXY_AUTHENTICATION_REQUIRED   = 407,
