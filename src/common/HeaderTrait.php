@@ -101,9 +101,8 @@ trait HeaderTrait
      */
     public function getHeader(string $name, string|array $default = null): string|array|null
     {
-        return $this->headers->get($name)
-            ?? $this->headers->get(strtolower($name))
-            ?? $default;
+        return $this->headers->get($name, $default)
+            ?? $this->headers->get(strtolower($name), $default);
     }
 
     /**
