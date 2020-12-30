@@ -40,15 +40,13 @@ final class Param extends StaticClass
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        if (is_array($name)) {
-            $combine && $values = array_combine(
-                $name, !$filter ? $values : array_pad($values, count($name), null)
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
             );
-
-            return $values;
         }
 
-        return $values[0] ?? $default;
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
@@ -70,15 +68,13 @@ final class Param extends StaticClass
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        if (is_array($name)) {
-            $combine && $values = array_combine(
-                $name, !$filter ? $values : array_pad($values, count($name), null)
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
             );
-
-            return $values;
         }
 
-        return $values[0] ?? $default;
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
@@ -99,15 +95,13 @@ final class Param extends StaticClass
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        if (is_array($name)) {
-            $combine && $values = array_combine(
-                $name, !$filter ? $values : array_pad($values, count($name), null)
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
             );
-
-            return $values;
         }
 
-        return $values[0] ?? $default;
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
