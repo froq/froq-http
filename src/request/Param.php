@@ -28,9 +28,11 @@ final class Param extends StaticClass
      * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $combine
      * @return any
      */
-    public static function get(string|array $name, $default = null, callable $map = null, callable $filter = null)
+    public static function get(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $combine = false)
     {
         $values = Params::gets((array) $name, $default);
 
@@ -38,7 +40,15 @@ final class Param extends StaticClass
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        if (is_array($name)) {
+            $combine && $values = array_combine(
+                $name, !$filter ? $values : array_pad($values, count($name), null)
+            );
+
+            return $values;
+        }
+
+        return $values[0] ?? $default;
     }
 
     /**
@@ -48,9 +58,11 @@ final class Param extends StaticClass
      * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $combine
      * @return any
      */
-    public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null)
+    public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $combine = false)
     {
         $values = Params::posts((array) $name, $default);
 
@@ -58,7 +70,15 @@ final class Param extends StaticClass
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        if (is_array($name)) {
+            $combine && $values = array_combine(
+                $name, !$filter ? $values : array_pad($values, count($name), null)
+            );
+
+            return $values;
+        }
+
+        return $values[0] ?? $default;
     }
 
     /**
@@ -68,16 +88,26 @@ final class Param extends StaticClass
      * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $combine
      * @return any
      */
-    public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null)
+    public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $combine = false)
     {
         $values = Params::cookies((array) $name, $default);
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        if (is_array($name)) {
+            $combine && $values = array_combine(
+                $name, !$filter ? $values : array_pad($values, count($name), null)
+            );
+
+            return $values;
+        }
+
+        return $values[0] ?? $default;
     }
 
     /**
