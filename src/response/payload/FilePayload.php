@@ -41,8 +41,8 @@ final class FilePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$file, $fileName, $fileMime, $modifiedAt] = [
-            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt'])
+        [$file, $fileName, $fileMime, $modifiedAt, $direct] = [
+            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt', 'direct'])
         ];
 
         if ($file == null) {
@@ -54,7 +54,7 @@ final class FilePayload extends Payload implements PayloadInterface
             throw new PayloadException('File name must not contain non-ascii characters');
         }
 
-        if (is_string($file)) {
+        if (!$direct && is_string($file)) {
             $temp = $file;
 
             // Check if content is a file.
@@ -94,6 +94,12 @@ final class FilePayload extends Payload implements PayloadInterface
             }
 
             unset($temp);
+        } else {
+            $fileName   = $fileName ?: file_name($file);
+            $modifiedAt = self::getModifiedAt($file, $modifiedAt);
+
+            $fileMime   = $fileMime ?: file_mime($file);
+            $fileSize   = $fileSize ?: filesize($file);
         }
 
         // Extract file name & extension.
@@ -103,9 +109,10 @@ final class FilePayload extends Payload implements PayloadInterface
             strstr($name, '.') && $fileExtension = file_extension($name);
         }
 
-        // Ensure all needed stuff.
-        $fileMime = $fileMime ?? file_mime(fmeta($file)['uri']);
-        $fileSize = $fileSize ?? fstat($file)['size'];
+        if (!$direct) {
+            $fileMime = $fileMime ?: file_mime(fmeta($file)['uri']);
+            $fileSize = $fileSize ?: fstat($file)['size'];
+        }
 
         // Add extension to file name.
         $fileName = $fileName .'.'. ($fileExtension ?? (
@@ -115,8 +122,9 @@ final class FilePayload extends Payload implements PayloadInterface
 
         // Update attributes.
         $this->setAttributes([
-            'name' => $fileName, 'mime'       => $fileMime,
-            'size' => $fileSize, 'modifiedAt' => $modifiedAt
+            'name'   => $fileName, 'mime'       => $fileMime,
+            'size'   => $fileSize, 'modifiedAt' => $modifiedAt,
+            'direct' => $direct
         ]);
 
         return ($content = $file);

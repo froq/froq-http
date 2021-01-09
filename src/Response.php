@@ -243,26 +243,59 @@ final class Response extends Message
                 return;
             }
 
-            [$image, $imageType, $modifiedAt, $options] = [
-                $content, $attributes['type'], $attributes['modifiedAt'],
-                          $attributes['options'] ?? $this->app->config('response.image')
+            [$image, $imageType, $modifiedAt, $expiresAt, $direct, $etag] = [
+                $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
             ];
 
-            $image   = ImageObject::fromResource($image, $imageType, $options);
-            $content = $image->toString();
+            // For direct file readings.
+            if ($direct) {
+                header('Content-Type: '. $imageType);
+                header('Content-Length: '. filesize($image));
+                if ($etag) {
+                    header('ETag: '. (is_string($etag) ? $etag : hash_file('fnv1a64', $image)));
+                }
+                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
+                    header('Last-Modified: '. Http::date(
+                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
+                    ));
+                }
+                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
+                    header('Expires: '. Http::date(
+                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
+                    ));
+                }
+                header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
 
-            header('Content-Type: '. $imageType);
-            header('Content-Length: '. strlen($content));
-            if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                header('Last-Modified: '. Http::date(
-                    is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
-                ));
+                readfile($image);
             }
-            header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
+            // For resize/crop purposes.
+            else {
+                $options = $attributes['options'] ?? $this->app->config('response.image');
 
-            echo $content;
+                $image   = ImageObject::fromResource($image, $imageType, $options);
+                $content = $image->toString();
 
-            unset($image); // Free.
+                header('Content-Type: '. $imageType);
+                header('Content-Length: '. strlen($content));
+                if ($etag) {
+                    header('ETag: '. (is_string($etag) ? $etag : hash('fnv1a64', $content)));
+                }
+                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
+                    header('Last-Modified: '. Http::date(
+                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
+                    ));
+                }
+                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
+                    header('Expires: '. Http::date(
+                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
+                    ));
+                }
+                header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
+
+                echo $content;
+
+                unset($image); // Free.
+            }
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
@@ -271,13 +304,12 @@ final class Response extends Message
                 return;
             }
 
-            [$file, $fileMime, $fileName, $fileSize, $modifiedAt] = [
-                $content, $attributes['mime'], $attributes['name'],
-                          $attributes['size'], $attributes['modifiedAt']
+            [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rate] = [
+                $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rate'])
             ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
-            $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
+            $rateLimit = $rate ?? (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
@@ -298,16 +330,29 @@ final class Response extends Message
                 header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
             }
 
-            $file = FileObject::fromResource($file);
-            $file->rewind();
+            // For direct file readings.
+            if ($direct) {
+                $file = fopen($file, 'rb');
 
-            do {
-                $content = $file->read($rateLimit);
-                echo $content;
-                sleep(1); // Apply rate limit.
-            } while ($content && !connection_aborted());
+                do {
+                    echo fread($file, $rateLimit);
+                    sleep(1); // Apply rate limit.
+                } while (!connection_aborted() && !feof($file));
 
-            unset($file); // Free.
+                fclose($file);
+            }
+            // For resource readings.
+            else {
+                $file = FileObject::fromResource($file);
+                $file->rewind();
+
+                do {
+                    echo $file->read($rateLimit);
+                    sleep(1); // Apply rate limit.
+                } while (!connection_aborted() && $file->valid());
+
+                unset($file); // Free.
+            }
         } else {
             // Nope, nothing to print..
         }

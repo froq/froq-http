@@ -40,8 +40,8 @@ final class ImagePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$image, $imageType, $modifiedAt] = [
-            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt'])
+        [$image, $imageType, $modifiedAt, $direct] = [
+            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
         ];
 
         if ($image == null) {
@@ -54,7 +54,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 . ' image/png, image/gif, image/webp', $imageType ?: 'null');
         }
 
-        if (is_string($image)) {
+        if (!$direct && is_string($image)) {
             $temp = $image;
 
             // Check if content is a file.
@@ -91,11 +91,14 @@ final class ImagePayload extends Payload implements PayloadInterface
             }
 
             unset($temp);
+        } else {
+            $modifiedAt = self::getModifiedAt($image, $modifiedAt);
         }
 
         // Update attributes.
         $this->setAttributes([
-            'modifiedAt' => $modifiedAt
+            'modifiedAt' => $modifiedAt,
+            'direct'     => $direct
         ]);
 
         return ($content = $image);
