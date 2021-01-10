@@ -231,6 +231,17 @@ final class Request extends Message
     }
 
     /**
+     * Get URL.
+     *
+     * @return string
+     * @since  5.0
+     */
+    public function getUrl(): string
+    {
+        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME'] . $this->uri->toString();
+    }
+
+    /**
      * Get context, aka URI path.
      *
      * @return string
