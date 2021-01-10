@@ -195,7 +195,7 @@ final class Response extends Message
 
         // Those n/a responses output nothing.
         if ($body->isNa()) {
-            header('Content-Type: n/a');
+            header('Content-Type: none');
             header('Content-Length: 0');
         }
         // Text contents (html, json, xml etc.).
