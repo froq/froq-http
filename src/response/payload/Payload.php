@@ -220,7 +220,7 @@ class Payload
     protected static function getModifiedAt(string $file, $option): int|string|null
     {
         // Disable directive.
-        if ($option === false) {
+        if ($option === null || $option === false) {
             return null;
         }
         // Now directive.
