@@ -95,6 +95,10 @@ final class FilePayload extends Payload implements PayloadInterface
 
             unset($temp);
         } else {
+            if (File::errorCheck($file, $error)) {
+                throw new PayloadException($error->getMessage(), null, $error->getCode());
+            }
+
             $fileName   = $fileName ?: file_name($file);
             $modifiedAt = self::getModifiedAt($file, $modifiedAt);
 

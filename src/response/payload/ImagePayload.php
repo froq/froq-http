@@ -92,6 +92,10 @@ final class ImagePayload extends Payload implements PayloadInterface
 
             unset($temp);
         } else {
+            if (File::errorCheck($image, $error)) {
+                throw new PayloadException($error->getMessage(), null, $error->getCode());
+            }
+
             $modifiedAt = self::getModifiedAt($image, $modifiedAt);
         }
 
