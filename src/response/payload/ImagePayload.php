@@ -91,7 +91,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             }
 
             unset($temp);
-        } else {
+        } elseif (!is_image($image)) { // Image may be GdImage.
             if (File::errorCheck($image, $error)) {
                 throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
