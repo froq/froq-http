@@ -401,7 +401,7 @@ final class Response extends Message
     {
         $exposeAppRuntime = $this->app->config('exposeAppRuntime');
         if ($exposeAppRuntime && ($exposeAppRuntime === true || $exposeAppRuntime === $this->app->env())) {
-            header('X-App-Runtime: '. sprintf('%.3F', $this->app->runtime()));
+            header('X-Art: '. sprintf('%.3F', $this->app->runtime()));
         }
     }
 }
