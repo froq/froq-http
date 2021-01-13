@@ -197,6 +197,8 @@ final class Response extends Message
         if ($body->isNa()) {
             header('Content-Type: na');
             header('Content-Length: 0');
+
+            $this->exposeAppRuntime();
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
@@ -234,6 +236,8 @@ final class Response extends Message
             header('Content-Type: '. $contentType);
             header('Content-Length: '. strlen($content));
 
+            $this->exposeAppRuntime();
+
             echo $content;
         }
         // Image contents.
@@ -266,6 +270,8 @@ final class Response extends Message
                 }
                 header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
 
+                $this->exposeAppRuntime();
+
                 readfile($image);
             }
             // For resize/crop purposes.
@@ -291,6 +297,8 @@ final class Response extends Message
                     ));
                 }
                 header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
+
+                $this->exposeAppRuntime();
 
                 echo $content;
 
@@ -330,6 +338,8 @@ final class Response extends Message
                 header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
             }
 
+            $this->exposeAppRuntime();
+
             // For direct file readings.
             if ($direct) {
                 $file = fopen($file, 'rb');
@@ -353,9 +363,9 @@ final class Response extends Message
 
                 unset($file); // Free.
             }
-        } else {
-            // Nope, nothing to print..
         }
+        // Nope, nothing to print..
+        // else {}
 
         // Free.
         $body->setContent(null);
@@ -370,16 +380,28 @@ final class Response extends Message
     {
         $code = $this->status->getCode();
 
+        header('Status: '. $code);
+
         if (!http_response_code($code)) {
             ($this->httpVersion >= 2.0)
                 ? header(sprintf('%s %s', $this->httpProtocol, $code))
                 : header(sprintf('%s %s %s', $this->httpProtocol, $code, $this->status->getText()));
         }
 
-        header('Status: '. $code);
-
         $this->sendHeaders();
         $this->sendCookies();
         $this->sendBody();
+    }
+
+    /**
+     * @since 5.0
+     * @internal
+     */
+    private function exposeAppRuntime(): void
+    {
+        $exposeAppRuntime = $this->app->config('exposeAppRuntime');
+        if ($exposeAppRuntime && ($exposeAppRuntime === true || $exposeAppRuntime === $this->app->env())) {
+            header('X-App-Runtime: '. sprintf('%.4F', $this->app->runtime()));
+        }
     }
 }
