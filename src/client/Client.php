@@ -294,18 +294,19 @@ final class Client
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
         }
 
-        $headers['host'] = $temp[3]['host'];
+        $headers['Host'] = $temp[3]['host'];
 
         // Encode body & add related headers if needed.
         if ($body != null && is_array($body)) {
             if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
                 $body = json_encode($body);
+                $headers['Content-Type'] ??= 'application/json';
             } else {
                 $body = http_build_query($body);
+                $headers['Content-Type'] ??= 'application/x-www-form-urlencoded';
             }
 
-            $headers['content-type']   ??= 'application/x-www-form-urlencoded';
-            $headers['content-length'] ??= '' . strlen($body);
+            $headers['Content-Length'] ??= (string) strlen($body);
         }
 
         // Create message objects.
