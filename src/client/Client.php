@@ -298,7 +298,7 @@ final class Client
             if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
                 $body = json_encode($body);
             } else {
-                $bool = http_build_query($body);
+                $body = http_build_query($body);
             }
         }
 
