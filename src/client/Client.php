@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\client;
 
 use froq\http\client\{ClientException, Request, Response};
-use froq\http\client\curl\{Curl, CurlError};
+use froq\http\client\curl\{Curl, CurlError, CurlResponseError};
 use froq\common\trait\OptionTrait;
 use froq\http\Util as HttpUtil;
 use froq\event\Events;
@@ -52,11 +52,12 @@ final class Client
 
     /** @var array<string, any> */
     private static array $optionsDefault = [
-        'redirs'      => true,  'redirsMax'      => 3,
-        'timeout'     => 5,     'timeoutConnect' => 3,
-        'keepResult'  => true,  'keepResultInfo' => true,
-        'httpVersion' => null,  'throwErrors'    => false,
-        'method'      => 'GET', 'curl'           => null, // Curl options.
+        'redirs'      => true,  'redirsMax'       => 3,
+        'timeout'     => 5,     'timeoutConnect'  => 3,
+        'keepResult'  => true,  'keepResultInfo'  => true,
+        'throwErrors' => false, 'throwHttpErrors' => false,
+        'method'      => 'GET', 'curl'            => null, // Curl options.
+        'httpVersion' => null,
     ];
 
     /** @var froq\event\Events */
@@ -293,13 +294,18 @@ final class Client
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
         }
 
-        // Encode body if needed.
+        $headers['host'] = $temp[3]['host'];
+
+        // Encode body & add related headers if needed.
         if ($body != null && is_array($body)) {
             if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
                 $body = json_encode($body);
             } else {
                 $body = http_build_query($body);
             }
+
+            $headers['content-type']   ??= 'application/x-www-form-urlencoded';
+            $headers['content-length'] ??= '' . strlen($body);
         }
 
         // Create message objects.
@@ -320,6 +326,13 @@ final class Client
     public function end(?string $result, ?array $resultInfo, ?CurlError $error): void
     {
         if ($error == null) {
+            if ($this->options['throwHttpErrors']) {
+                $code = $resultInfo['http_code'];
+                if ($code && $code >= 400) {
+                    throw new CurlResponseError(code: $code);
+                }
+            }
+
             // Finalize request headers.
             $headers = HttpUtil::parseHeaders($resultInfo['request_header'], true);
             if (empty($headers[0])) {
