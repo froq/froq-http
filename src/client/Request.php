@@ -54,6 +54,7 @@ final class Request extends Message
         // Merge & normalize headers.
         $headers = array_replace_recursive($headersDefault, $headers ?? []);
         $headers = array_change_key_case($headers, CASE_LOWER);
+        ksort($headers);
 
         parent::__construct(Message::TYPE_REQUEST, null, $headers, $body);
     }
