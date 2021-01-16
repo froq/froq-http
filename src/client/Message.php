@@ -143,6 +143,8 @@ abstract class Message
             $this->headers = [];
         }
 
+        ksort($headers);
+
         foreach ($headers as $key => $value) {
             $this->setHeader((string) $key, $value);
         }
