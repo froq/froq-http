@@ -36,7 +36,7 @@ final class Param extends StaticClass
         bool $trim = true, bool $combine = false)
     {
         // Trim is default for map if not false.
-        if ($trim && !$map) $map = 'trim';
+        if (!$map && $trim) $map = 'trim';
 
         $values = Params::gets((array) $name, $default);
 
@@ -68,7 +68,7 @@ final class Param extends StaticClass
         bool $trim = true, bool $combine = false)
     {
         // Trim is default for map if not false.
-        if ($trim && !$map) $map = 'trim';
+        if (!$map && $trim) $map = 'trim';
 
         $values = Params::posts((array) $name, $default);
 
@@ -100,7 +100,7 @@ final class Param extends StaticClass
         bool $trim = true, bool $combine = false)
     {
         // Trim is default for map if not false.
-        if ($trim && !$map) $map = 'trim';
+        if (!$map && $trim) $map = 'trim';
 
         $values = Params::cookies((array) $name, $default);
 
