@@ -204,7 +204,7 @@ final class Response extends Message
         elseif ($body->isText()) {
             $content        = (string) $content;
             $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
-            $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8; // @default
+            $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
             if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
