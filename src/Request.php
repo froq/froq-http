@@ -222,34 +222,37 @@ final class Request extends Message
     /**
      * Get URI.
      *
+     * @param  bool $escape
      * @return string
      * @since  4.7
      */
-    public function getUri(): string
+    public function getUri(bool $escape = false): string
     {
-        return $this->uri->toString();
+        return !$escape ? $this->uri->toString() : htmlspecialchars($this->uri->toString());
     }
 
     /**
      * Get URL.
      *
+     * @param  bool $escape
      * @return string
      * @since  5.0
      */
-    public function getUrl(): string
+    public function getUrl(bool $escape = false): string
     {
-        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME'] . $this->uri->toString();
+        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME'] . $this->getUri($escape);
     }
 
     /**
      * Get context, aka URI path.
      *
+     * @param  bool $escape
      * @return string
      * @since  4.8
      */
-    public function getContext(): string
+    public function getContext(bool $escape = false): string
     {
-        return $this->uri->getPath();
+        return !$escape ? $this->uri->get('path') : htmlspecialchars($this->uri->get('path'));
     }
 
     /**
