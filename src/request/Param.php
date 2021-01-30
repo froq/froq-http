@@ -137,10 +137,29 @@ final class Param extends StaticClass
      */
     private static function applyMapFilter(array $values, ?callable $map, ?callable $filter): array
     {
+        // For safely trimming array'ed values.
+        if ($map == 'trim') $map = fn($v) => self::trim($v);
+
         // Apply map & filter if provided.
         $map    && $values = array_map($map, $values);
         $filter && $values = array_filter($values, $filter);
 
         return $values;
+    }
+
+    /**
+     * Safely trim given input for maps.
+     *
+     * @param  any $input
+     * @return any
+     * @since  5.0
+     */
+    private static function trim($input)
+    {
+        if (is_array($input)) foreach ($input as &$value) {
+            $value = is_array($value) ? self::trim($value) : trim((string) $value);
+        }
+
+        return $input;
     }
 }
