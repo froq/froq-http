@@ -21,17 +21,21 @@ use CurlHandle;
  */
 final class Curl
 {
-    /** @var froq\http\client\Client */
-    private Client $client;
-
     /** @const array */
     public const BLOCKED_OPTIONS = [
         'CURLOPT_CUSTOMREQUEST'  => 10036,
         'CURLOPT_URL'            => 10002,
         'CURLOPT_HEADER'         => 42,
         'CURLOPT_RETURNTRANSFER' => 19913,
+        'CURLOPT_HEADERFUNCTION' => 20079,
         'CURLINFO_HEADER_OUT'    => 2,
     ];
+
+    /** @var froq\http\client\Client */
+    private Client $client;
+
+    /** @var string @since 5.0 */
+    private string $headers = '';
 
     /**
      * Constructor.
@@ -67,6 +71,27 @@ final class Curl
     }
 
     /**
+     * Get a processed cURL handle info.
+     *
+     * @param  CurlHandle $handle
+     * @return array
+     * @since  5.0
+     */
+    public function getHandleInfo(CurlHandle $handle): array
+    {
+        $info = curl_getinfo($handle);
+
+        // Add/update headers.
+        $info['request_header']  = trim($info['request_header']);
+        $info['response_header'] = trim($this->headers);
+
+        // Reset for other requests.
+        $this->headers = '';
+
+        return $info;
+    }
+
+    /**
      * Run a cURL request.
      *
      * @return void
@@ -83,12 +108,13 @@ final class Curl
 
         $result = curl_exec($handle);
         if ($result !== false) {
-            $client->end($result, curl_getinfo($handle), null);
+            $client->end($result, $this->getHandleInfo($handle), null);
         } else {
             $client->end(null, null, new CurlError(curl_error($handle), null, curl_errno($handle)));
         }
 
-        $handle = null;
+        // Drop handle.
+        unset($handle);
     }
 
     /**
@@ -117,7 +143,7 @@ final class Curl
             // Immutable (internal) options.
             CURLOPT_CUSTOMREQUEST     => $method, // Prepared, set by request object.
             CURLOPT_URL               => $url,    // Prepared, set by request object.
-            CURLOPT_HEADER            => true,    // For proper response headers & body split.
+            CURLOPT_HEADER            => false,   // Made by header function.
             CURLOPT_RETURNTRANSFER    => true,    // For proper response headers & body split.
             CURLINFO_HEADER_OUT       => true,    // For proper request headers split.
             // Mutable (client) options.
@@ -130,6 +156,7 @@ final class Curl
             CURLOPT_DNS_CACHE_TIMEOUT => 3600, // 1 hour.
             CURLOPT_TIMEOUT           => (int) $clientOptions['timeout'],
             CURLOPT_CONNECTTIMEOUT    => (int) $clientOptions['timeoutConnect'],
+            CURLOPT_HEADERFUNCTION    => fn($_, $header) => $this->collectHeaders($header),
         ];
 
         // Request headers.
@@ -138,7 +165,7 @@ final class Curl
             $options[CURLOPT_HTTPHEADER][] = $name .': '. $value;
         }
 
-        // If body provided, Content-Type & Content-Length added automatically by curl.
+        // If body provided, Content-Type & Content-Length added automatically by cURL.
         // Else we add them manually, if method is suitable for this.
         if ($body !== null) {
             $options[CURLOPT_POSTFIELDS] = $body;
@@ -189,7 +216,7 @@ final class Curl
                 }
 
                 // Check for internal options.
-                if (self::optionCheck($name, $foundName)) {
+                if (self::checkOption($name, $foundName)) {
                     throw new CurlException(
                         'Not allowed cURL option %s given [tip: some options are set internally and '.
                         'not allowed for a proper request/response process, not allowed options are: '.
@@ -215,13 +242,36 @@ final class Curl
     }
 
     /**
+     * Collect response headers (called by "CURLOPT_HEADERFUNCTION" option).
+     *
+     * @param  string $header
+     * @return int
+     * @since  5.0
+     */
+    private function collectHeaders(string $header): int
+    {
+        $line = trim($header);
+
+        if ($line != '') {
+            // Status lines (for separating headers from redirect/continue etc.).
+            if (str_starts_with($line, 'HTTP/')) {
+                $this->headers .= "\r\n";
+            }
+
+            $this->headers .= $line . "\r\n";
+        }
+
+        return strlen($header);
+    }
+
+    /**
      * Check option validity.
      *
      * @param  any          $searchValue
      * @param  string|null &$foundName
      * @return bool
      */
-    private static function optionCheck($searchValue, string &$foundName = null): bool
+    private static function checkOption($searchValue, string &$foundName = null): bool
     {
         // Check options if contain search value.
         foreach (self::BLOCKED_OPTIONS as $name => $value) {

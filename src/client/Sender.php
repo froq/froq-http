@@ -38,12 +38,12 @@ final class Sender
     }
 
     /**
-     * Send an async request with multi clients.
+     * Send multi requests with multi clients.
      *
      * @param  array<froq\http\client\Client> $clients
      * @return array<froq\http\client\Response>
      */
-    public static function sendAsync(array $clients): array
+    public static function sendMulti(array $clients): array
     {
         foreach ($clients as $client) {
             $client->setCurl(new Curl($client));

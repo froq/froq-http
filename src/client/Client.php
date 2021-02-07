@@ -265,8 +265,8 @@ final class Client
 
     /**
      * Setup is an internal method and called by `Curl` and `CurlMulti` before cURL operations starts
-     * in `run()` method, for both single and multi (async) clients. Throw a `ClientException` if no
-     * method, no URL or an invalid URL given.
+     * in `run()` method, for both single and multi clients. Throw a `ClientException` if no method,
+     * no URL or an invalid URL given.
      *
      * @return void
      * @throws froq\http\client\ClientException
@@ -317,7 +317,7 @@ final class Client
 
     /**
      * End is an internal method and called by `Curl` and `CurlMulti` after cURL operations end
-     * in `run()` method, for both single and multi (async) clients.
+     * in `run()` method, for both single and multi clients.
      *
      * @param  ?string                     $result
      * @param  ?array                      $resultInfo
@@ -375,14 +375,23 @@ final class Client
             $this->request->setHttpProtocol($httpProtocol)
                           ->setHeaders($headers, true);
 
-            // Checker for redirections etc. (for finding final HTTP-Message).
-            $nextCheck = fn($body) => $body && str_starts_with($body, 'HTTP/');
+            // @cancel
+            // // Checker for redirections etc. (for finding final HTTP-Message).
+            // $next = fn($body) => $body && str_starts_with($body, 'HTTP/');
 
-            @ [$headers, $body] = explode("\r\n\r\n", $result, 2);
-            if ($nextCheck($body)) {
-                do {
-                    @ [$headers, $body] = explode("\r\n\r\n", $body, 2);
-                } while ($nextCheck($body));
+            // @ [$headers, $body] = explode("\r\n\r\n", $result, 2);
+            // if ($next($body)) {
+            //     do {
+            //         @ [$headers, $body] = explode("\r\n\r\n", $body, 2);
+            //     } while ($next($body));
+            // }
+
+            [$headers, $body] = [$resultInfo['response_header'], $result];
+
+            // Get last slice of headers.
+            if ($headers != '') {
+                $headers =@ end(explode("\r\n\r\n", $headers));
+                error_clear(8);
             }
 
             $headers = HttpUtil::parseHeaders($headers, true);

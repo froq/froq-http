@@ -83,7 +83,7 @@ final class CurlMulti
             $client->setup();
 
             $curl   = $client->getCurl();
-            $handle = $curl->init(true);
+            $handle = $curl->init();
 
 
             $result = curl_multi_add_handle($multiHandle, $handle);
@@ -117,7 +117,6 @@ final class CurlMulti
 
             while ($info = curl_multi_info_read($multiHandle)) {
                 $id = (int) $info['handle'];
-
                 @ [$client, $curl] = $stack[$id];
 
                 // Check tick.
@@ -131,13 +130,10 @@ final class CurlMulti
 
                 $result = $ok ? curl_multi_getcontent($handle) : false;
                 if ($result !== false) {
-                    $client->end($result, curl_getinfo($handle), null);
+                    $client->end($result, $curl->getHandleInfo($handle), null);
                 } else {
                     $client->end(null, null, new CurlError(curl_error($handle), null, $info['result']));
                 }
-
-                curl_multi_remove_handle($multiHandle, $handle);
-                unset($curl->handle, $stack[$id]);
 
                 // This can be set true to break the queue.
                 if ($client->aborted) {
@@ -158,6 +154,6 @@ final class CurlMulti
         }
 
         // Drop handle.
-        $multiHandle = null;
+        unset($multiHandle);
     }
 }
