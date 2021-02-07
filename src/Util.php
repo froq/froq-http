@@ -74,33 +74,30 @@ final class Util extends StaticClass
      */
     public static function parseHeaders(string $headers, bool $lower = true): array
     {
-        $ret = [];
-
         $headers = explode("\r\n", trim($headers));
-        if ($headers != null) {
-            // Pick status line.
-            $ret[0] = trim((string) array_shift($headers));
 
-            foreach ($headers as $header) {
-                @ [$name, $value] = explode(':', $header, 2);
-                if ($name === null) {
-                    error_clear(2);
-                    continue;
-                }
+        // Pick status line.
+        $ret[0] = trim((string) array_shift($headers));
 
-                $name  = trim((string) $name);
-                $value = trim((string) $value);
+        foreach ($headers as $header) {
+            @ [$name, $value] = explode(':', $header, 2);
+            if ($name === null) {
+                error_clear(2);
+                continue;
+            }
 
-                if ($lower) {
-                    $name = strtolower($name);
-                }
+            $name  = trim((string) $name);
+            $value = trim((string) $value);
 
-                // Handle multi-headers as array.
-                if (isset($ret[$name])) {
-                    $ret[$name] = array_merge((array) $ret[$name], [$value]);
-                } else {
-                    $ret[$name] = $value;
-                }
+            if ($lower) {
+                $name = strtolower($name);
+            }
+
+            // Handle multi-headers as array.
+            if (isset($ret[$name])) {
+                $ret[$name] = array_merge((array) $ret[$name], [$value]);
+            } else {
+                $ret[$name] = $value;
             }
         }
 
