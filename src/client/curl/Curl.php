@@ -134,7 +134,7 @@ final class Curl
         $request = $client->getRequest();
 
         [$method, $url, $headers, $body, $clientOptions] = [
-            $request->getMethod(), $request->getUrl(),
+            $request->getMethod(),  $request->getUrl(),
             $request->getHeaders(), $request->getBody(),
             $client->getOptions()
         ];
@@ -253,7 +253,7 @@ final class Curl
         $line = trim($header);
 
         if ($line != '') {
-            // Status lines (for separating headers from redirect/continue etc.).
+            // Status lines (for separating headers of redirect/continue etc.).
             if (str_starts_with($line, 'HTTP/')) {
                 $this->headers .= "\r\n";
             }
