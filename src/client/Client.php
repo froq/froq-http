@@ -420,7 +420,7 @@ final class Client
                 if (isset($headers['content-type'])
                     && str_contains($headers['content-type'], 'json')) {
                     $parsedBody = json_decode($body, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
-                    if ($parsedBody !== null) {
+                    if (is_array($parsedBody)) {
                         $this->response->setParsedBody($parsedBody);
                     }
                 }
