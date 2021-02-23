@@ -399,8 +399,8 @@ final class Response extends Message
      */
     private function exposeAppRuntime(): void
     {
-        $exposeAppRuntime = $this->app->config('exposeAppRuntime');
-        if ($exposeAppRuntime && ($exposeAppRuntime === true || $exposeAppRuntime === $this->app->env())) {
+        $art = $this->app->config('exposeAppRuntime');
+        if ($art && ($art === true || $art === $this->app->env())) {
             header('X-Art: '. $this->app->runtime(format: true));
         }
     }
