@@ -58,6 +58,8 @@ final class Util extends StaticClass
             parse_str($query, $query);
         }
 
+        parse_str((string) $query, $query);
+
         // Base URL with scheme, host, authority and path.
         $url = sprintf('%s://%s%s%s', $parsedUrl['scheme'], $authority, $host,
             $parsedUrl['path'] ?? '/');
