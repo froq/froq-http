@@ -54,9 +54,6 @@ final class Util extends StaticClass
 
         $query    = $parsedUrl['query'] ?? null;
         $fragment = $parsedUrl['fragment'] ?? null;
-        if ($query != null) {
-            parse_str($query, $query);
-        }
 
         parse_str((string) $query, $query);
 
