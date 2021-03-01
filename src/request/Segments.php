@@ -159,6 +159,18 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
+     * Get a segment param by given key (name).
+     *
+     * @param  string   $key
+     * @param  any|null $default
+     * @return any|null
+     */
+    public function getParam(string $key, $default = null)
+    {
+        return $this->get($key, $default);
+    }
+
+    /**
      * Get an action param.
      *
      * @param  int|string $key
