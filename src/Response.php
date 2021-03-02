@@ -56,14 +56,16 @@ final class Response extends Message
     }
 
     /**
-     * Set/get status.
+     * Get status, also set its code if provided.
      *
      * @param  ... $args
-     * @return self|froq\http\response\Status
+     * @return froq\http\response\Status
      */
-    public function status(...$args)
+    public function status(...$args): Status
     {
-        return $args ? $this->setStatus(...$args) : $this->status;
+        $args && $this->setStatus(...$args);
+
+        return $this->status;
     }
 
     /**
