@@ -40,6 +40,16 @@ final class Scheme implements Stringable
     }
 
     /**
+     * Magic string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
      * Set name.
      *
      * @param  string $name
