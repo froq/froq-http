@@ -245,15 +245,16 @@ final class Client
      * @param  array|null  $urlParams
      * @param  string|null $body
      * @param  array|null  $headers
+     * @param  array|null  $query  Alias for $urlParams
      * @return froq\http\client\Response
      */
     public function send(string $method = null, string $url = null, array $urlParams = null,
-        string|array $body = null, array $headers = null): Response
+        string|array $body = null, array $headers = null, array $query = null): Response
     {
         // May be set via setOption().
         $method    = $method ?: $this->getOption('method');
         $url       = $url    ?: $this->getOption('url');
-        $urlParams = array_replace_recursive($this->getOption('urlParams', []), $urlParams ?: []);
+        $urlParams = array_replace_recursive($this->getOption('urlParams', []), $urlParams ?: $query ?: []);
         $body      = $body   ?: $this->getOption('body');
         $headers   = array_replace_recursive($this->getOption('headers', []), $headers ?: []);
 
