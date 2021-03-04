@@ -7,7 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\{interface\Arrayable, exception\UnsupportedOperationException};
+use froq\common\exception\UnsupportedOperationException;
+use froq\common\interface\{Arrayable, Listable};
 use froq\{Router, mvc\Controller};
 use Countable, ArrayAccess;
 
@@ -21,7 +22,7 @@ use Countable, ArrayAccess;
  * @author  Kerem Güneş
  * @since   4.1
  */
-final class Segments implements Arrayable, Countable, ArrayAccess
+final class Segments implements Arrayable, Listable, Countable, ArrayAccess
 {
     /**
      * Root.
@@ -238,11 +239,9 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * Conver params to list.
-     *
-     * @param  int $offset
-     * @return array
-     * @since  4.2
+     * @inheritDoc froq\common\interface\Listable
+     * @param      int $offset
+     * @since      4.2
      */
     public function toList(int $offset = 0): array
     {
@@ -269,24 +268,24 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetExists($name)
+    public function offsetExists($key)
     {
-        return isset($this->stack[$name]);
+        return $this->get($key) !== null;
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetGet($name)
+    public function offsetGet($key)
     {
-        return $this->stack[$name] ?? null;
+        return $this->get($key);
     }
 
     /**
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetSet($name, $value)
+    public function offsetSet($key, $value)
     {
         throw new UnsupportedOperationException('No set() allowed for object' . self::class);
     }
@@ -295,7 +294,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetUnset($name)
+    public function offsetUnset($key)
     {
         throw new UnsupportedOperationException('No unset() allowed for object' . self::class);
     }
