@@ -145,17 +145,6 @@ final class Request extends Message
     }
 
     /**
-     * Get request time.
-     *
-     * @return int
-     * @since  5.0
-     */
-    public function time(): int
-    {
-        return $this->times[0];
-    }
-
-    /**
      * Get times property.
      *
      * @return array
