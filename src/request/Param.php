@@ -138,7 +138,7 @@ final class Param extends StaticClass
     private static function applyMapFilter(array $values, ?callable $map, ?callable $filter): array
     {
         // For safely mapping array'ed values.
-        if ($map) $map = fn($v) => self::map($map, $v);
+        if ($map) $map = fn($v) => self::map($v, $map);
 
         // Apply map & filter if provided.
         $map    && $values = array_map($map, $values);
@@ -149,14 +149,12 @@ final class Param extends StaticClass
 
     /**
      * Array-safe map.
-     *
-     * @param  any $input
-     * @return any
-     * @since  5.0
+     * @since 5.0
+     * @internal
      */
-    private static function map($fn, $in)
+    private static function map($in, $map)
     {
-        return is_array($in) ? array_map(fn($v) => self::map($fn, $v), $in)
-             : $fn((string) $in); // Always string.
+        return is_array($in) ? array_map(fn($v) => self::map($v, $map), $in)
+             : $map((string) $in); // Always string.
     }
 }
