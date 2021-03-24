@@ -58,6 +58,7 @@ final class Client
         'throwErrors' => false, 'throwHttpErrors' => false,
         'method'      => 'GET', 'curl'            => null, // Curl options.
         'httpVersion' => null,  'userpass'        => null,
+        'json'        => false,
     ];
 
     /** @var froq\event\Events */
@@ -293,6 +294,11 @@ final class Client
         $urlParams = array_replace_recursive($temp[1] ?? [], $urlParams ?? []);
         if ($urlParams != null) {
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
+        }
+
+        // Add JSON header if options.json is true.
+        if ($this->options['json']) {
+            $headers['content-type'] = 'application/json';
         }
 
         $headers = array_change_key_case($headers ?? [], CASE_LOWER);
