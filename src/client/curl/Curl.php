@@ -189,6 +189,12 @@ final class Curl
             $clientOptionsCurl[CURLOPT_NOBODY] = true;
         }
 
+        // Add "userpass" stuff for basic authorizations.
+        if (isset($clientOptions['userpass'])) {
+            $clientOptionsCurl[CURLOPT_USERPWD] = is_array($clientOptions['userpass'])
+                ? join(':', $clientOptions['userpass']) : (string) $clientOptions['userpass'];
+        }
+
         // Assign HTTP version if provided.
         if (isset($clientOptions['httpVersion'])) {
             $clientOptionsCurl[CURLOPT_HTTP_VERSION] = match ((string) $clientOptions['httpVersion']) {

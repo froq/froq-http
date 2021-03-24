@@ -57,7 +57,7 @@ final class Client
         'keepResult'  => true,  'keepResultInfo'  => true,
         'throwErrors' => false, 'throwHttpErrors' => false,
         'method'      => 'GET', 'curl'            => null, // Curl options.
-        'httpVersion' => null,
+        'httpVersion' => null,  'userpass'        => null,
     ];
 
     /** @var froq\event\Events */
