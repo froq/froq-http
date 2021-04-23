@@ -258,8 +258,8 @@ final class Request extends Message
     /**
      * Get a URI segment.
      *
-     * @param  string   $key
-     * @param  any|null $default
+     * @param  int|string $key
+     * @param  any|null   $default
      * @return any|null
      * @since  5.0
      */
@@ -271,8 +271,8 @@ final class Request extends Message
     /**
      * Get all/many URI segments.
      *
-     * @param  array|null $keys
-     * @param  any|null   $default
+     * @param  array<int|string>|null $keys
+     * @param  any|null               $default
      * @return froq\http\request\Segments|array
      * @since  5.0
      */

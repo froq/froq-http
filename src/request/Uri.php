@@ -62,8 +62,8 @@ final class Uri extends Url
     /**
      * Get segments property or params.
      *
-     * @param  array|null $keys
-     * @param  any|null   $default
+     * @param  array<int|string>|null $keys
+     * @param  any|null               $default
      * @return froq\http\request\Segments|array
      */
     public function segments(array $keys = null, $default = null): Segments|array
