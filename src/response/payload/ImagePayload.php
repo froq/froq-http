@@ -1,54 +1,36 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\util\Strings;
-use froq\file\Util as FileUtil;
-use froq\http\Response;
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
+use froq\http\Response;
+use froq\file\File;
+use Error;
 
 /**
  * Image Payload.
- * @package froq\http\response\Payload
- * @object  froq\http\response\Payload\ImagePayload
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.9, 4.0
+ *
+ * @package froq\http\response\payload
+ * @object  froq\http\response\payload\ImagePayload
+ * @author  Kerem Güneş
+ * @since   3.9
  */
 final class ImagePayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.
+     *
      * @param int                     $code
-     * @param string|resource         $content
+     * @param string|GdImage          $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null,
-        Response $response = null)
+    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
     {
         parent::__construct($code, $content, $attributes, $response);
     }
@@ -58,60 +40,69 @@ final class ImagePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$image, $imageType, $imageModifiedAt] = [
-            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt'])
+        [$image, $imageType, $modifiedAt, $direct] = [
+            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
         ];
 
         if ($image == null) {
             throw new PayloadException('Image must not be empty');
-        } elseif (!is_string($image) && !is_resource($image)) {
-            throw new PayloadException('Image content must be a valid readable file path, '.
-                'binary or gd resource, "%s" given', [gettype($image)]);
+        } elseif (!is_string($image) && !is_image($image)) {
+            throw new PayloadException('Image content must be a valid readable file path,'
+                . ' binary string or GdImage, %s given', get_type($image));
         } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
-            throw new PayloadException('Invalid image type "%s", valids are: image/jpeg, '.
-                'image/png, image/gif, image/webp', [$imageType]);
+            throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg,'
+                . ' image/png, image/gif, image/webp', $imageType ?: 'null');
         }
 
-        if (!is_resource($image)) {
-            $imageContent = $image;
+        if (!$direct && is_string($image)) {
+            $temp = $image;
 
             // Check if content is a file.
-            if (FileUtil::isFile($image)) {
-                if (FileUtil::errorCheck($image, $error)) {
+            if (File::isFile($image)) {
+                if (File::errorCheck($image, $error)) {
                     throw new PayloadException($error->getMessage(), null, $error->getCode());
                 }
 
-                $imageSize      = filesize($image);
-                $imageSizeLimit = FileUtil::convertBytes(ini_get('memory_limit'));
-                if ($imageSizeLimit > -1 && $imageSize > $imageSizeLimit) {
-                    throw new PayloadException('Too large image, check "ini.memory_limit" option '.
-                        '(current ini value: %s)', [ini_get('memory_limit')]);
+                $imageSize   = filesize($image);
+                $memoryLimit = self::getMemoryLimit($limit);
+                if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
+                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
+                        . ' value (%s)', $limit);
                 }
 
-                // This attribute may be given in attributes (true means auto-set, mime default is true).
-                $imageModifiedAt = ($imageModifiedAt === true) ? filemtime($image) : $imageModifiedAt;
+                try {
+                    $image = imagecreatefromstring(file_get_contents($image));
+                } catch (Error) { $image = null; }
 
-                $image = imagecreatefromstring(file_get_contents($image));
+                $image || throw new PayloadException('Failed creating image source, invalid file contents in'
+                    . ' %s file', $temp);
+
+                $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
-            // Convert file to source (binary content accepted).
-            elseif (Strings::isBinary($imageContent)) {
-                $image = imagecreatefromstring($imageContent);
+            // Convert file to source.
+            else {
+                try {
+                    $image = imagecreatefromstring($image);
+                } catch (Error) { $image = null; }
+
+                $image || throw new PayloadException('Failed creating image source, invalid string contents');
+
+                $modifiedAt = self::getModifiedAt('', $modifiedAt);
             }
 
-            if (!is_resource($image)) {
-                throw new PayloadException('Failed to create image resource, image content must '.
-                    'be a valid readable file path, binary or gd resource');
+            unset($temp);
+        } elseif (!is_image($image)) { // Image may be GdImage.
+            if (File::errorCheck($image, $error)) {
+                throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
-        }
 
-        if (!is_resource($image) || get_resource_type($image) != 'gd') {
-            throw new PayloadException('Invalid image content, image content must be a valid '.
-                'readable file path, binary or gd resource');
+            $modifiedAt = self::getModifiedAt($image, $modifiedAt);
         }
 
         // Update attributes.
         $this->setAttributes([
-            'modifiedAt' => $imageModifiedAt
+            'modifiedAt' => $modifiedAt,
+            'direct'     => $direct
         ]);
 
         return ($content = $image);

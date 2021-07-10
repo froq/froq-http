@@ -1,89 +1,55 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\Client;
 use froq\http\client\curl\{CurlError, CurlException};
+use froq\http\client\Client;
+use CurlHandle;
 
 /**
  * Curl.
+ *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\Curl
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.0, 4.0
+ * @author  Kerem Güneş
+ * @since   3.0
  */
 final class Curl
 {
-    /**
-     * Client.
-     * @var froq\http\client\Client
-     */
+    /** @const array */
+    public const BLOCKED_OPTIONS = [
+        'CURLOPT_CUSTOMREQUEST'  => 10036,
+        'CURLOPT_URL'            => 10002,
+        'CURLOPT_HEADER'         => 42,
+        'CURLOPT_RETURNTRANSFER' => 19913,
+        'CURLOPT_HEADERFUNCTION' => 20079,
+        'CURLINFO_HEADER_OUT'    => 2,
+    ];
+
+    /** @var froq\http\client\Client */
     private Client $client;
 
-    /**
-     * Handle.
-     * @var resource
-     */
-    private $handle;
-
-    /**
-     * Not allowed options.
-     * @var array<string, int|null>
-     */
-    private static array $notAllowedOptions = [
-        'CURLOPT_CUSTOMREQUEST'  => null,
-        'CURLOPT_URL'            => null,
-        'CURLOPT_HEADER'         => null,
-        'CURLOPT_RETURNTRANSFER' => null,
-        'CURLINFO_HEADER_OUT'    => null,
-    ];
+    /** @var string @since 5.0 */
+    private string $headers = '';
 
     /**
      * Constructor.
-     * @param froq\http\client\Client $client
-     * @throws froq\http\client\CurlException
+     *
+     * @param froq\http\client\Client|null $client
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client = null)
     {
-        if (!extension_loaded('curl')) {
-            throw new CurlException('curl module not loaded');
-        }
-
-        $handle = curl_init();
-        if (!$handle) {
-            throw new CurlException('Failed to initialize curl session [error: %s]', ['@error']);
-        }
-
-        $this->client = $client;
-        $this->handle = $handle;
+        $client && $this->setClient($client);
     }
 
     /**
      * Set client.
+     *
      * @param  froq\http\client\Client $client
      * @return self
      */
@@ -96,79 +62,101 @@ final class Curl
 
     /**
      * Get client.
-     * @return froq\http\client\Client
+     *
+     * @return froq\http\client\Client|null
      */
-    public function getClient(): Client
+    public function getClient(): Client|null
     {
-        return $this->client;
+        return $this->client ?? null;
     }
 
     /**
-     * Get handle.
-     * @return resource
+     * Get a processed cURL handle info.
+     *
+     * @param  CurlHandle $handle
+     * @return array
+     * @since  5.0
      */
-    public function getHandle()
+    public function getHandleInfo(CurlHandle $handle): array
     {
-        return $this->handle;
+        $info = curl_getinfo($handle);
+
+        // Add/update headers.
+        $info['request_header']  = trim($info['request_header']);
+        $info['response_header'] = trim($this->headers);
+
+        // Reset for other requests.
+        $this->headers = '';
+
+        return $info;
     }
 
     /**
-     * Run.
+     * Run a cURL request.
+     *
      * @return void
+     * @throws froq\http\client\curl\CurlException
      */
     public function run(): void
     {
-        $client = $this->client;
-        $client->prepare();
+        $client = $this->getClient();
+        $client || throw new CurlException('No client initiated yet to process');
 
-        $curl = $this;
-        $curl->applyOptions();
+        $client->setup();
 
-        $handle = $curl->getHandle();
+        $handle =& $this->init();
 
         $result = curl_exec($handle);
         if ($result !== false) {
-            $client->end($result, curl_getinfo($handle), null);
+            $client->end($result, $this->getHandleInfo($handle), null);
         } else {
             $client->end(null, null, new CurlError(curl_error($handle), null, curl_errno($handle)));
         }
 
-        curl_close($handle);
+        // Drop handle.
+        unset($handle);
     }
 
     /**
-     * Apply options.
-     * @return void
-     * @throws froq\http\client\CurlException
+     * Init a cURL handle.
+     *
+     * @return &CurlHandle
+     * @throws froq\http\client\curl\CurlException
      */
-    public function applyOptions(): void
+    public function &init(): CurlHandle
     {
-        $client = $this->client;
-        $clientOptions = $client->getOptions();
+        $client = $this->getClient();
+        $client || throw new CurlException('No client initiated yet to process');
+
+        $handle = curl_init();
+        $handle || throw new CurlException('Failed curl session [error: %s]', '@error');
 
         $request = $client->getRequest();
 
-        [$method, $url, $headers, $body] = [
-            $request->getMethod(), $request->getUrl(),
-            $request->getHeaders(), $request->getBody()];
+        [$method, $url, $headers, $body, $clientOptions] = [
+            $request->getMethod(),  $request->getUrl(),
+            $request->getHeaders(), $request->getBody(),
+            $client->getOptions()
+        ];
 
         $options = [
             // Immutable (internal) options.
             CURLOPT_CUSTOMREQUEST     => $method, // Prepared, set by request object.
             CURLOPT_URL               => $url,    // Prepared, set by request object.
-            CURLOPT_HEADER            => true,    // For proper response headers & body split.
+            CURLOPT_HEADER            => false,   // Made by header function.
             CURLOPT_RETURNTRANSFER    => true,    // For proper response headers & body split.
             CURLINFO_HEADER_OUT       => true,    // For proper request headers split.
             // Mutable (client) options.
             CURLOPT_AUTOREFERER       => true,
             CURLOPT_FOLLOWLOCATION    => (bool) $clientOptions['redirs'],
-            CURLOPT_MAXREDIRS         => (int) $clientOptions['redirsMax'],
+            CURLOPT_MAXREDIRS         => (int)  $clientOptions['redirsMax'],
             CURLOPT_SSL_VERIFYHOST    => false,
             CURLOPT_SSL_VERIFYPEER    => false,
             CURLOPT_DEFAULT_PROTOCOL  => 'http',
             CURLOPT_DNS_CACHE_TIMEOUT => 3600, // 1 hour.
             CURLOPT_TIMEOUT           => (int) $clientOptions['timeout'],
             CURLOPT_CONNECTTIMEOUT    => (int) $clientOptions['timeoutConnect'],
+            CURLOPT_HEADERFUNCTION    => fn($_, $header) => $this->collectHeaders($header),
         ];
 
         // Request headers.
@@ -177,7 +165,7 @@ final class Curl
             $options[CURLOPT_HTTPHEADER][] = $name .': '. $value;
         }
 
-        // If body provided, Content-Type & Content-Length added automatically by curl.
+        // If body provided, Content-Type & Content-Length added automatically by cURL.
         // Else we add them manually, if method is suitable for this.
         if ($body !== null) {
             $options[CURLOPT_POSTFIELDS] = $body;
@@ -186,30 +174,60 @@ final class Curl
             $options[CURLOPT_HTTPHEADER][] = 'Content-Length: '. strlen((string) $body);
         }
 
+        // Extra cURL options.
+        $clientOptionsCurl = null;
+
+        if (isset($clientOptions['curl'])) {
+            is_array($clientOptions['curl']) || throw new CurlException(
+                'Options `curl` field must be array|null, %s given', get_type($clientOptions['curl'])
+            );
+            $clientOptionsCurl = $clientOptions['curl'];
+        }
+
         // Somehow HEAD method is freezing requests and causing timeouts.
         if ($method == 'HEAD') {
-            $clientOptions['curl'][CURLOPT_NOBODY] = true;
+            $clientOptionsCurl[CURLOPT_NOBODY] = true;
+        }
+
+        // Add "userpass" stuff for basic authorizations.
+        if (isset($clientOptions['userpass'])) {
+            $clientOptionsCurl[CURLOPT_USERPWD] = is_array($clientOptions['userpass'])
+                ? join(':', $clientOptions['userpass']) : (string) $clientOptions['userpass'];
+        }
+
+        // Assign HTTP version if provided.
+        if (isset($clientOptions['httpVersion'])) {
+            $clientOptionsCurl[CURLOPT_HTTP_VERSION] = match ((string) $clientOptions['httpVersion']) {
+                '2', '2.0' => CURL_HTTP_VERSION_2_0,
+                '1.1'      => CURL_HTTP_VERSION_1_1,
+                '1.0'      => CURL_HTTP_VERSION_1_0,
+                default    => throw new CurlException('Invalid `httpVersion` option `%s`, valids are: '
+                    . '2, 2.0, 1.1, 1.0', $clientOptions['httpVersion'])
+            };
         }
 
         // Apply user-provided options.
-        if (isset($clientOptions['curl'])) {
-            $clientOptions['curl'] = (array) $clientOptions['curl'];
-
-            // if (isset($clientOptions['curl'][CURLOPT_HTTP_VERSION])
-            //        && $clientOptions['curl'][CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0) {
-            //     // HTTP/2 requires a https scheme.
-            //     if (strpos($url, 'https') !== 0) {
-            //         throw new CurlException('URL scheme must be "https" for HTTP/2 requests');
-            //     }
+        if (isset($clientOptionsCurl)) {
+            // // HTTP/2 requires a https scheme.
+            // if (isset($clientOptionsCurl[CURLOPT_HTTP_VERSION])
+            //     && $clientOptionsCurl[CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0
+            //     && !str_starts_with($url, 'https')) {
+            //     throw new CurlException('URL scheme must be `https` for HTTP/2 requests');
             // }
 
-            foreach ($clientOptions['curl'] as $name => $value) {
+            foreach ($clientOptionsCurl as $name => $value) {
+                // Check constant name.
+                if (!$name || !is_int($name)) {
+                    throw new CurlException('Invalid cURL constant `%s`', $name);
+                }
+
                 // Check for internal options.
-                if (self::optionCheck($name, $foundName)) {
+                if (self::checkOption($name, $foundName)) {
                     throw new CurlException(
-                        'Not allowed cURL option %s given (some options are set internally and '.
-                        'not allowed for a proper request/response process, not allowed options'.
-                        'are: %s)', [$foundName, join(', ', array_keys(self::$notAllowedOptions))]);
+                        'Not allowed cURL option %s given [tip: some options are set internally and '.
+                        'not allowed for a proper request/response process, not allowed options are: '.
+                        '%s]', [$foundName, join(', ', array_keys(self::BLOCKED_OPTIONS))]
+                    );
                 }
 
                 if (is_array($value)) {
@@ -222,35 +240,53 @@ final class Curl
             }
         }
 
-        curl_setopt_array($this->handle, $options);
+        if (curl_setopt_array($handle, $options)) {
+            return $handle;
+        }
+
+        throw new CurlException('Failed to apply cURL options [error: %s]', '@error');
     }
 
     /**
-     * Option check.
+     * Collect response headers (called by "CURLOPT_HEADERFUNCTION" option).
+     *
+     * @param  string $header
+     * @return int
+     * @since  5.0
+     */
+    private function collectHeaders(string $header): int
+    {
+        $line = trim($header);
+
+        if ($line != '') {
+            // Status lines (for separating headers of redirect/continue etc.).
+            if (str_starts_with($line, 'HTTP/')) {
+                $this->headers .= "\r\n";
+            }
+
+            $this->headers .= $line . "\r\n";
+        }
+
+        return strlen($header);
+    }
+
+    /**
+     * Check option validity.
+     *
      * @param  any          $searchValue
      * @param  string|null &$foundName
      * @return bool
      */
-    private static function optionCheck($searchValue, string &$foundName = null): bool
+    private static function checkOption($searchValue, string &$foundName = null): bool
     {
-        // Cache options for once.
-        if (!isset(self::$notAllowedOptions['CURLOPT_CUSTOMREQUEST'])) {
-            $names = array_keys(self::$notAllowedOptions);
-            foreach (get_defined_constants(true)['curl'] as $name => $value) {
-                if (in_array($name, $names)) {
-                    self::$notAllowedOptions[$name] = $value;
-                }
-            }
-        }
-
         // Check options if contain search value.
-        foreach (self::$notAllowedOptions as $name => $value) {
+        foreach (self::BLOCKED_OPTIONS as $name => $value) {
             if ($searchValue === $value) {
                 $foundName = $name;
                 break;
             }
         }
 
-        return ($foundName !== null);
+        return ($foundName != null);
     }
 }

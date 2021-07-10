@@ -1,33 +1,14 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\response\Cookie;
 use froq\http\common\CookieException;
+use froq\http\response\Cookie;
 
 /**
  * Cookie Trait.
@@ -37,20 +18,21 @@ use froq\http\common\CookieException;
  *
  * @package  froq\http\common
  * @object   froq\http\common\CookieTrait
- * @author   Kerem Güneş <k-gun@mail.com>
+ * @author   Kerem Güneş
  * @since    4.0
  * @internal Used in froq\http only.
  */
 trait CookieTrait
 {
     /**
-     * Set/get cookie.
+     * Set/get a cookie.
+     *
      * @param  string      $name
-     * @param  scalar|null $value
+     * @param  string|null $value
      * @param  array|null  $options
      * @return self|array|null
      */
-    public function cookie(string $name, $value = null, array $options = null)
+    public function cookie(string $name, string $value = null, array $options = null)
     {
         if (func_num_args() == 1) {
             return $this->getCookie($name);
@@ -59,7 +41,8 @@ trait CookieTrait
     }
 
     /**
-     * Has cookie.
+     * Check a cookie existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -69,27 +52,27 @@ trait CookieTrait
     }
 
     /**
-     * Add cookie.
-     * @aliasOf setCookie()
+     * Add a cookie.
+     *
+     * @alias of setCookie()
      */
-    public function addCookie(...$arguments)
+    public function addCookie(...$args)
     {
-        return $this->setCookie(...$arguments);
+        return $this->setCookie(...$args);
     }
 
     /**
-     * Set cookie.
-     * @param  string     $name
-     * @param  ?scalar    $value
-     * @param  array|null $options
+     * Set a cookie.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @param  array|null  $options
      * @return self
      * @throws froq\http\common\CookieException
      */
-    public function setCookie(string $name, $value, array $options = null): self
+    public function setCookie(string $name, string|null $value, array $options = null): self
     {
-        if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
-        }
+        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
 
         $this->cookies->set($name, new Cookie($name, $value, $options));
 
@@ -97,18 +80,20 @@ trait CookieTrait
     }
 
     /**
-     * Get cookie.
+     * Get a cookie.
+     *
      * @param  string      $name
-     * @param  string|null $valueDefault
-     * @return ?string
+     * @param  string|null $default
+     * @return string|null
      */
-    public function getCookie(string $name, string $valueDefault = null): ?string
+    public function getCookie(string $name, string $default = null): string|null
     {
-        return $this->cookies->get($name, $valueDefault);
+        return $this->cookies->get($name, $default);
     }
 
     /**
-     * Remove cookie.
+     * Remove a cookie.
+     *
      * @param  string $name
      * @param  bool   $defer
      * @return self
@@ -116,23 +101,17 @@ trait CookieTrait
      */
     public function removeCookie(string $name, bool $defer = false): self
     {
-        if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
-        }
+        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
 
         $cookie = $this->getCookie($name);
         if ($cookie != null) {
             $this->cookies->remove($name);
 
             // Remove instantly.
-            if (!$defer) {
-                $this->sendCookie($name, null, $cookie->toArray());
-            }
+            $defer || $this->sendCookie($name, null, $cookie->toArray());
         } else {
             // Remove instantly.
-            if (!$defer) {
-                $this->sendCookie($name, null);
-            }
+            $defer || $this->sendCookie($name, null);
         }
 
         return $this;

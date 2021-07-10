@@ -1,42 +1,26 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
-use froq\util\Util;
-use froq\http\MessageException;
-use froq\http\message\{Body, Cookies, Headers};
+use froq\http\{Http, MessageException};
+use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
+use froq\App;
 
 /**
  * Message.
+ *
+ * Represents an abstract HTTP message entity which is used by `Request/Response` classes and mainly deals with
+ * Froq! application and controllers.
+ *
  * @package froq\http
  * @object  froq\http\Message
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   1.0
  */
 abstract class Message
@@ -48,60 +32,49 @@ abstract class Message
     public const TYPE_REQUEST  = 1,
                  TYPE_RESPONSE = 2;
 
-    /**
-     * App.
-     * @var froq\App
-     */
+    /** @var froq\App */
     protected App $app;
 
-    /**
-     * Type.
-     * @var int
-     */
+    /** @var int */
     protected int $type;
 
-    /**
-     * HTTP Version.
-     * @var string
-     */
-    protected string $httpVersion;
+    /** @var string */
+    protected string $httpProtocol;
 
-    /**
-     * Headers.
-     * @var froq\http\message\Headers
-     */
+    /** @var float */
+    protected float $httpVersion;
+
+    /** @var froq\http\message\Headers */
     protected Headers $headers;
 
-    /**
-     * Cookies.
-     * @var froq\http\message\Cookies
-     */
+    /** @var froq\http\message\Cookies */
     protected Cookies $cookies;
 
-    /**
-     * Body.
-     * @var froq\http\message\Body
-     */
+    /** @var froq\http\message\Body */
     protected Body $body;
 
     /**
      * Constructor.
+     *
      * @param froq\App $app
      * @param int      $type
      */
     public function __construct(App $app, int $type)
     {
-        $this->app         = $app;
-        $this->type        = $type;
-        $this->httpVersion = Http::version();
+        $this->app          = $app;
+        $this->type         = $type;
 
-        $this->headers     = new Headers();
-        $this->cookies     = new Cookies();
-        $this->body        = new Body();
+        $this->httpProtocol = Http::protocol();
+        $this->httpVersion  = Http::version();
+
+        $this->headers      = new Headers();
+        $this->cookies      = new Cookies();
+        $this->body         = new Body();
     }
 
     /**
      * Get app.
+     *
      * @return froq\App
      */
     public final function getApp(): App
@@ -111,6 +84,7 @@ abstract class Message
 
     /**
      * Get type.
+     *
      * @return int
      */
     public final function getType(): int
@@ -119,56 +93,58 @@ abstract class Message
     }
 
     /**
-     * Get http version.
+     * Get HTTP protocol.
+     *
      * @return string
+     * @since  5.0 Replaced with getHttpVersion().
      */
-    public final function getHttpVersion(): string
+    public final function getHttpProtocol(): string
+    {
+        return $this->httpProtocol;
+    }
+
+    /**
+     * Get HTTP version.
+     *
+     * @return float
+     * @since  4.7, 5.0 Replaced with getHttpVersionNumber().
+     */
+    public final function getHttpVersion(): float
     {
         return $this->httpVersion;
     }
 
     /**
-     * Get http version number.
-     * @return float
-     * @since  4.7
+     * Set/get headers, set for only Response.
+     *
+     * @param  ... $args
+     * @return static|froq\http\message\Headers
+     * @throws froq\http\MessageException
      */
-    public final function getHttpVersionNumber(): float
+    public final function headers(...$args): static|Headers
     {
-        return (float) substr($this->httpVersion, 5, 3);
-    }
+        if ($args) {
+            $this->isRequest() && throw new MessageException('Connot modify request headers');
 
-    /**
-     * Set/get headers.
-     * @param  ...$arguments
-     * @return self|froq\http\message\Headers
-     */
-    public final function headers(...$arguments)
-    {
-        if ($arguments) {
-            if ($this->isRequest()) {
-                throw new MessageException('Connot modify request headers');
-            }
-
-            return $this->setHeaders(...$arguments);
+            return $this->setHeaders(...$args);
         }
 
         return $this->headers;
     }
 
     /**
-     * Set/get cookies.
-     * @param  ...$arguments
-     * @return self|froq\http\message\Cookies
+     * Set/get cookies, set for only Response.
+     *
+     * @param  ...$args
+     * @return static|froq\http\message\Cookies
      * @throws froq\http\MessageException
      */
-    public final function cookies(...$arguments)
+    public final function cookies(...$args): static|Cookies
     {
-        if ($arguments) {
-            if ($this->isRequest()) {
-                throw new MessageException('Connot modify request cookies');
-            }
+        if ($args) {
+            $this->isRequest() && throw new MessageException('Connot modify request cookies');
 
-            return $this->setCookies(...$arguments);
+            return $this->setCookies(...$args);
         }
 
         return $this->cookies;
@@ -176,21 +152,23 @@ abstract class Message
 
     /**
      * Set/get body.
-     * @param  ...$arguments
-     * @return self|froq\http\message\Body
+     *
+     * @param  ...$args
+     * @return static|froq\http\message\Body
      */
-    public final function body(...$arguments)
+    public final function body(...$args): static|Body
     {
-        return $arguments ? $this->setBody(...$arguments) : $this->body;
+        return $args ? $this->setBody(...$args) : $this->body;
     }
 
     /**
-     * Set headers.
+     * Add headers.
+     *
      * @param  array<string, any> $headers
-     * @return self
+     * @return static
      * @since  4.0
      */
-    public final function addHeaders(array $headers): self
+    public final function addHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -201,10 +179,11 @@ abstract class Message
 
     /**
      * Set headers.
+     *
      * @param  array<string, any> $headers
-     * @return self
+     * @return static
      */
-    public final function setHeaders(array $headers): self
+    public final function setHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
@@ -215,10 +194,11 @@ abstract class Message
 
     /**
      * Set cookies.
+     *
      * @param  array<string, any> $cookies
-     * @return self
+     * @return static
      */
-    public function setCookies(array $cookies): self
+    public function setCookies(array $cookies): static
     {
         foreach ($cookies as $name => $value) {
             $this->setCookie($name, $value);
@@ -229,6 +209,7 @@ abstract class Message
 
     /**
      * Get headers.
+     *
      * @return froq\http\message\Headers
      */
     public final function getHeaders(): Headers
@@ -238,6 +219,7 @@ abstract class Message
 
     /**
      * Get cookies.
+     *
      * @return froq\http\message\Cookies
      * @since  4.0
      */
@@ -248,87 +230,64 @@ abstract class Message
 
     /**
      * Set body.
+     *
      * @param  any|null   $content
-     * @param  array|null $contentAttributes
+     * @param  array|null $attributes
      * @param  bool|null  $isError @internal
      * @return self
      * @throws froq\http\MessageException
      */
-    public final function setBody($content, array $contentAttributes = null, bool $isError = null): self
+    public final function setBody($content, array $attributes = null, bool $isError = null): self
     {
         // @cancel
         // $isError is an internal option and string content needed here.
         // @see App.error() and App.endOutputBuffer().
         // if (!$isError) {
         //     $this->body->setContent($content)
-        //                ->setContentAttributes($contentAttributes);
+        //                ->setAttributes($attributes);
         //     return $this;
         // }
 
         if ($this->isRequest()) {
-            if ($content != null) {
-                $this->body->setContent($content)
-                           ->setContentAttributes($contentAttributes);
-            }
+            $this->body->setContent($content)
+                       ->setAttributes($attributes);
         }
         elseif ($this->isResponse()) {
             // Payload contents.
             if ($content instanceof Payload) {
                 $payload = $content;
-            }
-            // Text contents.
-            elseif (is_string($content)) {
+            } else {
                 // Prepare defaults with type.
-                $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
-                ], (array) $contentAttributes);
+                $attributes = array_merge(['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
+                    (array) $attributes);
 
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
-            }
-            // File/image contents.
-            elseif (is_resource($content)) {
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
-            }
-            // All others.
-            else {
-                // Prepare defaults with type.
-                $contentAttributes = array_merge([
-                    'type' => $this->getContentType() ?? Body::CONTENT_TYPE_TEXT_HTML,
-                ], (array) $contentAttributes);
-
-                $contentType = (string) ($contentAttributes['type'] ?? '');
-                $contentValueType = Util::getType($content, true, true);
-
-                if ($contentValueType == 'array' || $contentValueType == 'object') {
+                if (is_array($content)) {
+                    $contentType = trim($attributes['type'] ?? '');
                     if ($contentType == '') {
-                        throw new MessageException('Missing content type for "%s" type content value',
-                            [$contentValueType]);
+                        throw new MessageException('Missing content type for `array` type content');
                     }
                     if (!preg_match('~(json|xml)~', $contentType)) {
-                        throw new MessageException('Invalid content value type for "%s" type content, '.
-                            'content type must be such type "xxx/json" or "xxx/xml"', [$contentValueType]);
+                        throw new MessageException('Invalid content value type for `array` type content,'
+                            . ' content type must be such type `xxx/json` or `xxx/xml`');
                     }
-                } elseif ($contentValueType != 'null' && $contentValueType != 'scalar') {
-                    throw new MessageException('Invalid content value type "%s"', [$contentValueType]);
+                } elseif (!is_null($content) && !is_scalar($content)) {
+                    throw new MessageException('Invalid content value type `%s`', get_type($content));
                 }
 
-                $payload = new Payload($this->getStatusCode(), $content, $contentAttributes);
+                $payload = new Payload($this->getStatusCode(), $content, $attributes);
             }
 
             // @override
-            [$content, $contentAttributes, $responseAttributes] = $payload->process($this);
+            $result = $payload->process($this);
 
             // Set original arguments or their overrides, finally..
-            $this->body->setContent($content)
-                       ->setContentAttributes($contentAttributes);
+            $this->body->setContent($result[0])->setAttributes($result[1]);
 
-            if (isset($responseAttributes)) {
-                @ [$code, $headers, $cookies] = $responseAttributes;
-
-                $code    && $this->setStatus($code);
-                $headers && $this->setHeaders($headers);
-                $cookies && $this->setCookies($cookies);
-            }
+            // Set response attributes
+            [$code, $headers, $cookies] = $result[2];
+            $code    && $this->setStatus($code);
+            $headers && $this->setHeaders($headers);
+            $cookies && $this->setCookies($cookies);
         }
 
         return $this;
@@ -336,6 +295,7 @@ abstract class Message
 
     /**
      * Get body.
+     *
      * @return froq\http\message\Body
      */
     public final function getBody(): Body
@@ -344,7 +304,8 @@ abstract class Message
     }
 
     /**
-     * Is request.
+     * Get whether message is request.
+     *
      * @return bool
      */
     public final function isRequest(): bool
@@ -353,7 +314,8 @@ abstract class Message
     }
 
     /**
-     * Is response.
+     * Get whether message is response.
+     *
      * @return bool
      */
     public final function isResponse(): bool

@@ -1,39 +1,21 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\interfaces\Stringable;
+use froq\common\interface\Stringable;
 
 /**
  * Method.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Method
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0, 4.0
+ * @author  Kerem Güneş
+ * @since   1.0
  */
 final class Method implements Stringable
 {
@@ -49,14 +31,12 @@ final class Method implements Stringable
                  COPY    = 'COPY',    MOVE    = 'MOVE',
                  LINK    = 'LINK',    UNLINK  = 'UNLINK';
 
-    /**
-     * Name.
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
     /**
      * Constructor.
+     *
      * @param string $name
      */
     public function __construct(string $name)
@@ -65,7 +45,18 @@ final class Method implements Stringable
     }
 
     /**
+     * Magic string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
      * Set name.
+     *
      * @param  string $name
      * @return void
      */
@@ -76,6 +67,7 @@ final class Method implements Stringable
 
     /**
      * Get name.
+     *
      * @return string
      */
     public function getName(): string
@@ -85,6 +77,7 @@ final class Method implements Stringable
 
     /**
      * Is get.
+     *
      * @return bool
      */
     public function isGet(): bool
@@ -94,6 +87,7 @@ final class Method implements Stringable
 
     /**
      * Is post.
+     *
      * @return bool
      */
     public function isPost(): bool
@@ -103,6 +97,7 @@ final class Method implements Stringable
 
     /**
      * Is put.
+     *
      * @return bool
      */
     public function isPut(): bool
@@ -112,6 +107,7 @@ final class Method implements Stringable
 
     /**
      * Is patch.
+     *
      * @return bool
      */
     public function isPatch(): bool
@@ -121,6 +117,7 @@ final class Method implements Stringable
 
     /**
      * Is delete.
+     *
      * @return bool
      */
     public function isDelete(): bool
@@ -130,6 +127,7 @@ final class Method implements Stringable
 
     /**
      * Is options.
+     *
      * @return bool
      */
     public function isOptions(): bool
@@ -139,6 +137,7 @@ final class Method implements Stringable
 
     /**
      * Is head.
+     *
      * @return bool
      */
     public function isHead(): bool
@@ -148,6 +147,7 @@ final class Method implements Stringable
 
     /**
      * Is trace.
+     *
      * @return bool
      */
     public function isTrace(): bool
@@ -157,6 +157,7 @@ final class Method implements Stringable
 
     /**
      * Is connect.
+     *
      * @return bool
      */
     public function isConnect(): bool
@@ -166,6 +167,7 @@ final class Method implements Stringable
 
     /**
      * Is copy.
+     *
      * @return bool
      */
     public function isCopy(): bool
@@ -175,6 +177,7 @@ final class Method implements Stringable
 
     /**
      * Is move.
+     *
      * @return bool
      */
     public function isMove(): bool
@@ -184,6 +187,7 @@ final class Method implements Stringable
 
     /**
      * Is ajax.
+     *
      * @return bool
      */
     public function isAjax(): bool
@@ -197,7 +201,7 @@ final class Method implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      */
     public function toString(): string
     {

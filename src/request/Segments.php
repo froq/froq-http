@@ -1,47 +1,28 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\interfaces\Arrayable;
-use froq\common\exceptions\{InvalidKeyException, UnsupportedOperationException};
+use froq\common\exception\UnsupportedOperationException;
+use froq\common\interface\{Arrayable, Listable};
 use froq\{Router, mvc\Controller};
 use Countable, ArrayAccess;
 
 /**
  * Segments.
  *
- * Respresents a read-only segment stack object with some utility methods.
+ * Represents a read-only segment stack object with some utility methods.
  *
  * @package froq\http\request
  * @object  froq\http\request\Segments
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.1
  */
-final class Segments implements Arrayable, Countable, ArrayAccess
+final class Segments implements Arrayable, Listable, Countable, ArrayAccess
 {
     /**
      * Root.
@@ -49,53 +30,51 @@ final class Segments implements Arrayable, Countable, ArrayAccess
      */
     public const ROOT = '/';
 
-    /**
-     * Stack.
-     * @var array
-     */
+    /** @var array */
     private array $stack = [];
 
-    /**
-     * Stack root.
-     * @var string
-     */
-    private string $stackRoot = '/';
+    /** @var string */
+    private string $stackRoot = self::ROOT;
 
     /**
      * Constructor.
+     *
      * @param array|null  $stack
      * @param string|null $stackRoot
      */
     public function __construct(array $stack = null, string $stackRoot = null)
     {
-        $stack && $this->stack = $stack;
+        $stack     && $this->stack     = $stack;
         $stackRoot && $this->stackRoot = $stackRoot;
     }
 
     /**
-     * Get stack.
+     * Get stack property.
+     *
      * @return array
      */
-    public function getStack(): array
+    public function stack(): array
     {
         return $this->stack;
     }
 
     /**
-     * Get stack root.
+     * Get stack-root property.
+     *
      * @return string
      */
-    public function getStackRoot(): string
+    public function stackRoot(): string
     {
         return $this->stackRoot;
     }
 
     /**
      * Get controller.
+     *
      * @param  bool $suffix
-     * @return ?string
+     * @return string|null
      */
-    public function getController(bool $suffix = false): ?string
+    public function getController(bool $suffix = false): string|null
     {
         $controller = $this->stack['controller'] ?? null;
 
@@ -108,10 +87,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get action.
+     *
      * @param  bool $suffix
-     * @return ?string
+     * @return string|null
      */
-    public function getAction(bool $suffix = false): ?string
+    public function getAction(bool $suffix = false): string|null
     {
         $action = $this->stack['action'] ?? null;
 
@@ -124,10 +104,11 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get params.
+     *
      * @param  bool $list
-     * @return ?array
+     * @return array|null
      */
-    public function getParams(bool $list = false): ?array
+    public function getParams(bool $list = false): array|null
     {
         return !$list ? $this->stack['params'] ?? null
                       : $this->stack['paramsList'] ?? null;
@@ -135,19 +116,21 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get params list.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public function getParamsList(): ?array
+    public function getParamsList(): array|null
     {
         return $this->stack['paramsList'] ?? null;
     }
 
     /**
      * Get action params.
+     *
      * @param  bool $list
-     * @return ?array
+     * @return array|null
      */
-    public function getActionParams(bool $list = false): ?array
+    public function getActionParams(bool $list = false): array|null
     {
         return !$list ? $this->stack['actionParams'] ?? null
                       : $this->stack['actionParamsList'] ?? null;
@@ -155,53 +138,55 @@ final class Segments implements Arrayable, Countable, ArrayAccess
 
     /**
      * Get action params list.
-     * @return ?array.
+     *
+     * @return array|null.
      */
-    public function getActionParamsList(): ?array
+    public function getActionParamsList(): array|null
     {
         return $this->stack['actionParamsList'] ?? null;
     }
 
     /**
-     * Get.
+     * Get a segment param.
+     *
      * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * @param  any|null   $default
      * @return any|null
-     * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function get($key, $valueDefault = null)
+    public function get(int|string $key, $default = null)
     {
-        if (is_int($key)) {
-            return $this->stack['paramsList'][$key - 1] ?? $valueDefault;
-        }
-        if (is_string($key)) {
-            return $this->stack['params'][$key] ?? $valueDefault;
-        }
-
-        throw new InvalidKeyException('Key type must be int|string, "%s" given', [gettype($key)]);
+        return is_int($key) ? $this->stack['paramsList'][$key - 1] ?? $default
+                            : $this->stack['params'][$key] ?? $default;
     }
 
     /**
-     * Get.
-     * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * Get a segment param by given name.
+     *
+     * @param  string   $name
+     * @param  any|null $default
      * @return any|null
-     * @throws froq\common\exceptions\InvalidKeyException
      */
-    public function getActionParam($key, $valueDefault = null)
+    public function getParam(string $name, $default = null)
     {
-        if (is_int($key)) {
-            return $this->stack['actionParamsList'][$key - 1] ?? $valueDefault;
-        }
-        if (is_string($key)) {
-            return $this->stack['actionParams'][$key] ?? $valueDefault;
-        }
+        return $this->stack['params'][$name] ?? $default;
+    }
 
-        throw new InvalidKeyException('Key type must be int|string, "%s" given', [gettype($key)]);
+    /**
+     * Get an action param.
+     *
+     * @param  int|string $key
+     * @param  any|null   $default
+     * @return any|null
+     */
+    public function getActionParam(int|string $key, $default = null)
+    {
+        return is_int($key) ? $this->stack['actionParamsList'][$key - 1] ?? $default
+                            : $this->stack['actionParams'][$key] ?? $default;
     }
 
     /**
      * From array.
+     *
      * @param  array $array
      * @return froq\http\request\Segments
      */
@@ -215,9 +200,9 @@ final class Segments implements Arrayable, Countable, ArrayAccess
         ];
 
         $stack = [
-            'params'       => [], 'paramsList' => [],
             'controller'   => $controller,
             'action'       => $action,
+            'params'       => [], 'paramsList' => [],
             'actionParams' => [], 'actionParamsList' => [],
         ];
 
@@ -236,14 +221,15 @@ final class Segments implements Arrayable, Countable, ArrayAccess
         // array_unshift($paramsList, null);
         // array_unshift($actionParamsList, null);
 
-        $stack['paramsList'] = array_filter($paramsList, 'strlen');
+        $stack['paramsList']       = array_filter($paramsList, 'strlen');
         $stack['actionParamsList'] = array_filter($actionParamsList, 'strlen');
 
         return new Segments($stack);
     }
 
     /**
-     * Empty.
+     * Check whether param list empty.
+     *
      * @return bool
      * @since  4.2, 4.9 Renamed from empty().
      */
@@ -253,10 +239,9 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * To list.
-     * @param  int $offset
-     * @return array
-     * @since  4.2
+     * @inheritDoc froq\common\interface\Listable
+     * @param      int $offset
+     * @since      4.2
      */
     public function toList(int $offset = 0): array
     {
@@ -264,7 +249,7 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Arrayable
+     * @inheritDoc froq\common\interface\Arrayable
      */
     public function toArray(): array
     {
@@ -283,34 +268,34 @@ final class Segments implements Arrayable, Countable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetExists($name)
+    public function offsetExists($key)
     {
-        return isset($this->stack[$name]);
+        return $this->get($key) !== null;
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetGet($name)
+    public function offsetGet($key)
     {
-        return isset($this->stack[$name]) ? $this->stack[$name] : null;
+        return $this->get($key);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exceptions\UnsupportedOperationException
+     * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetSet($name, $value)
+    public function offsetSet($key, $value)
     {
-        throw new UnsupportedOperationException('No set() allowed for "%s"', [self::class]);
+        throw new UnsupportedOperationException('No set() allowed for object' . self::class);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exceptions\UnsupportedOperationException
+     * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetUnset($name)
+    public function offsetUnset($key)
     {
-        throw new UnsupportedOperationException('No unset() allowed for "%s"', [self::class]);
+        throw new UnsupportedOperationException('No unset() allowed for object' . self::class);
     }
 }

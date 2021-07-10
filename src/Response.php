@@ -1,83 +1,76 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
-use froq\file\{FileObject, ImageObject, Util as FileUtil};
-use froq\encoding\Encoder;
+use froq\http\response\{ResponseTrait, ResponseException, Status, StatusException, Cookie, Cookies};
+use froq\http\message\{ContentType, ContentCharset};
 use froq\http\{Http, Message};
-use froq\http\message\Body;
-use froq\http\response\{ResponseTrait, ResponseException,
-    Status, StatusException, Cookies, Cookie};
+use froq\file\{object\FileObject, object\ImageObject, Util as FileUtil};
+use froq\{App, encoding\Encoder};
 
 /**
  * Response.
+ *
+ * Represents a HTTP response entity which extends `Message` class and mainly deals with Froq! application and
+ * controllers.
+ *
  * @package froq\http
  * @object  froq\http\Response
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   1.0
  */
 final class Response extends Message
 {
-    /**
-     * Response trait.
-     * @see froq\http\response\ResponseTrait
-     */
+    /** @see froq\http\response\ResponseTrait */
     use ResponseTrait;
 
-    /**
-     * Status.
-     * @var froq\http\response\Status
-     */
+    /** @var froq\http\response\Status */
     protected Status $status;
 
     /**
      * Constructor.
+     *
      * @param froq\App $app
      */
     public function __construct(App $app)
     {
         parent::__construct($app, Message::TYPE_RESPONSE);
 
-        $this->status  = new Status();
+        $this->status = new Status();
     }
 
     /**
-     * Set/get status.
-     * @param  ...$arguments
-     * @return self|froq\http\response\Status
+     * Get runtime.
+     *
+     * @alias to App.runtime()
+     * @since 5.0
      */
-    public function status(...$arguments)
+    public function time(...$args)
     {
-        return $arguments ? $this->setStatus(...$arguments) : $this->status;
+        return $this->app->runtime(...$args);
     }
 
     /**
-     * Redirect.
+     * Get status, also set its code if provided.
+     *
+     * @param  ... $args
+     * @return froq\http\response\Status
+     */
+    public function status(...$args): Status
+    {
+        $args && $this->setStatus(...$args);
+
+        return $this->status;
+    }
+
+    /**
+     * Redirect client to given location with/without given headers and cookies.
+     *
      * @param  string     $to
      * @param  int        $code
      * @param  array|null $headers
@@ -95,7 +88,8 @@ final class Response extends Message
     }
 
     /**
-     * Set status.
+     * Set status code and optionally status text.
+     *
      * @param  int         $code
      * @param  string|null $text
      * @return self
@@ -104,31 +98,35 @@ final class Response extends Message
     {
         try {
             $this->status->setCode($code);
-        } catch (StatusException $e) {
+        } catch (StatusException) {
             $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
         }
 
-        $this->status->setText($text ?? Status::getTextByCode($code));
+        // Not needed for HTTP/2 version.
+        if ($this->httpVersion < 2.0) {
+            $this->status->setText($text ?? Status::getTextByCode($code));
+        }
 
         return $this;
     }
 
     /**
-     * Send header.
-     * @param  string  $name
-     * @param  ?string $value
-     * @param  bool    $replace
+     * Send a header.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @param  bool        $replace
      * @return void
      * @throws froq\http\response\ResponseException
      */
-    public function sendHeader(string $name, ?string $value, bool $replace = true): void
+    public function sendHeader(string $name, string|null $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException('Cannot use "%s()", headers already sent in "%s:%s"',
+            throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
-        if ($value === null) {
+        if (is_null($value)) {
             header_remove($name);
         } else {
             header(sprintf('%s: %s', $name, $value), $replace);
@@ -136,7 +134,8 @@ final class Response extends Message
     }
 
     /**
-     * Send headers.
+     * Send all holding headers.
+     *
      * @return void
      */
     public function sendHeaders(): void
@@ -153,35 +152,35 @@ final class Response extends Message
     }
 
     /**
-     * Send cookie.
+     * Send a cookie.
+     *
      * @param  string                                $name
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
      * @throws froq\http\response\ResponseException
      */
-    public function sendCookie(string $name, $value, array $options = null): void
+    public function sendCookie(string $name, string|Cookie|null $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
-            throw new ResponseException('Cannot use "%s()", headers already sent in "%s:%s"',
+            throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
         // Check name.
         $session = $this->app->session();
-        if ($session != null && $session->getName() == $name) {
-            throw new ResponseException('Invalid cookie name "%s", name "%s" reserved as '.
-                'session name', [$name, $name]);
+        if ($session != null && $session->name() == $name) {
+            throw new ResponseException('Invalid cookie name `%s`, name is reserved as session name', $name);
         }
 
-        $cookie = ($value instanceof Cookie)
-            ? $value : new Cookie($name, $value, $options);
+        $cookie = ($value instanceof Cookie) ? $value : new Cookie($name, $value, $options);
 
-        header('Set-Cookie: '. $cookie->toString(), false);
+        header('Set-Cookie: ' . $cookie->toString(), false);
     }
 
     /**
-     * Send cookies.
+     * Send all holding cookies.
+     *
      * @return void
      */
     public function sendCookies(): void
@@ -193,6 +192,7 @@ final class Response extends Message
 
     /**
      * Send body.
+     *
      * @return void
      */
     public function sendBody(): void
@@ -202,38 +202,44 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        $body              = $this->getBody();
-        $content           = $body->getContent();
-        $contentAttributes = $body->getContentAttributes();
+        $body       = $this->body;
+        $content    = $body->getContent();
+        $attributes = $body->getAttributes();
 
         // Those n/a responses output nothing.
-        if ($body->isNone()) {
-            header('Content-Type: n/a');
+        if ($body->isNa()) {
+            header('Content-Type: na');
             header('Content-Length: 0');
+
+            $this->exposeAppRuntime();
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
             $content        = (string) $content;
-            $contentType    = $contentAttributes['type'] ?? Body::CONTENT_TYPE_TEXT_HTML; // @default
-            $contentCharset = $contentAttributes['charset'] ?? Body::CONTENT_CHARSET_UTF_8; // @default
-            if ($contentCharset && $contentCharset != Body::CONTENT_CHARSET_NA) {
+            $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
+            $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
+            if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
             // Gzip stuff.
             $contentLength = strlen($content);
             if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
-                $gzipOptions    = $this->app->config('response.gzip');
-                $acceptEncoding = $this->app->request()->getHeader('Accept-Encoding', '');
+                $gzipOptions       = $this->app->config('response.gzip');
+                $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
 
                 // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions != null && $contentLength >= ($gzipOptions['minlen'] ?? 64)
-                    && strpos($acceptEncoding, 'gzip') !== false) {
-                    $content = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
-                    if ($error == null) {
-                        // Cancel php's compression & add required headers.
+                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && str_contains(
+                    $this->app->request()->getHeader('Accept-Encoding', ''), 'gzip'
+                )) {
+                    $temp = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
+                    if ($temp && $error == null) {
+                        [$content, $temp] = [$temp, null];
+
+                        // Cancel PHP compression.
                         ini_set('zlib.output_compression', 'off');
 
+                        // Add required headers.
                         header('Vary: Accept-Encoding');
                         header('Content-Encoding: gzip');
                     }
@@ -243,7 +249,9 @@ final class Response extends Message
             header('Content-Type: '. $contentType);
             header('Content-Length: '. strlen($content));
 
-            print $content;
+            $this->exposeAppRuntime();
+
+            echo $content;
         }
         // Image contents.
         elseif ($body->isImage()) {
@@ -252,25 +260,63 @@ final class Response extends Message
                 return;
             }
 
-            [$image, $imageType, $imageModifiedAt, $imageOptions] = [
-                $content, $contentAttributes['type'], $contentAttributes['modifiedAt'],
-                          $contentAttributes['options'] ?? $this->app->config('response.image')];
+            [$image, $imageType, $modifiedAt, $expiresAt, $direct, $etag] = [
+                $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
+            ];
 
-            $image   = ImageObject::fromResource($image, $imageType, $imageOptions);
-            $content = $image->toString();
+            // For direct file readings.
+            if ($direct) {
+                header('Content-Type: '. $imageType);
+                header('Content-Length: '. filesize($image));
+                if ($etag) {
+                    header('ETag: '. (is_string($etag) ? $etag : hash_file('fnv1a64', $image)));
+                }
+                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
+                    header('Last-Modified: '. Http::date(
+                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
+                    ));
+                }
+                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
+                    header('Expires: '. Http::date(
+                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
+                    ));
+                }
+                header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
 
-            header('Content-Type: '. $imageType);
-            header('Content-Length: '. strlen($content));
-            if (is_int($imageModifiedAt) || is_string($imageModifiedAt)) {
-                header('Last-Modified: '. Http::date(
-                    is_int($imageModifiedAt) ? $imageModifiedAt : strtotime($imageModifiedAt)
-                ));
+                $this->exposeAppRuntime();
+
+                readfile($image);
             }
-            header('X-Dimensions: '. vsprintf('%dx%d', $image->getDimensions()));
+            // For resize/crop purposes.
+            else {
+                $options = $attributes['options'] ?? $this->app->config('response.image');
 
-            print $content;
+                $image   = ImageObject::fromResource($image, $imageType, $options);
+                $content = $image->toString();
 
-            $image->free();
+                header('Content-Type: '. $imageType);
+                header('Content-Length: '. strlen($content));
+                if ($etag) {
+                    header('ETag: '. (is_string($etag) ? $etag : hash('fnv1a64', $content)));
+                }
+                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
+                    header('Last-Modified: '. Http::date(
+                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
+                    ));
+                }
+                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
+                    header('Expires: '. Http::date(
+                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
+                    ));
+                }
+                header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
+
+                $this->exposeAppRuntime();
+
+                echo $content;
+
+                unset($image); // Free.
+            }
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
@@ -279,65 +325,96 @@ final class Response extends Message
                 return;
             }
 
-            [$file, $fileMime, $fileName, $fileSize, $fileModifiedAt] = [
-                $content, $contentAttributes['mime'], $contentAttributes['name'],
-                          $contentAttributes['size'], $contentAttributes['modifiedAt']];
+            [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rate] = [
+                $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rate'])
+            ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
-            $rateLimit = (int) $this->app->config('response.file.rateLimit', -1);
+            $rateLimit = $rate ?? (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
 
-            header('Content-Type: '. ($fileMime ?: Body::CONTENT_TYPE_APPLICATION_OCTET_STREAM));
+            header('Content-Type: '. ($fileMime ?: ContentType::APPLICATION_OCTET_STREAM));
             header('Content-Length: '. $fileSize);
             header('Content-Disposition: attachment; filename="'. $fileName .'"');
             header('Content-Transfer-Encoding: binary');
             header('Cache-Control: no-cache');
             header('Pragma: no-cache');
-            header('Expires: '. Http::date(0));
-            if (is_int($fileModifiedAt) || is_string($fileModifiedAt)) {
+            header('Expires: 0');
+            if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 header('Last-Modified: '. Http::date(
-                    is_int($fileModifiedAt) ? $fileModifiedAt : strtotime($fileModifiedAt)
+                    is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
                 ));
             }
             if ($rateLimit != $fileSize) {
                 header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
             }
 
-            $file = FileObject::fromResource($file);
-            $file->rewind();
+            $this->exposeAppRuntime();
 
-            do {
-                $content = $file->read($rateLimit);
-                print $content;
-                sleep(1); // Apply rate limit.
-            } while ($content && !connection_aborted());
+            // For direct file readings.
+            if ($direct) {
+                $file = fopen($file, 'rb');
 
-            $file->free();
-        } else {
-            // Nope, nothing to print..
+                do {
+                    echo fread($file, $rateLimit);
+                    sleep(1); // Apply rate limit.
+                } while (!connection_aborted() && !feof($file));
+
+                fclose($file);
+            }
+            // For resource readings.
+            else {
+                $file = FileObject::fromResource($file);
+                $file->rewind();
+
+                do {
+                    echo $file->read($rateLimit);
+                    sleep(1); // Apply rate limit.
+                } while (!connection_aborted() && $file->valid());
+
+                unset($file); // Free.
+            }
         }
+        // Nope, nothing to print..
+        // else {}
+
+        // Free.
+        $body->setContent(null);
     }
 
     /**
      * End.
+     *
      * @return void
      */
     public function end(): void
     {
         $code = $this->status->getCode();
-        if (!http_response_code($code)) {
-            if ($this->getHttpVersionNumber() >= 2.0) {
-                header(sprintf('%s %s', $this->getHttpVersion(), $code));
-            } else {
-                header(sprintf('%s %s %s', $this->getHttpVersion(), $code, $this->status->getText()));
-            }
-        }
+
         header('Status: '. $code);
+
+        if (!http_response_code($code)) {
+            ($this->httpVersion >= 2.0)
+                ? header(sprintf('%s %s', $this->httpProtocol, $code))
+                : header(sprintf('%s %s %s', $this->httpProtocol, $code, $this->status->getText()));
+        }
 
         $this->sendHeaders();
         $this->sendCookies();
         $this->sendBody();
+    }
+
+    /**
+     * @since 5.0
+     * @internal
+     */
+    private function exposeAppRuntime(): void
+    {
+        $art = $this->app->config('exposeAppRuntime');
+        if ($art && ($art === true || $art === $this->app->env())) {
+            header('X-Art: '. $this->app->runtime(format: true));
+        }
     }
 }

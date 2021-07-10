@@ -1,38 +1,20 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\interfaces\Stringable;
+use froq\common\interface\Stringable;
 
 /**
  * Scheme.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Scheme
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  */
 final class Scheme implements Stringable
@@ -44,14 +26,12 @@ final class Scheme implements Stringable
     public const HTTP  = 'http',
                  HTTPS = 'https';
 
-    /**
-     * Name.
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
     /**
      * Constructor.
+     *
      * @param string $name
      */
     public function __construct(string $name)
@@ -60,7 +40,18 @@ final class Scheme implements Stringable
     }
 
     /**
+     * Magic string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
      * Set name.
+     *
      * @param  string $name
      * @return void
      */
@@ -71,6 +62,7 @@ final class Scheme implements Stringable
 
     /**
      * Get name.
+     *
      * @return string
      */
     public function getName(): string
@@ -80,6 +72,7 @@ final class Scheme implements Stringable
 
     /**
      * Is secure.
+     *
      * @return bool
      */
     public function isSecure(): bool
@@ -88,7 +81,7 @@ final class Scheme implements Stringable
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      */
     public function toString(): string
     {

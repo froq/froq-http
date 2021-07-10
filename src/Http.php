@@ -1,26 +1,7 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -29,30 +10,30 @@ namespace froq\http;
 /**
  * Http.
  *
- * A static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocol versions both related
+ * Represents a static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocol versions both related
  * utility methods.
  *
  * @package froq\http
  * @object  froq\http\Http
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   1.0
  * @static
  */
 final class Http
 {
     /**
-     * Versions.
+     * Protocols.
      * @const string
      */
-    public const VERSION_1_0     = 'HTTP/1.0',
-                 VERSION_1_1     = 'HTTP/1.1',
-                 VERSION_2_0     = 'HTTP/2.0';
+    public const PROTOCOL_1_0     = 'HTTP/1.0',
+                 PROTOCOL_1_1     = 'HTTP/1.1',
+                 PROTOCOL_2_0     = 'HTTP/2.0';
 
     /**
      * Version default.
      * @const string
      */
-    public const VERSION_DEFAULT = self::VERSION_1_1;
+    public const PROTOCOL_DEFAULT = self::PROTOCOL_1_1;
 
     /**
      * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
@@ -61,16 +42,30 @@ final class Http
     public const DATE_FORMAT = 'D, d M Y H:i:s \G\M\T';
 
     /**
-     * Detect version.
+     * Get protocol.
+     *
      * @return string
+     * @since  5.0 Derived from version().
      */
-    public static function version(): string
+    public static function protocol(): string
     {
-        return $_SERVER['SERVER_PROTOCOL'] ?? self::VERSION_DEFAULT;
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::PROTOCOL_DEFAULT);
     }
 
     /**
-     * Date.
+     * Get version.
+     *
+     * @return float
+     * @since  5.0 Changed to float return.
+     */
+    public static function version(): float
+    {
+        return (float) substr(self::protocol(), 5, 3);
+    }
+
+    /**
+     * Format a time as HTTP date.
+     *
      * @param  int|null $time
      * @return string
      * @since  4.0
@@ -81,7 +76,8 @@ final class Http
     }
 
     /**
-     * Date verify.
+     * Verify a date by HTTP format.
+     *
      * @param  string $date
      * @return bool
      * @since  4.0

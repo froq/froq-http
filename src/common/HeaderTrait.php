@@ -1,26 +1,7 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -36,14 +17,15 @@ use froq\http\common\HeaderException;
  *
  * @package  froq\http\common
  * @object   froq\http\common\HeaderTrait
- * @author   Kerem Güneş <k-gun@mail.com>
+ * @author   Kerem Güneş
  * @since    4.0
  * @internal Used in froq\http only.
  */
 trait HeaderTrait
 {
     /**
-     * Set/get/add header.
+     * Set/get/add a header.
+     *
      * @param  string      $name
      * @param  string|null $value
      * @param  bool        $replace
@@ -59,7 +41,8 @@ trait HeaderTrait
     }
 
     /**
-     * Has header.
+     * Check a header existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -70,55 +53,39 @@ trait HeaderTrait
     }
 
     /**
-     * Add header.
+     * Add a header.
+     *
      * @param  string                    $name
      * @param  string|array<string>|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function addHeader(string $name, $value): self
+    public function addHeader(string $name, string|array|null $value): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
-
-        // Memoize value check/convert function.
-        static $valueOf;
-        $valueOf ??= function ($name, $value) {
-            if (is_null($value) || is_string($value)) {
-                return $value;
-            }
-
-            if (is_scalar($value)) {
-                return var_export($value, true);
-            }
-
-            throw new HeaderException('Non-null/scalar value given for "%s" header', [$name]);
-        };
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         if (is_array($value)) {
             foreach ($value as $valu) {
-                $this->headers->add($name, $valueOf($name, $valu));
+                $this->headers->add($name, $valu);
             }
         } else {
-            $this->headers->add($name, $valueOf($name, $value));
+            $this->headers->add($name, $value);
         }
 
         return $this;
     }
 
     /**
-     * Set header.
-     * @param  string  $name
-     * @param  ?string $value
+     * Set a header.
+     *
+     * @param  string      $name
+     * @param  string|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function setHeader(string $name, ?string $value): self
+    public function setHeader(string $name, string|null $value): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         $this->headers->set($name, $value);
 
@@ -126,20 +93,21 @@ trait HeaderTrait
     }
 
     /**
-     * Get header.
+     * Get a header.
+     *
      * @param  string                    $name
-     * @param  string|array<string>|null $valueDefault
+     * @param  string|array<string>|null $default
      * @return string|array<string>|null
      */
-    public function getHeader(string $name, $valueDefault = null)
+    public function getHeader(string $name, string|array $default = null): string|array|null
     {
-        return $this->headers->get($name)
-            ?? $this->headers->get(strtolower($name))
-            ?? $valueDefault;
+        return $this->headers->get($name, $default)
+            ?? $this->headers->get(strtolower($name), $default);
     }
 
     /**
-     * Remove header.
+     * Remove a header.
+     *
      * @param  string $name
      * @param  bool   $defer
      * @return self
@@ -147,9 +115,7 @@ trait HeaderTrait
      */
     public function removeHeader(string $name, bool $defer = false): self
     {
-        if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
-        }
+        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
 
         $header = $this->getHeader($name);
         if ($header != null) {
@@ -157,9 +123,7 @@ trait HeaderTrait
             || $this->headers->remove(strtolower($name));
 
             // Remove instantly.
-            if (!$defer) {
-                $this->sendHeader($name, null);
-            }
+            $defer || $this->sendHeader($name, null);
         }
 
         return $this;

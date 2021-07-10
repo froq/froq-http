@@ -1,111 +1,160 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\objects\StaticClass;
 use froq\http\request\Params;
+use froq\common\object\StaticClass;
 
 /**
  * Param.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Param
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.8
  * @static
  */
 final class Param extends StaticClass
 {
     /**
-     * Get.
+     * Get one or many "$_GET" params, optionally mapping/filtering.
+     *
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $trim
+     * @param  bool          $combine
      * @return any
      */
-    public static function get($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function get(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false)
     {
-        $values = Params::gets((array) $name, $valueDefault);
+        // Trim is default for map if not false.
+        (!$map && $trim) && $map = 'trim';
+
+        // All entries wanted.
+        ($name == '*') && $name = array_keys($_GET);
+
+        $values = Params::gets((array) $name, $default);
+
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
+            );
+        }
+
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
-     * Get.
+     * Get one or many "$_POST" params, optionally mapping/filtering.
+     *
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $trim
+     * @param  bool          $combine
      * @return any
      */
-    public static function post($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false)
     {
-        $values = Params::posts((array) $name, $valueDefault);
+        // Trim is default for map if not false.
+        (!$map && $trim) && $map = 'trim';
+
+        // All entries wanted.
+        ($name == '*') && $name = array_keys($_POST);
+
+        $values = Params::posts((array) $name, $default);
+
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
+            );
+        }
+
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
-     * Cookie.
+     * Get one or many "$_COOKIE" params, optionally mapping/filtering.
+     *
      * @param  string|array  $name
-     * @param  any|null      $valueDefault
+     * @param  any|null      $default
      * @param  callable|null $map
      * @param  callable|null $filter
+     * @param  bool          $trim
+     * @param  bool          $combine
      * @return any
      */
-    public static function cookie($name, $valueDefault = null, callable $map = null, callable $filter = null)
+    public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false)
     {
-        $values = Params::cookies((array) $name, $valueDefault);
+        // Trim is default for map if not false.
+        (!$map && $trim) && $map = 'trim';
+
+        // All entries wanted.
+        ($name == '*') && $name = array_keys($_COOKIE);
+
+        $values = Params::cookies((array) $name, $default);
+
         if ($map || $filter) {
             $values = self::applyMapFilter($values, $map, $filter);
         }
 
-        return is_array($name) ? $values : ($values[0] ?? $valueDefault);
+        if ($combine) {
+            return array_combine($names = (array) $name,
+                !$filter ? $values : array_pad($values, count($names), null)
+            );
+        }
+
+        return is_array($name) ? $values : ($values[0] ?? $default);
     }
 
     /**
      * Apply map/filter.
-     * @param  array         $values
-     * @param  callable|null $map
-     * @param  callable|null $filter
+     *
+     * @param  array     $values
+     * @param  ?callable $map
+     * @param  ?callable $filter
      * @return array
+     * @internal
      */
-    private static function applyMapFilter(array $values, callable $map = null, callable $filter = null): array
+    private static function applyMapFilter(array $values, ?callable $map, ?callable $filter): array
     {
+        // For safely mapping array'ed values.
+        if ($map) $map = fn($v) => self::map($v, $map);
+
         // Apply map & filter if provided.
-        $map && $values = array_map($map, $values);
+        $map    && $values = array_map($map, $values);
         $filter && $values = array_filter($values, $filter);
 
         return $values;
+    }
+
+    /**
+     * Array-safe map.
+     * @since 5.0
+     * @internal
+     */
+    private static function map($in, $map)
+    {
+        return is_array($in) ? array_map(fn($v) => self::map($v, $map), $in)
+             : $map((string) $in); // Always string.
     }
 }

@@ -1,26 +1,7 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -29,12 +10,12 @@ namespace froq\http\response;
 /**
  * Status Codes.
  *
- * Respresents an HTTP Status Code registry with some utility methods. All code & text (reason
- * phrases) resouces can be found at: https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
+ * Represents an HTTP Status Code registry with some utility methods. All code & text (reason phrases)
+ * resouces can be found at: https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
  *
  * @package froq\http\response
  * @object  froq\http\response\StatusCodes
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  */
 class StatusCodes
@@ -78,6 +59,7 @@ class StatusCodes
         PAYMENT_REQUIRED                = 402,
         FORBIDDEN                       = 403,
         NOT_FOUND                       = 404,
+        NOT_ALLOWED                     = 405, // @alias
         METHOD_NOT_ALLOWED              = 405,
         NOT_ACCEPTABLE                  = 406,
         PROXY_AUTHENTICATION_REQUIRED   = 407,
@@ -91,6 +73,8 @@ class StatusCodes
         UNSUPPORTED_MEDIA_TYPE          = 415,
         RANGE_NOT_SATISFIABLE           = 416,
         EXPECTATION_FAILED              = 417,
+        IMA_TEAPOT                      = 418,
+        ENHANCE_YOUR_CALM               = 420,
         MISDIRECTED_REQUEST             = 421,
         UNPROCESSABLE_ENTITY            = 422,
         LOCKED                          = 423,
@@ -100,10 +84,14 @@ class StatusCodes
         PRECONDITION_REQUIRED           = 428,
         TOO_MANY_REQUESTS               = 429,
         REQUEST_HEADER_FIELDS_TOO_LARGE = 431,
+        NO_RESPONSE                     = 444,
+        RETRY_WITH                      = 449,
         UNAVAILABLE_FOR_LEGAL_REASONS   = 451,
+        CLIENT_CLOSED_REQUEST           = 499,
 
         // Server errors (5xx).
         INTERNAL_SERVER_ERROR           = 500,
+        INTERNAL                        = 500, // @alias
         NOT_IMPLEMENTED                 = 501,
         BAD_GATEWAY                     = 502,
         SERVICE_UNAVAILABLE             = 503,
@@ -112,11 +100,14 @@ class StatusCodes
         VARIANT_ALSO_NEGOTIATES         = 506,
         INSUFFICIENT_STORAGE            = 507,
         LOOP_DETECTED                   = 508,
+        BANDWIDTH_LIMIT_EXCEEDED        = 509,
         NOT_EXTENDED                    = 510,
-        NETWORK_AUTHENTICATION_REQUIRED = 511;
+        NETWORK_AUTHENTICATION_REQUIRED = 511,
+        NETWORK_READ_TIMEOUT_ERROR      = 598,
+        NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
 
     /**
-     * Statuses.
+     * Statuses map.
      * @var array
      */
     private static array $statuses = [
@@ -167,6 +158,8 @@ class StatusCodes
         415 => 'Unsupported Media Type',
         416 => 'Range Not Satisfiable',
         417 => 'Expectation Failed',
+        418 => 'I\'m a Teapot',
+        420 => 'Enhance Your Calm',
         421 => 'Misdirected Request',
         422 => 'Unprocessable Entity',
         423 => 'Locked',
@@ -176,7 +169,10 @@ class StatusCodes
         428 => 'Precondition Required',
         429 => 'Too Many Requests',
         431 => 'Request Header Fields Too Large',
+        444 => 'No Response',
+        449 => 'Retry With',
         451 => 'Unavailable For Legal Reasons',
+        499 => 'Client Closed Request',
 
         // Server errors (5xx).
         500 => 'Internal Server Error',
@@ -188,12 +184,16 @@ class StatusCodes
         506 => 'Variant Also Negotiates',
         507 => 'Insufficient Storage',
         508 => 'Loop Detected',
+        509 => 'Bandwidth Limit Exceeded',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
+        598 => 'Network Read Timeout Error',
+        599 => 'Network Connect Timeout Error',
     ];
 
     /**
-     * All.
+     * Get all statuses.
+     *
      * @return array
      */
     public static final function all(): array
@@ -202,12 +202,14 @@ class StatusCodes
     }
 
     /**
-     * Validate.
+     * Validate given status code.
+     *
      * @param  int $code
      * @return bool
      */
     public static final function validate(int $code): bool
     {
+        // @cancel
         // Since only IANA-defined codes are here, do not use $statuses.
         // return array_key_exists($code, self::$statuses);
 
@@ -216,20 +218,22 @@ class StatusCodes
 
     /**
      * Get code by text.
+     *
      * @param  string $text
-     * @return ?int
+     * @return int|null
      */
-    public static final function getCodeByText(string $text): ?int
+    public static final function getCodeByText(string $text): int|null
     {
         return array_flip(self::$statuses)[$text] ?? null;
     }
 
     /**
      * Get text by code.
+     *
      * @param  int $code
-     * @return ?string
+     * @return string|null
      */
-    public static final function getTextByCode(int $code): ?string
+    public static final function getTextByCode(int $code): string|null
     {
         return self::$statuses[$code] ?? null;
     }

@@ -1,56 +1,36 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\{Url, UrlException};
 use froq\http\request\{Segments, UriException};
+use froq\http\Url;
 use Throwable;
 
 /**
  * Uri.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Uri
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   1.0
  */
 final class Uri extends Url
 {
-    /**
-     * Segments.
-     * @var froq\http\request\Segments
-     */
+    /** @var froq\http\request\Segments */
     private Segments $segments;
 
     /**
      * Constructor.
+     *
      * @param  array|string $source
      * @throws froq\http\request\UriException
      */
-    public function __construct($source)
+    public function __construct(array|string $source)
     {
         try {
             parent::__construct($source, ['path', 'query', 'queryParams', 'fragment']);
@@ -62,40 +42,55 @@ final class Uri extends Url
     }
 
     /**
-     * Segment.
+     * Get a segment.
+     *
      * @param  int|string $key
-     * @param  any|null   $valueDefault
+     * @param  any|null   $default
      * @return any|null
      * @throws froq\http\request\UriException
      */
-    public function segment($key, $valueDefault = null)
+    public function segment(int|string $key, $default = null)
     {
         if (isset($this->segments)) {
-            try {
-                return $this->segments->get($key, $valueDefault);
-            } catch (Throwable $e) {
-                throw new UriException($e);
-            }
+            return $this->segments->get($key, $default);
         }
 
-        throw new UriException('Uri.segments property not set yet (method generateSegments() '
-            . 'not called at all)');
+        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
+            . ' not called yet]');
     }
 
     /**
-     * Segments.
-     * @return ?froq\http\request\Segments
+     * Get segments property or params.
+     *
+     * @param  array<int|string>|null $keys
+     * @param  any|null               $default
+     * @return froq\http\request\Segments|array
      */
-    public function segments(): ?Segments
+    public function segments(array $keys = null, $default = null): Segments|array
     {
-        return $this->segments ?? null;
+        if (isset($this->segments)) {
+            if ($keys === null) {
+                return $this->segments;
+            }
+
+            $ret = [];
+            foreach ($keys as $key) {
+                $ret[] = $this->segments->get($key, $default);
+            }
+            return $ret;
+        }
+
+        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
+            . ' not called yet]');
     }
 
     /**
      * Generate segments.
+     *
      * @param  string|null $root
      * @return void
      * @throws froq\http\request\UriException
+     * @internal
      */
     public function generateSegments(string $root = null): void
     {
@@ -111,8 +106,8 @@ final class Uri extends Url
                 $root = '/'. trim($root, '/');
 
                 // Prevent wrong generate action.
-                if (strpos($path, $root) !== 0) {
-                    throw new UriException('URI path "%s" has no root such "%s"', [$path, $root]);
+                if (!str_starts_with($path, $root)) {
+                    throw new UriException('URI path `%s` has no root such `%s`', [$path, $root]);
                 }
 
                 // Drop root from path.

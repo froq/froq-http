@@ -1,33 +1,13 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\common;
 
 use froq\http\request\Params;
-use froq\http\common\ParamException;
 
 /**
  * Param Trait.
@@ -36,75 +16,64 @@ use froq\http\common\ParamException;
  *
  * @package  froq\http\common
  * @object   froq\http\common\ParamTrait
- * @author   Kerem Güneş <k-gun@mail.com>
+ * @author   Kerem Güneş
  * @since    4.0
  * @internal Used in froq\http only.
  */
 trait ParamTrait
 {
     /**
-     * Get.
+     * Get one/many "GET" param.
+     *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
-    public function get($name = null, $valueDefault = null)
+    public function get(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->getParam($name, $valueDefault);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->getParams($name, $valueDefault);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->getParam($name, $default)
+                                : $this->getParams($name, $default);
     }
 
     /**
-     * Get param.
+     * Get one "GET" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function getParam(string $name, $valueDefault = null)
+    public function getParam(string $name, $default = null)
     {
-        return Params::get($name, $valueDefault);
+        return Params::get($name, $default);
     }
 
     /**
-     * Get params.
+     * Get many "GET" param.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function getParams(array $names = null, $valuesDefault = null): array
+    public function getParams(array $names = null, $default = null): array
     {
-        return Params::gets($names, $valuesDefault);
+        return Params::gets($names, $default);
     }
 
     /**
-     * Has get.
+     * Check one/many "GET" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
-    public function hasGet($name = null): bool
+    public function hasGet(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasGetParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasGetParams($name);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->hasGetParam($name)
+                                : $this->hasGetParams($name);
     }
 
     /**
-     * Has get param.
+     * Check one "GET" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -114,7 +83,8 @@ trait ParamTrait
     }
 
     /**
-     * Has get params.
+     * Check many "GET" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -124,68 +94,57 @@ trait ParamTrait
     }
 
     /**
-     * Post.
+     * Get one/many "POST" param.
+     *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
-    public function post($name = null, $valueDefault = null)
+    public function post(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->postParam($name, $valueDefault);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->postParams($name, $valueDefault);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->postParam($name, $default)
+                                : $this->postParams($name, $default);
     }
 
     /**
-     * Post param.
+     * Get one "POST" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function postParam(string $name, $valueDefault = null)
+    public function postParam(string $name, $default = null)
     {
-        return Params::post($name, $valueDefault);
+        return Params::post($name, $default);
     }
 
     /**
-     * Post params.
+     * Get many "POST" param.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function postParams(array $names = null, $valuesDefault = null): array
+    public function postParams(array $names = null, $default = null): array
     {
-        return Params::posts($names, $valuesDefault);
+        return Params::posts($names, $default);
     }
 
     /**
-     * Has post.
+     * Check one/many "POST" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
-    public function hasPost($name = null): bool
+    public function hasPost(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasPostParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasPostParams($name);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->hasPostParam($name)
+                                : $this->hasPostParams($name);
     }
 
     /**
-     * Has post param.
+     * Check one "POST" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -195,7 +154,8 @@ trait ParamTrait
     }
 
     /**
-     * Has post params.
+     * Check many "POST" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
@@ -205,68 +165,57 @@ trait ParamTrait
     }
 
     /**
-     * Cookie.
+     * Get one/many "COOKIE" param.
+     *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $valueDefault
+     * @param  any|null                  $default
      * @return any|null
-     * @throws froq\http\common\ParamException
      */
-    public function cookie($name = null, $valueDefault = null)
+    public function cookie(string|array $name = null, $default = null)
     {
-        if (is_string($name)) {
-            return $this->cookieParam($name, $valueDefault);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->cookieParams($name, $valueDefault);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->cookieParam($name, $default)
+                                : $this->cookieParams($name, $default);
     }
 
     /**
-     * Cookie param.
+     * Get one "COOKIE" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public function cookieParam(string $name, $valueDefault = null)
+    public function cookieParam(string $name, $default = null)
     {
-        return Params::cookie($name, $valueDefault);
+        return Params::cookie($name, $default);
     }
 
     /**
-     * Cookie params.
+     * Get many "COOKIE" param.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public function cookieParams(array $names = null, $valuesDefault = null): array
+    public function cookieParams(array $names = null, $default = null): array
     {
-        return Params::cookies($names, $valuesDefault);
+        return Params::cookies($names, $default);
     }
 
     /**
-     * Has cookie.
+     * Check one/many "COOKIE" param existence.
+     *
      * @param  string|array<string>|null $name
      * @return bool
-     * @throws froq\http\common\ParamException
      */
-    public function hasCookie($name = null): bool
+    public function hasCookie(string|array $name = null): bool
     {
-        if (is_string($name)) {
-            return $this->hasCookieParam($name);
-        }
-        if ($name === null || is_array($name)) {
-            return $this->hasCookieParams($name);
-        }
-
-        throw new ParamException('Invalid type "%s" for $name argument, valids are: string, '.
-            'array<string>, null', [gettype($name)]);
+        return is_string($name) ? $this->hasCookieParam($name)
+                                : $this->hasCookieParams($name);
     }
 
     /**
-     * Has cookie param.
+     * Get one "COOKIE" param existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -276,7 +225,8 @@ trait ParamTrait
     }
 
     /**
-     * Has cookie params.
+     * Get many "COOKIE" param existence.
+     *
      * @param  array<string>|null $names
      * @return bool
      */

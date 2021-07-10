@@ -1,50 +1,35 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
+use froq\common\object\StaticClass;
+
 /**
  * Util.
+ *
  * @package froq\http
  * @object  froq\http\Util
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  * @static
  */
-final class Util
+final class Util extends StaticClass
 {
     /**
-     * Parse url.
+     * Parse given URL.
+     *
      * @param  string $url
-     * @return ?array
+     * @return array|null
      */
-    public static function parseUrl(string $url): ?array
+    public static function parseUrl(string $url): array|null
     {
         // Ensure scheme is http (or https).
-        if (strpos($url, 'http') !== 0) {
+        if (!str_starts_with($url, 'http')) {
             return null;
         }
 
@@ -53,7 +38,7 @@ final class Util
             return null;
         }
 
-        @ [$authority, $user, $pass] = ['', $parsedUrl['user'], $parsedUrl['pass']];
+        [$authority, $user, $pass] = ['', $parsedUrl['user'] ?? null, $parsedUrl['pass'] ?? null];
         if ($user != null || $pass != null) {
             $authority = $user;
             if ($pass != null) {
@@ -67,54 +52,51 @@ final class Util
             $host .= ':'. $port;
         }
 
-        $query = $parsedUrl['query'] ?? null;
-        if ($query != null) {
-            parse_str($query, $query);
-        }
+        $query    = $parsedUrl['query'] ?? null;
+        $fragment = $parsedUrl['fragment'] ?? null;
+
+        parse_str((string) $query, $query);
 
         // Base URL with scheme, host, authority and path.
         $url = sprintf('%s://%s%s%s', $parsedUrl['scheme'], $authority, $host,
             $parsedUrl['path'] ?? '/');
 
-        $urlParams = $query;
-        $urlFragment = $parsedUrl['fragment'] ?? null;
-
-        return [$url, $urlParams, $urlFragment, $parsedUrl];
+        return [$url, $query, $fragment, $parsedUrl];
     }
 
     /**
-     * Parse headers.
-     * @param  string    $headers
-     * @param  bool|null $lower
+     * Parse given headers.
+     *
+     * @param  string $headers
+     * @param  bool   $lower
      * @return array
      */
-    public static function parseHeaders(string $headers, bool $lower = null): array
+    public static function parseHeaders(string $headers, bool $lower = true): array
     {
-        $ret = [];
-
         $headers = explode("\r\n", trim($headers));
-        if ($headers != null) {
-            // Pick status line.
-            $ret[0] = trim(array_shift($headers));
 
-            foreach ($headers as $header) {
-                @ [$name, $value] = explode(':', $header, 2);
-                if ($name === null) {
-                    continue;
-                }
+        // Pick status line.
+        $ret[0] = trim((string) array_shift($headers));
 
-                $name = trim((string) $name);
-                $value = trim((string) $value);
-                if ($lower) {
-                    $name = strtolower($name);
-                }
+        foreach ($headers as $header) {
+            @ [$name, $value] = explode(':', $header, 2);
+            if ($name === null) {
+                error_clear(2);
+                continue;
+            }
 
-                // Handle multi-headers as array.
-                if (isset($ret[$name])) {
-                    $ret[$name] = array_merge((array) $ret[$name], [$value]);
-                } else {
-                    $ret[$name] = $value;
-                }
+            $name  = trim((string) $name);
+            $value = trim((string) $value);
+
+            if ($lower) {
+                $name = strtolower($name);
+            }
+
+            // Handle multi-headers as array.
+            if (isset($ret[$name])) {
+                $ret[$name] = array_merge((array) $ret[$name], [$value]);
+            } else {
+                $ret[$name] = $value;
             }
         }
 
@@ -122,7 +104,8 @@ final class Util
     }
 
     /**
-     * Build query.
+     * Build a query string.
+     *
      * @param  array $data
      * @param  bool  $normalizeArrays
      * @return string
@@ -139,8 +122,8 @@ final class Util
 
         $ret = http_build_query($filter($data));
 
-        if ($normalizeArrays && strpos($qs, '%5D')) {
-            $qs = str_replace(['%5B', '%5D'], ['[', ']'], $qs);
+        if ($normalizeArrays && str_contains($ret, '%5D=')) {
+            $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
         }
 
         return $ret;

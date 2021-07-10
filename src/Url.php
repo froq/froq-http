@@ -1,97 +1,69 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interfaces\Stringable;
-use froq\collection\ComponentCollection;
-use froq\util\{Util, Arrays};
 use froq\http\UrlException;
+use froq\collection\ComponentCollection;
+use froq\common\interface\Stringable;
+use froq\util\{Util, Arrays};
 
 /**
  * Url.
  *
- * Respresents a URL object with strict/optional components that accessible via set/get methods or
- * via `__call()` magic with their names (eg: `getScheme()`), and some other utility methods.
+ * Represents a URL object with strict/optional components that accessible via set/get methods or via
+ * `__call()` magic with their names (eg: `getScheme()`), and some other utility methods.
  *
  * @package froq\http
  * @object  froq\http\Url
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   4.0
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /**
-     * Source.
-     * @var array|string
-     */
-    protected $source;
+    /** @var array|string */
+    protected array|string $source;
 
-    /**
-     * Components.
-     * @var array
-     */
+    /** @var array */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
         'query', 'queryParams', 'fragment', 'authority', 'userInfo'];
 
     /**
      * Constructor.
-     * @param   array|string $source
-     * @param   array|null   $components
+     *
+     * @param   array|string|null $source
+     * @param   array|null        $components
      * @@throws froq\http\UrlException
      */
-    public function __construct($source = null, array $components = null)
+    public function __construct(array|string $source = null, array $components = null)
     {
-        if ($source && !is_array($source) && !is_string($source)) {
-            throw new UrlException('Invalide source type "%s" given, valids are: string, array',
-                [gettype($source)]);
-        }
-
-        $components = $components ?: self::$components;
+        $components ??= self::$components;
 
         // Set components.
         parent::__construct($components);
 
-        // Keep source.
-        $this->source = $source;
-
-        if (!$source) {
+        if ($source == null) {
             return;
         }
+
+        // Keep source.
+        $this->source = $source;
 
         if (is_string($source)) {
             $i = 0;
             // $colon = strpos($source, ':');
 
             // Fix beginning-slashes & colons issue that falsifying parse_url();
-            if (strpos($source, '//') === 0) {
+            if (str_starts_with($source, '//')) {
                 while (($source[++$i] ?? '') === '/');
 
                 $source = '/'. substr($source, $i);
             }
+
             // if ($colon) {
             //     $source = str_replace(':', '%3A', $source);
             // }
@@ -106,6 +78,7 @@ class Url extends ComponentCollection implements Stringable
                 if ($i) {
                     $source['path'] = str_repeat('/', $i - 1) . $source['path'];
                 }
+
                 // if ($colon) {
                 //     $source['path'] = str_replace('%3A', ':', $source['path']);
                 // }
@@ -115,13 +88,12 @@ class Url extends ComponentCollection implements Stringable
         if (isset($source['query'])) {
             $query = Arrays::pull($source, 'query');
             if ($query != null) {
-                $source += ['query' => $query,
-                            'queryParams' => Util::parseQueryString($query)];
+                $source += ['query' => $query, 'queryParams' => Util::parseQueryString($query)];
             }
         }
 
         if (isset($source['authority'])) {
-            $authority = parse_url('scheme://'. $source['authority']);
+            $authority = parse_url('scheme://' . $source['authority']);
             if ($authority === false) {
                 throw new UrlException('Invalid authority, parsing failed');
             }
@@ -134,7 +106,7 @@ class Url extends ComponentCollection implements Stringable
             $authority = $userInfo = '';
 
             isset($source['user']) && $authority .= $source['user'];
-            isset($source['pass']) && $authority .= ':'. $source['pass'];
+            isset($source['pass']) && $authority .= ':' . $source['pass'];
 
             $userInfo = $authority;
 
@@ -145,7 +117,7 @@ class Url extends ComponentCollection implements Stringable
             }
 
             isset($source['host']) && $authority .= $source['host'];
-            isset($source['port']) && $authority .= ':'. $source['port'];
+            isset($source['port']) && $authority .= ':' . $source['port'];
 
             if ($authority != '') {
                 $source['authority'] = $authority;
@@ -161,29 +133,31 @@ class Url extends ComponentCollection implements Stringable
     }
 
     /**
-     * Get source.
-     * @return array|string
+     * Get source property.
+     *
+     * @return array|string|null
      */
-    public function getSource()
+    public function source(): array|string|null
     {
-        return $this->source;
+        return $this->source ?? null;
     }
 
     /**
-     * @inheritDoc froq\common\interfaces\Stringable
+     * @inheritDoc froq\common\interface\Stringable
      */
     public function toString(): string
     {
-        @ ['scheme' => $scheme, 'authority'   => $authority,   'path'      => $path,
-           'query'  => $query,  'queryParams' => $queryParams, 'fragment'  => $fragment
-          ] = $this->toArray();
+        $url = $this->toArray();
+        [$scheme, $authority, $path, $query, $queryParams, $fragment] = array_select(
+            $url, ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']
+        );
 
         $ret = '';
 
         // Syntax Components: https://tools.ietf.org/html/rfc3986#section-3
         if ($scheme) {
             $ret .= $scheme;
-            $ret .= $authority ? '://'. $authority : ':';
+            $ret .= $authority ? '://' . $authority : ':';
         } elseif ($authority) {
             $ret .= $authority;
         }
@@ -193,8 +167,8 @@ class Url extends ComponentCollection implements Stringable
         }
 
         $path     && $ret .= $path;
-        $query    && $ret .= '?'. $query;
-        $fragment && $ret .= '#'. $fragment;
+        $query    && $ret .= '?' . $query;
+        $fragment && $ret .= '#' . $fragment;
 
         return $ret;
     }

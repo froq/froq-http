@@ -1,26 +1,7 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
@@ -31,16 +12,18 @@ use froq\http\client\curl\{Curl, CurlMulti};
 
 /**
  * Sender.
+ *
  * @package froq\http\client
  * @object  froq\http\client\Sender
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.0, 4.0 Renamed as Sender from MessageEmitter.
+ * @author  Kerem Güneş
+ * @since   3.0, 4.0 Renamed from MessageEmitter.
  * @static
  */
 final class Sender
 {
     /**
-     * Send.
+     * Send a request with a single client.
+     *
      * @param  froq\http\client\Client $client
      * @return froq\http\client\Response
      */
@@ -49,32 +32,29 @@ final class Sender
         $curl = new Curl($client);
         $client->setCurl($curl);
 
-        $runner = $curl;
-        $runner->run();
+        $curl->run();
 
-        $response = $client->getResponse();
-
-        return $response;
+        return $client->getResponse();
     }
 
     /**
-     * Send async.
+     * Send multi requests with multi clients.
+     *
      * @param  array<froq\http\client\Client> $clients
      * @return array<froq\http\client\Response>
      */
-    public static function sendAsync(array $clients): array
+    public static function sendMulti(array $clients): array
     {
         foreach ($clients as $client) {
-            $curl = new Curl($client);
-            $client->setCurl($curl);
+            $client->setCurl(new Curl($client));
         }
 
-        $runner = new CurlMulti($clients);
-        $runner->run();
+        $curlm = new CurlMulti($clients);
+        $curlm->run();
 
         $responses = [];
 
-        foreach ($runner->getClients() as $client) {
+        foreach ($curlm->getClients() as $client) {
             $responses[] = $client->getResponse();
         }
 

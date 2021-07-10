@@ -1,46 +1,28 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\objects\StaticClass;
-use froq\util\Arrays;
+use froq\common\object\StaticClass;
 
 /**
  * Params.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Params
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   1.0, 4.0
+ * @author  Kerem Güneş
+ * @since   1.0
  * @static
  */
 final class Params extends StaticClass
 {
     /**
-     * All.
+     * Get all params by GPC sort.
+     *
      * @return array
      * @since  4.0
      */
@@ -50,51 +32,55 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get.
+     * Get a "$_GET" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function get(string $name, $valueDefault = null)
+    public static function get(string $name, $default = null)
     {
-        return Arrays::get($_GET, $name, $valueDefault);
+        return array_fetch($_GET, $name, $default);
     }
 
     /**
-     * Gets.
+     * Get all/many "$_GET" params.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function gets(array $names = null, $valuesDefault = null): array
+    public static function gets(array $names = null, $default = null): array
     {
         return ($names === null) ? $_GET // All.
-            : Arrays::getAll($_GET, $names, $valuesDefault);
+             : array_fetch($_GET, $names, $default);
     }
 
     /**
-     * Has get.
+     * Check a "$_GET" param.
+     *
      * @param  string $name
      * @return bool
      */
     public static function hasGet(string $name): bool
     {
-        return isset($_GET[$name]);
+        return self::get($name) !== null;
     }
 
     /**
-     * Has gets.
+     * Check all/many "$_GET" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
     public static function hasGets(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_GET);
+        if ($names === null) {
+            return !!$_GET;
         }
 
         foreach ($names as $name) {
-            if (!isset($_GET[$name])) {
+            if (!self::hasGet($name)) {
                 return false;
             }
         }
@@ -102,51 +88,55 @@ final class Params extends StaticClass
     }
 
     /**
-     * Post.
+     * Get a "$_POST" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function post(string $name, $valueDefault = null)
+    public static function post(string $name, $default = null)
     {
-        return Arrays::get($_POST, $name, $valueDefault);
+        return array_fetch($_POST, $name, $default);
     }
 
     /**
-     * Posts.
+     * Get all/many "$_POST" params.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function posts(array $names = null, $valuesDefault = null): array
+    public static function posts(array $names = null, $default = null): array
     {
         return ($names === null) ? $_POST // All.
-            : Arrays::getAll($_POST, $names, $valuesDefault);
+             : array_fetch($_POST, $names, $default);
     }
 
     /**
-     * Has post.
+     * Check a "$_POST" param.
+     *
      * @param  string $name
      * @return bool
      */
     public static function hasPost(string $name): bool
     {
-        return isset($_POST[$name]);
+        return self::post($name) !== null;
     }
 
     /**
-     * Has posts.
+     * Check all/many "$_POST" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
     public static function hasPosts(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_POST);
+        if ($names === null) {
+            return !!$_POST;
         }
 
         foreach ($names as $name) {
-            if (!isset($_POST[$name])) {
+            if (!self::hasPost($name)) {
                 return false;
             }
         }
@@ -154,51 +144,55 @@ final class Params extends StaticClass
     }
 
     /**
-     * Cookie.
+     * Get a "$_COOKIE" param.
+     *
      * @param  string   $name
-     * @param  any|null $valueDefault
+     * @param  any|null $default
      * @return any|null
      */
-    public static function cookie(string $name, $valueDefault = null)
+    public static function cookie(string $name, $default = null)
     {
-        return Arrays::get($_COOKIE, $name, $valueDefault);
+        return array_fetch($_COOKIE, $name, $default);
     }
 
     /**
-     * Cookies.
+     * Get all/many "$_COOKIE" params.
+     *
      * @param  array<string>|null $names
-     * @param  any|null           $valuesDefault
+     * @param  any|null           $default
      * @return array
      */
-    public static function cookies(array $names = null, $valuesDefault = null): array
+    public static function cookies(array $names = null, $default = null): array
     {
         return ($names === null) ? $_COOKIE // All.
-            : Arrays::getAll($_COOKIE, $names, $valuesDefault);
+             : array_fetch($_COOKIE, $names, $default);
     }
 
     /**
-     * Has cookie.
+     * Check a "$_COOKIE" param.
+     *
      * @param  string $name
      * @return bool
      */
     public static function hasCookie(string $name): bool
     {
-        return isset($_COOKIE[$name]);
+        return self::cookie($name) !== null;
     }
 
     /**
-     * Has cookies.
+     * Check all/many "$_COOKIE" params.
+     *
      * @param  array<string>|null $names
      * @return bool
      */
     public static function hasCookies(array $names = null): bool
     {
-        if ($names == null) {
-            return !empty($_COOKIE);
+        if ($names === null) {
+            return !!$_COOKIE;
         }
 
         foreach ($names as $name) {
-            if (!isset($_COOKIE[$name])) {
+            if (!self::hasCookie($name)) {
                 return false;
             }
         }

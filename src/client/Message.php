@@ -1,37 +1,21 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http\client;
 
+use froq\http\Http;
+
 /**
  * Message.
+ *
  * @package froq\http\client
  * @object  froq\http\client\Message
- * @author  Kerem Güneş <k-gun@mail.com>
- * @since   3.0, 4.0
+ * @author  Kerem Güneş
+ * @since   3.0
  */
 abstract class Message
 {
@@ -42,63 +26,50 @@ abstract class Message
     public const TYPE_REQUEST  = 1,
                  TYPE_RESPONSE = 2;
 
-    /**
-    * Type.
-    * @var int
-    */
+    /** @var int */
     protected int $type;
 
-    /**
-     * Http version.
-     * @var string
-     */
-    protected string $httpVersion;
+    /** @var string */
+    protected string $httpProtocol;
 
-    /**
-    * Headers.
-    * @var ?array
-    */
+    /** @var ?array */
     protected ?array $headers = null;
 
-    /**
-    * Body.
-    * @var ?string
-    */
+    /** @var ?string */
     protected ?string $body = null;
 
     /**
      * Constructor.
+     *
      * @param int         $type
-     * @param string|null $httpVersion
+     * @param string|null $httpProtocol
      * @param array|null  $headers
      * @param string|null $body
      */
-    public function __construct(int $type, string $httpVersion = null, array $headers = null,
-        string $body = null)
+    public function __construct(int $type, string $httpProtocol = null, array $headers = null, string $body = null)
     {
-        $this->type = $type;
-        $this->httpVersion = $httpVersion ?? ($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
+        $this->type         = $type;
+        $this->httpProtocol = $httpProtocol ?? Http::protocol();
 
-        isset($headers) && $this->setHeaders($headers);
-        isset($body)    && $this->setBody($body);
+        isset($headers)     && $this->setHeaders($headers);
+        isset($body)        && $this->setBody($body);
     }
 
     /**
-     * To string.
+     * Magic string.
+     *
      * @return string
      */
     public final function __toString()
     {
         if ($this->type == self::TYPE_REQUEST) {
-            $ret = sprintf("%s %s %s\r\n",
-                $this->getMethod(), $this->getUri(), $this->getHttpVersion());
+            $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());
         } elseif ($this->type == self::TYPE_RESPONSE) {
-            $ret = sprintf("%s %s\r\n",
-                $this->getHttpVersion(), $this->getStatus());
+            $ret = sprintf("%s %s\r\n", $this->getHttpProtocol(), $this->getStatus());
         }
 
         $headers = $this->getHeaders();
-        $body = $this->getBody();
+        $body    = $this->getBody();
 
         if ($headers != null) {
             foreach ($headers as $name => $value) {
@@ -128,6 +99,7 @@ abstract class Message
 
     /**
      * Get type.
+     *
      * @return int
      */
     public final function getType(): int
@@ -136,28 +108,31 @@ abstract class Message
     }
 
     /**
-     * Set http version.
-     * @param  string $httpVersion
+     * Set http protocol.
+     *
+     * @param  string $httpProtocol
      * @return self
      */
-    public final function setHttpVersion(string $httpVersion): self
+    public final function setHttpProtocol(string $httpProtocol): self
     {
-        $this->httpVersion = $httpVersion;
+        $this->httpProtocol = $httpProtocol;
 
         return $this;
     }
 
     /**
-     * Get http version.
+     * Get http protocol.
+     *
      * @return string
      */
-    public final function getHttpVersion(): string
+    public final function getHttpProtocol(): string
     {
-        return $this->httpVersion;
+        return $this->httpProtocol;
     }
 
     /**
      * Set headers.
+     *
      * @param  array     $headers
      * @param  bool|null $reset @internal
      * @return self
@@ -168,6 +143,8 @@ abstract class Message
             $this->headers = [];
         }
 
+        ksort($headers);
+
         foreach ($headers as $key => $value) {
             $this->setHeader((string) $key, $value);
         }
@@ -177,15 +154,17 @@ abstract class Message
 
     /**
      * Get headers.
-     * @return ?array
+     *
+     * @return array|null
      */
-    public final function getHeaders(): ?array
+    public final function getHeaders(): array|null
     {
         return $this->headers;
     }
 
     /**
-     * Has header.
+     * Check a header existence.
+     *
      * @param  string $name
      * @return bool
      */
@@ -195,20 +174,18 @@ abstract class Message
     }
 
     /**
-     * Set header.
+     * Set a header.
+     *
      * @param   string       $name
-     * @param   scalar|array $value
+     * @param   string|array $value
      * @return  self
      */
-    public final function setHeader(string $name, $value): self
+    public final function setHeader(string $name, string|array $value): self
     {
         // Null means remove.
         if ($value === null) {
             unset($this->headers[$name]);
         } else {
-            if (is_scalar($value)) {
-                $value = (string) $value;
-            }
             $this->headers[$name] = $value;
         }
 
@@ -216,20 +193,22 @@ abstract class Message
     }
 
     /**
-     * Get header.
+     * Get a header.
+     *
      * @param  string      $name
-     * @param  string|null $valueDefault
+     * @param  string|null $default
      * @return string|array|null
      */
-    public final function getHeader(string $name, string $valueDefault = null)
+    public final function getHeader(string $name, string $default = null)
     {
         return $this->headers[$name]
             ?? $this->headers[strtolower($name)]
-            ?? $valueDefault;
+            ?? $default;
     }
 
     /**
      * Set body.
+     *
      * @param  string $body
      * @return self
      */
@@ -242,9 +221,10 @@ abstract class Message
 
     /**
      * Get body.
-     * @return ?string
+     *
+     * @return string|null
      */
-    public final function getBody(): ?string
+    public final function getBody(): string|null
     {
         return $this->body;
     }

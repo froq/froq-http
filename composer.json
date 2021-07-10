@@ -1,18 +1,16 @@
 {
     "name": "froq/froq-http",
-    "homepage": "https://github.com/froq/froq-http",
+    "homepage": "http://github.com/froq/froq-http",
     "description": "Froq! Http.",
     "keywords": ["froq", "http"],
-    "license": "MIT",
-    "authors": [
-        {"name": "Kerem Güneş", "email": "k-gun@mail.com"}
-    ],
+    "license": "Apache-2.0",
+    "authors": [{"name": "Kerem Güneş"}],
     "require": {
-        "php": "^7.4",
-        "froq/froq-common": "^4.0",
-        "froq/froq": "^4.0",
-        "froq/froq-file": "^4.0",
-        "froq/froq-encoding": "^4.0"
+        "php": "^8.0",
+        "froq/froq-common": "^5.0",
+        "froq/froq": "^5.0",
+        "froq/froq-file": "^5.0",
+        "froq/froq-encoding": "^5.0"
     },
     "autoload": {
         "classmap": ["src/"]

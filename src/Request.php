@@ -1,92 +1,54 @@
 <?php
 /**
- * MIT License <https://opensource.org/licenses/mit>
- *
- * Copyright (c) 2015 Kerem Güneş
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Copyright (c) 2015 · Kerem Güneş
+ * Apache License 2.0 · http://github.com/froq/froq-http
  */
 declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\App;
-use froq\util\Util;
+use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\http\Message;
-use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files};
+use froq\{App, util\Util};
 use Error;
 
 /**
  * Request.
+ *
+ * Represents a HTTP request entity which extends `Message` class and mainly deals with Froq! application
+ * and controllers.
+ *
  * @package froq\http
  * @object  froq\http\Request
- * @author  Kerem Güneş <k-gun@mail.com>
+ * @author  Kerem Güneş
  * @since   1.0
  */
 final class Request extends Message
 {
-    /**
-     * Request trait.
-     * @see froq\http\request\RequestTrait
-     */
+    /** @see froq\http\request\RequestTrait */
     use RequestTrait;
 
-    /**
-     * Method.
-     * @var froq\http\request\Method
-     */
+    /** @var froq\http\request\Method */
     protected Method $method;
 
-    /**
-     * Scheme.
-     * @var froq\http\request\Scheme
-     */
+    /** @var froq\http\request\Scheme */
     protected Scheme $scheme;
 
-    /**
-     * Uri.
-     * @var froq\http\request\Uri
-     */
+    /** @var froq\http\request\Uri */
     protected Uri $uri;
 
-    /**
-     * Client.
-     * @var froq\http\request\Client
-     */
+    /** @var froq\http\request\Client */
     protected Client $client;
 
-    /**
-     * Id.
-     * @var string
-     * @since 4.6
-     */
+    /** @var string @since 4.6 */
     private string $id;
 
-    /**
-     * Times.
-     * @var array
-     * @since 4.6
-     */
+    /** @var array *@since 4.6 */
     private array $times;
 
     /**
      * Constructor.
+     *
      * @param froq\App
      */
     public function __construct(App $app)
@@ -105,20 +67,20 @@ final class Request extends Message
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that, 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
-        $content = strval(file_get_contents('php://input'));
-        $contentType = strtolower($headers['content-type'] ?? '');
+        $content     = $this->input();
+        $contentType = $headers['content-type'] ?? '';
 
         $_GET = $this->loadGlobal('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
-        if ($content != '' && strpos($contentType, 'multipart/form-data') === false) {
-            $_POST = $this->loadGlobal('POST', $content, strpos($contentType, '/json') !== false);
+        if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
+            $_POST = $this->loadGlobal('POST', $content, !!str_contains($contentType, '/json'));
         }
 
         $_COOKIE = $this->loadGlobal('COOKIE');
 
         // Fill body object.
-        $this->setBody($content, ['type' => $contentType]);
+        $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
 
         // Fill & lock headers and cookies objects.
         foreach ($headers as $name => $value) {
@@ -132,7 +94,8 @@ final class Request extends Message
     }
 
     /**
-     * Method.
+     * Get method property.
+     *
      * @return froq\http\request\Method
      */
     public function method(): Method
@@ -141,7 +104,8 @@ final class Request extends Message
     }
 
     /**
-     * Scheme.
+     * Get scheme property.
+     *
      * @return froq\http\request\Scheme
      */
     public function scheme(): Scheme
@@ -150,7 +114,8 @@ final class Request extends Message
     }
 
     /**
-     * Uri.
+     * Get uri property.
+     *
      * @return froq\http\request\Uri
      */
     public function uri(): Uri
@@ -159,7 +124,8 @@ final class Request extends Message
     }
 
     /**
-     * Client.
+     * Get client property.
+     *
      * @return froq\http\request\Client
      */
     public function client(): Client
@@ -168,7 +134,8 @@ final class Request extends Message
     }
 
     /**
-     * Id.
+     * Get id property.
+     *
      * @return string
      * @since  4.6
      */
@@ -178,8 +145,8 @@ final class Request extends Message
     }
 
     /**
-     * Times.
-     * @param int $i
+     * Get times property.
+     *
      * @return array
      * @since  4.6
      */
@@ -189,7 +156,8 @@ final class Request extends Message
     }
 
     /**
-     * Params.
+     * Get all params as GPC sort.
+     *
      * @return array
      */
     public function params(): array
@@ -198,7 +166,8 @@ final class Request extends Message
     }
 
     /**
-     * Files.
+     * Get all uploaded files.
+     *
      * @return array
      */
     public function files(): array
@@ -207,7 +176,8 @@ final class Request extends Message
     }
 
     /**
-     * Input.
+     * Get PHP input.
+     *
      * @return string
      * @since  4.5
      */
@@ -217,17 +187,19 @@ final class Request extends Message
     }
 
     /**
-     * Input json.
+     * Get PHP input as JSON array.
+     *
      * @return array
      * @since  4.5
      */
-    public function inputJson(): array
+    public function json(): array
     {
-        return (array) json_decode(trim($this->input()), true);
+        return (array) json_decode($this->input(), flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
     }
 
     /**
-     * Get method.
+     * Get method name.
+     *
      * @return string
      * @since  4.7
      */
@@ -237,7 +209,8 @@ final class Request extends Message
     }
 
     /**
-     * Get scheme.
+     * Get scheme name.
+     *
      * @return string
      * @since  4.7
      */
@@ -247,43 +220,87 @@ final class Request extends Message
     }
 
     /**
-     * Get uri.
+     * Get URI.
+     *
+     * @param  bool $escape
      * @return string
      * @since  4.7
      */
-    public function getUri(): string
+    public function getUri(bool $escape = false): string
     {
-        return $this->uri->toString();
+        return !$escape ? $this->uri->toString() : htmlspecialchars($this->uri->toString());
     }
 
     /**
-     * Get context.
+     * Get URL.
+     *
+     * @param  bool $escape
+     * @return string
+     * @since  5.0
+     */
+    public function getUrl(bool $escape = false): string
+    {
+        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME'] . $this->getUri($escape);
+    }
+
+    /**
+     * Get context, aka URI path.
+     *
+     * @param  bool $escape
      * @return string
      * @since  4.8
      */
-    public function getContext(): string
+    public function getContext(bool $escape = false): string
     {
-        return $this->uri->getPath();
+        return !$escape ? $this->uri->get('path') : htmlspecialchars($this->uri->get('path'));
+    }
+
+    /**
+     * Get a URI segment.
+     *
+     * @param  int|string $key
+     * @param  any|null   $default
+     * @return any|null
+     * @since  5.0
+     */
+    public function getSegment(int|string $key, $default = null)
+    {
+        return $this->uri->segment($key, $default);
+    }
+
+    /**
+     * Get all/many URI segments.
+     *
+     * @param  array<int|string>|null $keys
+     * @param  any|null               $default
+     * @return froq\http\request\Segments|array
+     * @since  5.0
+     */
+    public function getSegments(array $keys = null, $default = null): Segments|array
+    {
+        return $this->uri->segments($keys, $default);
     }
 
     /**
      * Load headers.
+     *
      * @return array
+     * @internal
      */
     private function loadHeaders(): array
     {
         try {
             $headers = (array) getallheaders();
-        } catch (Error $e) {
+        } catch (Error) {
             $headers = [];
-            foreach ((array) $_SERVER as $key => $value) {
-                if (strpos((string) $key, 'HTTP_') === 0) {
+            foreach ($_SERVER as $key => $value) {
+                if (str_starts_with((string) $key, 'HTTP_')) {
                     $headers[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
                 }
             }
         }
 
-        // Lowerize keys.
+        // Lowerize names.
         $headers = array_change_key_case($headers, CASE_LOWER);
 
         // Content issues.
@@ -313,13 +330,15 @@ final class Request extends Message
     }
 
     /**
-     * Load global (without changing dotted keys).
+     * Load global (without changing dotted names).
+     *
      * @param  string $name
      * @param  string $source
-     * @param  bool   $sourceJson
+     * @param  bool   $json
      * @return array
+     * @internal
      */
-    private function loadGlobal(string $name, string $source = '', bool $sourceJson = false): array
+    private function loadGlobal(string $name, string $source = '', bool $json = false): array
     {
         $encode = false;
 
@@ -330,8 +349,8 @@ final class Request extends Message
                 break;
             case 'POST':
                 // This is checked in constructor via content-type header.
-                if ($sourceJson) {
-                    return (array) json_decode(trim($source), true);
+                if ($json) {
+                    return (array) json_decode($source, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
                 }
                 break;
             case 'COOKIE':
