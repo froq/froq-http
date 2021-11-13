@@ -344,7 +344,7 @@ final class Request extends Message
 
         switch ($name) {
             case 'GET':
-                $source = $_SERVER['QUERY_STRING'] ?? '';
+                $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
                 $encode = true;
                 break;
             case 'POST':
@@ -354,8 +354,8 @@ final class Request extends Message
                 }
                 break;
             case 'COOKIE':
-                if (isset($_SERVER['HTTP_COOKIE'])) {
-                    $source = implode('&', array_map('trim', explode(';', $_SERVER['HTTP_COOKIE'])));
+                if (!empty($_SERVER['HTTP_COOKIE'])) {
+                    $source = implode('&', array_map('trim', explode(';', (string) $_SERVER['HTTP_COOKIE'])));
                 }
                 break;
         }
