@@ -62,7 +62,7 @@ final class Request extends Message
         $this->id     = get_request_id(); // From util.sugars.
         $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
 
-        $headers = $this->loadHeaders();
+        $headers = $this->prepareHeaders();
 
         // Set/parse body for overriding methods (put, delete etc. or even for get).
         // Note that, 'php://input' is not available with enctype="multipart/form-data".
@@ -70,14 +70,14 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        $_GET = $this->loadGlobal('GET');
+        $_GET = $this->prepareGlobalVariable('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->loadGlobal('POST', $content, !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobalVariable('POST', $content, !!str_contains($contentType, '/json'));
         }
 
-        $_COOKIE = $this->loadGlobal('COOKIE');
+        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
 
         // Fill body object.
         $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
@@ -282,12 +282,11 @@ final class Request extends Message
     }
 
     /**
-     * Load headers.
+     * Prepare headers.
      *
      * @return array
-     * @internal
      */
-    private function loadHeaders(): array
+    private function prepareHeaders(): array
     {
         try {
             $headers = (array) getallheaders();
@@ -331,15 +330,14 @@ final class Request extends Message
     }
 
     /**
-     * Load global (without changing dotted names).
+     * Prepare a global variable (without changing dotted names).
      *
      * @param  string $name
      * @param  string $source
      * @param  bool   $json
      * @return array
-     * @internal
      */
-    private function loadGlobal(string $name, string $source = '', bool $json = false): array
+    private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
     {
         $encode = false;
 
