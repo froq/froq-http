@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files, Segments};
-use froq\http\Message;
+use froq\http\{Message, UrlQuery};
 use froq\{App, util\Util};
 use Error;
 
@@ -39,6 +39,9 @@ final class Request extends Message
 
     /** @var froq\http\request\Client */
     protected Client $client;
+
+    /** @var froq\http\UrlQuery @since 5.1 */
+    protected UrlQuery $query;
 
     /** @var string @since 4.6 */
     private string $id;
@@ -131,6 +134,18 @@ final class Request extends Message
     public function client(): Client
     {
         return $this->client;
+    }
+
+    /**
+     * Get query property or create newly.
+     *
+     * @return froq\http\UrlQuery
+     * @since  5.1
+     */
+    public function query(): UrlQuery
+    {
+        // More memory friendly..
+        return $this->query ??= new UrlQuery($_GET);
     }
 
     /**
