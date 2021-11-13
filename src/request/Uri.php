@@ -33,7 +33,7 @@ final class Uri extends Url
     public function __construct(array|string $source)
     {
         try {
-            parent::__construct($source, ['path', 'query', 'queryParams', 'fragment']);
+            parent::__construct($source, components: ['path', 'query', 'queryParams', 'fragment']);
         } catch (Throwable $e) {
             throw new UriException($e);
         }
