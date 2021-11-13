@@ -68,7 +68,7 @@ final class Request extends Message
         // Note that, 'php://input' is not available with enctype="multipart/form-data".
         // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
         $content     = $this->input();
-        $contentType = $headers['content-type'] ?? '';
+        $contentType = strtolower($headers['content-type'] ?? '');
 
         $_GET = $this->loadGlobal('GET');
 
@@ -295,7 +295,8 @@ final class Request extends Message
             $headers = [];
             foreach ($_SERVER as $key => $value) {
                 if (str_starts_with((string) $key, 'HTTP_')) {
-                    $headers[str_replace(['_', ' '], '-', substr($key, 5))] = $value;
+                    $key = str_replace(['_', ' '], '-', substr($key, 5));
+                    $headers[$key] = $value;
                 }
             }
         }
