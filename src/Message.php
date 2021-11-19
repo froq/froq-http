@@ -198,7 +198,7 @@ abstract class Message
      * @param  array<string, any> $cookies
      * @return static
      */
-    public function setCookies(array $cookies): static
+    public final function setCookies(array $cookies): static
     {
         foreach ($cookies as $name => $value) {
             $this->setCookie($name, $value);
