@@ -345,7 +345,7 @@ final class Request extends Message
     }
 
     /**
-     * Prepare a global variable (without changing dotted names).
+     * Prepare a global variable (without changing dotted param keys).
      *
      * @param  string $name
      * @param  string $source
@@ -354,26 +354,48 @@ final class Request extends Message
      */
     private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
     {
+        // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
+        $dotted = $this->app->config('request.dottedParams');
         $encode = false;
 
         switch ($name) {
             case 'GET':
+                if (!$dotted) {
+                    return $_GET;
+                }
+
                 $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
                 $encode = true;
                 break;
+
             case 'POST':
+                if (!$dotted && !$json) {
+                    return $_POST;
+                }
+
                 // This is checked in constructor via content-type header.
                 if ($json) {
-                    return (array) json_decode($source, flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+                    return (array) json_decode($source,
+                        flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING
+                    );
                 }
+
                 break;
+
             case 'COOKIE':
+                if (!$dotted) {
+                    return $_COOKIE;
+                }
+
                 if (!empty($_SERVER['HTTP_COOKIE'])) {
-                    $source = implode('&', array_map('trim', explode(';', (string) $_SERVER['HTTP_COOKIE'])));
+                    $source = (string) implode('&', array_map('trim',
+                        array: explode(';', (string) $_SERVER['HTTP_COOKIE'])
+                    ));
                 }
                 break;
         }
 
+        // Run parsing process.
         return Util::parseQueryString($source, $encode);
     }
 }
