@@ -289,14 +289,19 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        $_GET = $this->prepareGlobalVariable('GET');
+        // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
+        $dotted = (bool) $this->app->config('request.dottedParams');
+
+        $_GET = $this->prepareGlobalVariable('GET', dotted: $dotted);
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobalVariable('POST', $content, !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobalVariable('POST', $content, dotted: $dotted,
+                json: !!str_contains($contentType, '/json')
+            );
         }
 
-        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
+        $_COOKIE = $this->prepareGlobalVariable('COOKIE', dotted: $dotted);
 
         // Fill body object.
         $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
@@ -308,8 +313,12 @@ final class Request extends Message
         foreach ($_COOKIE as $name => $value) {
             $this->cookies->add($name, $value);
         }
-        $this->headers->readOnly(true);
-        $this->cookies->readOnly(true);
+        $this->headers->lock(); $this->cookies->lock();
+
+        // Modify URI params as well.
+        if ($dotted) {
+            $this->uri->unlock()->set('queryParams', $_GET)->lock();
+        }
     }
 
     /**
@@ -361,17 +370,17 @@ final class Request extends Message
     }
 
     /**
-     * Prepare a global variable (without changing dotted param keys).
+     * Prepare a global variable (without changing dotted param keys if dotted option is true).
      *
      * @param  string $name
      * @param  string $source
+     * @param  bool   $dotted
      * @param  bool   $json
      * @return array
      */
-    private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
+    private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false,
+        bool $json = false): array
     {
-        // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
-        $dotted = (bool) $this->app->config('request.dottedParams');
         $encode = false;
 
         switch ($name) {
