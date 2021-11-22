@@ -15,8 +15,8 @@ use froq\App;
 /**
  * Message.
  *
- * Represents an abstract HTTP message entity which is used by `Request/Response` classes and mainly deals with
- * Froq! application and controllers.
+ * Represents an abstract HTTP message entity which is used by `Request/Response` classes
+ * and mainly deals with Froq! application and controllers.
  *
  * @package froq\http
  * @object  froq\http\Message
@@ -123,13 +123,7 @@ abstract class Message
      */
     public final function headers(...$args): static|Headers
     {
-        if ($args) {
-            $this->isRequest() && throw new MessageException('Connot modify request headers');
-
-            return $this->setHeaders(...$args);
-        }
-
-        return $this->headers;
+        return $args ? $this->setHeaders(...$args) : $this->headers;
     }
 
     /**
@@ -141,13 +135,7 @@ abstract class Message
      */
     public final function cookies(...$args): static|Cookies
     {
-        if ($args) {
-            $this->isRequest() && throw new MessageException('Connot modify request cookies');
-
-            return $this->setCookies(...$args);
-        }
-
-        return $this->cookies;
+        return $args ? $this->setCookies(...$args) : $this->cookies;
     }
 
     /**
@@ -258,15 +246,17 @@ abstract class Message
                 $payload = $content;
             } else {
                 // Prepare defaults with type.
-                $attributes = array_merge(['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
-                    (array) $attributes);
+                $attributes = array_merge(
+                    ['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
+                    (array) $attributes
+                );
 
+                // Content & content type checks.
                 if (is_array($content)) {
                     $contentType = trim($attributes['type'] ?? '');
                     if ($contentType == '') {
                         throw new MessageException('Missing content type for `array` type content');
-                    }
-                    if (!preg_match('~(json|xml)~', $contentType)) {
+                    } elseif (!preg_test('~(json|xml)~', $contentType)) {
                         throw new MessageException('Invalid content value type for `array` type content,'
                             . ' content type must be such type `xxx/json` or `xxx/xml`');
                     }
@@ -277,11 +267,11 @@ abstract class Message
                 $payload = new Payload($this->getStatusCode(), $content, $attributes);
             }
 
-            // @override
             $result = $payload->process($this);
 
             // Set original arguments or their overrides, finally..
-            $this->body->setContent($result[0])->setAttributes($result[1]);
+            $this->body->setContent($result[0])
+                       ->setAttributes($result[1]);
 
             // Set response attributes
             [$code, $headers, $cookies] = $result[2];
