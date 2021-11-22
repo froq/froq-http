@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\ResponseException;
+use froq\http\ResponseException;
 
 /**
  * Payload Exception.

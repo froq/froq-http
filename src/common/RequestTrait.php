@@ -5,15 +5,15 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\request;
+namespace froq\http\common;
 
 use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
 
 /**
  * Request Trait.
  *
- * @package  froq\http\request
- * @object   froq\http\request\RequestTrait
+ * @package  froq\http\common
+ * @object   froq\http\common\RequestTrait
  * @author   Kerem Güneş
  * @since    4.0
  * @internal Used in froq\http only.

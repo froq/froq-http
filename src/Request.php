@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\request\{RequestTrait, Method, Scheme, Uri, Client, Params, Files, Segments};
-use froq\http\{Message, UrlQuery};
+use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
+use froq\http\{Message, UrlQuery, RequestException, common\RequestTrait};
 use froq\{App, util\Util};
 use Error;
 
@@ -25,7 +25,7 @@ use Error;
  */
 final class Request extends Message
 {
-    /** @see froq\http\request\RequestTrait */
+    /** @see froq\http\common\RequestTrait */
     use RequestTrait;
 
     /** @var froq\http\request\Method */
@@ -64,36 +64,6 @@ final class Request extends Message
         $this->client = new Client();
         $this->id     = get_request_id(); // From util.sugars.
         $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
-
-        $headers = $this->prepareHeaders();
-
-        // Set/parse body for overriding methods (put, delete etc. or even for get).
-        // Note that, 'php://input' is not available with enctype="multipart/form-data".
-        // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
-        $content     = $this->input();
-        $contentType = strtolower($headers['content-type'] ?? '');
-
-        $_GET = $this->prepareGlobalVariable('GET');
-
-        // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
-        if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobalVariable('POST', $content, !!str_contains($contentType, '/json'));
-        }
-
-        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
-
-        // Fill body object.
-        $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
-
-        // Fill & lock headers and cookies objects.
-        foreach ($headers as $name => $value) {
-            $this->headers->add($name, $value);
-        }
-        foreach ($_COOKIE as $name => $value) {
-            $this->cookies->add($name, $value);
-        }
-        $this->headers->readOnly(true);
-        $this->cookies->readOnly(true);
     }
 
     /**
@@ -297,6 +267,52 @@ final class Request extends Message
     }
 
     /**
+     * Load request stuff (globals, headers, body etc.).
+     *
+     * @return void
+     * @throws froq\http\RequestException
+     * @since  5.3
+     */
+    public function load(): void
+    {
+        static $loaded;
+
+        // Check/tick for load-once state.
+        $loaded ? throw new RequestException('Request was already loaded')
+                : ($loaded = true);
+
+        $headers = $this->prepareHeaders();
+
+        // Set/parse body for overriding methods (put, delete etc. or even for get).
+        // Note that, 'php://input' is not available with enctype="multipart/form-data".
+        // @see https://www.php.net/manual/en/wrappers.php.php#wrappers.php.input.
+        $content     = $this->input();
+        $contentType = strtolower($headers['content-type'] ?? '');
+
+        $_GET = $this->prepareGlobalVariable('GET');
+
+        // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
+        if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
+            $_POST = $this->prepareGlobalVariable('POST', $content, !!str_contains($contentType, '/json'));
+        }
+
+        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
+
+        // Fill body object.
+        $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
+
+        // Fill & lock headers and cookies objects.
+        foreach ($headers as $name => $value) {
+            $this->headers->add($name, $value);
+        }
+        foreach ($_COOKIE as $name => $value) {
+            $this->cookies->add($name, $value);
+        }
+        $this->headers->readOnly(true);
+        $this->cookies->readOnly(true);
+    }
+
+    /**
      * Prepare headers.
      *
      * @return array
@@ -355,7 +371,7 @@ final class Request extends Message
     private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
     {
         // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
-        $dotted = $this->app->config('request.dottedParams');
+        $dotted = (bool) $this->app->config('request.dottedParams');
         $encode = false;
 
         switch ($name) {
@@ -396,6 +412,6 @@ final class Request extends Message
         }
 
         // Run parsing process.
-        return Util::parseQueryString($source, $encode);
+        return Util::parseQueryString($source, $encode, dotted: $dotted);
     }
 }

@@ -7,17 +7,16 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\response\{ResponseTrait, ResponseException, Status, StatusException, Cookie, Cookies};
-use froq\http\message\{ContentType, ContentCharset};
-use froq\http\{Http, Message};
+use froq\http\response\{Cookie, Cookies, Status, StatusException};
+use froq\http\{Message, Http, ResponseException, common\ResponseTrait, message\ContentType, message\ContentCharset};
 use froq\file\{object\FileObject, object\ImageObject, Util as FileUtil};
 use froq\{App, encoding\Encoder};
 
 /**
  * Response.
  *
- * Represents a HTTP response entity which extends `Message` class and mainly deals with Froq! application and
- * controllers.
+ * Represents a HTTP response entity which extends `Message` class and mainly deals with Froq! application
+ * and controllers.
  *
  * @package froq\http
  * @object  froq\http\Response
@@ -26,7 +25,7 @@ use froq\{App, encoding\Encoder};
  */
 final class Response extends Message
 {
-    /** @see froq\http\response\ResponseTrait */
+    /** @see froq\http\common\ResponseTrait */
     use ResponseTrait;
 
     /** @var froq\http\response\Status */
@@ -117,7 +116,7 @@ final class Response extends Message
      * @param  string|null $value
      * @param  bool        $replace
      * @return void
-     * @throws froq\http\response\ResponseException
+     * @throws froq\http\ResponseException
      */
     public function sendHeader(string $name, string|null $value, bool $replace = true): void
     {
@@ -158,7 +157,7 @@ final class Response extends Message
      * @param  string|froq\http\response\Cookie|null $value
      * @param  array|null                            $options
      * @return void
-     * @throws froq\http\response\ResponseException
+     * @throws froq\http\ResponseException
      */
     public function sendCookie(string $name, string|Cookie|null $value, array $options = null): void
     {
@@ -218,6 +217,7 @@ final class Response extends Message
             $content        = (string) $content;
             $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
             $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
+
             if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
@@ -268,6 +268,7 @@ final class Response extends Message
             if ($direct) {
                 header('Content-Type: '. $imageType);
                 header('Content-Length: '. filesize($image));
+
                 if ($etag) {
                     header('ETag: '. (is_string($etag) ? $etag : hash_file('fnv1a64', $image)));
                 }
@@ -281,6 +282,7 @@ final class Response extends Message
                         is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
                     ));
                 }
+
                 header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
 
                 $this->exposeAppRuntime();
@@ -296,6 +298,7 @@ final class Response extends Message
 
                 header('Content-Type: '. $imageType);
                 header('Content-Length: '. strlen($content));
+
                 if ($etag) {
                     header('ETag: '. (is_string($etag) ? $etag : hash('fnv1a64', $content)));
                 }
@@ -309,6 +312,7 @@ final class Response extends Message
                         is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
                     ));
                 }
+
                 header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
 
                 $this->exposeAppRuntime();
@@ -342,6 +346,7 @@ final class Response extends Message
             header('Cache-Control: no-cache');
             header('Pragma: no-cache');
             header('Expires: 0');
+
             if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 header('Last-Modified: '. Http::date(
                     is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)

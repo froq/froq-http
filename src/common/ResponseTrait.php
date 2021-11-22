@@ -5,15 +5,15 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
+namespace froq\http\common;
 
 use froq\http\common\{HeaderTrait, CookieTrait};
 
 /**
  * Response Trait.
  *
- * @package  froq\http\response
- * @object   froq\http\response\ResponseTrait
+ * @package  froq\http\common
+ * @object   froq\http\common\ResponseTrait
  * @author   Kerem Güneş
  * @since    4.0
  * @internal Used in froq\http only.

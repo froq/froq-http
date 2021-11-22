@@ -5,15 +5,15 @@
  */
 declare(strict_types=1);
 
-namespace froq\http\response;
+namespace froq\http;
 
 use froq\http\MessageException;
 
 /**
  * Response Exception.
  *
- * @package froq\http\response
- * @object  froq\http\response\ResponseException
+ * @package froq\http
+ * @object  froq\http\ResponseException
  * @author  Kerem Güneş
  * @since   4.0
  */
