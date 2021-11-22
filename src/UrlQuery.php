@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\common\interface\{Arrayable, Objectable, Stringable};
+use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataListTrait};
+use froq\collection\trait\{EachTrait, FilterTrait, MapTrait};
 use froq\util\{Util, Arrays};
 
 /**
@@ -22,6 +24,20 @@ use froq\util\{Util, Arrays};
  */
 final class UrlQuery implements Arrayable, Objectable, Stringable
 {
+    /**
+     * @see froq\common\trait\DataCountTrait
+     * @see froq\common\trait\DataEmptyTrait
+     * @see froq\common\trait\DataListTrait
+     */
+    use DataCountTrait, DataEmptyTrait, DataListTrait;
+
+    /**
+     * @see froq\collection\trait\EachTrait
+     * @see froq\collection\trait\FilterTrait
+     * @see froq\collection\trait\MapTrait
+     */
+    use EachTrait, FilterTrait, MapTrait;
+
     /** @var array */
     private array $data;
 
@@ -146,34 +162,6 @@ final class UrlQuery implements Arrayable, Objectable, Stringable
     public function getBool(string $key, $default = null): bool
     {
         return (bool) $this->get($key, $default);
-    }
-
-    /**
-     * Filter.
-     *
-     * @param  callable|null $func
-     * @param  bool          $keepKeys
-     * @return self
-     */
-    public function filter(callable $func = null, bool $keepKeys = true): self
-    {
-        $this->data = Arrays::filter($this->data, $func, $keepKeys);
-
-        return $this;
-    }
-
-    /**
-     * Map.
-     *
-     * @param  callable $func
-     * @param  bool     $keepKeys
-     * @return self
-     */
-    public function map(callable $func, bool $keepKeys = true): self
-    {
-        $this->data = Arrays::map($this->data, $func, $keepKeys);
-
-        return $this;
     }
 
     /**
