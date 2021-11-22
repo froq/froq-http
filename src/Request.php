@@ -179,7 +179,8 @@ final class Request extends Message
      */
     public function json(): array
     {
-        return (array) json_decode($this->input(), flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+        return (array) json_decode($this->input(),
+            flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
     }
 
     /**
@@ -213,7 +214,8 @@ final class Request extends Message
      */
     public function getUri(bool $escape = false): string
     {
-        return !$escape ? $this->uri->toString() : htmlspecialchars($this->uri->toString());
+        return !$escape ? $this->uri->toString()
+             : htmlspecialchars($this->uri->toString());
     }
 
     /**
@@ -225,7 +227,8 @@ final class Request extends Message
      */
     public function getUrl(bool $escape = false): string
     {
-        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME'] . $this->getUri($escape);
+        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME']
+             . $this->getUri($escape);
     }
 
     /**
@@ -237,7 +240,8 @@ final class Request extends Message
      */
     public function getContext(bool $escape = false): string
     {
-        return !$escape ? $this->uri->get('path') : htmlspecialchars($this->uri->get('path'));
+        return !$escape ? $this->uri->get('path')
+             : htmlspecialchars($this->uri->get('path'));
     }
 
     /**
@@ -297,8 +301,7 @@ final class Request extends Message
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
             $_POST = $this->prepareGlobalVariable('POST', $content, dotted: $dotted,
-                json: !!str_contains($contentType, '/json')
-            );
+                json: !!str_contains($contentType, '/json'));
         }
 
         $_COOKIE = $this->prepareGlobalVariable('COOKIE', dotted: $dotted);
@@ -392,7 +395,6 @@ final class Request extends Message
                 $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
                 $encode = true;
                 break;
-
             case 'POST':
                 if (!$dotted && !$json) {
                     return $_POST;
@@ -401,12 +403,9 @@ final class Request extends Message
                 // This is checked in constructor via content-type header.
                 if ($json) {
                     return (array) json_decode($source,
-                        flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING
-                    );
+                        flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
                 }
-
                 break;
-
             case 'COOKIE':
                 if (!$dotted) {
                     return $_COOKIE;
