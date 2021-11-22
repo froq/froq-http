@@ -12,8 +12,8 @@ use froq\http\common\HeaderException;
 /**
  * Header Trait.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
- * Request & Response) / modifying (of Response only) headers.
+ * Represents a trait stack that used by both Request and Response objects, utilizes accessing
+ * (to Request & Response) / modifying (of Response only) headers.
  *
  * @package  froq\http\common
  * @object   froq\http\common\HeaderTrait
@@ -36,6 +36,7 @@ trait HeaderTrait
         if (func_num_args() == 1) {
             return $this->getHeader($name);
         }
+
         return $replace ? $this->setHeader($name, $value)
                         : $this->addHeader($name, $value);
     }
@@ -62,7 +63,9 @@ trait HeaderTrait
      */
     public function addHeader(string $name, string|array|null $value): self
     {
-        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
+        if ($this->isRequest()) {
+            throw new HeaderException('Cannot modify request headers');
+        }
 
         if (is_array($value)) {
             foreach ($value as $valu) {
@@ -85,7 +88,9 @@ trait HeaderTrait
      */
     public function setHeader(string $name, string|null $value): self
     {
-        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
+        if ($this->isRequest()) {
+            throw new HeaderException('Cannot modify request headers');
+        }
 
         $this->headers->set($name, $value);
 
@@ -115,7 +120,9 @@ trait HeaderTrait
      */
     public function removeHeader(string $name, bool $defer = false): self
     {
-        $this->isRequest() && throw new HeaderException('Cannot modify request headers');
+        if ($this->isRequest()) {
+            throw new HeaderException('Cannot modify request headers');
+        }
 
         $header = $this->getHeader($name);
         if ($header != null) {

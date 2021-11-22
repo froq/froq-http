@@ -13,8 +13,8 @@ use froq\http\response\Cookie;
 /**
  * Cookie Trait.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing (to
- * Request & Response) / modifying (of Response only) cookies.
+ * Represents a trait stack that used by both Request and Response objects, utilizes accessing
+ * (to Request & Response) / modifying (of Response only) cookies.
  *
  * @package  froq\http\common
  * @object   froq\http\common\CookieTrait
@@ -37,6 +37,7 @@ trait CookieTrait
         if (func_num_args() == 1) {
             return $this->getCookie($name);
         }
+
         return $this->setCookie($name, $value, $options);
     }
 
@@ -72,7 +73,9 @@ trait CookieTrait
      */
     public function setCookie(string $name, string|null $value, array $options = null): self
     {
-        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
+        if ($this->isRequest()) {
+            throw new CookieException('Cannot modify request cookies');
+        }
 
         $this->cookies->set($name, new Cookie($name, $value, $options));
 
@@ -101,7 +104,9 @@ trait CookieTrait
      */
     public function removeCookie(string $name, bool $defer = false): self
     {
-        $this->isRequest() && throw new CookieException('Cannot modify request cookies');
+        if ($this->isRequest()) {
+            throw new CookieException('Cannot modify request cookies');
+        }
 
         $cookie = $this->getCookie($name);
         if ($cookie != null) {
