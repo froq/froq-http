@@ -287,7 +287,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
      */
     public function offsetSet($key, $value)
     {
-        throw new UnsupportedOperationException('No set() allowed for object' . self::class);
+        throw new UnsupportedOperationException('No set() allowed for ' . self::class);
     }
 
     /**
@@ -296,6 +296,6 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
      */
     public function offsetUnset($key)
     {
-        throw new UnsupportedOperationException('No unset() allowed for object' . self::class);
+        throw new UnsupportedOperationException('No unset() allowed for ' . self::class);
     }
 }
