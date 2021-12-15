@@ -80,10 +80,6 @@ trait HeaderTrait
         return $this;
     }
 
-    function h() {
-        return $this->headers;
-    }
-
     /**
      * Set a header.
      *
