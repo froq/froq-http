@@ -67,15 +67,21 @@ trait HeaderTrait
             throw new HeaderException('Cannot modify request headers');
         }
 
-        if (is_array($value)) {
-            foreach ($value as $valu) {
-                $this->headers->add($name, $valu);
-            }
-        } else {
-            $this->headers->add($name, $value);
+        // Multi-headers (eg: Link, Cookie).
+        if ($this->headers->has($name)) {
+            $value = array_map('strval', array_merge(
+                (array) $this->headers->get($name),
+                (array) $value
+            ));
         }
 
+        $this->headers->set($name, $value);
+
         return $this;
+    }
+
+    function h() {
+        return $this->headers;
     }
 
     /**
