@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interface\{Arrayable, Listable, Objectable, Stringable};
-use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToArrayTrait, DataToListTrait};
+use froq\common\interface\{Listable, Arrayable, Objectable, Stringable};
+use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait};
 use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait};
 use froq\util\{Util, Arrays};
 
@@ -22,15 +22,15 @@ use froq\util\{Util, Arrays};
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Arrayable, Listable, Objectable, Stringable
+final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
 {
     /**
      * @see froq\common\trait\DataCountTrait
      * @see froq\common\trait\DataEmptyTrait
-     * @see froq\common\trait\DataToArrayTrait
      * @see froq\common\trait\DataToListTrait
+     * @see froq\common\trait\DataToArrayTrait
      */
-    use DataCountTrait, DataEmptyTrait, DataToArrayTrait, DataToListTrait;
+    use DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait;
 
     /**
      * @see froq\collection\trait\EachTrait
