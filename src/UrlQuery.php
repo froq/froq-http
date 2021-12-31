@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interface\{Arrayable, Objectable, Stringable};
-use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataListTrait};
-use froq\collection\trait\{EachTrait, FilterTrait, MapTrait};
+use froq\common\interface\{Arrayable, Listable, Objectable, Stringable};
+use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToArrayTrait, DataToListTrait};
+use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait};
 use froq\util\{Util, Arrays};
 
 /**
@@ -22,21 +22,23 @@ use froq\util\{Util, Arrays};
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Arrayable, Objectable, Stringable
+final class UrlQuery implements Arrayable, Listable, Objectable, Stringable
 {
     /**
      * @see froq\common\trait\DataCountTrait
      * @see froq\common\trait\DataEmptyTrait
-     * @see froq\common\trait\DataListTrait
+     * @see froq\common\trait\DataToArrayTrait
+     * @see froq\common\trait\DataToListTrait
      */
-    use DataCountTrait, DataEmptyTrait, DataListTrait;
+    use DataCountTrait, DataEmptyTrait, DataToArrayTrait, DataToListTrait;
 
     /**
      * @see froq\collection\trait\EachTrait
      * @see froq\collection\trait\FilterTrait
      * @see froq\collection\trait\MapTrait
+     * @see froq\collection\trait\GetTrait
      */
-    use EachTrait, FilterTrait, MapTrait;
+    use EachTrait, FilterTrait, MapTrait, GetTrait;
 
     /** @var array */
     private array $data;
@@ -114,62 +116,6 @@ final class UrlQuery implements Arrayable, Objectable, Stringable
     public function getAll(array $keys, $default = null): array
     {
         return array_fetch($this->data, $keys, $default);
-    }
-
-    /**
-     * Get a value as int by given key.
-     *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return int
-     */
-    public function getInt(string $key, $default = null): int
-    {
-        return (int) $this->get($key, $default);
-    }
-
-    /**
-     * Get a value as float by given key.
-     *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return float
-     */
-    public function getFloat(string $key, $default = null): float
-    {
-        return (float) $this->get($key, $default);
-    }
-
-    /**
-     * Get a value as string by given key.
-     *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return string
-     */
-    public function getString(string $key, $default = null): string
-    {
-        return (string) $this->get($key, $default);
-    }
-
-    /**
-     * Get a value as bool by given key.
-     *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return bool
-     */
-    public function getBool(string $key, $default = null): bool
-    {
-        return (bool) $this->get($key, $default);
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Arrayable
-     */
-    public function toArray(): array
-    {
-        return $this->data;
     }
 
     /**
