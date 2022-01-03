@@ -52,7 +52,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     {
         is_array($data) || $data = Util::parseQueryString($data);
 
-        $data = array_map_recursive($data, 'strval');
+        $data = array_map_recursive('strval', $data);
 
         $this->data = $data;
     }

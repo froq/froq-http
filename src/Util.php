@@ -114,7 +114,7 @@ final class Util extends StaticClass
     {
         $ret = http_build_query(
             // Fix skipped NULL values by http_build_query().
-            array_map_recursive($data, 'strval')
+            array_map_recursive('strval', $data)
         );
 
         if ($normalizeArrays && str_contains($ret, '%5D=')) {
