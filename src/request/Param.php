@@ -22,7 +22,7 @@ use froq\common\object\StaticClass;
 final class Param extends StaticClass
 {
     /**
-     * Get one or many "$_GET" params, optionally mapping/filtering.
+     * Get one or many $_GET params, optionally mapping/filtering.
      *
      * @param  string|array  $name
      * @param  any|null      $default
@@ -35,29 +35,11 @@ final class Param extends StaticClass
     public static function get(string|array $name, $default = null, callable $map = null, callable $filter = null,
         bool $trim = true, bool $combine = false)
     {
-        // Trim is default for map if not false.
-        (!$map && $trim) && $map = 'trim';
-
-        // All entries wanted.
-        ($name == '*') && $name = array_keys($_GET);
-
-        $values = Params::gets((array) $name, $default);
-
-        if ($map || $filter) {
-            $values = self::applyMapFilter($values, $map, $filter);
-        }
-
-        if ($combine) {
-            return array_combine($names = (array) $name,
-                !$filter ? $values : array_pad($values, count($names), null)
-            );
-        }
-
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        return self::fetch('get', $name, $default, $map, $filter, $trim, $combine);
     }
 
     /**
-     * Get one or many "$_POST" params, optionally mapping/filtering.
+     * Get one or many $_POST params, optionally mapping/filtering.
      *
      * @param  string|array  $name
      * @param  any|null      $default
@@ -70,29 +52,11 @@ final class Param extends StaticClass
     public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null,
         bool $trim = true, bool $combine = false)
     {
-        // Trim is default for map if not false.
-        (!$map && $trim) && $map = 'trim';
-
-        // All entries wanted.
-        ($name == '*') && $name = array_keys($_POST);
-
-        $values = Params::posts((array) $name, $default);
-
-        if ($map || $filter) {
-            $values = self::applyMapFilter($values, $map, $filter);
-        }
-
-        if ($combine) {
-            return array_combine($names = (array) $name,
-                !$filter ? $values : array_pad($values, count($names), null)
-            );
-        }
-
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        return self::fetch('post', $name, $default, $map, $filter, $trim, $combine);
     }
 
     /**
-     * Get one or many "$_COOKIE" params, optionally mapping/filtering.
+     * Get one or many $_COOKIE params, optionally mapping/filtering.
      *
      * @param  string|array  $name
      * @param  any|null      $default
@@ -105,42 +69,54 @@ final class Param extends StaticClass
     public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null,
         bool $trim = true, bool $combine = false)
     {
-        // Trim is default for map if not false.
-        (!$map && $trim) && $map = 'trim';
+        return self::fetch('cookie', $name, $default, $map, $filter, $trim, $combine);
+    }
 
-        // All entries wanted.
-        ($name == '*') && $name = array_keys($_COOKIE);
+    /**
+     * Fetch params from given source by name(s).
+     */
+    private static function fetch(string $source, string|array $name, mixed $default, callable|null $map, callable|null $filter,
+        bool $trim, bool $combine)
+    {
+        $all = ($name === '*');
 
-        $values = Params::cookies((array) $name, $default);
+        // If all entries wanted (* and null => all).
+        $names = !$all ? (array) $name : null;
 
-        if ($map || $filter) {
-            $values = self::applyMapFilter($values, $map, $filter);
+        $values = match ($source) {
+            'get'    => Params::gets($names, $default),
+            'post'   => Params::posts($names, $default),
+            'cookie' => Params::cookies($names, $default),
+        };
+
+        if ($values) {
+            // Trim is default for map, if not false.
+            if ($trim && !$map) {
+                $map = 'trim';
+            }
+            // Apply map & filter, if provided.
+            if ($map || $filter) {
+                $values = self::applyMapFilter($values, $map, $filter);
+            }
         }
 
-        if ($combine) {
-            return array_combine($names = (array) $name,
-                !$filter ? $values : array_pad($values, count($names), null)
-            );
+        if (!$all && $combine) {
+            return array_combine($names, $values);
         }
-
-        return is_array($name) ? $values : ($values[0] ?? $default);
+        if (!$all && is_string($name)) {
+            return array_first($values);
+        }
+        return $values;
     }
 
     /**
      * Apply map/filter.
-     *
-     * @param  array     $values
-     * @param  ?callable $map
-     * @param  ?callable $filter
-     * @return array
-     * @internal
      */
-    private static function applyMapFilter(array $values, ?callable $map, ?callable $filter): array
+    private static function applyMapFilter(array $values, callable|null $map, callable|null $filter): array
     {
-        // For safely mapping array'ed values.
-        if ($map) $map = fn($v) => self::map($v, $map);
+        // For safely mapping arrays/nulls.
+        if ($map) $map = fn($v) => self::wrapMap($v, $map);
 
-        // Apply map & filter if provided.
         $map    && $values = array_map($map, $values);
         $filter && $values = array_filter($values, $filter);
 
@@ -148,13 +124,14 @@ final class Param extends StaticClass
     }
 
     /**
-     * Array-safe map.
+     * Array/null safe map wrap.
      * @since 5.0
-     * @internal
      */
-    private static function map($in, $map)
+    private static function wrapMap($input, $map)
     {
-        return is_array($in) ? array_map(fn($v) => self::map($v, $map), $in)
-             : $map((string) $in); // Always string.
+        return is_array($input)
+             ? array_map(fn($v) => self::wrapMap($v, $map), $input)
+             : ($input !== null ? $map((string) $input) : $input);
+             // $map((string) $in); // Always string. @nope
     }
 }

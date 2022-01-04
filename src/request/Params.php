@@ -32,7 +32,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get a "$_GET" param.
+     * Get a $_GET param.
      *
      * @param  string   $name
      * @param  any|null $default
@@ -44,7 +44,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get all/many "$_GET" params.
+     * Get all/many $_GET params.
      *
      * @param  array<string>|null $names
      * @param  any|null           $default
@@ -57,7 +57,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check a "$_GET" param.
+     * Check a $_GET param.
      *
      * @param  string $name
      * @return bool
@@ -68,7 +68,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check all/many "$_GET" params.
+     * Check all/many $_GET params.
      *
      * @param  array<string>|null $names
      * @return bool
@@ -88,7 +88,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get a "$_POST" param.
+     * Get a $_POST param.
      *
      * @param  string   $name
      * @param  any|null $default
@@ -100,7 +100,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get all/many "$_POST" params.
+     * Get all/many $_POST params.
      *
      * @param  array<string>|null $names
      * @param  any|null           $default
@@ -113,7 +113,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check a "$_POST" param.
+     * Check a $_POST param.
      *
      * @param  string $name
      * @return bool
@@ -124,7 +124,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check all/many "$_POST" params.
+     * Check all/many $_POST params.
      *
      * @param  array<string>|null $names
      * @return bool
@@ -144,7 +144,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get a "$_COOKIE" param.
+     * Get a $_COOKIE param.
      *
      * @param  string   $name
      * @param  any|null $default
@@ -156,7 +156,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Get all/many "$_COOKIE" params.
+     * Get all/many $_COOKIE params.
      *
      * @param  array<string>|null $names
      * @param  any|null           $default
@@ -169,7 +169,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check a "$_COOKIE" param.
+     * Check a $_COOKIE param.
      *
      * @param  string $name
      * @return bool
@@ -180,7 +180,7 @@ final class Params extends StaticClass
     }
 
     /**
-     * Check all/many "$_COOKIE" params.
+     * Check all/many $_COOKIE params.
      *
      * @param  array<string>|null $names
      * @return bool
