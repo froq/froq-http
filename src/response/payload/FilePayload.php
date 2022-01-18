@@ -77,7 +77,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $file || throw new PayloadException('Failed creating file resource, file content must be a'
                     . ' valid readable file path');
 
-                $fileName   = $fileName ?: file_name($temp);
+                $fileName   = $fileName ?: filename($temp);
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
             // Convert file to source.
@@ -99,22 +99,24 @@ final class FilePayload extends Payload implements PayloadInterface
                 throw new PayloadException($error->getMessage(), null, $error->getCode());
             }
 
-            $fileName   = $fileName ?: file_name($file);
+            $fileName   = $fileName ?: filename($file);
             $modifiedAt = self::getModifiedAt($file, $modifiedAt);
 
-            $fileMime   = $fileMime ?: file_mime($file);
+            $fileMime   = $fileMime ?: filemime($file);
             $fileSize   = $fileSize ?: filesize($file);
         }
 
         // Extract file name & extension.
         if ($fileName != null) {
             $name     = $fileName;
-            $fileName = file_name($name);
-            strstr($name, '.') && $fileExtension = file_extension($name);
+            $fileName = filename($name);
+            if (str_contains($name, '.')) {
+                $fileExtension = file_extension($name);
+            }
         }
 
         if (!$direct) {
-            $fileMime = $fileMime ?: file_mime(fmeta($file)['uri']);
+            $fileMime = $fileMime ?: filemime(fmeta($file)['uri']);
             $fileSize = $fileSize ?: fstat($file)['size'];
         }
 
