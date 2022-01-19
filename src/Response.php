@@ -41,6 +41,7 @@ final class Response extends Message
         parent::__construct($app, Message::TYPE_RESPONSE);
 
         $this->status = new Status();
+        $this->setStatus(Status::OK);
     }
 
     /**
@@ -55,15 +56,47 @@ final class Response extends Message
     }
 
     /**
-     * Get status, also set its code if provided.
+     * Set/get status.
      *
-     * @param  ... $args
+     * @param  ...$args
+     * @return self|froq\http\response\Status
+     */
+    public function status(...$args): self|Status
+    {
+        return $args ? $this->setStatus(...$args) : $this->getStatus();
+    }
+
+    /**
+     * Set status code and optionally status text.
+     *
+     * @param  int         $code
+     * @param  string|null $text
+     * @return self
+     */
+    public function setStatus(int $code, string $text = null): self
+    {
+        // For invalid codes.
+        try {
+            $this->status->setCode($code);
+        } catch (StatusException) {
+            $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
+        }
+
+        // Not needed for HTTP/2 version.
+        if ($this->httpVersion < 2.0) {
+            $this->status->setText($text ?? Status::getTextByCode($code));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get status.
+     *
      * @return froq\http\response\Status
      */
-    public function status(...$args): Status
+    public function getStatus(): Status
     {
-        $args && $this->setStatus(...$args);
-
         return $this->status;
     }
 
@@ -82,29 +115,6 @@ final class Response extends Message
 
         $headers && $this->setHeaders($headers);
         $cookies && $this->setCookies($cookies);
-
-        return $this;
-    }
-
-    /**
-     * Set status code and optionally status text.
-     *
-     * @param  int         $code
-     * @param  string|null $text
-     * @return self
-     */
-    public function setStatus(int $code, string $text = null): self
-    {
-        try {
-            $this->status->setCode($code);
-        } catch (StatusException) {
-            $this->status->setCode(Status::INTERNAL_SERVER_ERROR);
-        }
-
-        // Not needed for HTTP/2 version.
-        if ($this->httpVersion < 2.0) {
-            $this->status->setText($text ?? Status::getTextByCode($code));
-        }
 
         return $this;
     }

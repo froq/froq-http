@@ -122,7 +122,7 @@ abstract class Message
      */
     public final function headers(...$args): static|Headers
     {
-        return $args ? $this->setHeaders(...$args) : $this->headers;
+        return $args ? $this->setHeaders(...$args) : $this->getHeaders();
     }
 
     /**
@@ -133,7 +133,7 @@ abstract class Message
      */
     public final function cookies(...$args): static|Cookies
     {
-        return $args ? $this->setCookies(...$args) : $this->cookies;
+        return $args ? $this->setCookies(...$args) : $this->getCookies();
     }
 
     /**
@@ -144,7 +144,7 @@ abstract class Message
      */
     public final function body(...$args): static|Body
     {
-        return $args ? $this->setBody(...$args) : $this->body;
+        return $args ? $this->setBody(...$args) : $this->getBody();
     }
 
     /**
