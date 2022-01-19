@@ -79,7 +79,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
-            // Convert file to source.
+            // Convert content to source.
             else {
                 try {
                     $image = imagecreatefromstring($image);
@@ -91,7 +91,9 @@ final class ImagePayload extends Payload implements PayloadInterface
             }
 
             unset($temp);
-        } elseif (!is_image($image)) { // Image may be GdImage.
+        }
+        // Image may be GdImage.
+        elseif (!is_image($image)) {
             if (File::errorCheck($image, $error)) {
                 throw new PayloadException($error->getMessage(), null, $error->getCode());
             }

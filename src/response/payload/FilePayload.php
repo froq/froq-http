@@ -80,7 +80,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $fileName   = $fileName ?: filename($temp);
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
-            // Convert file to source.
+            // Convert content to source.
             else {
                 try {
                     $file = tmpfile();
