@@ -52,10 +52,10 @@ trait ResponseTrait
     /**
      * Set content type.
      *
-     * @param  ?string $type
+     * @param  string $type
      * @return self
      */
-    public function setContentType(?string $type): self
+    public function setContentType(string $type): self
     {
         $this->body->setAttribute('type', $type);
 
@@ -65,9 +65,9 @@ trait ResponseTrait
     /**
      * Get content type.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getContentType(): ?string
+    public function getContentType(): string|null
     {
         return $this->body->getAttribute('type');
     }
@@ -75,10 +75,10 @@ trait ResponseTrait
     /**
      * Set content charset.
      *
-     * @param  ?string $charset
+     * @param  string $charset
      * @return self
      */
-    public function setContentCharset(?string $charset): self
+    public function setContentCharset(string $charset): self
     {
         $this->body->setAttribute('charset', $charset);
 
@@ -88,9 +88,9 @@ trait ResponseTrait
     /**
      * Get content charset.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getContentCharset(): ?string
+    public function getContentCharset(): string|null
     {
         return $this->body->getAttribute('charset');
     }
