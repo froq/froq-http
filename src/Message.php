@@ -119,7 +119,6 @@ abstract class Message
      *
      * @param  ... $args
      * @return static|froq\http\message\Headers
-     * @throws froq\http\MessageException
      */
     public final function headers(...$args): static|Headers
     {
@@ -131,7 +130,6 @@ abstract class Message
      *
      * @param  ...$args
      * @return static|froq\http\message\Cookies
-     * @throws froq\http\MessageException
      */
     public final function cookies(...$args): static|Cookies
     {
@@ -219,28 +217,17 @@ abstract class Message
     /**
      * Set body.
      *
-     * @param  any|null   $content
+     * @param  mixed      $content
      * @param  array|null $attributes
-     * @param  bool|null  $isError @internal
      * @return self
      * @throws froq\http\MessageException
      */
-    public final function setBody($content, array $attributes = null, bool $isError = null): self
+    public final function setBody(mixed $content, array $attributes = null): self
     {
-        // @cancel
-        // $isError is an internal option and string content needed here.
-        // @see App.error() and App.endOutputBuffer().
-        // if (!$isError) {
-        //     $this->body->setContent($content)
-        //                ->setAttributes($attributes);
-        //     return $this;
-        // }
-
         if ($this->isRequest()) {
             $this->body->setContent($content)
                        ->setAttributes($attributes);
-        }
-        elseif ($this->isResponse()) {
+        } elseif ($this->isResponse()) {
             // Payload contents.
             if ($content instanceof Payload) {
                 $payload = $content;
@@ -255,13 +242,20 @@ abstract class Message
                 if (is_array($content)) {
                     $contentType = trim($attributes['type'] ?? '');
                     if ($contentType == '') {
-                        throw new MessageException('Missing content type for `array` type content');
+                        throw new MessageException(
+                            'Missing content type for `array` type content'
+                        );
                     } elseif (!preg_test('~(json|xml)~', $contentType)) {
-                        throw new MessageException('Invalid content value type for `array` type content,'
-                            . ' content type must be such type `xxx/json` or `xxx/xml`');
+                        throw new MessageException(
+                            'Invalid content type for `array` type content, ' .
+                            'content type must be such type `xxx/json` or `xxx/xml`'
+                        );
                     }
                 } elseif (!is_null($content) && !is_scalar($content)) {
-                    throw new MessageException('Invalid content value type `%s`', get_type($content));
+                    throw new MessageException(
+                        'Invalid content value type `%s`, content value must be string|null',
+                        get_type($content)
+                    );
                 }
 
                 $payload = new Payload($this->getStatusCode(), $content, $attributes);
