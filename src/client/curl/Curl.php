@@ -174,30 +174,32 @@ final class Curl
             $options[CURLOPT_HTTPHEADER][] = 'Content-Length: '. strlen((string) $body);
         }
 
-        // Extra cURL options.
-        $clientOptionsCurl = null;
+        // Extra cURL options from client options.curl field.
+        $optionsExtra = null;
 
         if (isset($clientOptions['curl'])) {
             is_array($clientOptions['curl']) || throw new CurlException(
                 'Options `curl` field must be array|null, %s given', get_type($clientOptions['curl'])
             );
-            $clientOptionsCurl = $clientOptions['curl'];
+            $optionsExtra = $clientOptions['curl'];
         }
 
-        // Somehow HEAD method is freezing requests and causing timeouts.
+        // Somehow HEAD method is freezing requests and causing timeouts. @override
         if ($method == 'HEAD') {
-            $clientOptionsCurl[CURLOPT_NOBODY] = true;
+            $optionsExtra[CURLOPT_NOBODY] = true;
+        } elseif ($method == 'POST') {
+            $optionsExtra[CURLOPT_POST] = true;
         }
 
         // Add "userpass" stuff for basic authorizations.
         if (isset($clientOptions['userpass'])) {
-            $clientOptionsCurl[CURLOPT_USERPWD] = is_array($clientOptions['userpass'])
+            $optionsExtra[CURLOPT_USERPWD] = is_array($clientOptions['userpass'])
                 ? join(':', $clientOptions['userpass']) : (string) $clientOptions['userpass'];
         }
 
         // Assign HTTP version if provided.
         if (isset($clientOptions['httpVersion'])) {
-            $clientOptionsCurl[CURLOPT_HTTP_VERSION] = match ((string) $clientOptions['httpVersion']) {
+            $optionsExtra[CURLOPT_HTTP_VERSION] = match ((string) $clientOptions['httpVersion']) {
                 '2', '2.0' => CURL_HTTP_VERSION_2_0,
                 '1.1'      => CURL_HTTP_VERSION_1_1,
                 '1.0'      => CURL_HTTP_VERSION_1_0,
@@ -206,45 +208,44 @@ final class Curl
             };
         }
 
-        // Apply user-provided options.
-        if (isset($clientOptionsCurl)) {
+        if ($optionsExtra != null) {
             // // HTTP/2 requires a https scheme.
-            // if (isset($clientOptionsCurl[CURLOPT_HTTP_VERSION])
-            //     && $clientOptionsCurl[CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0
+            // if (isset($optionsExtra[CURLOPT_HTTP_VERSION])
+            //     && $optionsExtra[CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0
             //     && !str_starts_with($url, 'https')) {
             //     throw new CurlException('URL scheme must be `https` for HTTP/2 requests');
             // }
 
-            foreach ($clientOptionsCurl as $name => $value) {
-                // Check constant name.
-                if (!$name || !is_int($name)) {
-                    throw new CurlException('Invalid cURL constant `%s`', $name);
+            foreach ($optionsExtra as $option => $value) {
+                // Check constant option.
+                if (!$option || !is_int($option)) {
+                    throw new CurlException('Invalid cURL constant `%s`', $option);
                 }
 
                 // Check for internal options.
-                if (self::checkOption($name, $foundName)) {
+                if (self::checkOption($option, $name)) {
                     throw new CurlException(
                         'Not allowed cURL option %s given [tip: some options are set internally and '.
-                        'not allowed for a proper request/response process, not allowed options are: '.
-                        '%s]', [$foundName, join(', ', array_keys(self::BLOCKED_OPTIONS))]
+                        'not allowed for a proper request/response process, not allowed options are: %s]',
+                        [$name, join(', ', array_keys(self::BLOCKED_OPTIONS))]
                     );
                 }
 
                 if (is_array($value)) {
                     foreach ($value as $value) {
-                        $options[$name][] = $value;
+                        $options[$option][] = $value;
                     }
                 } else {
-                    $options[$name] = $value;
+                    $options[$option] = $value;
                 }
             }
         }
 
-        if (curl_setopt_array($handle, $options)) {
-            return $handle;
+        if (!curl_setopt_array($handle, $options)) {
+            throw new CurlException('Failed to apply cURL options [error: %s]', '@error');
         }
 
-        throw new CurlException('Failed to apply cURL options [error: %s]', '@error');
+        return $handle;
     }
 
     /**
@@ -273,20 +274,21 @@ final class Curl
     /**
      * Check option validity.
      *
-     * @param  any          $searchValue
-     * @param  string|null &$foundName
+     * @param  mixed        $option
+     * @param  string|null &$name
      * @return bool
      */
-    private static function checkOption($searchValue, string &$foundName = null): bool
+    private static function checkOption(mixed $option, string|null &$name): bool
     {
-        // Check options if contain search value.
-        foreach (self::BLOCKED_OPTIONS as $name => $value) {
-            if ($searchValue === $value) {
-                $foundName = $name;
+        $name = null;
+
+        foreach (self::BLOCKED_OPTIONS as $_name => $_option) {
+            if ($option === $_option) {
+                $name = $_name;
                 break;
             }
         }
 
-        return ($foundName != null);
+        return ($name != null);
     }
 }
