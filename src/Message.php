@@ -115,9 +115,9 @@ abstract class Message
     }
 
     /**
-     * Set/get headers, set for only Response.
+     * Set/get headers (set for only Response).
      *
-     * @param  ... $args
+     * @param  ...$args
      * @return static|froq\http\message\Headers
      */
     public final function headers(...$args): static|Headers
@@ -126,7 +126,7 @@ abstract class Message
     }
 
     /**
-     * Set/get cookies, set for only Response.
+     * Set/get cookies (set for only Response).
      *
      * @param  ...$args
      * @return static|froq\http\message\Cookies
