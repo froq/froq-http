@@ -381,8 +381,7 @@ final class Request extends Message
      * @param  bool   $json
      * @return array
      */
-    private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false,
-        bool $json = false): array
+    private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false, bool $json = false): array
     {
         $encode = false;
 
