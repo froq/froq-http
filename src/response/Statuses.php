@@ -21,7 +21,7 @@ use froq\common\object\StaticClass;
  * @since   4.0
  * @static @internal
  */
-class Statuses extends StaticClass
+final class Statuses extends StaticClass
 {
     /**
      * Status constants.
