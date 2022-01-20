@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use StaticClass;
+
 /**
  * Content Charset.
  *
@@ -16,7 +18,7 @@ namespace froq\http\message;
  * @since   5.0 Derived from Body constants.
  * @static
  */
-final class ContentCharset
+final class ContentCharset extends StaticClass
 {
     /**
     * Names.
