@@ -206,22 +206,30 @@ final class Response extends Message
      */
     public function sendBody(): void
     {
-        // Clean up above..
+        // Clean up above.
         while (ob_get_level()) {
             ob_end_clean();
         }
-
-        $body       = $this->body;
-        $content    = $body->getContent();
-        $attributes = $body->getAttributes();
 
         // Done wrapper.
         $done = function ($output = null) {
             $this->free();
             $this->expose();
             // Print output content.
-            $output && print $output;
+            if ($output !== null) {
+                print $output;
+            }
         };
+
+        // Response may contain not-modified status with null content.
+        if ($this->body->getContent() == null
+            && $this->status->getCode() == Status::NOT_MODIFIED) {
+            return;
+        }
+
+        $body       = $this->body;
+        $content    = $body->getContent();
+        $attributes = $body->getAttributes();
 
         // Those n/a responses output nothing.
         if ($body->isNa()) {
@@ -271,11 +279,6 @@ final class Response extends Message
         }
         // Image contents.
         elseif ($body->isImage()) {
-            // Payload may be contain not-modified status with null content.
-            if ($content == null) {
-                return;
-            }
-
             [$image, $imageType, $modifiedAt, $expiresAt, $direct, $etag] = [
                 $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
             ];
@@ -338,11 +341,6 @@ final class Response extends Message
         }
         // File contents (actually file downloads).
         elseif ($body->isFile()) {
-            // Payload may be contain not-modified status with null content.
-            if ($content == null) {
-                return;
-            }
-
             [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rate] = [
                 $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rate'])
             ];
