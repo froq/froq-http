@@ -232,23 +232,24 @@ abstract class Message
             if ($content instanceof Payload) {
                 $payload = $content;
             } else {
-                // Prepare defaults with type.
-                $attributes = array_merge(
-                    ['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
-                    (array) $attributes
-                );
+                $code = $this->getStatusCode();
+                $type = $this->getContentType() ?? ContentType::TEXT_HTML;
+
+                // Attributes with default type if none.
+                $attributes = ((array) $attributes) + ['type' => $type];
 
                 // Content & content type checks.
                 if (is_array($content)) {
-                    $contentType = trim($attributes['type'] ?? '');
-                    if ($contentType == '') {
+                    $type = trim($attributes['type']);
+                    if ($type == '') {
                         throw new MessageException(
                             'Missing content type for `array` type content'
                         );
-                    } elseif (!preg_test('~(json|xml)~', $contentType)) {
+                    } elseif (!preg_test('~(json|xml)~i', $type)) {
                         throw new MessageException(
-                            'Invalid content type for `array` type content, ' .
-                            'content type must be such type `xxx/json` or `xxx/xml`'
+                            'Invalid content type `%s` for `array` type content, '.
+                            'content type must be denoted like `xxx/json` or `xxx/xml`',
+                            $type
                         );
                     }
                 } elseif (!is_null($content) && !is_scalar($content)) {
@@ -258,18 +259,18 @@ abstract class Message
                     );
                 }
 
-                $payload = new Payload($this->getStatusCode(), $content, $attributes);
+                $payload = new Payload($code, $content, $attributes);
             }
 
-            $result = $payload->process($this);
+            // Extract needed stuff from payload process.
+            [$content, $attributes, [$status, $headers, $cookies]] = $payload->process($this);
 
-            // Set original arguments or their overrides, finally..
-            $this->body->setContent($result[0])
-                       ->setAttributes($result[1]);
+            // Set body content & attributes.
+            $this->body->setContent($content)
+                       ->setAttributes($attributes);
 
-            // Set response attributes
-            [$code, $headers, $cookies] = $result[2];
-            $code    && $this->setStatus($code);
+            // Set response stuff.
+            $status  && $this->setStatus($status);
             $headers && $this->setHeaders($headers);
             $cookies && $this->setCookies($cookies);
         }
