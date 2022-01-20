@@ -215,12 +215,20 @@ final class Response extends Message
         $content    = $body->getContent();
         $attributes = $body->getAttributes();
 
+        // Done wrapper.
+        $done = function ($output = null) {
+            $this->free();
+            $this->expose();
+            // Print output content.
+            $output && print $output;
+        };
+
         // Those n/a responses output nothing.
         if ($body->isNa()) {
             header('Content-Type: na');
             header('Content-Length: 0');
 
-            $this->exposeAppRuntime();
+            $done();
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
@@ -259,9 +267,7 @@ final class Response extends Message
             header('Content-Type: '. $contentType);
             header('Content-Length: '. strlen($content));
 
-            $this->exposeAppRuntime();
-
-            echo $content;
+            $done($content);
         }
         // Image contents.
         elseif ($body->isImage()) {
@@ -274,7 +280,7 @@ final class Response extends Message
                 $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
             ];
 
-            // For direct file readings.
+            // For direct file reads.
             if ($direct) {
                 header('Content-Type: '. $imageType);
                 header('Content-Length: '. filesize($image));
@@ -295,9 +301,9 @@ final class Response extends Message
 
                 header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
 
-                $this->exposeAppRuntime();
+                $done();
 
-                readfile($image);
+                readfile($image); // Read.
             }
             // For resize/crop purposes.
             else {
@@ -325,9 +331,7 @@ final class Response extends Message
 
                 header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
 
-                $this->exposeAppRuntime();
-
-                echo $content;
+                $done($content);
 
                 unset($image); // Free.
             }
@@ -366,37 +370,34 @@ final class Response extends Message
                 header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
             }
 
-            $this->exposeAppRuntime();
+            $done();
 
-            // For direct file readings.
+            // For direct file reads.
             if ($direct) {
                 $file = fopen($file, 'rb');
 
                 do {
-                    echo fread($file, $rateLimit);
+                    print fread($file, $rateLimit);
                     sleep(1); // Apply rate limit.
                 } while (!connection_aborted() && !feof($file));
 
                 fclose($file);
             }
-            // For resource readings.
+            // For resource reads.
             else {
                 $file = FileObject::fromResource($file);
                 $file->rewind();
 
                 do {
-                    echo $file->read($rateLimit);
+                    print $file->read($rateLimit);
                     sleep(1); // Apply rate limit.
                 } while (!connection_aborted() && $file->valid());
 
                 unset($file); // Free.
             }
         }
-        // Nope, nothing to print..
+        // Nothing to print.
         // else {}
-
-        // Free.
-        $body->setContent(null);
     }
 
     /**
@@ -422,10 +423,17 @@ final class Response extends Message
     }
 
     /**
-     * @since 5.0
-     * @internal
+     * Free up body content.
      */
-    private function exposeAppRuntime(): void
+    private function free(): void
+    {
+        $this->body->setContent(null);
+    }
+
+    /**
+     * Expose app runtime if available.
+     */
+    private function expose(): void
     {
         $art = $this->app->config('exposeAppRuntime');
         if ($art && ($art === true || $art === $this->app->env())) {
