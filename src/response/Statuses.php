@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use StaticClass;
-
 /**
  * Statuses.
  *
@@ -19,9 +17,9 @@ use StaticClass;
  * @object  froq\http\response\Statuses
  * @author  Kerem Güneş
  * @since   4.0
- * @static @internal
+ * @internal
  */
-final class Statuses extends StaticClass
+class Statuses
 {
     /**
      * Status constants.

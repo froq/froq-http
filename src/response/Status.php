@@ -19,7 +19,7 @@ use froq\http\response\{Statuses, StatusException};
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Status
+final class Status extends Statuses
 {
     /** @var int */
     private int $code = 0;
@@ -169,7 +169,7 @@ final class Status
     {
         // @cancel
         // Since only IANA-defined codes are there, use defined codes only.
-        // return array_key_exists($code, Statuses::all());
+        // return array_key_exists($code, parent::all());
 
         return ($code >= 100 && $code <= 599);
     }
@@ -182,7 +182,7 @@ final class Status
      */
     public static function getCodeByText(string $text): int|null
     {
-        return array_find_key(Statuses::all(), fn($_text) => $_text == $text);
+        return array_find_key(parent::all(), fn($_text) => $_text == $text);
     }
 
     /**
@@ -193,6 +193,6 @@ final class Status
      */
     public static function getTextByCode(int $code): string|null
     {
-        return array_find(Statuses::all(), fn($_, $_code) => $_code == $code);
+        return array_find(parent::all(), fn($_, $_code) => $_code == $code);
     }
 }
