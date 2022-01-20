@@ -26,16 +26,16 @@ final class Body
      */
     use AttributeTrait;
 
-    /** @var any|null */
-    private $content;
+    /** @var mixed|null */
+    private mixed $content = null;
 
     /**
      * Constructor.
      *
-     * @param any|null   $content
+     * @param mixed|null $content
      * @param array|null $attributes
      */
-    public function __construct($content = null, array $attributes = null)
+    public function __construct(mixed $content = null, array $attributes = null)
     {
         $this->content    = $content;
         $this->attributes = $attributes ?? [];
@@ -44,10 +44,10 @@ final class Body
     /**
      * Set content.
      *
-     * @param  any|null $content
+     * @param  mixed $content
      * @return self
      */
-    public function setContent($content): self
+    public function setContent(mixed $content): self
     {
         $this->content = $content;
 
@@ -57,11 +57,22 @@ final class Body
     /**
      * Get content.
      *
-     * @return any|null
+     * @return mixed
      */
-    public function getContent()
+    public function getContent(): mixed
     {
         return $this->content;
+    }
+
+    /**
+     * Get content type.
+     *
+     * @return string|null
+     * @since  6.0
+     */
+    public final function getContentType(): string|null
+    {
+        return $this->getAttribute('type');
     }
 
     /**
@@ -72,7 +83,7 @@ final class Body
      */
     public function isNa(): bool
     {
-        return $this->getAttribute('type') == ContentType::NA;
+        return ($this->getContentType() == ContentType::NA);
     }
 
     /**
@@ -84,7 +95,7 @@ final class Body
     public function isText(): bool
     {
         return (is_null($this->content) || is_string($this->content))
-            && !$this->isNa() && !$this->isFile() && !$this->isImage();
+            && (!$this->isNa() && !$this->isFile() && !$this->isImage());
     }
 
     /**
@@ -95,7 +106,7 @@ final class Body
      */
     public function isFile(): bool
     {
-        return in_array($this->getAttribute('type'), [
+        return in_array($this->getContentType(), [
             ContentType::APPLICATION_OCTET_STREAM,
             ContentType::APPLICATION_DOWNLOAD
         ]);
@@ -109,7 +120,7 @@ final class Body
      */
     public function isImage(): bool
     {
-        return in_array($this->getAttribute('type'), [
+        return in_array($this->getContentType(), [
             ContentType::IMAGE_JPEG, ContentType::IMAGE_PNG,
             ContentType::IMAGE_GIF, ContentType::IMAGE_WEBP
         ]);
