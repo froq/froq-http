@@ -65,14 +65,53 @@ final class Body
     }
 
     /**
+     * Set content type.
+     *
+     * @param  string $type
+     * @return self
+     * @since  6.0
+     */
+    public function setContentType(string $type): self
+    {
+        $this->setAttribute('type', $type);
+
+        return $this;
+    }
+
+    /**
      * Get content type.
      *
      * @return string|null
      * @since  6.0
      */
-    public final function getContentType(): string|null
+    public function getContentType(): string|null
     {
         return $this->getAttribute('type');
+    }
+
+    /**
+     * Set content charset.
+     *
+     * @param  string $charset
+     * @return self
+     * @since  6.0
+     */
+    public function setContentCharset(string $charset): self
+    {
+        $this->setAttribute('charset', $charset);
+
+        return $this;
+    }
+
+    /**
+     * Get content charset.
+     *
+     * @return string|null
+     * @since  6.0
+     */
+    public function getContentCharset(): string|null
+    {
+        return $this->getAttribute('charset');
     }
 
     /**

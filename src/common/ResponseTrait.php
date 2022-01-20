@@ -57,7 +57,7 @@ trait ResponseTrait
      */
     public function setContentType(string $type): self
     {
-        $this->body->setAttribute('type', $type);
+        $this->body->setContentType($type);
 
         return $this;
     }
@@ -69,7 +69,7 @@ trait ResponseTrait
      */
     public function getContentType(): string|null
     {
-        return $this->body->getAttribute('type');
+        return $this->body->getContentType();
     }
 
     /**
@@ -80,7 +80,7 @@ trait ResponseTrait
      */
     public function setContentCharset(string $charset): self
     {
-        $this->body->setAttribute('charset', $charset);
+        $this->body->setContentCharset($charset);
 
         return $this;
     }
@@ -92,6 +92,6 @@ trait ResponseTrait
      */
     public function getContentCharset(): string|null
     {
-        return $this->body->getAttribute('charset');
+        return $this->body->getContentCharset();
     }
 }
