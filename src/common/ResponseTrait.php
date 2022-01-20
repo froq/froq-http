@@ -50,6 +50,36 @@ trait ResponseTrait
     }
 
     /**
+     * Set content.
+     *
+     * @param  mixed       $content
+     * @param  string|null $type
+     * @param  string|null $charset
+     * @return self
+     * @since  6.0
+     */
+    public function setContent(mixed $content, string $type = null, string $charset = null): self
+    {
+        $this->body->setContent($content);
+
+        $type    && $this->setContentType($type);
+        $charset && $this->setContentCharset($charset);
+
+        return $this;
+    }
+
+    /**
+     * Get content.
+     *
+     * @return mixed
+     * @since  6.0
+     */
+    public function getContent(): mixed
+    {
+        return $this->body->getContent();
+    }
+
+    /**
      * Set content type.
      *
      * @param  string $type
