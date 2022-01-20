@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\object\StaticClass;
+use StaticClass;
 
 /**
  * Params.
