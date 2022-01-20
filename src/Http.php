@@ -66,13 +66,19 @@ final class Http
     /**
      * Format a time as HTTP date.
      *
-     * @param  int|null $time
+     * @param  int|string|null $time
      * @return string
      * @since  4.0
      */
-    public static function date(int $time = null): string
+    public static function date(int|string $time = null): string
     {
-        return gmdate(self::DATE_FORMAT, $time ?? time());
+        $time ??= time();
+
+        if (is_string($time)) {
+            $time = strtotime($time);
+        }
+
+        return gmdate(self::DATE_FORMAT, $time);
     }
 
     /**
