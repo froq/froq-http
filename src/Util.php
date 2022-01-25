@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use StaticClass;
-
 /**
  * Util.
  *
@@ -18,7 +16,7 @@ use StaticClass;
  * @since   4.0
  * @static
  */
-final class Util extends StaticClass
+final class Util extends \StaticClass
 {
     /**
      * Parse given URL.

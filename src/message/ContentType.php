@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
-use StaticClass;
-
 /**
  * Content Type.
  *
@@ -18,7 +16,7 @@ use StaticClass;
  * @since   5.0 Derived from Body constants.
  * @static
  */
-final class ContentType extends StaticClass
+final class ContentType extends \StaticClass
 {
     /**
     * Names.

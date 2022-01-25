@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use StaticClass;
-
 /**
  * Params.
  *
@@ -18,7 +16,7 @@ use StaticClass;
  * @since   1.0
  * @static
  */
-final class Params extends StaticClass
+final class Params extends \StaticClass
 {
     /**
      * Get all params by GPC sort.

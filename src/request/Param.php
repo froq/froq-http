@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 use froq\http\request\Params;
-use StaticClass;
 
 /**
  * Param.
@@ -19,7 +18,7 @@ use StaticClass;
  * @since   4.8
  * @static
  */
-final class Param extends StaticClass
+final class Param extends \StaticClass
 {
     /**
      * Get one or many $_GET params, optionally mapping/filtering.
