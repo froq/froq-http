@@ -179,7 +179,7 @@ final class Curl
 
         if (isset($clientOptions['curl'])) {
             is_array($clientOptions['curl']) || throw new CurlException(
-                'Options `curl` field must be array|null, %s given', get_type($clientOptions['curl'])
+                'Options `curl` field must be array|null, %t given', $clientOptions['curl']
             );
             $optionsExtra = $clientOptions['curl'];
         }

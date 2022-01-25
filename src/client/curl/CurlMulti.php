@@ -44,10 +44,10 @@ final class CurlMulti
     public function setClients(array $clients): void
     {
         foreach ($clients as $client) {
-            if (!$client instanceof Client) {
-                throw new CurlException('Each client must be instance of %s, %s given',
-                    [Client::class, get_type($client)]);
-            }
+            ($client instanceof Client) || throw new CurlException(
+                'Each client must be instance of %s, %t given',
+                [Client::class, $client]
+            );
 
             $this->clients[] = $client;
         }
