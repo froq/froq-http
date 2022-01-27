@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\{Http, MessageException};
 use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
 use froq\App;
@@ -232,30 +231,46 @@ abstract class Message
             if ($content instanceof Payload) {
                 $payload = $content;
             } else {
-                $code = $this->getStatusCode();
-                $type = $this->getContentType() ?? ContentType::TEXT_HTML;
+                $type = ContentType::TEXT_HTML;
+                $attributes = (array) $attributes;
+
+                // Response contents (eg: return this.response(...)).
+                if ($content instanceof Response) {
+                    $code = $content->getStatusCode();
+                    $type = $content->getContentType() ?? $type;
+
+                    // Update attributes with current body attributes.
+                    $attributes = [...$attributes, ...$content->body->getAttributes()];
+
+                    // Update content with current body content.
+                    $content = $content->body->getContent();
+                } else {
+                    $code = $this->getStatusCode();
+                    $type = $this->getContentType() ?? $type;
+                }
 
                 // Attributes with default type if none.
-                $attributes = ((array) $attributes) + ['type' => $type];
+                $attributes = $attributes + ['type' => $type];
 
-                // Content & content type checks.
-                if (is_array($content)) {
-                    $type = trim($attributes['type']);
-                    if ($type == '') {
-                        throw new MessageException(
-                            'Missing content type for `array` type content'
-                        );
-                    } elseif (!preg_test('~(json|xml)~i', $type)) {
+                // Content type check for a proper response.
+                $contentType = trim((string) $attributes['type']);
+                $contentType || throw new MessageException('Missing content type');
+
+                $type = new \XType($content);
+                if ($type->isArray()) {
+                    // Note: must be checked here only!
+                    if (!preg_test('~(json|xml)~i', $contentType)) {
                         throw new MessageException(
                             'Invalid content type `%s` for `array` type content, '.
                             'content type must be denoted like `xxx/json` or `xxx/xml`',
-                            $type
+                            $contentType
                         );
                     }
-                } elseif (!is_null($content) && !is_scalar($content)) {
+                } elseif (!$type->isNull() && !$type->isString()
+                       && !$type->isImage() && !$type->isStream()) {
                     throw new MessageException(
-                        'Invalid content value type `%s`, content value must be string|null',
-                        get_type($content)
+                        'Invalid content value type `%s`, it must be string|image|stream|null',
+                        $type
                     );
                 }
 
