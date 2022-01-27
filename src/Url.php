@@ -148,7 +148,7 @@ class Url extends ComponentCollection implements Stringable
     public function toString(): string
     {
         [$scheme, $authority, $path, $query, $queryParams, $fragment] = array_select(
-            $this->toArray(), ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']
+            $this->data, ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']
         );
 
         $ret = '';
