@@ -124,4 +124,29 @@ trait ResponseTrait
     {
         return $this->body->getContentCharset();
     }
+
+    /**
+     * Set content attributes.
+     *
+     * @param  string $attributes
+     * @return self
+     * @since  6.0
+     */
+    public function setContentAttributes(array $attributes): self
+    {
+        $this->body->setAttributes($attributes);
+
+        return $this;
+    }
+
+    /**
+     * Get content attributes.
+     *
+     * @return array|null
+     * @since  6.0
+     */
+    public function getContentAttributes(): array|null
+    {
+        return $this->body->getAttributes() ?: null;
+    }
 }
