@@ -11,17 +11,14 @@ namespace froq\http\message;
  * Content Charset.
  *
  * @package froq\http\message
- * @object  froq\http\message\ContentCharset
+ * @class   froq\http\message\ContentCharset
  * @author  Kerem Güneş
  * @since   5.0 Derived from Body constants.
  * @static
  */
 final class ContentCharset extends \StaticClass
 {
-    /**
-    * Names.
-    * @const string
-    */
+    /** @const string */
     public const NA     = 'n/a',
                  UTF_8  = 'utf-8',
                  UTF_16 = 'utf-16';

@@ -11,7 +11,7 @@ namespace froq\http\message;
  * Content Type.
  *
  * @package froq\http\message
- * @object  froq\http\message\ContentType
+ * @class   froq\http\message\ContentType
  * @author  Kerem Güneş
  * @since   5.0 Derived from Body constants.
  * @static
