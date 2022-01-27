@@ -268,7 +268,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetExists($key)
+    public function offsetExists(mixed $key): bool
     {
         return $this->get($key) !== null;
     }
@@ -276,7 +276,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $key): string
     {
         return $this->get($key);
     }
@@ -285,7 +285,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $key, mixed $value): never
     {
         throw new UnsupportedOperationException('No set() allowed for ' . self::class);
     }
@@ -294,7 +294,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     froq\common\exception\UnsupportedOperationException
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $key): never
     {
         throw new UnsupportedOperationException('No unset() allowed for ' . self::class);
     }
