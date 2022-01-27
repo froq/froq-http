@@ -330,10 +330,9 @@ final class Request extends Message
      */
     private function prepareHeaders(): array
     {
-        try {
-            $headers = getallheaders() ?: [];
-        } catch (\Error) {
-            $headers = [];
+        $headers = getallheaders();
+
+        if (!$headers) {
             foreach ($_SERVER as $key => $value) {
                 if (str_starts_with((string) $key, 'HTTP_')) {
                     $name = str_replace(['_', ' '], '-', substr($key, 5));
@@ -345,13 +344,16 @@ final class Request extends Message
         $headers = array_lower_keys($headers);
 
         // Content issues.
-        if (isset($_SERVER['CONTENT_TYPE'])) {
+        if (!isset($headers['content-type'])
+            && isset($_SERVER['CONTENT_TYPE'])) {
             $headers['content-type'] = $_SERVER['CONTENT_TYPE'];
         }
-        if (isset($_SERVER['CONTENT_LENGTH'])) {
+        if (!isset($headers['content-length'])
+            && isset($_SERVER['CONTENT_LENGTH'])) {
             $headers['content-length'] = $_SERVER['CONTENT_LENGTH'];
         }
-        if (isset($_SERVER['CONTENT_MD5'])) {
+        if (!isset($headers['content-md5'])
+            && isset($_SERVER['CONTENT_MD5'])) {
             $headers['content-md5'] = $_SERVER['CONTENT_MD5'];
         }
 
