@@ -231,13 +231,14 @@ abstract class Message
             if ($content instanceof Payload) {
                 $payload = $content;
             } else {
-                $type = ContentType::TEXT_HTML;
                 $attributes = (array) $attributes;
+                // Content type could be set by headers before.
+                $contentType = $this->header('Content-Type') ?: ContentType::TEXT_HTML;
 
                 // Response contents (eg: return this.response(...)).
                 if ($content instanceof Response) {
                     $code = $content->getStatusCode();
-                    $type = $content->getContentType() ?? $type;
+                    $contentType = $content->getContentType() ?? $contentType;
 
                     // Update attributes with current body attributes.
                     $attributes = [...$attributes, ...$content->body->getAttributes()];
@@ -246,11 +247,11 @@ abstract class Message
                     $content = $content->body->getContent();
                 } else {
                     $code = $this->getStatusCode();
-                    $type = $this->getContentType() ?? $type;
+                    $contentType = $this->getContentType() ?? $contentType;
                 }
 
                 // Attributes with default type if none.
-                $attributes = $attributes + ['type' => $type];
+                $attributes = $attributes + ['type' => $contentType];
 
                 // Content type check for a proper response.
                 $contentType = trim((string) $attributes['type']);
