@@ -11,7 +11,7 @@ namespace froq\http\message;
  * Content Charset.
  *
  * @package froq\http\message
- * @class   froq\http\message\ContentCharset
+ * @object  froq\http\message\ContentCharset
  * @author  Kerem Güneş
  * @since   5.0 Derived from Body constants.
  * @static

@@ -16,7 +16,7 @@ use froq\util\Arrays;
  * Cookie.
  *
  * @package froq\http\response
- * @class   froq\http\response\Cookie
+ * @object  froq\http\response\Cookie
  * @author  Kerem Güneş
  */
 final class Cookie extends ComponentCollection implements Stringable
