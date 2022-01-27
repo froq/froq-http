@@ -286,34 +286,43 @@ final class Client
         // Reproduce URL structure.
         $temp = HttpUtil::parseUrl($url);
         if (empty($temp[0])) {
-            throw new ClientException('No valid URL given, only http and https URLs are accepted'
-                . ' [given: %s]', $url);
+            throw new ClientException(
+                'No valid URL given, only http/https URLs are accepted '.
+                '[given: %s]', $url
+            );
         }
 
         $url       = $temp[0];
-        $urlParams = array_replace_recursive($temp[1] ?? [], $urlParams ?? []);
-        if ($urlParams != null) {
+        $urlParams = array_replace_recursive((array) $temp[1], (array) $urlParams);
+        if ($urlParams) {
             $url = $url .'?'. HttpUtil::buildQuery($urlParams);
         }
 
-        // Add JSON header if options.json is true.
-        if ($this->options['json']) {
-            $headers['content-type'] = 'application/json';
-        }
-
-        $headers = array_change_key_case($headers ?? [], CASE_LOWER);
+        $headers         = array_lower_keys((array) $headers);
         $headers['host'] = $temp[3]['host'];
 
+        $contentType = null;
+        if (!empty($headers['content-type'])) {
+            $contentType = $headers['content-type'] = strtolower($headers['content-type']);
+        }
+
+        // Add JSON header if options.json is true.
+        if ($this->options['json'] && (!$contentType || !str_contains($contentType, 'json'))) {
+            $contentType = $headers['content-type'] = 'application/json';
+        }
+
         // Encode body & add related headers if needed.
-        if ($body != null && is_array($body)) {
-            if (isset($headers['content-type']) && str_contains($headers['content-type'], 'json')) {
-                $body = json_encode($body, flags: JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
-                $headers['content-type'] ??= 'application/json';
+        if ($body && is_array($body)) {
+            if ($contentType && str_contains($contentType, 'json')) {
+                $body = json_encode($body, flags: (
+                    JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR
+                ));
             } else {
                 $body = http_build_query($body);
-                $headers['content-type'] ??= 'application/x-www-form-urlencoded';
+                $contentType = 'application/x-www-form-urlencoded';
             }
 
+            $headers['content-type']   ??= $contentType;
             $headers['content-length'] ??= (string) strlen($body);
         }
 
@@ -334,7 +343,7 @@ final class Client
      */
     public function end(?string $result, ?array $resultInfo, ?CurlError $error): void
     {
-        if ($error == null) {
+        if (!$error) {
             if ($this->options['throwHttpErrors']) {
                 $code = $resultInfo['http_code'];
                 if ($code && $code >= 400) {
