@@ -110,10 +110,10 @@ final class Util extends \StaticClass
      */
     public static function buildQuery(array $data, bool $normalizeArrays = true): string
     {
-        $ret = http_build_query(
-            // Fix skipped NULL values by http_build_query().
-            array_map_recursive('strval', $data)
-        );
+        // Fix skipped nulls by http_build_query().
+        $data = array_map_recursive('strval', $data);
+
+        $ret = http_build_query($data);
 
         if ($normalizeArrays && str_contains($ret, '%5D=')) {
             $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
