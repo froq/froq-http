@@ -35,7 +35,7 @@ final class ContentType extends \StaticClass
                  IMAGE_PNG                = 'image/png',
                  IMAGE_GIF                = 'image/gif',
                  IMAGE_WEBP               = 'image/webp',
-                 // Downloads
+                 // Downloads.
                  APPLICATION_DOWNLOAD     = 'application/download',
                  APPLICATION_OCTET_STREAM = 'application/octet-stream';
 }
