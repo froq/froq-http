@@ -278,11 +278,11 @@ final class Request extends Message
      */
     public function load(): void
     {
-        static $loaded;
+        static $done;
 
         // Check/tick for load-once state.
-        $loaded ? throw new RequestException('Request was already loaded')
-                : ($loaded = true);
+        $done ? throw new RequestException('Request was already loaded')
+                : ($done = true);
 
         $headers = $this->prepareHeaders();
 
@@ -310,17 +310,15 @@ final class Request extends Message
 
         // Fill & lock headers and cookies objects.
         foreach ($headers as $name => $value) {
-            $this->headers->add($name, $value);
+            $this->headers->set($name, $value);
         }
         foreach ($_COOKIE as $name => $value) {
-            $this->cookies->add($name, $value);
+            $this->cookies->set($name, $value);
         }
         $this->headers->lock(); $this->cookies->lock();
 
         // Modify URI params as well.
-        if ($dotted) {
-            $this->uri->unlock()->set('queryParams', $_GET)->lock();
-        }
+        $dotted && $this->uri->unlock()->set('queryParams', $_GET)->lock();
     }
 
     /**
