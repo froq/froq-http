@@ -29,10 +29,53 @@ final class ContentType extends \StaticClass
                  APPLICATION_JSON         = 'application/json',
                  // Images.
                  IMAGE_JPEG               = 'image/jpeg',
+                 IMAGE_WEBP               = 'image/webp',
                  IMAGE_PNG                = 'image/png',
                  IMAGE_GIF                = 'image/gif',
-                 IMAGE_WEBP               = 'image/webp',
                  // Downloads.
                  APPLICATION_DOWNLOAD     = 'application/download',
                  APPLICATION_OCTET_STREAM = 'application/octet-stream';
+
+    /**
+     * Get text valid types.
+     *
+     * @return array
+     * @since  6.0
+     */
+    public static function textTypes(): array
+    {
+        return [
+            self::TEXT_HTML, self::TEXT_PLAIN,
+            self::TEXT_XML, self::TEXT_JSON,
+            self::APPLICATION_XML, self::APPLICATION_JSON
+        ];
+    }
+
+    /**
+     * Get image valid types.
+     *
+     * @return array
+     * @since  6.0
+     */
+    public static function imageTypes(): array
+    {
+        return [
+            self::IMAGE_JPEG, self::IMAGE_WEBP,
+            self::IMAGE_PNG, self::IMAGE_GIF
+        ];
+    }
+
+    /**
+     * Get file valid types.
+     *
+     * @return array
+     * @since  6.0
+     */
+    public static function fileTypes(): array
+    {
+        return [
+            self::APPLICATION_OCTET_STREAM,
+            self::APPLICATION_DOWNLOAD
+        ];
+    }
 }
