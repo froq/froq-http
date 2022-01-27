@@ -176,11 +176,11 @@ abstract class Message
     /**
      * Set a header.
      *
-     * @param   string       $name
-     * @param   string|array $value
+     * @param   string            $name
+     * @param   string|array|null $value
      * @return  self
      */
-    public final function setHeader(string $name, string|array $value): self
+    public final function setHeader(string $name, string|array|null $value): self
     {
         // Null means remove.
         if ($value === null) {
