@@ -41,26 +41,34 @@ final class FilePayload extends Payload implements PayloadInterface
      */
     public function handle()
     {
-        [$file, $fileName, $fileMime, $modifiedAt, $direct] = [
+        [$file, $fileName, $fileMime, $fileExtension, $modifiedAt, $direct] = [
             $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt', 'direct'])
         ];
 
-        if ($file == null) {
-            throw new PayloadException('File must not be empty');
-        } elseif (!is_string($file) && !is_stream($file)) {
+        $type = new \XType($file);
+
+        if (!$file) {
+            throw new PayloadException('File empty');
+        } elseif (!$type->isString() && !$type->isStream()) {
             throw new PayloadException('File content must be a valid readable file path,'
-                . ' binary string or stream, %s given', get_type($file));
-        } elseif ($fileName != null && !preg_match('~^[\w\+\-\.]+$~', $fileName)) {
+                . ' binary string or stream, %s given', $type);
+        } elseif ($fileName && !$this->isValidFileName($fileName)) {
             throw new PayloadException('File name must not contain non-ascii characters');
         }
 
-        if (!$direct && is_string($file)) {
+        // Direct file reads.
+        if ($direct && !$type->isString()) {
+            throw new PayloadException('File content must be string (a valid file path)'
+                . ' when `direct` option is true, %s given', $type);
+        }
+
+        if (!$direct && $type->isString()) {
             $temp = $file;
 
             // Check if content is a file.
             if (File::isFile($file)) {
                 if (File::errorCheck($file, $error)) {
-                    throw new PayloadException($error->getMessage(), code: $error->getCode(), cause: $error);
+                    throw new PayloadException($error->message, code: $error->code, cause: $error);
                 }
 
                 $fileSize    = filesize($file);
@@ -72,12 +80,12 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 try {
                     $file = fopen($file, 'rb');
-                } catch (Error) { $file = null; }
+                } catch (\Error) { $file = null; }
 
                 $file || throw new PayloadException('Failed creating file resource, file content must be a'
                     . ' valid readable file path');
 
-                $fileName   = $fileName ?: filename($temp);
+                $fileName   = $fileName ?: filename($temp, true);
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
             // Convert content to source.
@@ -85,7 +93,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 try {
                     $file = tmpfile();
                     $file && fwrite($file, $temp);
-                } catch (Error) { $file = null; }
+                } catch (\Error) { $file = null; }
 
                 $file || throw new PayloadException('Failed creating file resource, cannot write temp-file');
 
@@ -94,30 +102,31 @@ final class FilePayload extends Payload implements PayloadInterface
             }
 
             unset($temp);
-        } else {
+        }
+        // File may be stream.
+        elseif (!$type->isStream()) {
             if (File::errorCheck($file, $error)) {
-                throw new PayloadException($error->getMessage(), code: $error->getCode(), cause: $error);
+                throw new PayloadException($error->message, code: $error->code, cause: $error);
             }
 
-            $fileName   = $fileName ?: filename($file);
+            $fileName   = $fileName ?: filename($file, true);
             $modifiedAt = self::getModifiedAt($file, $modifiedAt);
 
             $fileMime   = $fileMime ?: filemime($file);
             $fileSize   = $fileSize ?: filesize($file);
         }
 
+        $fileName = $fileName ?: fmeta($file)['uri'];
+        $fileMime = $fileMime ?: filemime($fileName);
+        $fileSize = $fileSize ?: fstat($file)['size'];
+
         // Extract file name & extension.
-        if ($fileName != null) {
+        if ($fileName) {
             $name     = $fileName;
             $fileName = filename($name);
             if (str_contains($name, '.')) {
                 $fileExtension = file_extension($name);
             }
-        }
-
-        if (!$direct) {
-            $fileMime = $fileMime ?: filemime(fmeta($file)['uri']);
-            $fileSize = $fileSize ?: fstat($file)['size'];
         }
 
         // Add extension to file name.
@@ -134,5 +143,13 @@ final class FilePayload extends Payload implements PayloadInterface
         ]);
 
         return ($content = $file);
+    }
+
+    /**
+     * Valid file-name checker.
+     */
+    private function isValidFileName(mixed $fileName): bool
+    {
+        return preg_test('~^[\w\+\-\.]+$~', (string) $fileName);
     }
 }

@@ -8,9 +8,8 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\Response;
+use froq\http\{Response, message\ContentType};
 use froq\file\File;
-use Error;
 
 /**
  * Image Payload.
@@ -44,23 +43,31 @@ final class ImagePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
         ];
 
-        if ($image == null) {
-            throw new PayloadException('Image must not be empty');
-        } elseif (!is_string($image) && !is_image($image)) {
+        $type = new \XType($image);
+
+        if (!$image) {
+            throw new PayloadException('Image empty');
+        } elseif (!$type->isString() && !$type->isImage()) {
             throw new PayloadException('Image content must be a valid readable file path,'
-                . ' binary string or GdImage, %s given', get_type($image));
-        } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
-            throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg,'
-                . ' image/png, image/gif, image/webp', $imageType ?: 'null');
+                . ' binary string or GdImage, %s given', $type);
+        } elseif (!$imageType || !$this->isValidImageType($imageType)) {
+            throw new PayloadException('Invalid image type `%s` [valids: %s]',
+                [$imageType ?: 'null', join(',', ContentType::imageTypes())]);
         }
 
-        if (!$direct && is_string($image)) {
+        // Direct file reads.
+        if ($direct && !$type->isString()) {
+            throw new PayloadException('Image content must be string (a valid file path)'
+                . ' when `direct` option is true, %s given', $type);
+        }
+
+        if (!$direct && $type->isString()) {
             $temp = $image;
 
             // Check if content is a file.
             if (File::isFile($image)) {
                 if (File::errorCheck($image, $error)) {
-                    throw new PayloadException($error->getMessage(), code: $error->getCode(), cause: $error);
+                    throw new PayloadException($error->message, code: $error->code, cause: $error);
                 }
 
                 $imageSize   = filesize($image);
@@ -72,7 +79,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
                 try {
                     $image = imagecreatefromstring(file_get_contents($image));
-                } catch (Error) { $image = null; }
+                } catch (\Error) { $image = null; }
 
                 $image || throw new PayloadException('Failed creating image source, invalid file contents in'
                     . ' %s file', $temp);
@@ -83,7 +90,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             else {
                 try {
                     $image = imagecreatefromstring($image);
-                } catch (Error) { $image = null; }
+                } catch (\Error) { $image = null; }
 
                 $image || throw new PayloadException('Failed creating image source, invalid string contents');
 
@@ -93,9 +100,9 @@ final class ImagePayload extends Payload implements PayloadInterface
             unset($temp);
         }
         // Image may be GdImage.
-        elseif (!is_image($image)) {
+        elseif (!$type->isImage()) {
             if (File::errorCheck($image, $error)) {
-                throw new PayloadException($error->getMessage(), code: $error->getCode(), cause: $error);
+                throw new PayloadException($error->message, code: $error->code, cause: $error);
             }
 
             $modifiedAt = self::getModifiedAt($image, $modifiedAt);
@@ -108,5 +115,13 @@ final class ImagePayload extends Payload implements PayloadInterface
         ]);
 
         return ($content = $image);
+    }
+
+    /**
+     * Valid iamge-type checker.
+     */
+    private function isValidImageType(mixed $imageType): bool
+    {
+        return preg_test('~^image/(?:jpeg|webp|png|gif)$~', (string) $imageType);
     }
 }

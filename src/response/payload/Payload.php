@@ -23,26 +23,24 @@ use froq\common\trait\AttributeTrait;
  */
 class Payload
 {
-    /**
-     * @see froq\common\trait\AttributeTrait
-     */
+    /** @see froq\common\trait\AttributeTrait */
     use AttributeTrait;
 
-    /** @var any */
-    protected $content;
+    /** @var mixed|null */
+    protected mixed $content = null;
 
     /** @var froq\http\Response|null */
-    protected Response|null $response;
+    protected Response|null $response = null;
 
     /**
      * Constructor.
      *
      * @param int                     $code
-     * @param any                     $content
+     * @param mixed|null              $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, mixed $content = null, array $attributes = null, Response $response = null)
     {
         $this->content      = $content;
         $this->response     = $response;
@@ -55,11 +53,22 @@ class Payload
     /**
      * Get content.
      *
-     * @return any
+     * @return mixed|null
      */
-    public final function getContent()
+    public final function getContent(): mixed
     {
         return $this->content;
+    }
+
+    /**
+     * Get content type.
+     *
+     * @return string|null
+     * @since  6.0
+     */
+    public final function getContentType(): string|null
+    {
+        return $this->getAttribute('type');
     }
 
     /**
@@ -134,7 +143,7 @@ class Payload
             && $payload->getResponseCode() == Status::NOT_MODIFIED) {
             // Return content, content attributes, response attributes.
             return [
-                null,
+                $content = null,
                 $payload->getAttributes(),
                 [$payload->getResponseCode(),
                  $payload->getResponseHeaders(),
@@ -147,13 +156,15 @@ class Payload
             $content = $payload->handle();
             if (!is_null($content) && !is_string($content)
                 && !is_image($content) && !is_stream($content)) {
-                throw new PayloadException('Failed to achive string/resource content from payload %s',
-                    $payload::class);
+                throw new PayloadException(
+                    'Failed to achive string/resource content from payload %s',
+                    get_class($payload)
+                );
             }
         }
         // Not ready to handle, try to create (eg: Payload).
         else {
-            $contentType = $payload->getAttribute('type');
+            $contentType = $payload->getContentType();
             if ($contentType == null) {
                 throw new PayloadException('Content type must not be empty');
             }
@@ -161,41 +172,53 @@ class Payload
             // Detect content type and process.
             switch ($type = self::sniffContentType($contentType)) {
                 case 'n/a':
-                    $content = '';
+                    $content = null;
                     break;
                 case 'text':
                     $content = $payload->getContent();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Content must be string|null for text responses,'
-                            . ' %s given', get_type($content));
+                        throw new PayloadException(
+                            'Content must be string|null for text responses, %s given',
+                            get_type($content)
+                        );
                     }
                     break;
                 case 'json': case 'xml':
                     $payload = self::createPayload($type, [
                         $payload->getResponseCode(), $payload->getContent(),
-                        $payload->getAttributes(),   $response
+                        $payload->getAttributes(), $response
                     ]);
 
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException('Failed getting string content from payload %s',
-                            $payload::class);
+                        throw new PayloadException(
+                            'Failed getting string content from payload %s, [return: %s]',
+                            [get_class($payload), get_type($content)]
+                        );
                     }
                     break;
                 case 'image': case 'file': case 'download':
                     $payload = self::createPayload($type, [
                         $payload->getResponseCode(), $payload->getContent(),
-                        $payload->getAttributes(),   $response
+                        $payload->getAttributes(), $response
                     ]);
 
                     $content = $payload->handle();
-                    if (!is_image($content) && !is_stream($content)) {
-                        throw new PayloadException('Failed getting resource content from payload %s',
-                            $payload::class);
+                    if (!is_image($content) && !is_stream($content)
+                        // Skip direct file reads.
+                        && !$payload->getAttribute('direct')
+                    ) {
+                        throw new PayloadException(
+                            'Failed getting resource content from payload %s, [return: %s]',
+                            [get_class($payload), get_type($content)]
+                        );
                     }
                     break;
                 default:
-                    throw new PayloadException('Invalid payload type `%s`', $type ?? $payload->getAttribute('type'));
+                    throw new PayloadException(
+                        'Invalid payload type `%s`',
+                        $type ?? $payload->getContentType()
+                    );
             }
         }
 
@@ -213,11 +236,11 @@ class Payload
      * Get "modified at" option as timestamp.
      *
      * @param  string $file
-     * @param  any    $option
+     * @param  mixed  $option
      * @return int|string|null
      * @since  5.0
      */
-    protected static function getModifiedAt(string $file, $option): int|string|null
+    protected static function getModifiedAt(string $file, mixed $option): int|string|null
     {
         // Disable directive.
         if ($option === null || $option === false) {
@@ -251,19 +274,16 @@ class Payload
 
     /**
      * Sniff given content type and return a pseudo type if valid.
-     *
-     * @param  string $contentType
-     * @return string|null
-     * @internal
      */
     private static function sniffContentType(string $contentType): string|null
     {
+        $contentType = strtolower($contentType);
         if ($contentType == 'n/a') {
             return 'n/a';
         }
 
         // Eg: text/html, image/jpeg, application/json.
-        if (preg_match('~/(?:.*?(\w+)$)?~i', $contentType, $match)) {
+        if (preg_match('~/(?:.*?(\w+)$)?~', $contentType, $match)) {
             $match = match ($match[1]) {
                 'json' => 'json', 'xml' => 'xml',
                 'jpeg', 'webp', 'png', 'gif' => 'image',
@@ -293,19 +313,19 @@ class Payload
 
     /**
      * Create a payload object by given pseudo type.
-     *
-     * @param  string $type
-     * @param  array  $args
-     * @return froq\http\response\payload\PayloadInterface
-     * @internal
      */
     private static function createPayload(string $type, array $args): PayloadInterface
     {
-        return match ($type) {
-            'json'             => new JsonPayload(...$args),
-            'xml'              => new XmlPayload(...$args),
-            'image'            => new ImagePayload(...$args),
-            'file', 'download' => new FilePayload(...$args),
+        switch ($type) {
+            case 'json':
+                return new JsonPayload(...$args);
+            case 'xml':
+                return new XmlPayload(...$args);
+            case 'image':
+                return new ImagePayload(...$args);
+            case 'file':
+            case 'download':
+                return new FilePayload(...$args);
         };
     }
 }
