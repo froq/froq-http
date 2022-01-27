@@ -18,10 +18,7 @@ namespace froq\http\message;
  */
 final class ContentType extends \StaticClass
 {
-    /**
-    * Names.
-    * @const string
-    */
+    /** @const string */
     public const NA                       = 'n/a',
                  // Texts.
                  TEXT_HTML                = 'text/html',
