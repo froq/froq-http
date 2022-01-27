@@ -32,11 +32,11 @@ abstract class Message
     /** @var string */
     protected string $httpProtocol;
 
-    /** @var ?array */
-    protected ?array $headers = null;
+    /** @var array|null */
+    protected array|null $headers = null;
 
-    /** @var ?string */
-    protected ?string $body = null;
+    /** @var string|null */
+    protected string|null $body = null;
 
     /**
      * Constructor.

@@ -25,8 +25,15 @@ final class Request extends Message
     /** @var string */
     private string $url;
 
-    /** @var ?array */
-    private ?array $urlParams = null;
+    /** @var array|null */
+    private array|null $urlParams = null;
+
+    /** @var array */
+    private static array $headersDefault = [
+        'accept'          => '*/*',
+        'accept-encoding' => 'gzip',
+        'user-agent'      => 'Froq HTTP Client (+http://github.com/froq/froq-http)',
+    ];
 
     /**
      * Constructor.
@@ -44,16 +51,9 @@ final class Request extends Message
              ->setUrl($url)
              ->setUrlParams($urlParams);
 
-        // Default headers.
-        static $headersDefault = [
-            'accept'          => '*/*',
-            'accept-encoding' => 'gzip',
-            'user-agent'      => 'Froq HTTP Client (+http://github.com/froq/froq-http)',
-        ];
-
         // Merge & normalize headers.
-        $headers = array_replace_recursive($headersDefault, $headers ?? []);
-        $headers = array_change_key_case($headers, CASE_LOWER);
+        $headers = array_replace_recursive(self::$headersDefault, (array) $headers);
+        $headers = array_lower_keys($headers);
 
         parent::__construct(Message::TYPE_REQUEST, null, $headers, $body);
     }
