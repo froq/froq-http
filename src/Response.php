@@ -177,12 +177,14 @@ final class Response extends Message
         }
 
         // Check name.
-        $session = $this->app->session();
-        if ($session != null && $session->name() == $name) {
-            throw new ResponseException('Invalid cookie name `%s`, name is reserved as session name', $name);
+        if ($this->app->session()?->name() === $name) {
+            throw new ResponseException('Invalid cookie name `%s`, it is reserved as session name', $name);
         }
 
-        $cookie = ($value instanceof Cookie) ? $value : new Cookie($name, $value, $options);
+        // We need Cookie here.
+        if (!$value instanceof Cookie) {
+            $value = new Cookie($name, $value, $options);
+        }
 
         header('Set-Cookie: ' . $cookie->toString(), false);
     }
@@ -211,16 +213,6 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        // Done wrapper.
-        $done = function ($output = null) {
-            $this->free();
-            $this->expose();
-            // Print output content.
-            if ($output !== null) {
-                print $output;
-            }
-        };
-
         // Response may contain not-modified status with null content.
         if ($this->body->getContent() == null
             && $this->status->getCode() == Status::NOT_MODIFIED) {
@@ -233,49 +225,48 @@ final class Response extends Message
 
         // Those n/a responses output nothing.
         if ($body->isNa()) {
-            header('Content-Type: na');
-            header('Content-Length: 0');
-
-            $done();
+            $this->done(['Content-Type' => 'n/a', 'Content-Length' => 0]);
         }
         // Text contents (html, json, xml etc.).
         elseif ($body->isText()) {
             $content        = (string) $content;
             $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
             $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
+            $contentLength  = strlen($content);
 
             if ($contentCharset && $contentCharset != ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
-            // Gzip stuff.
-            $contentLength = strlen($content);
-            if ($contentLength > 0) { // Prevent gzip corruption for 0 byte data.
-                $gzipOptions       = $this->app->config('response.gzip');
+            $headers = ['Content-Type' => $contentType, 'Content-Length' => $contentLength];
+
+            // Prevent gzip corruption for 0 byte data.
+            if ($contentLength > 0) {
+                $gzipOptions = $this->app->config('response.gzip');
                 $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
 
                 // Gzip options may be emptied by developer to disable gzip using null.
                 if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && str_contains(
-                    $this->app->request()->getHeader('Accept-Encoding', ''), 'gzip'
+                    (string) $this->app->request()->header('Accept-Encoding'), 'gzip'
                 )) {
                     $temp = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
-                    if ($temp && $error == null) {
+                    if ($temp && !$error) {
                         [$content, $temp] = [$temp, null];
 
                         // Cancel PHP compression.
-                        ini_set('zlib.output_compression', 'off');
+                        ini_set('zlib.output_compression', false);
 
                         // Add required headers.
-                        header('Vary: Accept-Encoding');
-                        header('Content-Encoding: gzip');
+                        $headers['Vary'] = 'Accept-Encoding';
+                        $headers['Content-Encoding'] = 'gzip';
+
+                        // Update content length.
+                        $headers['Content-Length'] = strlen($content);
                     }
                 }
             }
 
-            header('Content-Type: '. $contentType);
-            header('Content-Length: '. strlen($content));
-
-            $done($content);
+            $this->done($headers, $content);
         }
         // Image contents.
         elseif ($body->isImage()) {
@@ -283,28 +274,25 @@ final class Response extends Message
                 $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
             ];
 
+            $headers = ['Content-Type' => $imageType];
+
             // For direct file reads.
             if ($direct) {
-                header('Content-Type: '. $imageType);
-                header('Content-Length: '. filesize($image));
+                $headers['Content-Length'] = filesize($image);
 
                 if ($etag) {
-                    header('ETag: '. (is_string($etag) ? $etag : hash_file('fnv1a64', $image)));
+                    $headers['ETag'] = is_string($etag) ? $etag : hash_file('fnv1a64', $image);
                 }
                 if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                    header('Last-Modified: '. Http::date(
-                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
-                    ));
+                    $headers['Last-Modified'] = Http::date($modifiedAt);
                 }
                 if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
-                    header('Expires: '. Http::date(
-                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
-                    ));
+                    $headers['Expires'] = Http::date($expiresAt);
                 }
 
-                header('X-Dimensions: '. vsprintf('%dx%d', getimagesize($image)));
+                $headers['X-Dimensions'] = vsprintf('%dx%d', getimagesize($image));
 
-                $done();
+                $this->done($headers);
 
                 readfile($image); // Read.
             }
@@ -312,29 +300,24 @@ final class Response extends Message
             else {
                 $options = $attributes['options'] ?? $this->app->config('response.image');
 
-                $image   = ImageObject::fromResource($image, $imageType, $options);
+                $image   = new ImageObject($image, $imageType, $options);
                 $content = $image->toString();
 
-                header('Content-Type: '. $imageType);
-                header('Content-Length: '. strlen($content));
+                $headers['Content-Length'] = strlen($content);
 
                 if ($etag) {
-                    header('ETag: '. (is_string($etag) ? $etag : hash('fnv1a64', $content)));
+                    $headers['ETag'] = is_string($etag) ? $etag : hash('fnv1a64', $content);
                 }
                 if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                    header('Last-Modified: '. Http::date(
-                        is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
-                    ));
+                    $headers['Last-Modified'] = Http::date($modifiedAt);
                 }
                 if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
-                    header('Expires: '. Http::date(
-                        is_int($expiresAt) ? $expiresAt : strtotime($expiresAt)
-                    ));
+                    $headers['Expires'] = Http::date($expiresAt);
                 }
 
-                header('X-Dimensions: '. vsprintf('%dx%d', $image->dimensions()));
+                $headers['X-Dimensions'] = vsprintf('%dx%d', $image->dimensions());
 
-                $done($content);
+                $this->done($headers, $content);
 
                 unset($image); // Free.
             }
@@ -351,24 +334,25 @@ final class Response extends Message
                 $rateLimit = $fileSize;
             }
 
-            header('Content-Type: '. ($fileMime ?: ContentType::APPLICATION_OCTET_STREAM));
-            header('Content-Length: '. $fileSize);
-            header('Content-Disposition: attachment; filename="'. $fileName .'"');
-            header('Content-Transfer-Encoding: binary');
-            header('Cache-Control: no-cache');
-            header('Pragma: no-cache');
-            header('Expires: 0');
+            $headers = [
+                'Content-Type' => $fileMime ?: ContentType::APPLICATION_OCTET_STREAM,
+                'Content-Length' => $fileSize,
+            ];
+
+            $headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $fileName);
+            $headers['Content-Transfer-Encoding'] = 'binary';
+            $headers['Cache-Control'] = 'no-cache';
+            $headers['Pragma'] = 'no-cache';
+            $headers['Expires'] = '0';
 
             if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                header('Last-Modified: '. Http::date(
-                    is_int($modifiedAt) ? $modifiedAt : strtotime($modifiedAt)
-                ));
+                $headers['Last-Modified'] = Http::date($modifiedAt);
             }
             if ($rateLimit != $fileSize) {
-                header('X-Rate-Limit: '. FileUtil::formatBytes($rateLimit) .'/s');
+                $headers['X-Rate-Limit'] = FileUtil::formatBytes($rateLimit) . '/s';
             }
 
-            $done();
+            $this->done($headers);
 
             // For direct file reads.
             if ($direct) {
@@ -383,7 +367,7 @@ final class Response extends Message
             }
             // For resource reads.
             else {
-                $file = FileObject::fromResource($file);
+                $file = new FileObject($file);
                 $file->rewind();
 
                 do {
@@ -418,6 +402,25 @@ final class Response extends Message
         $this->sendHeaders();
         $this->sendCookies();
         $this->sendBody();
+    }
+
+    /**
+     * Done wrapper.
+     */
+    private function done(array $headers, string $output = null): void
+    {
+        $this->free();
+        $this->expose();
+
+        // Print headers.
+        foreach ($headers as $name => $value) {
+            header($name .': '. $value);
+        }
+
+        // Print output content.
+        if ($output !== null) {
+            print($output);
+        }
     }
 
     /**
