@@ -16,7 +16,7 @@ use froq\util\Arrays;
  * Cookie.
  *
  * @package froq\http\response
- * @object  froq\http\response\Cookie
+ * @class   froq\http\response\Cookie
  * @author  Kerem Güneş
  */
 final class Cookie extends ComponentCollection implements Stringable
@@ -38,10 +38,10 @@ final class Cookie extends ComponentCollection implements Stringable
         // Set components.
         parent::__construct(self::$components);
 
-        $options = ['name' => $name, 'value' => $value] + ($options ?? []);
+        $options = ['name' => $name, 'value' => $value] + ((array) $options);
 
         // Fix case issues.
-        $options = array_change_key_case($options, CASE_LOWER);
+        $options = Arrays::lowerKeys($options);
         Arrays::swap($options, 'httponly', 'httpOnly');
         Arrays::swap($options, 'samesite', 'sameSite');
 
@@ -54,24 +54,25 @@ final class Cookie extends ComponentCollection implements Stringable
 
         extract($options);
 
-        if ($sameSite != null) {
+        if ($sameSite !== null) {
             $sameSite = strtolower($sameSite);
         }
 
-        $this->setData(compact(self::$components)); // Store.
+        // Store.
+        $this->setData(compact(self::$components));
     }
 
-    /**
-     * @inheritDoc froq\common\interface\Stringable
-     */
+    /** @inheritDoc froq\common\interface\Stringable */
     public function toString(): string
     {
-        extract($this->getData()); // Unstore.
+        // Unstore.
+        extract($this->getData());
 
         $ret = rawurlencode($name) .'=';
 
+        // Remove.
         if ($value === null || $value === '' || $expires < 0) {
-            $ret .= sprintf('n/a; Expires=%s; Max-Age=0', Http::date(0)); // Remove.
+            $ret .= sprintf('n/a; Expires=%s; Max-Age=0', Http::date(0));
         } else {
             $ret .= rawurlencode($value);
 
