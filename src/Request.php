@@ -10,7 +10,6 @@ namespace froq\http;
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\http\{Message, UrlQuery, RequestException, common\RequestTrait};
 use froq\{App, util\Util};
-use Error;
 
 /**
  * Request.
@@ -332,19 +331,18 @@ final class Request extends Message
     private function prepareHeaders(): array
     {
         try {
-            $headers = (array) getallheaders();
-        } catch (Error) {
+            $headers = getallheaders() ?: [];
+        } catch (\Error) {
             $headers = [];
             foreach ($_SERVER as $key => $value) {
                 if (str_starts_with((string) $key, 'HTTP_')) {
-                    $key = str_replace(['_', ' '], '-', substr($key, 5));
-                    $headers[$key] = $value;
+                    $name = str_replace(['_', ' '], '-', substr($key, 5));
+                    $headers[$name] = $value;
                 }
             }
         }
 
-        // Lowerize names.
-        $headers = array_change_key_case($headers, CASE_LOWER);
+        $headers = array_lower_keys($headers);
 
         // Content issues.
         if (isset($_SERVER['CONTENT_TYPE'])) {
