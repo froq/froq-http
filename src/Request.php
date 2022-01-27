@@ -419,6 +419,6 @@ final class Request extends Message
         }
 
         // Run parsing process.
-        return Util::parseQueryString($source, $encode, dotted: $dotted);
+        return Util::parseQueryString($source, encode: $encode, dotted: $dotted);
     }
 }
