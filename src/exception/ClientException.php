@@ -9,6 +9,7 @@ namespace froq\http\exception;
 
 use froq\http\exception\trait\PrepareTrait;
 use froq\http\HttpException;
+use Throwable;
 
 /**
  * Client Exception.
@@ -36,10 +37,17 @@ class ClientException extends HttpException
     public function __construct(string $message = null, $messageParams = null, int $code = null,
         Throwable $previous = null, Throwable $cause = null)
     {
-        // Forbid code assigns for internal classes.
-        if (isset($code) && self::class != static::class && str_starts_with(static::class, __namespace__)) {
-            throw new HttpException('Cannot set $code parameter for %s, it is already set internally',
-                static::class);
+        if ($code !== null) {
+            // Forbid code assigns for internal classes.
+            if (static::class != self::class && str_starts_with(static::class, __namespace__)) {
+                throw new HttpException('Cannot set $code parameter for %s, it is already set internally',
+                    static::class);
+            }
+
+            // Forbid invalid code assigns.
+            if ($code < 400 || $code > 499) {
+                throw new HttpException('Invalid client exception code %s, it must be between 400-499', $code);
+            }
         }
 
         [$code, $message] = self::prepare($code, $message);

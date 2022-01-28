@@ -25,11 +25,11 @@ trait PrepareTrait
     /**
      * Prepare.
      *
-     * @param  ?int    $code
-     * @param  ?string $message
+     * @param  int|null    $code
+     * @param  string|null $message
      * @return array
      */
-    public static final function prepare(?int $code, ?string $message): array
+    public static final function prepare(int|null $code, string|null $message): array
     {
         // Overwrite on code with child class code.
         if (defined(static::class . '::CODE')) {
