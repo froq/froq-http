@@ -253,7 +253,7 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
      */
     public function toArray(): array
     {
-        return $this->getStack();
+        return $this->stack();
     }
 
     /**
