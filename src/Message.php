@@ -257,7 +257,7 @@ abstract class Message
                 $contentType = trim((string) $attributes['type']);
                 $contentType || throw new MessageException('Missing content type');
 
-                $type = new \XType($content);
+                $type = new \Type($content);
                 if ($type->isArray()) {
                     // Note: must be checked here only!
                     if (!preg_test('~(json|xml)~i', $contentType)) {
