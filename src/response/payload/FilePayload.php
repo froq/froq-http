@@ -45,7 +45,7 @@ final class FilePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt', 'direct'])
         ];
 
-        $type = new \XType($file);
+        $type = new \Type($file);
 
         if (!$file) {
             throw new PayloadException('File empty');

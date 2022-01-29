@@ -43,7 +43,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
         ];
 
-        $type = new \XType($image);
+        $type = new \Type($image);
 
         if (!$image) {
             throw new PayloadException('Image empty');
