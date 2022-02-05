@@ -392,7 +392,7 @@ final class Client
                           ->setHeaders($headers, true);
 
             // @cancel
-            // // Checker for redirections etc. (for finding final HTTP-Message).
+            // Checker for redirections etc. (for finding final HTTP-Message).
             // $next = fn($body) => $body && str_starts_with($body, 'HTTP/');
 
             // @ [$headers, $body] = explode("\r\n\r\n", $result, 2);
