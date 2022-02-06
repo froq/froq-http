@@ -11,6 +11,7 @@ use froq\http\{Http, common\CookieException};
 use froq\collection\ComponentCollection;
 use froq\common\interface\Stringable;
 use froq\util\Arrays;
+use Assert;
 
 /**
  * Cookie.
@@ -38,37 +39,53 @@ final class Cookie extends ComponentCollection implements Stringable
         // Set components.
         parent::__construct(self::$components);
 
+        // Prepare & validate name.
+        $name = trim($name);
+        Assert::regExp($name, '~^[\w][\w\.\-]*$~', new CookieException(
+            'Invalid cookie name, it must be alphanumeric & non-empty string'
+        ));
+
         $options = ['name' => $name, 'value' => $value] + ((array) $options);
+        $options = Arrays::map($options, fn($o) => isset($o) ? strval($o) : $o);
 
         // Fix case issues.
         $options = Arrays::lowerKeys($options);
         Arrays::swap($options, 'httponly', 'httpOnly');
         Arrays::swap($options, 'samesite', 'sameSite');
 
-        foreach ($options as $name => $value) {
-            $this->set($name, $value);
-        }
-
         // Define defaults for component names.
         $expires = $path = $domain = $secure = $httpOnly = $sameSite = null;
 
         extract($options);
 
-        if ($sameSite !== null) {
-            $sameSite = strtolower($sameSite);
+        $path     && $path     = trim($path);
+        $secure   && $secure   = (bool) $secure;
+        $httpOnly && $httpOnly = (bool) $httpOnly;
+        $sameSite && $sameSite = trim($sameSite);
+
+        if ($sameSite !== '') {
+            // Valids: none, lax, strict, none; secure (@see https://web.dev/schemeful-samesite/).
+            Assert::regExp($sameSite, '~^(?:(none|lax|strict|none; *secure))$~i', new CookieException(
+                'Invalid samesite option `%s`', $sameSite
+            ));
+
+            // Formatify.
+            $sameSite = xstring($sameSite)->splitMap('; *')->mapMulti('lower|ucfirst')->join('; ');
         }
 
         // Store.
-        $this->setData(compact(self::$components));
+        $this->data = compact(self::$components);
     }
 
-    /** @inheritDoc froq\common\interface\Stringable */
+    /**
+     * @inheritDoc froq\common\interface\Stringable
+     */
     public function toString(): string
     {
         // Unstore.
-        extract($this->getData());
+        extract($this->data);
 
-        $ret = rawurlencode($name) .'=';
+        $ret = rawurlencode($name) . '=';
 
         // Remove.
         if ($value === null || $value === '' || $expires < 0) {
@@ -82,11 +99,11 @@ final class Cookie extends ComponentCollection implements Stringable
             }
         }
 
-        $path     && $ret .= '; Path='. $path;
-        $domain   && $ret .= '; Domain='. $domain;
+        $path     && $ret .= '; Path=' . $path;
+        $domain   && $ret .= '; Domain=' . $domain;
         $secure   && $ret .= '; Secure';
         $httpOnly && $ret .= '; HttpOnly';
-        $sameSite && $ret .= '; SameSite='. $sameSite;
+        $sameSite && $ret .= '; SameSite=' . $sameSite;
 
         return $ret;
     }
