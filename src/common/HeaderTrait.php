@@ -127,7 +127,7 @@ trait HeaderTrait
         }
 
         $header = $this->getHeader($name);
-        if ($header != null) {
+        if ($header !== null) {
                $this->headers->remove($name)
             || $this->headers->remove(strtolower($name));
 

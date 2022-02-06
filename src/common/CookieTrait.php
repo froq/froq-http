@@ -109,7 +109,7 @@ trait CookieTrait
         }
 
         $cookie = $this->getCookie($name);
-        if ($cookie != null) {
+        if ($cookie !== null) {
             $this->cookies->remove($name);
 
             // Remove instantly.
