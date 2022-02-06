@@ -186,7 +186,7 @@ final class Response extends Message
             $value = new Cookie($name, $value, $options);
         }
 
-        header('Set-Cookie: ' . $cookie->toString(), false);
+        header('Set-Cookie: ' . $value->toString(), false);
     }
 
     /**
