@@ -9,7 +9,6 @@ namespace froq\http\request;
 
 use froq\http\request\{Segments, UriException};
 use froq\http\Url;
-use Throwable;
 
 /**
  * Uri.
@@ -24,6 +23,9 @@ final class Uri extends Url
     /** @var froq\http\request\Segments */
     private Segments $segments;
 
+    /** @var array */
+    protected static array $components = ['path', 'query', 'queryParams', 'fragment'];
+
     /**
      * Constructor.
      *
@@ -33,8 +35,8 @@ final class Uri extends Url
     public function __construct(array|string $source)
     {
         try {
-            parent::__construct($source, components: ['path', 'query', 'queryParams', 'fragment']);
-        } catch (Throwable $e) {
+            parent::__construct($source, self::$components);
+        } catch (\Throwable $e) {
             throw new UriException($e);
         }
 
@@ -45,28 +47,30 @@ final class Uri extends Url
      * Get a segment.
      *
      * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
+     * @param  mixed|null $default
+     * @return mixed|null
      * @throws froq\http\request\UriException
      */
-    public function segment(int|string $key, $default = null)
+    public function segment(int|string $key, mixed $default = null): mixed
     {
         if (isset($this->segments)) {
             return $this->segments->get($key, $default);
         }
 
-        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
-            . ' not called yet]');
+        throw new UriException(
+            'Property $segments not set yet [tip: method generateSegments() '.
+            'not called yet]'
+        );
     }
 
     /**
      * Get segments property or params.
      *
      * @param  array<int|string>|null $keys
-     * @param  any|null               $default
+     * @param  array|null             $default
      * @return froq\http\request\Segments|array
      */
-    public function segments(array $keys = null, $default = null): Segments|array
+    public function segments(array $keys = null, array $default = null): Segments|array
     {
         if (isset($this->segments)) {
             if ($keys === null) {
@@ -80,8 +84,10 @@ final class Uri extends Url
             return $ret;
         }
 
-        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
-            . ' not called yet]');
+        throw new UriException(
+            'Property $segments not set yet [tip: method generateSegments() '.
+            'not called yet]'
+        );
     }
 
     /**
@@ -94,20 +100,22 @@ final class Uri extends Url
      */
     public function generateSegments(string $root = null): void
     {
-        $path = $this->get('path') ?: '';
+        $path = $this->get('path', '');
 
-        [$path, $segments, $segmentsRoot] = [
-            rawurldecode($path), [], Segments::ROOT
-        ];
+        [$path, $segments, $segmentsRoot]
+            = [rawurldecode($path), [], Segments::ROOT];
 
-        if ($path && $path != $segmentsRoot) {
+        if ($path != '' && $path != $segmentsRoot) {
             // Drop root if exists.
-            if ($root && $root != $segmentsRoot) {
-                $root = '/'. trim($root, '/');
+            if ($root != '' && $root != $segmentsRoot) {
+                $root = '/' . trim($root, '/');
 
                 // Prevent wrong generate action.
                 if (!str_starts_with($path, $root)) {
-                    throw new UriException('URI path `%s` has no root such `%s`', [$path, $root]);
+                    throw new UriException(
+                        'URI path `%s` has no root such `%s`',
+                        [$path, $root]
+                    );
                 }
 
                 // Drop root from path.
@@ -117,7 +125,15 @@ final class Uri extends Url
                 $segmentsRoot = $root;
             }
 
-            $segments = (array) preg_split('~/+~', $path, -1, 1);
+            $segments = preg_split('~/+~', $path, flags: 1);
+
+            // In any case.
+            if ($segments === false) {
+                throw new UriException(
+                    'Cannot generate segments [error: %s]',
+                    '@error'
+                );
+            }
         }
 
         $this->segments = Segments::fromArray($segments, $segmentsRoot);
