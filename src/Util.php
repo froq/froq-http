@@ -121,4 +121,45 @@ final class Util extends \StaticClass
 
         return $ret;
     }
+
+    /**
+     * Build a cookie string.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @param  array|null  $options
+     * @return string
+     * @since  6.0
+     */
+    public static function buildCookie(string $name, string|null $value, array $options = null): string
+    {
+        $cookie = ['name' => $name, 'value' => $value] + array_replace(
+            array_pad_keys([], ['expires', 'path', 'domain', 'secure', 'httponly', 'samesite']),
+            array_map_keys($options ?? [], 'strtolower')
+        );
+
+        extract($cookie);
+
+        $ret = rawurlencode($name) . '=';
+
+        if ($value === '' || $value === null || $expires < 0) {
+            $ret .= sprintf('n/a; Expires=%s; Max-Age=0', gmdate('D, d M Y H:i:s \G\M\T', 0));
+        } else {
+            $ret .= rawurlencode($value);
+
+            // Must be given in-seconds format.
+            if ($expires !== null) {
+                $ret .= sprintf('; Expires=%s; Max-Age=%d', gmdate('D, d M Y H:i:s \G\M\T', time() + $expires),
+                    $expires);
+            }
+        }
+
+        $path     && $ret .= '; Path=' . $path;
+        $domain   && $ret .= '; Domain=' . $domain;
+        $secure   && $ret .= '; Secure';
+        $httponly && $ret .= '; HttpOnly';
+        $samesite && $ret .= '; SameSite=' . $samesite;
+
+        return $ret;
+    }
 }
