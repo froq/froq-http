@@ -83,12 +83,12 @@ trait HeaderTrait
     /**
      * Set a header.
      *
-     * @param  string      $name
-     * @param  string|null $value
+     * @param  string                    $name
+     * @param  string|array<string>|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function setHeader(string $name, string|null $value): self
+    public function setHeader(string $name, string|array|null $value): self
     {
         if ($this->isRequest()) {
             throw new HeaderException('Cannot modify request headers');

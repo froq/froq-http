@@ -122,41 +122,49 @@ final class Response extends Message
     /**
      * Send a header.
      *
-     * @param  string      $name
-     * @param  string|null $value
-     * @param  bool        $replace
+     * @param  string            $name
+     * @param  string|array|null $value
+     * @param  bool              $replace
      * @return void
      * @throws froq\http\ResponseException
      */
-    public function sendHeader(string $name, string|null $value, bool $replace = true): void
+    public function sendHeader(string $name, string|array|null $value, bool $replace = true): void
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
+        // Multi-headers.
+        if (is_array($value)) {
+            foreach ($value as $value) {
+                $this->sendHeader($name, $value, false);
+            }
+            return;
+        }
+
+        $header = HttpUtil::buildHeader($name, $value);
+        if ($header === null) {
+            throw new ResponseException('Invalid header name, it is empty');
+        }
+
+        // Remove directive.
         if (is_null($value)) {
             header_remove($name);
         } else {
-            header(sprintf('%s: %s', $name, $value), $replace);
+            header($header, $replace);
         }
     }
 
     /**
-     * Send all holding headers.
+     * Send all headers.
      *
      * @return void
      */
     public function sendHeaders(): void
     {
         foreach ($this->headers as $name => $value) {
-            if (is_array($value)) {
-                foreach ($value as $value) {
-                    $this->sendHeader($name, $value, false);
-                }
-            } else {
-                $this->sendHeader($name, $value);
-            }
+            $this->sendHeader($name, $value);
         }
     }
 
@@ -196,7 +204,7 @@ final class Response extends Message
     }
 
     /**
-     * Send all holding cookies.
+     * Send all cookies.
      *
      * @return void
      */
