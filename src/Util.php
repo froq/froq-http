@@ -131,6 +131,24 @@ final class Util extends \StaticClass
     }
 
     /**
+     * Build a header (line) string.
+     *
+     * @param  string      $name
+     * @param  string|null $value
+     * @return string|null
+     * @since  6.0
+     */
+    public static function buildHeader(string $name, string|null $value): string|null
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+
+        return sprintf('%s: %s', $name, $value);
+    }
+
+    /**
      * Build a cookie string.
      *
      * @param  string      $name
@@ -141,6 +159,7 @@ final class Util extends \StaticClass
      */
     public static function buildCookie(string $name, string|null $value, array $options = null): string|null
     {
+        $name = trim($name);
         if ($name === '') {
             return null;
         }
