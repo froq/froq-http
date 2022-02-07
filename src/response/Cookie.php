@@ -22,9 +22,12 @@ use Assert;
  */
 final class Cookie extends ComponentCollection implements Stringable
 {
-    /** @var array */
-    private static array $components = ['name', 'value', 'expires', 'path', 'domain', 'secure',
-        'httpOnly', 'sameSite'];
+    /** @var array<string> */
+    private static array $components = [
+        'name', 'value',
+        'expires', 'path', 'domain',
+        'secure', 'httpOnly', 'sameSite'
+    ];
 
     /**
      * Constructor.
@@ -46,7 +49,7 @@ final class Cookie extends ComponentCollection implements Stringable
         ));
 
         $options = ['name' => $name, 'value' => $value] + ((array) $options);
-        $options = Arrays::map($options, fn($o) => isset($o) ? strval($o) : $o);
+        $options = Arrays::clean($options);
 
         // Fix case issues.
         $options = Arrays::lowerKeys($options);
@@ -58,12 +61,9 @@ final class Cookie extends ComponentCollection implements Stringable
 
         extract($options);
 
-        $path     && $path     = trim($path);
-        $secure   && $secure   = (bool) $secure;
-        $httpOnly && $httpOnly = (bool) $httpOnly;
-        $sameSite && $sameSite = trim($sameSite);
+        if ($sameSite) {
+            $sameSite = (string) $sameSite;
 
-        if ($sameSite !== '') {
             // Valids: none, lax, strict, none; secure (@see https://web.dev/schemeful-samesite/).
             Assert::regExp($sameSite, '~^(?:(none|lax|strict|none; *secure))$~i', new CookieException(
                 'Invalid samesite option `%s`', $sameSite
