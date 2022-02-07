@@ -67,10 +67,14 @@ final class Util extends \StaticClass
      *
      * @param  string $headers
      * @param  bool   $lower
-     * @return array
+     * @return array|null
      */
-    public static function parseHeaders(string $headers, bool $lower = true): array
+    public static function parseHeaders(string $headers, bool $lower = true): array|null
     {
+        if ($headers === '') {
+            return null;
+        }
+
         $headers = explode("\r\n", trim($headers));
 
         // Pick status line.
@@ -106,10 +110,14 @@ final class Util extends \StaticClass
      *
      * @param  array $data
      * @param  bool  $normalizeArrays
-     * @return string
+     * @return string|null
      */
-    public static function buildQuery(array $data, bool $normalizeArrays = true): string
+    public static function buildQuery(array $data, bool $normalizeArrays = true): string|null
     {
+        if ($data === []) {
+            return null;
+        }
+
         // Fix skipped nulls by http_build_query().
         $data = array_map_recursive('strval', $data);
 
@@ -128,11 +136,15 @@ final class Util extends \StaticClass
      * @param  string      $name
      * @param  string|null $value
      * @param  array|null  $options
-     * @return string
+     * @return string|null
      * @since  6.0
      */
-    public static function buildCookie(string $name, string|null $value, array $options = null): string
+    public static function buildCookie(string $name, string|null $value, array $options = null): string|null
     {
+        if ($name === '') {
+            return null;
+        }
+
         $cookie = ['name' => $name, 'value' => $value] + array_replace(
             array_pad_keys([], ['expires', 'path', 'domain', 'secure', 'httponly', 'samesite']),
             array_map_keys($options ?? [], 'strtolower')
