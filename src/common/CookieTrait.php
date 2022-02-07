@@ -77,7 +77,7 @@ trait CookieTrait
             throw new CookieException('Cannot modify request cookies');
         }
 
-        $this->cookies->set($name, new Cookie($name, $value, $options));
+        $this->cookies->set($name, ['value' => $value, 'options' => $options]);
 
         return $this;
     }

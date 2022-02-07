@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\response\{Cookie, Cookies, Status, StatusException};
-use froq\http\{Message, Http, ResponseException, common\ResponseTrait, message\ContentType, message\ContentCharset};
+use froq\http\response\{Status, StatusException};
+use froq\http\{common\ResponseTrait, message\ContentType, message\ContentCharset, Util as HttpUtil};
 use froq\file\{object\FileObject, object\ImageObject, Util as FileUtil};
 use froq\{App, encoding\Encoder};
 
@@ -163,30 +163,36 @@ final class Response extends Message
     /**
      * Send a cookie.
      *
-     * @param  string                                $name
-     * @param  string|froq\http\response\Cookie|null $value
-     * @param  array|null                            $options
+     * @param  string            $name
+     * @param  string|array|null $value
+     * @param  array|null        $options
      * @return void
      * @throws froq\http\ResponseException
      */
-    public function sendCookie(string $name, string|Cookie|null $value, array $options = null): void
+    public function sendCookie(string $name, string|array|null $value, array $options = null): void
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
                 [__method__, $file, $line]);
         }
 
-        // Check name.
+        // Protect session name.
         if ($this->app->session()?->name() === $name) {
             throw new ResponseException('Invalid cookie name `%s`, it is reserved as session name', $name);
         }
 
-        // We need Cookie here.
-        if (!$value instanceof Cookie) {
-            $value = new Cookie($name, $value, $options);
+        // Generally by CookieTrait.setCookie().
+        if (is_array($value)) {
+            $value   = $value['value'];
+            $options = $value['options'] ?? null;
         }
 
-        header('Set-Cookie: ' . $value->toString(), false);
+        $cookie = HttpUtil::buildCookie($name, $value, $options);
+        if ($cookie === null) {
+            throw new ResponseException('Invalid cookie name, it is empty');
+        }
+
+        header('Set-Cookie: ' . $cookie, false);
     }
 
     /**
