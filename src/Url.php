@@ -101,7 +101,8 @@ class Url extends ComponentCollection implements Stringable
             if ($userInfo != '') {
                 $source['userInfo'] = $userInfo;
 
-                $authority .= '@'; // Separate.
+                // Add separator.
+                $authority .= '@';
             }
 
             isset($source['host']) && $authority .= $source['host'];
@@ -118,6 +119,9 @@ class Url extends ComponentCollection implements Stringable
         foreach ($source as $name => $value) {
             $this->set($name, $value);
         }
+
+        // Set read-only.
+        $this->lock();
     }
 
     /**
