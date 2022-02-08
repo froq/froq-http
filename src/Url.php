@@ -46,7 +46,7 @@ class Url extends ComponentCollection implements Stringable
         // Set components.
         parent::__construct($components);
 
-        if ($source == null) {
+        if ($source === null) {
             return;
         }
 
@@ -54,41 +54,29 @@ class Url extends ComponentCollection implements Stringable
         $this->source = $source;
 
         if (is_string($source)) {
-            $i = 0;
-            // $colon = strpos($source, ':');
+            $startsWithSlashes = str_starts_with($source, '//');
 
-            // Fix beginning-slashes & colons issue that falsifying parse_url();
-            if (str_starts_with($source, '//')) {
-                while (($source[++$i] ?? '') === '/');
-
-                $source = '/'. substr($source, $i);
+            // Fix beginning-slashes issue that falsifying parse_url();
+            if ($startsWithSlashes) {
+                $source = '/' . ltrim($source, '/');
             }
-
-            // if ($colon) {
-            //     $source = str_replace(':', '%3A', $source);
-            // }
 
             $source = parse_url($source);
             if ($source === false) {
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
 
-            // Put slashes & colons back (to keep source original).
-            if (isset($source['path'])) {
-                if ($i) {
-                    $source['path'] = str_repeat('/', $i - 1) . $source['path'];
-                }
-
-                // if ($colon) {
-                //     $source['path'] = str_replace('%3A', ':', $source['path']);
-                // }
+            // Put slashes back (to keep source original).
+            if ($startsWithSlashes) {
+                $source['path'] = '/' . $source['path'];
             }
         }
 
         if (isset($source['query'])) {
             $query = Arrays::pull($source, 'query');
-            if ($query != null) {
-                $source += ['query' => $query, 'queryParams' => Util::parseQueryString($query)];
+            if ($query != '') {
+                $source += ['query' => $query,
+                            'queryParams' => Util::parseQueryString($query)];
             }
         }
 
@@ -165,9 +153,9 @@ class Url extends ComponentCollection implements Stringable
             $query = Util::buildQueryString($queryParams);
         }
 
-        $path     && $ret .= $path;
-        $query    && $ret .= '?' . $query;
-        $fragment && $ret .= '#' . $fragment;
+        if ($path != '')     $ret .= $path;
+        if ($query != '')    $ret .= '?' . $query;
+        if ($fragment != '') $ret .= '#' . $fragment;
 
         return $ret;
     }
