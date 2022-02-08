@@ -163,7 +163,7 @@ final class Response extends Message
      */
     public function sendHeaders(): void
     {
-        foreach ($this->headers as $name => $value) {
+        foreach ($this->headers->toArray() as $name => $value) {
             $this->sendHeader($name, $value);
         }
     }
@@ -210,7 +210,7 @@ final class Response extends Message
      */
     public function sendCookies(): void
     {
-        foreach ($this->cookies as $name => $cookie) {
+        foreach ($this->cookies->toArray() as $name => $cookie) {
             $this->sendCookie($name, $cookie);
         }
     }
