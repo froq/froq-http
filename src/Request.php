@@ -339,6 +339,7 @@ final class Request extends Message
             }
         }
 
+        // Lower all names.
         $headers = array_lower_keys($headers);
 
         // Content issues.
