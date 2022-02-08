@@ -109,10 +109,10 @@ final class Util extends \StaticClass
      * Build a query string.
      *
      * @param  array $data
-     * @param  bool  $normalizeArrays
+     * @param  bool  $normalize
      * @return string|null
      */
-    public static function buildQuery(array $data, bool $normalizeArrays = true): string|null
+    public static function buildQuery(array $data, bool $normalize = true): string|null
     {
         if ($data === []) {
             return null;
@@ -123,7 +123,8 @@ final class Util extends \StaticClass
 
         $ret = http_build_query($data);
 
-        if ($normalizeArrays && str_contains($ret, '%5D=')) {
+        // Normalize arrays.
+        if ($normalize && str_contains($ret, '%5D=')) {
             $ret = str_replace(['%5B', '%5D'], ['[', ']'], $ret);
         }
 
