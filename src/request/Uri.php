@@ -39,8 +39,6 @@ final class Uri extends Url
         } catch (\Throwable $e) {
             throw new UriException($e);
         }
-
-        $this->readOnly(true); // Lock.
     }
 
     /**
