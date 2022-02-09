@@ -292,7 +292,7 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
+        // This allows dotted params in globals (eg: x.a=1&x.b=2).
         $dotted = (bool) $this->app->config('request.dottedParams');
 
         $_GET = $this->prepareGlobalVariable('GET', dotted: $dotted);
@@ -317,7 +317,7 @@ final class Request extends Message
         }
         $this->headers->lock(); $this->cookies->lock();
 
-        // Modify URI params as well.
+        // Modify URI's query params as well if dotted is true.
         $dotted && $this->uri->unlock()->set('queryParams', $_GET)->lock();
     }
 
@@ -382,8 +382,6 @@ final class Request extends Message
      */
     private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false, bool $json = false): array
     {
-        $encode = false;
-
         switch ($name) {
             case 'GET':
                 if (!$dotted) {
@@ -391,7 +389,6 @@ final class Request extends Message
                 }
 
                 $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
-                $encode = true;
                 break;
             case 'POST':
                 if (!$dotted && !$json) {
@@ -418,6 +415,6 @@ final class Request extends Message
         }
 
         // Run parsing process.
-        return Util::parseQueryString($source, encode: $encode, dotted: $dotted);
+        return Util::parseQueryString($source, dotted: $dotted);
     }
 }
