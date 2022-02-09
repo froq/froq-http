@@ -14,6 +14,8 @@ use CurlHandle;
 /**
  * Curl Multi.
  *
+ * A class for handling multiple cURL opearations & feeding back client.
+ *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlMulti
  * @author  Kerem Güneş
