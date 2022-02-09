@@ -283,19 +283,19 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exception\UnsupportedOperationException
+     * @throws froq\common\exception\UnsupportedOperationException
      */
     public function offsetSet(mixed $key, mixed $value): never
     {
-        throw new UnsupportedOperationException('No set() allowed for ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . self::class);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exception\UnsupportedOperationException
+     * @throws froq\common\exception\UnsupportedOperationException
      */
     public function offsetUnset(mixed $key): never
     {
-        throw new UnsupportedOperationException('No unset() allowed for ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . self::class);
     }
 }
