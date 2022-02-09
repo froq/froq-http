@@ -25,7 +25,7 @@ use froq\util\{Util, Arrays};
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /** @var array|string */
+    /** @var array<string>|string */
     protected array|string $source;
 
     /** @var array<string> */
@@ -35,8 +35,8 @@ class Url extends ComponentCollection implements Stringable
     /**
      * Constructor.
      *
-     * @param   array|string|null $source
-     * @param   array|null        $components
+     * @param   array<string>|string|null source
+     * @param   array<string>|null        $components
      * @@throws froq\http\UrlException
      */
     public function __construct(array|string $source = null, array $components = null)
