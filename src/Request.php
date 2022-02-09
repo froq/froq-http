@@ -282,7 +282,7 @@ final class Request extends Message
 
         // Check/tick for load-once state.
         $done ? throw new RequestException('Request was already loaded')
-                : ($done = true);
+              : ($done = true);
 
         $headers = $this->prepareHeaders();
 
@@ -292,14 +292,14 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        $_GET = $this->prepareGlobalVariable('GET');
+        $_GET = $this->prepareGlobals('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobalVariable('POST', $content, json: !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobals('POST', $content, json: !!str_contains($contentType, '/json'));
         }
 
-        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
+        $_COOKIE = $this->prepareGlobals('COOKIE');
 
         // Fill body.
         $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
@@ -367,14 +367,14 @@ final class Request extends Message
     }
 
     /**
-     * Prepare a global variable.
+     * Prepare globals.
      *
      * @param  string $name
      * @param  string $source
      * @param  bool   $json
      * @return array
      */
-    private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
+    private function prepareGlobals(string $name, string $source = '', bool $json = false): array
     {
         // Plus check macro.
         $plussed = fn($s) => $s && str_contains($s, '+');
