@@ -50,11 +50,8 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
      */
     public function __construct(array|string $data)
     {
-        is_array($data) || $data = Util::parseQueryString($data);
-
-        $data = array_map_recursive('strval', $data);
-
-        $this->data = $data;
+        $this->data = is_array($data) ? array_map_recursive('strval', $data)
+            : Util::parseQueryString($data);
     }
 
     /** @magic */
