@@ -63,6 +63,9 @@ final class Request extends Message
         $this->client = new Client();
         $this->id     = get_request_id();
         $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
+
+        // Lock URI as read-only.
+        $this->uri->readOnly(true);
     }
 
     /**
@@ -313,7 +316,8 @@ final class Request extends Message
         }
 
         // Lock headers and cookies as read-only.
-        $this->headers->lock(); $this->cookies->lock();
+        $this->headers->readOnly(true);
+        $this->cookies->readOnly(true);
     }
 
     /**

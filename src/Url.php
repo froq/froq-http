@@ -119,9 +119,6 @@ class Url extends ComponentCollection implements Stringable
         foreach ($source as $name => $value) {
             $this->set($name, $value);
         }
-
-        // Set read-only.
-        $this->lock();
     }
 
     /**
