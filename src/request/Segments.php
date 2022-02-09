@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 use froq\common\interface\{Arrayable, Listable};
+use froq\collection\trait\GetTrait;
 use froq\common\exception\UnsupportedOperationException;
 
 /**
@@ -23,6 +24,9 @@ use froq\common\exception\UnsupportedOperationException;
  */
 final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
 {
+    /** @see froq\collection\trait\GetTrait */
+    use GetTrait;
+
     /** @const string */
     public const ROOT = '/';
 
@@ -42,6 +46,18 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
     {
         $data && $this->data = $data;
         $root && $this->root = $root;
+    }
+
+    /** @magic */
+    public function __set(string $key, string|null $value): void
+    {
+        $this->offsetSet($key, $value);
+    }
+
+    /** @magic */
+    public function __get(string $key): string|null
+    {
+        return $this->offsetGet($key);
     }
 
     /**
