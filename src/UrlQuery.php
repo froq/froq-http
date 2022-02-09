@@ -57,6 +57,24 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
         $this->data = $data;
     }
 
+    /** @magic */
+    public function __debugInfo(): array
+    {
+        return $this->data;
+    }
+
+    /** @magic */
+    public function __set(string $key, string|null $value): void
+    {
+        $this->set($key, $value);
+    }
+
+    /** @magic */
+    public function __get(string $key): string|null
+    {
+        return $this->get($key);
+    }
+
     /**
      * Check whether a key is set & not null.
      *
@@ -80,14 +98,14 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     }
 
     /**
-     * Check whether a key is set & not empty '' / null (usable for dotted notations) and
+     * Check whether a key is set & not empty "" / null (usable for dotted notations) and
      * set ref'ed value with fetched value.
      *
-     * @param  string    $key
-     * @param  any|null &$value
+     * @param  string       $key
+     * @param  string|null &$value
      * @return bool
      */
-    public function hasValue(string $key, &$value = null): bool
+    public function hasValue(string $key, string|null &$value = null): bool
     {
         $value = $this->get($key);
 
@@ -97,11 +115,11 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     /**
      * Get a value by given key.
      *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return any|null
+     * @param  string      $key
+     * @param  string|null $default
+     * @return string|null
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, string|null $default = null): string|null
     {
         return array_fetch($this->data, $key, $default);
     }
@@ -109,11 +127,11 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     /**
      * Get all values by given keys.
      *
-     * @param  array    $keys
-     * @param  any|null $default
+     * @param  array      $keys
+     * @param  array|null $default
      * @return array
      */
-    public function getAll(array $keys, $default = null): array
+    public function getAll(array $keys, array|null $default = null): array|null
     {
         return array_fetch($this->data, $keys, $default);
     }
