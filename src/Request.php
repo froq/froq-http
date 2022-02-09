@@ -186,6 +186,32 @@ final class Request extends Message
     }
 
     /**
+     * Get a URI segment.
+     *
+     * @param  int|string  $key
+     * @param  string|null $default
+     * @return string|null
+     * @since  5.0, 6.0
+     */
+    public function segment(int|string $key, string $default = null): string|null
+    {
+        return $this->uri->segment($key, $default);
+    }
+
+    /**
+     * Get all/many URI segments or Segments object.
+     *
+     * @param  array<int|string>|null $keys
+     * @param  array<string>|null     $defaults
+     * @return array<string>|froq\http\request\Segments|null
+     * @since  5.0, 6.0
+     */
+    public function segments(array $keys = null, array $defaults = null): array|Segments|null
+    {
+        return $this->uri->segments($keys, $defaults);
+    }
+
+    /**
      * Get method name.
      *
      * @return string
@@ -244,32 +270,6 @@ final class Request extends Message
     {
         return !$escape ? $this->uri->get('path')
              : htmlspecialchars($this->uri->get('path'));
-    }
-
-    /**
-     * Get a URI segment.
-     *
-     * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
-     * @since  5.0
-     */
-    public function getSegment(int|string $key, $default = null)
-    {
-        return $this->uri->segment($key, $default);
-    }
-
-    /**
-     * Get all/many URI segments.
-     *
-     * @param  array<int|string>|null $keys
-     * @param  any|null               $default
-     * @return froq\http\request\Segments|array
-     * @since  5.0
-     */
-    public function getSegments(array $keys = null, $default = null): Segments|array
-    {
-        return $this->uri->segments($keys, $default);
     }
 
     /**

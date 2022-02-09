@@ -45,14 +45,14 @@ final class Uri extends Url
     }
 
     /**
-     * Get a segment.
+     * Get a segment param.
      *
-     * @param  int|string $key
-     * @param  mixed|null $default
-     * @return mixed|null
+     * @param  int|string  $key
+     * @param  string|null $default
+     * @return string|null
      * @throws froq\http\request\UriException
      */
-    public function segment(int|string $key, mixed $default = null): mixed
+    public function segment(int|string $key, string $default = null): string|null
     {
         if (isset($this->segments)) {
             return $this->segments->get($key, $default);
@@ -65,13 +65,13 @@ final class Uri extends Url
     }
 
     /**
-     * Get segments property or params.
+     * Get a segment param or Segments object.
      *
      * @param  array<int|string>|null $keys
-     * @param  array|null             $default
-     * @return froq\http\request\Segments|array
+     * @param  array<string>|null     $defaults
+     * @return array<string>froq\http\request\Segments|null
      */
-    public function segments(array $keys = null, array $default = null): Segments|array
+    public function segments(array $keys = null, array $defaults = null): array|Segments|null
     {
         if (isset($this->segments)) {
             if ($keys === null) {
@@ -79,10 +79,11 @@ final class Uri extends Url
             }
 
             $ret = [];
-            foreach ($keys as $key) {
-                $ret[] = $this->segments->get($key, $default);
+            foreach ($keys as $i => $key) {
+                $ret[] = $this->segments->get($key, $defaults[$i] ?? null);
             }
-            return $ret;
+
+            return $ret ?: $defaults;
         }
 
         throw new UriException(
