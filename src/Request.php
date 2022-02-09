@@ -39,13 +39,13 @@ final class Request extends Message
     /** @var froq\http\request\Client */
     protected Client $client;
 
-    /** @var froq\http\UrlQuery @since 5.1 */
+    /** @var froq\http\UrlQuery */
     protected UrlQuery $query;
 
-    /** @var string @since 4.6 */
+    /** @var string */
     private string $id;
 
-    /** @var array *@since 4.6 */
+    /** @var array */
     private array $times;
 
     /**
@@ -61,7 +61,7 @@ final class Request extends Message
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
-        $this->id     = get_request_id(); // From util.sugars.
+        $this->id     = get_request_id();
         $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
     }
 
