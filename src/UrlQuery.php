@@ -41,7 +41,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     use EachTrait, FilterTrait, MapTrait, GetTrait;
 
     /** @var array */
-    private array $data;
+    private array $data = [];
 
     /**
      * Constructor.
