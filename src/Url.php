@@ -15,8 +15,8 @@ use froq\util\{Util, Arrays};
 /**
  * Url.
  *
- * Represents a URL object with strict/optional components that accessible via set/get methods or via
- * `__call()` magic with their names (eg: `getScheme()`), and some other utility methods.
+ * A URL object with strict/optional components that accessible via set/get methods or via
+ * `__call()` magic with their names (eg: `getPath()`), and some other utility methods.
  *
  * @package froq\http
  * @object  froq\http\Url

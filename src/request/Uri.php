@@ -13,6 +13,9 @@ use froq\http\Url;
 /**
  * Uri.
  *
+ * A URI object with strict/optional components that accessible via set/get methods or via
+ * `__call()` magic with their names (eg: `getPath()`), and some other utility methods.
+ *
  * @package froq\http\request
  * @object  froq\http\request\Uri
  * @author  Kerem Güneş
