@@ -26,7 +26,7 @@ final class Uri extends Url
     /** @var froq\http\request\Segments */
     private Segments $segments;
 
-    /** @var array */
+    /** @var array<string> */
     protected static array $components = ['path', 'query', 'queryParams', 'fragment'];
 
     /**

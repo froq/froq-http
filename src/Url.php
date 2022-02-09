@@ -28,7 +28,7 @@ class Url extends ComponentCollection implements Stringable
     /** @var array|string */
     protected array|string $source;
 
-    /** @var array */
+    /** @var array<string> */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
         'query', 'queryParams', 'fragment', 'authority', 'userInfo'];
 
