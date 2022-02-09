@@ -405,9 +405,7 @@ final class Request extends Message
                 }
 
                 if ($source) {
-                    $source = (string) implode('&', array_map('trim',
-                        array: explode(';', $source)
-                    ));
+                    $source = (string) implode('&', array_map('trim', explode(';', $source)));
                 }
                 break;
         }
