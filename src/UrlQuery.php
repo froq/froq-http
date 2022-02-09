@@ -10,19 +10,19 @@ namespace froq\http;
 use froq\common\interface\{Listable, Arrayable, Objectable, Stringable};
 use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait};
 use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait};
-use froq\util\{Util, Arrays};
+use froq\util\Util;
 
 /**
  * Url Query.
  *
- * Represents a URL-query class to be available to work in OOP style with URL-queries.
+ * An array-like class for working with URL-queries in OOP-style.
  *
  * @package froq\http
  * @object  froq\http\UrlQuery
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
+final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Countable, \ArrayAccess
 {
     /**
      * @see froq\common\trait\DataCountTrait
@@ -50,7 +50,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
      */
     public function __construct(array|string $data)
     {
-        $this->data = is_array($data) ? array_map_recursive('strval', $data)
+        $this->data = is_array($data) ? self::mapData($data)
             : Util::parseQueryString($data);
     }
 
@@ -110,19 +110,89 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     }
 
     /**
-     * Get a value by given key.
+     * Add an item.
+     *
+     * @param string       $key
+     * @param string|array $value
+     * @return self
+     * @since  6.0
+     */
+    public function add(string $key, string|array $value): self
+    {
+        if (is_array($value)) {
+            $value = self::mapData($value);
+        }
+
+        if (isset($this->data[$key])) {
+            $this->data[$key] = array_concat([], $this->data[$key], $value);
+        } else {
+            $this->data[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add many items.
+     *
+     * @param  array<string, string> $data
+     * @return self
+     * @since  6.0
+     */
+    public function addAll(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $this->add($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set an item.
+     *
+     * @param string $key
+     * @param string $value
+     * @return self
+     * @since  6.0
+     */
+    public function set(string $key, string $value): self
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set many items.
+     *
+     * @param  array<string, string> $data
+     * @return self
+     * @since  6.0
+     */
+    public function setAll(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get an item.
      *
      * @param  string      $key
      * @param  string|null $default
-     * @return string|null
+     * @return string|array|null
      */
-    public function get(string $key, string|null $default = null): string|null
+    public function get(string $key, string|array|null $default = null): string|array|null
     {
         return array_fetch($this->data, $key, $default);
     }
 
     /**
-     * Get all values by given keys.
+     * Get many items.
      *
      * @param  array      $keys
      * @param  array|null $default
@@ -131,6 +201,34 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     public function getAll(array $keys, array|null $default = null): array|null
     {
         return array_fetch($this->data, $keys, $default);
+    }
+
+    /**
+     * Remove an item.
+     *
+     * @param  string $key
+     * @return self
+     * @since  6.0
+     */
+    public function remove(string $key): self
+    {
+        array_fetch($this->data, $key, drop: true);
+
+        return $this;
+    }
+
+    /**
+     * Remove many items.
+     *
+     * @param  array<string> $keys
+     * @return self
+     * @since  6.0
+     */
+    public function removeAll(array $keys): self
+    {
+        array_fetch($this->data, $keys, drop: true);
+
+        return $this;
     }
 
     /**
@@ -169,5 +267,50 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     public static function fromString(string $data): self
     {
         return new self($data);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetExists(mixed $key): bool
+    {
+        return $this->get($key) !== null;
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetGet(mixed $key): string
+    {
+        return $this->get($key);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        $this->set($key, $value);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetUnset(mixed $key): void
+    {
+        $this->remove($key);
+    }
+
+    /**
+     * Map data to uniform as string.
+     */
+    private static function mapData(array $data): array
+    {
+        return array_map_recursive(function ($value) {
+            if (is_bool($value)) {
+                $value = (int) $value;
+            }
+            return (string) $value;
+        }, $data);
     }
 }
