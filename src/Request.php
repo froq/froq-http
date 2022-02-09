@@ -292,33 +292,28 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        // This allows dotted params in globals (eg: x.a=1&x.b=2).
-        $dotted = (bool) $this->app->config('request.dottedParams');
-
-        $_GET = $this->prepareGlobalVariable('GET', dotted: $dotted);
+        $_GET = $this->prepareGlobalVariable('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobalVariable('POST', $content, dotted: $dotted,
-                json: !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobalVariable('POST', $content, json: !!str_contains($contentType, '/json'));
         }
 
-        $_COOKIE = $this->prepareGlobalVariable('COOKIE', dotted: $dotted);
+        $_COOKIE = $this->prepareGlobalVariable('COOKIE');
 
-        // Fill body object.
+        // Fill body.
         $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
 
-        // Fill & lock headers and cookies objects.
+        // Fill headers and cookies.
         foreach ($headers as $name => $value) {
             $this->headers->set($name, $value);
         }
         foreach ($_COOKIE as $name => $value) {
             $this->cookies->set($name, $value);
         }
-        $this->headers->lock(); $this->cookies->lock();
 
-        // Modify URI's query params as well if dotted is true.
-        $dotted && $this->uri->unlock()->set('queryParams', $_GET)->lock();
+        // Lock headers and cookies as read-only.
+        $this->headers->lock(); $this->cookies->lock();
     }
 
     /**
@@ -372,49 +367,51 @@ final class Request extends Message
     }
 
     /**
-     * Prepare a global variable (without changing dotted param keys if dotted option is true).
+     * Prepare a global variable.
      *
      * @param  string $name
      * @param  string $source
-     * @param  bool   $dotted
      * @param  bool   $json
      * @return array
      */
-    private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false, bool $json = false): array
+    private function prepareGlobalVariable(string $name, string $source = '', bool $json = false): array
     {
+        // Plus check macro.
+        $plussed = fn($s) => $s && str_contains($s, '+');
+
         switch ($name) {
             case 'GET':
-                if (!$dotted) {
+                $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
+
+                if (!$plussed($source)) {
                     return $_GET;
                 }
-
-                $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
                 break;
             case 'POST':
-                if (!$dotted && !$json) {
+                if (!$plussed($source) && !$json) {
                     return $_POST;
                 }
 
-                // This is checked in constructor via content-type header.
                 if ($json) {
                     return (array) json_decode($source,
                         flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
                 }
                 break;
             case 'COOKIE':
-                if (!$dotted) {
+                $source = (string) ($_SERVER['HTTP_COOKIE'] ?? '');
+
+                if (!$plussed($source)) {
                     return $_COOKIE;
                 }
 
-                if (!empty($_SERVER['HTTP_COOKIE'])) {
+                if ($source) {
                     $source = (string) implode('&', array_map('trim',
-                        array: explode(';', (string) $_SERVER['HTTP_COOKIE'])
+                        array: explode(';', $source)
                     ));
                 }
                 break;
         }
 
-        // Run parsing process.
-        return Util::parseQueryString($source, dotted: $dotted);
+        return Util::parseQueryString($source);
     }
 }
