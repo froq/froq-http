@@ -74,7 +74,7 @@ final class Uri extends Url
     public function segments(array $keys = null, array $default = null): Segments|array
     {
         if (isset($this->segments)) {
-            if (!func_num_args()) {
+            if ($keys === null) {
                 return $this->segments;
             }
 
