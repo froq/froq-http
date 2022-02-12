@@ -117,7 +117,7 @@ final class Param extends \StaticClass
             $map = fn($v) => self::map($map, $v);
         }
 
-        $map    && $values = array_map($map, $values);
+        $map && $values = array_map($map, $values);
         $filter && $values = array_filter($values, $filter);
 
         return $values;
