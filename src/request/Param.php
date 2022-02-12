@@ -23,16 +23,16 @@ final class Param extends \StaticClass
     /**
      * Get one or many $_GET params, optionally mapping/filtering.
      *
-     * @param  string|array  $name
-     * @param  any|null      $default
-     * @param  callable|null $map
-     * @param  callable|null $filter
-     * @param  bool          $trim
-     * @param  bool          $combine
-     * @return any
+     * @param  string|array|null $name
+     * @param  mixed|null        $default
+     * @param  callable|null     $map
+     * @param  callable|null     $filter
+     * @param  bool              $trim
+     * @param  bool              $combine
+     * @return mixed
      */
-    public static function get(string|array $name, $default = null, callable $map = null, callable $filter = null,
-        bool $trim = true, bool $combine = false)
+    public static function get(string|array $name = null, mixed $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false): mixed
     {
         return self::fetch('get', $name, $default, $map, $filter, $trim, $combine);
     }
@@ -40,16 +40,16 @@ final class Param extends \StaticClass
     /**
      * Get one or many $_POST params, optionally mapping/filtering.
      *
-     * @param  string|array  $name
-     * @param  any|null      $default
-     * @param  callable|null $map
-     * @param  callable|null $filter
-     * @param  bool          $trim
-     * @param  bool          $combine
-     * @return any
+     * @param  string|array|null $name
+     * @param  mixed|null        $default
+     * @param  callable|null     $map
+     * @param  callable|null     $filter
+     * @param  bool              $trim
+     * @param  bool              $combine
+     * @return mixed
      */
-    public static function post(string|array $name, $default = null, callable $map = null, callable $filter = null,
-        bool $trim = true, bool $combine = false)
+    public static function post(string|array $name = null, mixed $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false): mixed
     {
         return self::fetch('post', $name, $default, $map, $filter, $trim, $combine);
     }
@@ -57,16 +57,16 @@ final class Param extends \StaticClass
     /**
      * Get one or many $_COOKIE params, optionally mapping/filtering.
      *
-     * @param  string|array  $name
-     * @param  any|null      $default
-     * @param  callable|null $map
-     * @param  callable|null $filter
-     * @param  bool          $trim
-     * @param  bool          $combine
-     * @return any
+     * @param  string|array|null $name
+     * @param  mixed|null        $default
+     * @param  callable|null     $map
+     * @param  callable|null     $filter
+     * @param  bool              $trim
+     * @param  bool              $combine
+     * @return mixed
      */
-    public static function cookie(string|array $name, $default = null, callable $map = null, callable $filter = null,
-        bool $trim = true, bool $combine = false)
+    public static function cookie(string|array $name = null, mixed $default = null, callable $map = null, callable $filter = null,
+        bool $trim = true, bool $combine = false): mixed
     {
         return self::fetch('cookie', $name, $default, $map, $filter, $trim, $combine);
     }
@@ -74,17 +74,15 @@ final class Param extends \StaticClass
     /**
      * Fetch params from given source by name(s).
      */
-    private static function fetch(string $source, string|array $name, mixed $default, callable|null $map, callable|null $filter,
-        bool $trim, bool $combine)
+    private static function fetch(string $source, string|array|null $name, mixed $default, callable|null $map, callable|null $filter, bool $trim, bool $combine): mixed
     {
-        $all = ($name === '*');
+        // All tick (* and null).
+        $all = $name === '*' || $name === null;
 
-        // If all entries wanted (* and null => all).
-        $names = !$all ? (array) $name : null;
-
+        $names = $all ? null : (array) $name;
         $values = match ($source) {
-            'get'    => Params::gets($names, $default),
-            'post'   => Params::posts($names, $default),
+            'get' => Params::gets($names, $default),
+            'post' => Params::posts($names, $default),
             'cookie' => Params::cookies($names, $default),
         };
 
@@ -105,6 +103,7 @@ final class Param extends \StaticClass
         if (!$all && is_string($name)) {
             return array_first($values);
         }
+
         return $values;
     }
 
@@ -114,7 +113,9 @@ final class Param extends \StaticClass
     private static function applyMapFilter(array $values, callable|null $map, callable|null $filter): array
     {
         // For safely mapping arrays/nulls.
-        if ($map) $map = fn($v) => self::wrapMap($v, $map);
+        if ($map) {
+            $map = fn($v) => self::map($map, $v);
+        }
 
         $map    && $values = array_map($map, $values);
         $filter && $values = array_filter($values, $filter);
@@ -123,14 +124,24 @@ final class Param extends \StaticClass
     }
 
     /**
-     * Array/null safe map wrap.
-     * @since 5.0
+     * Array/null safe map wrap, also recursive.
      */
-    private static function wrapMap($input, $map)
+    private static function map(callable $map, mixed $input): mixed
     {
-        return is_array($input)
-             ? array_map(fn($v) => self::wrapMap($v, $map), $input)
-             : ($input !== null ? $map((string) $input) : $input);
-             // $map((string) $in); // Always string. @nope
+        // Arrays.
+        if (is_array($input)) {
+            return array_map(
+                fn($v) => self::map($map, $v),
+                $input
+            );
+        }
+
+        // Nulls, leave alone.
+        if (is_null($input)) {
+            return null;
+        }
+
+        // String otherwise, allways.
+        return $map((string) $input);
     }
 }
