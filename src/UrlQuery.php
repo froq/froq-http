@@ -182,25 +182,25 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
     /**
      * Get an item.
      *
-     * @param  string      $key
-     * @param  string|null $default
-     * @return string|array|null
+     * @param  string     $key
+     * @param  mixed|null $default
+     * @return mixed
      */
-    public function get(string $key, string|array|null $default = null): string|array|null
+    public function get(string $key, mixed $default = null): mixed
     {
-        return array_fetch($this->data, $key, $default);
+        return array_get($this->data, $key, $default);
     }
 
     /**
      * Get many items.
      *
      * @param  array      $keys
-     * @param  array|null $default
+     * @param  array|null $defaults
      * @return array
      */
-    public function getAll(array $keys, array|null $default = null): array|null
+    public function getAll(array $keys, array $defaults = null): array
     {
-        return array_fetch($this->data, $keys, $default);
+        return array_get_all($this->data, $keys, $defaults);
     }
 
     /**
@@ -212,7 +212,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
      */
     public function remove(string $key): self
     {
-        array_fetch($this->data, $key, drop: true);
+        array_remove($this->data, $key);
 
         return $this;
     }
@@ -226,7 +226,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
      */
     public function removeAll(array $keys): self
     {
-        array_fetch($this->data, $keys, drop: true);
+        array_remove_all($this->data, $keys);
 
         return $this;
     }
