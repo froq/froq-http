@@ -78,12 +78,12 @@ final class Uri extends Url
                 return $this->segments;
             }
 
-            $ret = [];
+            $values = [];
             foreach ($keys as $i => $key) {
-                $ret[] = $this->segments->get($key, $defaults[$i] ?? null);
+                $values[] = $this->segments->get($key, $defaults[$i] ?? null);
             }
 
-            return $ret ?: $defaults;
+            return $values ?: $defaults;
         }
 
         throw new UriException(
