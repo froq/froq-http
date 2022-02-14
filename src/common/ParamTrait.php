@@ -12,7 +12,7 @@ use froq\http\request\Params;
 /**
  * Param Trait.
  *
- * Represents a trait stack that used by Request object, utilizes accessing (to Request) params.
+ * A trait that used by Request class, utilizes accessing to request parameters.
  *
  * @package  froq\http\common
  * @object   froq\http\common\ParamTrait
@@ -23,56 +23,57 @@ use froq\http\request\Params;
 trait ParamTrait
 {
     /**
-     * Get one/many "GET" param.
+     * Get one/many/all $_GET params.
      *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $default
-     * @return any|null
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options
+     * @return mixed
      */
-    public function get(string|array $name = null, $default = null)
+    public function get(string|array $name = null, mixed $default = null, mixed ...$options): mixed
     {
-        return is_string($name) ? $this->getParam($name, $default)
-                                : $this->getParams($name, $default);
+        return Params::get($name, $default, ...$options);
     }
 
     /**
-     * Get one "GET" param.
+     * Get one $_GET param.
      *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * @param  string     $name
+     * @param  mixed|null $default
+     * @param  mixed   ...$options
+     * @return mixed
      */
-    public function getParam(string $name, $default = null)
+    public function getParam(string $name, mixed $default = null, mixed ...$options): mixed
     {
-        return Params::get($name, $default);
+        return Params::get($name, $default, ...$options);
     }
 
     /**
-     * Get many "GET" param.
+     * Get many/all $_GET params.
      *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
+     * @param  string|array<string>|null $names
+     * @param  array|null                $defaults
+     * @param  mixed                  ...$options
      * @return array
      */
-    public function getParams(array $names = null, $default = null): array
+    public function getParams(array $names = null, array $defaults = null, mixed ...$options): array
     {
-        return Params::gets($names, $default);
+        return Params::get($names, $defaults, ...$options);
     }
 
     /**
-     * Check one/many "GET" param existence.
+     * Check one/many/all $_GET params.
      *
      * @param  string|array<string>|null $name
      * @return bool
      */
     public function hasGet(string|array $name = null): bool
     {
-        return is_string($name) ? $this->hasGetParam($name)
-                                : $this->hasGetParams($name);
+        return Params::hasGet($name);
     }
 
     /**
-     * Check one "GET" param existence.
+     * Check one $_GET param.
      *
      * @param  string $name
      * @return bool
@@ -83,67 +84,68 @@ trait ParamTrait
     }
 
     /**
-     * Check many "GET" param existence.
+     * Check many/all $_GET params.
      *
      * @param  array<string>|null $names
      * @return bool
      */
     public function hasGetParams(array $names = null): bool
     {
-        return Params::hasGets($names);
+        return Params::hasGet($names);
     }
 
     /**
-     * Get one/many "POST" param.
+     * Get one/many/all $_POST params.
      *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $default
-     * @return any|null
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options
+     * @return mixed
      */
-    public function post(string|array $name = null, $default = null)
+    public function post(string|array $name = null, mixed $default = null, mixed ...$options): mixed
     {
-        return is_string($name) ? $this->postParam($name, $default)
-                                : $this->postParams($name, $default);
+        return Params::post($name, $default, ...$options);
     }
 
     /**
-     * Get one "POST" param.
+     * Get one $_POST param.
      *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * @param  string     $name
+     * @param  mixed|null $default
+     * @param  mixed   ...$options
+     * @return mixed
      */
-    public function postParam(string $name, $default = null)
+    public function postParam(string $name, mixed $default = null, mixed ...$options): mixed
     {
-        return Params::post($name, $default);
+        return Params::post($name, $default, ...$options);
     }
 
     /**
-     * Get many "POST" param.
+     * Get many/all $_POST params.
      *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
+     * @param  string|array<string>|null $names
+     * @param  array|null                $defaults
+     * @param  mixed                  ...$options
      * @return array
      */
-    public function postParams(array $names = null, $default = null): array
+    public function postParams(array $names = null, array $defaults = null, mixed ...$options): array
     {
-        return Params::posts($names, $default);
+        return Params::post($names, $defaults, ...$options);
     }
 
     /**
-     * Check one/many "POST" param existence.
+     * Check one/many/all $_POST params.
      *
      * @param  string|array<string>|null $name
      * @return bool
      */
     public function hasPost(string|array $name = null): bool
     {
-        return is_string($name) ? $this->hasPostParam($name)
-                                : $this->hasPostParams($name);
+        return Params::hasPost($name);
     }
 
     /**
-     * Check one "POST" param existence.
+     * Check one $_POST param.
      *
      * @param  string $name
      * @return bool
@@ -154,67 +156,68 @@ trait ParamTrait
     }
 
     /**
-     * Check many "POST" param existence.
+     * Check many/all $_POST params.
      *
      * @param  array<string>|null $names
      * @return bool
      */
     public function hasPostParams(array $names = null): bool
     {
-        return Params::hasPosts($names);
+        return Params::hasPost($names);
     }
 
     /**
-     * Get one/many "COOKIE" param.
+     * Get one/many/all $_COOKIE params.
      *
      * @param  string|array<string>|null $name
-     * @param  any|null                  $default
-     * @return any|null
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options
+     * @return mixed
      */
-    public function cookie(string|array $name = null, $default = null)
+    public function cookie(string|array $name = null, mixed $default = null, mixed ...$options): mixed
     {
-        return is_string($name) ? $this->cookieParam($name, $default)
-                                : $this->cookieParams($name, $default);
+        return Params::cookie($name, $default, ...$options);
     }
 
     /**
-     * Get one "COOKIE" param.
+     * Get one $_COOKIE param.
      *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * @param  string     $name
+     * @param  mixed|null $default
+     * @param  mixed   ...$options
+     * @return mixed
      */
-    public function cookieParam(string $name, $default = null)
+    public function cookieParam(string $name, mixed $default = null, mixed ...$options): mixed
     {
-        return Params::cookie($name, $default);
+        return Params::cookie($name, $default, ...$options);
     }
 
     /**
-     * Get many "COOKIE" param.
+     * Get many/all $_COOKIE params.
      *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
+     * @param  string|array<string>|null $names
+     * @param  array|null                $defaults
+     * @param  mixed                  ...$options
      * @return array
      */
-    public function cookieParams(array $names = null, $default = null): array
+    public function cookieParams(array $names = null, array $defaults = null, mixed ...$options): array
     {
-        return Params::cookies($names, $default);
+        return Params::cookie($names, $defaults, ...$options);
     }
 
     /**
-     * Check one/many "COOKIE" param existence.
+     * Check one/many/all $_COOKIE params.
      *
      * @param  string|array<string>|null $name
      * @return bool
      */
     public function hasCookie(string|array $name = null): bool
     {
-        return is_string($name) ? $this->hasCookieParam($name)
-                                : $this->hasCookieParams($name);
+        return Params::hasCookie($name);
     }
 
     /**
-     * Get one "COOKIE" param existence.
+     * Check one $_COOKIE param.
      *
      * @param  string $name
      * @return bool
@@ -225,13 +228,13 @@ trait ParamTrait
     }
 
     /**
-     * Get many "COOKIE" param existence.
+     * Check many/all $_COOKIE params.
      *
      * @param  array<string>|null $names
      * @return bool
      */
     public function hasCookieParams(array $names = null): bool
     {
-        return Params::hasCookies($names);
+        return Params::hasCookie($names);
     }
 }
