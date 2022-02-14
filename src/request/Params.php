@@ -49,7 +49,6 @@ final class Params extends \StaticClass
      *
      * @param  string|array<string>|null $name
      * @return bool
-     * @since  6.0
      */
     public static function hasGet(string|array $name = null): bool
     {
@@ -74,7 +73,6 @@ final class Params extends \StaticClass
      *
      * @param  string|array<string>|null $name
      * @return bool
-     * @since  6.0
      */
     public static function hasPost(string|array $name = null): bool
     {
@@ -99,7 +97,6 @@ final class Params extends \StaticClass
      *
      * @param  string|array<string>|null $name
      * @return bool
-     * @since  6.0
      */
     public static function hasCookie(string|array $name = null): bool
     {
