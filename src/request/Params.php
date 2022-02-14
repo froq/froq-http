@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
+use froq\util\Arrays;
+
 /**
  * Params.
  *
@@ -30,170 +32,232 @@ final class Params extends \StaticClass
     }
 
     /**
-     * Get a $_GET param.
+     * Get one/many/all $_GET params.
      *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * @param  string|array<string>|null $name
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options @see fetch()
+     * @return mixed
      */
-    public static function get(string $name, $default = null)
+    public static function get(string|array $name = null, mixed $default = null, mixed ...$options): mixed
     {
-        return array_fetch($_GET, $name, $default);
+        return self::fetch($_GET, $name, $default, ...$options);
     }
 
     /**
-     * Get all/many $_GET params.
+     * Check one/many/all $_GET params.
      *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
-     * @return array
-     */
-    public static function gets(array $names = null, $default = null): array
-    {
-        return ($names === null) ? $_GET // All.
-             : array_fetch($_GET, $names, $default);
-    }
-
-    /**
-     * Check a $_GET param.
-     *
-     * @param  string $name
+     * @param  string|array<string>|null $name
      * @return bool
+     * @since  6.0
      */
-    public static function hasGet(string $name): bool
+    public static function hasGet(string|array $name = null): bool
     {
-        return self::get($name) !== null;
+        return self::check($_GET, $name);
     }
 
     /**
-     * Check all/many $_GET params.
+     * Get one/many/all $_POST params.
      *
-     * @param  array<string>|null $names
-     * @return bool
+     * @param  string|array<string>|null $name
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options @see fetch()
+     * @return mixed
      */
-    public static function hasGets(array $names = null): bool
+    public static function post(string|array $name = null, mixed $default = null, mixed ...$options): mixed
     {
-        if ($names === null) {
-            return !!$_GET;
+        return self::fetch($_POST, $name, $default, ...$options);
+    }
+
+    /**
+     * Check one/many/all $_POST params.
+     *
+     * @param  string|array<string>|null $name
+     * @return bool
+     * @since  6.0
+     */
+    public static function hasPost(string|array $name = null): bool
+    {
+        return self::check($_POST, $name);
+    }
+
+    /**
+     * Get one/many/all $_COOKIE params.
+     *
+     * @param  string|array<string>|null $name
+     * @param  mixed|null                $default
+     * @param  mixed                  ...$options @see fetch()
+     * @return mixed
+     */
+    public static function cookie(string|array $name = null, mixed $default = null, mixed ...$options): mixed
+    {
+        return self::fetch($_COOKIE, $name, $default, ...$options);
+    }
+
+    /**
+     * Check one/many/all $_COOKIE params.
+     *
+     * @param  string|array<string>|null $name
+     * @return bool
+     * @since  6.0
+     */
+    public static function hasCookie(string|array $name = null): bool
+    {
+        return self::check($_COOKIE, $name);
+    }
+
+    /**
+     * Check params for given source by name(s).
+     */
+    private static function check(array|null $source, string|array|null $name): bool
+    {
+        if (empty($source)) {
+            return false;
         }
 
-        foreach ($names as $name) {
-            if (!self::hasGet($name)) {
+        if ($name === null || $name === '*') {
+            return !empty($source);
+        }
+
+        foreach ((array) $name as $name) {
+            if (self::fetch($source, $name) === null) {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * Get a $_POST param.
-     *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * Fetch params from given source by name(s).
      */
-    public static function post(string $name, $default = null)
+    private static function fetch(
+        array|null        $source,
+        string|array      $name      = null,  // Eg: "id", ["id", "name"] or "*" for all.
+        mixed             $default   = null,  // Eg: "ok", false or ["ok"], [false] for multi-names.
+        callable|string   $map       = null,  // Eg: "int", "intval" or "trim|upper".
+        callable          $filter    = null,  // Eg: "is_numeric" or any filter function.
+        bool              $trim      = false, // Set trim as map function, can be disable for JSON inputs.
+        bool              $combine   = false  // Combine names/values, not for dotted name notations (eg: "foo.bar").
+    ): mixed
     {
-        return array_fetch($_POST, $name, $default);
-    }
+        $all = ($name === null || $name === '*');
 
-    /**
-     * Get all/many $_POST params.
-     *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
-     * @return array
-     */
-    public static function posts(array $names = null, $default = null): array
-    {
-        return ($names === null) ? $_POST // All.
-             : array_fetch($_POST, $names, $default);
-    }
+        // Some speed..
+        if (empty($source)) {
+            if ($all) {
+                return [];
+            }
 
-    /**
-     * Check a $_POST param.
-     *
-     * @param  string $name
-     * @return bool
-     */
-    public static function hasPost(string $name): bool
-    {
-        return self::post($name) !== null;
-    }
+            if (is_array($name)) {
+                $count   = count($name);
+                $default = (array) $default;
+                return array_combine($name, array_slice(
+                    array_pad($default, $count, null),
+                    0, $count
+                ));
+            }
 
-    /**
-     * Check all/many $_POST params.
-     *
-     * @param  array<string>|null $names
-     * @return bool
-     */
-    public static function hasPosts(array $names = null): bool
-    {
-        if ($names === null) {
-            return !!$_POST;
+            return $default;
         }
 
-        foreach ($names as $name) {
-            if (!self::hasPost($name)) {
-                return false;
+        $names  = (array) $name;
+        $values = [];
+
+        if (!$all && is_string($name)) {
+            // For #1/#2 below.
+            $values[0] = Arrays::get($source, $name, $default);
+            if ($values[0] === null) {
+                $values = [];
+            }
+        } elseif (!$all) {
+            $values = Arrays::getAll($source, $names, (array) $default);
+        } else {
+            $values = $source;
+        }
+
+        // #1
+        if ($values) {
+            // Set trim as default mapper, if true & no map given.
+            if ($trim && !$map) $map = 'trim';
+
+            // Apply map & filter, if map or filter given.
+            if ($map || $filter) {
+                $values = self::applyMapFilter($values, $map, $filter);
             }
         }
-        return true;
-    }
 
-    /**
-     * Get a $_COOKIE param.
-     *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
-     */
-    public static function cookie(string $name, $default = null)
-    {
-        return array_fetch($_COOKIE, $name, $default);
-    }
-
-    /**
-     * Get all/many $_COOKIE params.
-     *
-     * @param  array<string>|null $names
-     * @param  any|null           $default
-     * @return array
-     */
-    public static function cookies(array $names = null, $default = null): array
-    {
-        return ($names === null) ? $_COOKIE // All.
-             : array_fetch($_COOKIE, $names, $default);
-    }
-
-    /**
-     * Check a $_COOKIE param.
-     *
-     * @param  string $name
-     * @return bool
-     */
-    public static function hasCookie(string $name): bool
-    {
-        return self::cookie($name) !== null;
-    }
-
-    /**
-     * Check all/many $_COOKIE params.
-     *
-     * @param  array<string>|null $names
-     * @return bool
-     */
-    public static function hasCookies(array $names = null): bool
-    {
-        if ($names === null) {
-            return !!$_COOKIE;
+        // Won't work dotted names (eg: "foo.bar").
+        if (!$all && $combine) {
+            return Arrays::compose($names, $values);
         }
 
-        foreach ($names as $name) {
-            if (!self::hasCookie($name)) {
-                return false;
+        // #2
+        if (!$all && is_string($name)) {
+            return Arrays::first($values);
+        }
+
+        return $values;
+    }
+
+    /**
+     * Apply map/filter.
+     */
+    private static function applyMapFilter(array $values, callable|string|null $map, callable|null $filter): array
+    {
+        // For safely mapping arrays/nulls.
+        if ($map) $map = fn($v) => self::wrapMap($map, $v);
+
+        $map    && $values = Arrays::map($values, $map, true);
+        $filter && $values = Arrays::filter($values, $filter);
+
+        return $values;
+    }
+
+    /**
+     * Array/null safe map wrap, also multi-map aware.
+     */
+    private static function wrapMap(callable|string $map, mixed $input): mixed
+    {
+        // Nulls stay nulls.
+        if (is_null($input)) {
+            return null;
+        }
+
+        // Regular map.
+        if (is_callable($map)) {
+            // @cancel: Try/catch is more fast.
+            // $type = (new \ReflectionCallable($map))->getParameter(0)?->getType();
+            // if ($type?->isBuiltin()) {
+            //     settype($input, $type->getName());
+            // }
+            // return $map($input);
+
+            try {
+                return $map($input);
+            } catch (\TypeError) {
+                return $map((string) $input);
             }
         }
-        return true;
+
+        // Multi-map (eg: "trim|upper").
+        foreach (explode('|', $map) as $map) {
+            // Nulls stay nulls.
+            if (is_null($input)) {
+                continue;
+            }
+
+            // @todo: Use split().
+            if (!$map) continue;
+
+            // Wraps "[]" for safe map calls.
+            try {
+                $input = Arrays::map([$input], $map, true)[0];
+            } catch (\TypeError) {
+                $input = Arrays::map([(string) $input], $map, true)[0];
+            }
+        }
+
+        return $input;
     }
 }
