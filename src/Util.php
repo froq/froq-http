@@ -36,28 +36,30 @@ final class Util extends \StaticClass
             return null;
         }
 
-        [$authority, $user, $pass] = ['', $parsedUrl['user'] ?? null, $parsedUrl['pass'] ?? null];
-        if ($user != null || $pass != null) {
+        array_extract($parsedUrl,
+            'scheme, host, port, user, pass, path, query, fragment',
+            $scheme, $host, $port, $user, $pass, $path, $query, $fragment
+        );
+
+        $authority = '';
+        if ($user !== null || $pass !== null) {
             $authority = $user;
-            if ($pass != null) {
-                $authority .= ':'. $pass .'@';
+            if ($pass !== null) {
+                $authority .= ':' . $pass . '@';
             }
         }
 
-        $host = $parsedUrl['host'];
-        $port = $parsedUrl['port'] ?? null;
-        if ($port != null) {
-            $host .= ':'. $port;
+        if ($port !== null) {
+            $host .= ':' . $port;
         }
 
-        $query    = $parsedUrl['query'] ?? null;
-        $fragment = $parsedUrl['fragment'] ?? null;
+        $query ??= '';
+        $path  ??= '/';
 
-        parse_str((string) $query, $query);
+        parse_str($query, $query);
 
         // Base URL with scheme, host, authority and path.
-        $url = sprintf('%s://%s%s%s', $parsedUrl['scheme'], $authority, $host,
-            $parsedUrl['path'] ?? '/');
+        $url = sprintf('%s://%s%s%s', $scheme, $authority, $host, $path);
 
         return [$url, $query, $fragment, $parsedUrl];
     }
@@ -71,30 +73,29 @@ final class Util extends \StaticClass
      */
     public static function parseHeaders(string $headers, bool $lower = true): array|null
     {
-        if ($headers === '') {
+        if (!$headers) {
             return null;
         }
 
         $headers = explode("\r\n", trim($headers));
 
-        // Pick status line.
+        // Pull status line.
         $ret[0] = trim((string) array_shift($headers));
 
         foreach ($headers as $header) {
-            @ [$name, $value] = explode(':', $header, 2);
-            if ($name === null) {
-                error_clear(2);
+            $temp = explode(':', $header, 2);
+            if (!isset($temp[0])) {
                 continue;
             }
 
-            $name  = trim((string) $name);
-            $value = trim((string) $value);
+            $name  = trim((string) $temp[0]);
+            $value = trim((string) $temp[1]);
 
             if ($lower) {
                 $name = strtolower($name);
             }
 
-            // Handle multi-headers as array.
+            // Handle multi-headers.
             if (isset($ret[$name])) {
                 $ret[$name] = array_merge((array) $ret[$name], [$value]);
             } else {
@@ -114,7 +115,7 @@ final class Util extends \StaticClass
      */
     public static function buildQuery(array $data, bool $normalize = true): string|null
     {
-        if ($data === []) {
+        if (!$data) {
             return null;
         }
 
