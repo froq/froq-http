@@ -150,9 +150,10 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      * From array.
      *
      * @param  array<string> $array
+     * @param  string|null   $root
      * @return froq\http\request\Segments
      */
-    public static function fromArray(array $array): Segments
+    public static function fromArray(array $array, string $root = null): Segments
     {
         $data = ['params' => [], 'paramsList' => []];
 
@@ -166,8 +167,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
             $data['paramsList'][$i + 1] = $dat;
         }
 
-
-        return new Segments($data);
+        return new Segments($data, $root);
     }
 
     /**
