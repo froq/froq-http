@@ -56,7 +56,7 @@ class Url extends ComponentCollection implements Stringable
         if (is_string($source)) {
             $startsWithSlashes = str_starts_with($source, '//');
 
-            // Fix beginning-slashes issue that falsifying parse_url();
+            // Fix beginning-slashes issue falsifying parse_url();
             if ($startsWithSlashes) {
                 $source = '/' . ltrim($source, '/');
             }
