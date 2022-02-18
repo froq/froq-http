@@ -148,7 +148,7 @@ class Url extends ComponentCollection implements Stringable
 
         $ret = '';
 
-        // Syntax Components: https://tools.ietf.org/html/rfc3986#section-3
+        // Syntax: https://tools.ietf.org/html/rfc3986#section-3
         if ($scheme) {
             $ret .= $scheme;
             $ret .= $authority ? '://' . $authority : ':';
