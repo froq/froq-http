@@ -147,12 +147,10 @@ final class Params extends \StaticClass
             }
 
             if (is_array($name)) {
-                $count   = count($name);
-                $default = (array) $default;
-                return array_combine($name, array_slice(
-                    array_pad($default, $count, null),
-                    0, $count
-                ));
+                $default = array_pad((array) $default, $count = count($name), null);
+                if ($combine) {
+                    $default = array_combine($name, array_slice($default, 0, $count));
+                }
             }
 
             return $default;
@@ -162,7 +160,7 @@ final class Params extends \StaticClass
         $values = [];
 
         if (!$all && is_string($name)) {
-            // For #1/#2 below.
+            // For #1 & #2 below.
             $values[0] = Arrays::get($source, $name, $default);
             if ($values[0] === null) {
                 $values = [];
