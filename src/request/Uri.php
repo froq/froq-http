@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\request\{Segments, UriException};
 use froq\http\Url;
 
 /**
@@ -104,8 +103,22 @@ final class Uri extends Url
     {
         $path = $this->get('path', '');
 
-        [$path, $segments, $segmentsRoot]
-            = [rawurldecode($path), [], Segments::ROOT];
+        $this->segments = self::parseSegments($path, $root);
+    }
+
+    /**
+     * Parse segments.
+     *
+     * @param  string      $path
+     * @param  string|null $root
+     * @return froq\http\request\Segments
+     * @since  6.0
+     */
+    public static function parseSegments(string $path, string $root = null): Segments
+    {
+        $path         = rawurldecode($path);
+        $segments     = [];
+        $segmentsRoot = Segments::ROOT;
 
         if ($path != '' && $path != $segmentsRoot) {
             // Drop root if exists.
@@ -138,6 +151,6 @@ final class Uri extends Url
             }
         }
 
-        $this->segments = Segments::fromArray($segments, $segmentsRoot);
+        return Segments::fromArray($segments, $segmentsRoot);
     }
 }
