@@ -30,7 +30,7 @@ class Url extends ComponentCollection implements Stringable
 
     /** @var array<string> */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
-        'query', 'queryParams', 'fragment', 'authority', 'userInfo'];
+        'query', 'queryParams', 'fragment', 'origin', 'authority'];
 
     /**
      * Constructor.
@@ -66,6 +66,8 @@ class Url extends ComponentCollection implements Stringable
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
 
+            $source['path'] ??= '/';
+
             // Put slashes back (to keep source original).
             if ($startsWithSlashes) {
                 $source['path'] = '/' . $source['path'];
@@ -91,17 +93,12 @@ class Url extends ComponentCollection implements Stringable
 
             $source = array_merge($source, $authority);
         } else {
-            $authority = $userInfo = '';
-
+            $authority = '';
             isset($source['user']) && $authority .= $source['user'];
             isset($source['pass']) && $authority .= ':' . $source['pass'];
 
-            $userInfo = $authority;
-
-            if ($userInfo != '') {
-                $source['userInfo'] = $userInfo;
-
-                // Add separator.
+            // Add separator.
+            if ($authority != '') {
                 $authority .= '@';
             }
 
@@ -110,6 +107,13 @@ class Url extends ComponentCollection implements Stringable
 
             if ($authority != '') {
                 $source['authority'] = $authority;
+            }
+        }
+
+        if (isset($source['scheme'], $source['host'])) {
+            $source['origin'] = sprintf('%s://%s', $source['scheme'], $source['host']);
+            if (isset($source['port'])) {
+                $source['origin'] .= ':' . $source['port'];
             }
         }
 
