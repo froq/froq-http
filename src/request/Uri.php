@@ -53,14 +53,14 @@ final class Uri extends Url
      */
     public function segment(int|string $key, string $default = null): string|null
     {
-        if (isset($this->segments)) {
-            return $this->segments->get($key, $default);
+        if (!isset($this->segments)) {
+            throw new UriException(
+                'Property $segments not set yet [tip: method generateSegments() '.
+                'not called yet]'
+            );
         }
 
-        throw new UriException(
-            'Property $segments not set yet [tip: method generateSegments() '.
-            'not called yet]'
-        );
+        return $this->segments->get($key, $default);
     }
 
     /**
@@ -72,23 +72,23 @@ final class Uri extends Url
      */
     public function segments(array $keys = null, array $defaults = null): array|Segments
     {
-        if (isset($this->segments)) {
-            if ($keys === null) {
-                return $this->segments;
-            }
-
-            $values = [];
-            foreach ($keys as $i => $key) {
-                $values[] = $this->segments->get($key, $defaults[$i] ?? null);
-            }
-
-            return $values;
+        if (!isset($this->segments)) {
+            throw new UriException(
+                'Property $segments not set yet [tip: method generateSegments() '.
+                'not called yet]'
+            );
         }
 
-        throw new UriException(
-            'Property $segments not set yet [tip: method generateSegments() '.
-            'not called yet]'
-        );
+        if ($keys === null) {
+            return $this->segments;
+        }
+
+        $values = [];
+        foreach ($keys as $i => $key) {
+            $values[] = $this->segments->get($key, $defaults[$i] ?? null);
+        }
+
+        return $values;
     }
 
     /**
@@ -101,6 +101,10 @@ final class Uri extends Url
      */
     public function generateSegments(string $root = null): void
     {
+        if (isset($this->segments)) {
+            throw new UriException('Cannot re-generate segments');
+        }
+
         $path = $this->get('path', '');
 
         $this->segments = self::parseSegments($path, $root);
@@ -112,6 +116,7 @@ final class Uri extends Url
      * @param  string      $path
      * @param  string|null $root
      * @return froq\http\request\Segments
+     * @throws froq\http\request\UriException
      * @since  6.0
      */
     public static function parseSegments(string $path, string $root = null): Segments
