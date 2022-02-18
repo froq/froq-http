@@ -203,10 +203,10 @@ final class Request extends Message
      *
      * @param  array<int|string>|null $keys
      * @param  array<string>|null     $defaults
-     * @return array<string>|froq\http\request\Segments|null
+     * @return array<string>|froq\http\request\Segments
      * @since  5.0, 6.0
      */
-    public function segments(array $keys = null, array $defaults = null): array|Segments|null
+    public function segments(array $keys = null, array $defaults = null): array|Segments
     {
         return $this->uri->segments($keys, $defaults);
     }

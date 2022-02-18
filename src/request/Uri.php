@@ -69,9 +69,9 @@ final class Uri extends Url
      *
      * @param  array<int|string>|null $keys
      * @param  array<string>|null     $defaults
-     * @return array<string>froq\http\request\Segments|null
+     * @return array<string>froq\http\request\Segments
      */
-    public function segments(array $keys = null, array $defaults = null): array|Segments|null
+    public function segments(array $keys = null, array $defaults = null): array|Segments
     {
         if (isset($this->segments)) {
             if ($keys === null) {
@@ -83,7 +83,7 @@ final class Uri extends Url
                 $values[] = $this->segments->get($key, $defaults[$i] ?? null);
             }
 
-            return $values ?: $defaults;
+            return $values;
         }
 
         throw new UriException(

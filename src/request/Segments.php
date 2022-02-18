@@ -135,7 +135,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
     public function getParams(array $names = null, array $defaults = null): array|null
     {
         if ($names === null) {
-            return $this->data['params'] ?? null;
+            return $this->data['params'] ?? $defaults;
         }
 
         $values = [];
@@ -143,7 +143,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
             $values[] = $this->data['params'][$name] ?? $defaults[$i] ?? null;
         }
 
-        return $values ?: $defaults;
+        return $values;
     }
 
     /**
@@ -178,7 +178,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function isEmpty(): bool
     {
-        return empty($this->data['paramsList']);
+        return empty($this->paramsList());
     }
 
     /**
@@ -186,7 +186,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function toList(): array
     {
-        return slice($this->data['paramsList'] ?? [], 0);
+        return slice($this->paramsList() ?? [], 0);
     }
 
     /**
@@ -203,7 +203,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function count(): int
     {
-        return count($this->data['paramsList'] ?? []);
+        return count($this->paramsList() ?? []);
     }
 
     /**
