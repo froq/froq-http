@@ -119,8 +119,8 @@ final class Util extends \StaticClass
             return null;
         }
 
-        // Fix skipped nulls by http_build_query().
-        $data = array_map_recursive('strval', $data);
+        // Fix skipped nulls by http_build_query() & empty strings of falses.
+        $data = array_map_recursive(fn($value) => is_bool($value) ? intval($value) : strval($value), $data);
 
         $ret = http_build_query($data);
 
