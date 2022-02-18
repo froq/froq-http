@@ -54,6 +54,10 @@ class Url extends ComponentCollection implements Stringable
         $this->source = $source;
 
         if (is_string($source)) {
+            if ($source == '') {
+                throw new UrlException('Invalid URL/URI source, empty source given');
+            }
+
             $startsWithSlashes = str_starts_with($source, '//');
 
             // Fix beginning-slashes issue falsifying parse_url();
@@ -65,8 +69,6 @@ class Url extends ComponentCollection implements Stringable
             if ($source === false) {
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
-
-            $source['path'] ??= '/';
 
             // Put slashes back (to keep source original).
             if ($startsWithSlashes) {
