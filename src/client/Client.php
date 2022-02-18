@@ -406,8 +406,7 @@ final class Client
 
             // Get last slice of headers.
             if ($headers != '') {
-                $headers =@ end(explode("\r\n\r\n", $headers));
-                error_clear(8);
+                $headers = last(explode("\r\n\r\n", $headers));
             }
 
             $headers = HttpUtil::parseHeaders($headers, true);
