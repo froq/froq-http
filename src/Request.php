@@ -9,7 +9,7 @@ namespace froq\http;
 
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\http\{Message, UrlQuery, RequestException, common\RequestTrait};
-use froq\{App, util\Util};
+use froq\App;
 
 /**
  * Request.
@@ -414,6 +414,6 @@ final class Request extends Message
                 break;
         }
 
-        return Util::parseQueryString($source);
+        return http_query_parse($source);
     }
 }
