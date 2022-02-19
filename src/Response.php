@@ -9,8 +9,8 @@ namespace froq\http;
 
 use froq\http\response\{Status, StatusException};
 use froq\http\{common\ResponseTrait, message\ContentType, message\ContentCharset, Util as HttpUtil};
-use froq\file\{object\FileObject, object\ImageObject, Util as FileUtil};
-use froq\{App, encoding\Encoder};
+use froq\file\object\{FileObject, ImageObject};
+use froq\{App, util\Util, encoding\Encoder};
 
 /**
  * Response.
@@ -363,7 +363,7 @@ final class Response extends Message
                 $headers['Last-Modified'] = Http::date($modifiedAt);
             }
             if ($rateLimit != $fileSize) {
-                $headers['X-Rate-Limit'] = FileUtil::formatBytes($rateLimit) . '/s';
+                $headers['X-Rate-Limit'] = Util::formatBytes($rateLimit) . '/s';
             }
 
             $this->done($headers);
