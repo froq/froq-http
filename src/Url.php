@@ -73,6 +73,17 @@ class Url extends ComponentCollection implements Stringable
             }
         }
 
+        if (!isset($source['origin'])) {
+            $origin = null;
+            if (isset($source['scheme'], $source['host'])) {
+                $origin = sprintf('%s://%s%s', $source['scheme'], $source['host'], (
+                    isset($source['port']) ? ':' . $source['port'] : ''
+                ));
+            }
+
+            $source['origin'] = $origin;
+        }
+
         if (!isset($source['authority'])) {
             $authority = null;
             isset($source['user']) && $authority .= $source['user'];
@@ -87,17 +98,6 @@ class Url extends ComponentCollection implements Stringable
             isset($source['port']) && $authority .= ':' . $source['port'];
 
             $source['authority'] = $authority;
-        }
-
-        if (!isset($source['origin'])) {
-            $origin = null;
-            if (isset($source['scheme'], $source['host'])) {
-                $origin = sprintf('%s://%s%s', $source['scheme'], $source['host'], (
-                    isset($source['port']) ? ':' . $source['port'] : ''
-                ));
-            }
-
-            $source['origin'] = $origin;
         }
 
         // Use self component names only.
