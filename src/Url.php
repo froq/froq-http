@@ -108,6 +108,12 @@ class Url extends ComponentCollection implements Stringable
         }
     }
 
+    /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
     /**
      * Get source property.
      *

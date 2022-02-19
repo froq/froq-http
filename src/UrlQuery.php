@@ -61,6 +61,12 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
     }
 
     /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
+    /** @magic */
     public function __set(string $key, string|null $value): void
     {
         $this->set($key, $value);
