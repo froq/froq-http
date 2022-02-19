@@ -10,7 +10,6 @@ namespace froq\http;
 use froq\http\UrlException;
 use froq\collection\ComponentCollection;
 use froq\common\interface\Stringable;
-use froq\util\{Util, Arrays};
 
 /**
  * Url.
