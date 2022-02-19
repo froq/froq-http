@@ -25,8 +25,8 @@ use froq\util\{Util, Arrays};
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /** @var array<string>|string */
-    protected array|string $source;
+    /** @var array|string|null */
+    protected array|string|null $source;
 
     /** @var array<string> */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
@@ -41,61 +41,40 @@ class Url extends ComponentCollection implements Stringable
      */
     public function __construct(array|string $source = null, array $components = null)
     {
-        $components ??= self::$components;
+        parent::__construct($components ??= self::$components);
 
-        // Set components.
-        parent::__construct($components);
+        $this->source = $source;
 
         if ($source === null) {
             return;
         }
-
-        // Keep source.
-        $this->source = $source;
 
         if (is_string($source)) {
             if ($source == '') {
                 throw new UrlException('Invalid URL/URI source, empty source given');
             }
 
-            $startsWithSlashes = str_starts_with($source, '//');
-
-            // Fix beginning-slashes issue falsifying parse_url();
-            if ($startsWithSlashes) {
-                $source = '/' . ltrim($source, '/');
-            }
-
-            $source = parse_url($source);
-            if ($source === false) {
+            $source = http_url_parse($source);
+            if (!$source) {
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
-
-            // Put slashes back (to keep source original).
-            if ($startsWithSlashes) {
-                $source['path'] = '/' . $source['path'];
-            }
-        }
-
-        if (isset($source['query'])) {
-            $query = Arrays::pull($source, 'query');
-            if ($query != '') {
-                $source += ['query' => $query,
-                            'queryParams' => Util::parseQueryString($query)];
-            }
-        }
-
-        if (isset($source['authority'])) {
-            $authority = parse_url('scheme://' . $source['authority']);
-            if ($authority === false) {
-                throw new UrlException('Invalid authority, parsing failed');
-            }
-
-            // Drop used fake scheme above.
-            unset($authority['scheme']);
-
-            $source = array_merge($source, $authority);
         } else {
-            $authority = '';
+            // Update query stuff.
+            if (isset($source['query']) || isset($source['queryParams'])) {
+                $temp = [];
+                if (isset($source['query'])) {
+                    $temp = http_query_parse($source['query']);
+                }
+                if (isset($source['queryParams'])) {
+                    $temp = array_replace($temp, $source['queryParams']);
+                }
+                $source['query'] = http_query_build($temp);
+                $source['queryParams'] = $temp;
+            }
+        }
+
+        if (!isset($source['authority'])) {
+            $authority = null;
             isset($source['user']) && $authority .= $source['user'];
             isset($source['pass']) && $authority .= ':' . $source['pass'];
 
@@ -107,20 +86,22 @@ class Url extends ComponentCollection implements Stringable
             isset($source['host']) && $authority .= $source['host'];
             isset($source['port']) && $authority .= ':' . $source['port'];
 
-            if ($authority != '') {
-                $source['authority'] = $authority;
-            }
+            $source['authority'] = $authority;
         }
 
-        if (isset($source['scheme'], $source['host'])) {
-            $source['origin'] = sprintf('%s://%s', $source['scheme'], $source['host']);
-            if (isset($source['port'])) {
-                $source['origin'] .= ':' . $source['port'];
+        if (!isset($source['origin'])) {
+            $origin = null;
+            if (isset($source['scheme'], $source['host'])) {
+                $origin = sprintf('%s://%s%s', $source['scheme'], $source['host'], (
+                    isset($source['port']) ? ':' . $source['port'] : ''
+                ));
             }
+
+            $source['origin'] = $origin;
         }
 
         // Use self component names only.
-        $source = Arrays::include($source, $components);
+        $source = array_include($source, $components);
 
         foreach ($source as $name => $value) {
             $this->set($name, $value);
@@ -134,7 +115,7 @@ class Url extends ComponentCollection implements Stringable
      */
     public function source(): array|string|null
     {
-        return $this->source ?? null;
+        return $this->source;
     }
 
     /**
@@ -142,28 +123,6 @@ class Url extends ComponentCollection implements Stringable
      */
     public function toString(): string
     {
-        [$scheme, $authority, $path, $query, $queryParams, $fragment] = array_select(
-            $this->data, ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']
-        );
-
-        $ret = '';
-
-        // Syntax: https://tools.ietf.org/html/rfc3986#section-3
-        if ($scheme) {
-            $ret .= $scheme;
-            $ret .= $authority ? '://' . $authority : ':';
-        } elseif ($authority) {
-            $ret .= $authority;
-        }
-
-        if ($queryParams) {
-            $query = Util::buildQueryString($queryParams);
-        }
-
-        if ($path != '')     $ret .= $path;
-        if ($query != '')    $ret .= '?' . $query;
-        if ($fragment != '') $ret .= '#' . $fragment;
-
-        return $ret;
+        return http_url_build($this->data);
     }
 }
