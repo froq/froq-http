@@ -414,6 +414,6 @@ final class Request extends Message
                 break;
         }
 
-        return http_query_parse($source);
+        return http_parse_query($source);
     }
 }
