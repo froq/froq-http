@@ -10,8 +10,9 @@ namespace froq\http\response\payload;
 use froq\http\response\payload\{PayloadInterface, PayloadException,
     JsonPayload, XmlPayload, FilePayload, ImagePayload};
 use froq\http\{Response, response\Status};
-use froq\file\{Util as FileUtil, mime\Mime};
 use froq\common\trait\AttributeTrait;
+use froq\file\mime\Mime;
+use froq\util\Util;
 
 /**
  * Payload.
@@ -269,7 +270,7 @@ class Payload
     {
         $limit = (string) ini_get('memory_limit');
 
-        return FileUtil::convertBytes($limit);
+        return Util::convertBytes($limit);
     }
 
     /**
