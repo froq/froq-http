@@ -392,13 +392,13 @@ final class Request extends Message
                 }
                 break;
             case 'POST':
-                if (!$plussed($source) && !$json) {
-                    return $_POST;
-                }
-
                 if ($json) {
                     return (array) json_decode($source,
                         flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+                }
+
+                if (!$plussed($source)) {
+                    return $_POST;
                 }
                 break;
             case 'COOKIE':
@@ -408,7 +408,7 @@ final class Request extends Message
                     return $_COOKIE;
                 }
 
-                if ($source) {
+                if ($source != '') {
                     $source = (string) implode('&', array_map('trim', explode(';', $source)));
                 }
                 break;
