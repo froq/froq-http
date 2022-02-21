@@ -51,7 +51,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
     public function __construct(array|string $data)
     {
         $this->data = is_array($data) ? self::mapData($data)
-            : http_query_parse($data);
+            : http_parse_query_string($data);
     }
 
     /** @magic */
@@ -250,7 +250,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
      */
     public function toString(): string
     {
-        return http_query_build($this->data);
+        return http_build_query_string($this->data);
     }
 
     /**
