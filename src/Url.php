@@ -53,7 +53,7 @@ class Url extends ComponentCollection implements Stringable
                 throw new UrlException('Invalid URL/URI source, empty source given');
             }
 
-            $source = http_url_parse($source);
+            $source = http_parse_url($source);
             if (!$source) {
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
@@ -128,6 +128,6 @@ class Url extends ComponentCollection implements Stringable
      */
     public function toString(): string
     {
-        return http_url_build($this->data);
+        return http_build_url($this->data);
     }
 }
