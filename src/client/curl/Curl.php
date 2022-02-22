@@ -201,12 +201,15 @@ final class Curl
 
         // Assign HTTP version if provided.
         if (isset($clientOptions['httpVersion'])) {
-            $optionsExtra[CURLOPT_HTTP_VERSION] = match ((string) $clientOptions['httpVersion']) {
-                '2', '2.0' => CURL_HTTP_VERSION_2_0,
-                '1.1'      => CURL_HTTP_VERSION_1_1,
-                '1.0'      => CURL_HTTP_VERSION_1_0,
-                default    => throw new CurlException('Invalid `httpVersion` option `%s`, valids are: '
-                    . '2, 2.0, 1.1, 1.0', $clientOptions['httpVersion'])
+            $httpVersion = format_number($clientOptions['httpVersion'], 1);
+            $optionsExtra[CURLOPT_HTTP_VERSION] = match ($httpVersion) {
+                '2.0'   => CURL_HTTP_VERSION_2_0,
+                '1.1'   => CURL_HTTP_VERSION_1_1,
+                '1.0'   => CURL_HTTP_VERSION_1_0,
+                default => throw new CurlException(
+                    'Invalid `httpVersion` option `%s` [valids: 2, 2.0, 1.1, 1.0]',
+                    $clientOptions['httpVersion']
+                )
             };
         }
 
