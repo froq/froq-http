@@ -20,4 +20,24 @@ use froq\http\client\curl\CurlError;
  * @since   5.0
  */
 class CurlResponseError extends CurlError
-{}
+{
+    /** @var int */
+    private int $status;
+
+    /**
+     * Constructor.
+     *
+     * @param int      $status
+     * @param mixed ...$arguments
+     * @since 6.0
+     */
+    public function __construct(int $status, mixed ...$arguments)
+    {
+        $this->status = $status;
+
+        // Update code.
+        $arguments['code'] = $status;
+
+        parent::__construct(...$arguments);
+    }
+}
