@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http;
 
+use froq\http\common\RequestTrait;
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
-use froq\http\{Message, UrlQuery, RequestException, common\RequestTrait};
 use froq\App;
 
 /**
