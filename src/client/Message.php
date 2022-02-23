@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\Http;
-
 /**
  * Message.
  *
@@ -50,7 +48,7 @@ abstract class Message
     {
         $this->type = $type;
 
-        $httpProtocol ??= Http::protocol();
+        $httpProtocol ??= http_protocol();
         $this->setHttpProtocol($httpProtocol);
         $this->setHttpVersion((float) substr($httpProtocol, 5, 3));
 
