@@ -294,8 +294,8 @@ final class Client
      */
     public function setup(): void
     {
-        [$method, $url, $urlParams, $body, $headers] = $this->getOptions(
-            ['method', 'url', 'urlParams', 'body', 'headers']
+        [$method, $url, $urlParams, $body, $headers, $cookies] = $this->getOptions(
+            ['method', 'url', 'urlParams', 'body', 'headers', 'cookies']
         );
 
         $method || throw new ClientException('No method given');
@@ -323,6 +323,15 @@ final class Client
         $url = http_build_url($parsedUrl);
 
         $headers = array_lower_keys((array) $headers);
+
+        // Add cookies (if provided).
+        if ($cookies) {
+            $cookies = array_reduce_keys((array) $cookies, [], fn($ret, $name) => (
+                [...$ret, join('=', [$name, $cookies[$name]])]
+            ));
+
+            $headers['cookie'] = join('; ', $cookies);
+        }
 
         // Disable GZip'ed responses.
         if (!$this->options['gzip']) {
