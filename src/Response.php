@@ -7,8 +7,9 @@ declare(strict_types=1);
 
 namespace froq\http;
 
+use froq\http\common\ResponseTrait;
 use froq\http\response\{Status, StatusException};
-use froq\http\{common\ResponseTrait, message\ContentType, message\ContentCharset, Util as HttpUtil};
+use froq\http\message\{ContentType, ContentCharset};
 use froq\file\object\{FileObject, ImageObject};
 use froq\{App, util\Util, encoding\Encoder};
 
@@ -143,10 +144,8 @@ final class Response extends Message
             return;
         }
 
-        $header = HttpUtil::buildHeader($name, $value);
-        if ($header === null) {
-            throw new ResponseException('Invalid header name, it is empty');
-        }
+        $header = http_build_header($name, $value);
+        $header || throw new ResponseException('Invalid header name, it is empty');
 
         // Remove directive.
         if (is_null($value)) {
@@ -195,10 +194,8 @@ final class Response extends Message
             $options = $value['options'] ?? null;
         }
 
-        $cookie = HttpUtil::buildCookie($name, $value, $options);
-        if ($cookie === null) {
-            throw new ResponseException('Invalid cookie name, it is empty');
-        }
+        $cookie = http_build_cookie($name, $value, $options);
+        $cookie || throw new ResponseException('Invalid cookie name, it is empty');
 
         header('Set-Cookie: ' . $cookie, false);
     }
