@@ -110,9 +110,9 @@ final class Curl
 
         $result = curl_exec($handle);
         if ($result !== false) {
-            $client->end($result, $this->getHandleInfo($handle), null);
+            $client->end($result, $this->getHandleInfo($handle));
         } else {
-            $client->end(null, null, new CurlError(curl_error($handle), null, curl_errno($handle)));
+            $client->end(null, null, new CurlError(curl_error($handle), code: curl_errno($handle)));
         }
 
         // Drop handle.

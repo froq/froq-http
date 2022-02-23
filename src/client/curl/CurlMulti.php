@@ -132,16 +132,16 @@ final class CurlMulti
 
                 $result = $ok ? curl_multi_getcontent($handle) : false;
                 if ($result !== false) {
-                    $client->end($result, $curl->getHandleInfo($handle), null);
+                    $client->end($result, $curl->getHandleInfo($handle));
                 } else {
-                    $client->end(null, null, new CurlError(curl_error($handle), null, $info['result']));
+                    $client->end(null, null, new CurlError(curl_error($handle), code: $info['result']));
                 }
 
                 // This can be set true to break the queue.
-                if ($client->aborted) {
+                if ($client->abort) {
                     $client->fireEvent('abort');
 
-                    // Break upper loop.
+                    // Break outer loop.
                     break 2;
                 }
             }

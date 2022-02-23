@@ -25,8 +25,8 @@ final class Request extends Message
     /** @var string */
     private string $url;
 
-    /** @var array|null */
-    private array|null $urlParams = null;
+    /** @var ?array */
+    private ?array $urlParams = null;
 
     /** @var array */
     private static array $headersDefault = [
@@ -82,7 +82,7 @@ final class Request extends Message
     }
 
     /**
-     * Set url.
+     * Set URL.
      *
      * @param  string $url
      * @return self
@@ -95,7 +95,7 @@ final class Request extends Message
     }
 
     /**
-     * Get url.
+     * Get URL.
      *
      * @return string
      */
@@ -105,7 +105,7 @@ final class Request extends Message
     }
 
     /**
-     * Set url params.
+     * Set URL params.
      *
      * @param  array|null $urlParams
      * @return self
@@ -118,7 +118,7 @@ final class Request extends Message
     }
 
     /**
-     * Get url params.
+     * Get URL params.
      *
      * @return array|null
      */
@@ -128,7 +128,7 @@ final class Request extends Message
     }
 
     /**
-     * Get uri.
+     * Get URI.
      *
      * @return string
      * @internal
@@ -136,6 +136,6 @@ final class Request extends Message
     protected function getUri(): string
     {
         // Extract the only path and query part of URL.
-        return preg_replace('~^\w+://[^/]+(/.*)~', '\\1', $this->getUrl());
+        return preg_replace('~^\w+://[^/]+(/.*)~', '\1', $this->getUrl());
     }
 }

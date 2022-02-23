@@ -19,12 +19,9 @@ use froq\http\Http;
  */
 abstract class Message
 {
-    /**
-    * Types.
-    * @const int
-    */
-    public const TYPE_REQUEST  = 1,
-                 TYPE_RESPONSE = 2;
+    /** @const int */
+    public final const TYPE_REQUEST  = 1,
+                       TYPE_RESPONSE = 2;
 
     /** @var int */
     protected int $type;
@@ -32,11 +29,14 @@ abstract class Message
     /** @var string */
     protected string $httpProtocol;
 
-    /** @var array|null */
-    protected array|null $headers = null;
+    /** @var float */
+    protected float $httpVersion;
 
-    /** @var string|null */
-    protected string|null $body = null;
+    /** @var ?array */
+    protected ?array $headers = null;
+
+    /** @var ?string */
+    protected ?string $body = null;
 
     /**
      * Constructor.
@@ -48,53 +48,20 @@ abstract class Message
      */
     public function __construct(int $type, string $httpProtocol = null, array $headers = null, string $body = null)
     {
-        $this->type         = $type;
-        $this->httpProtocol = $httpProtocol ?? Http::protocol();
+        $this->type = $type;
 
-        isset($headers)     && $this->setHeaders($headers);
-        isset($body)        && $this->setBody($body);
+        $httpProtocol ??= Http::protocol();
+        $this->setHttpProtocol($httpProtocol);
+        $this->setHttpVersion((float) substr($httpProtocol, 5, 3));
+
+        isset($headers) && $this->setHeaders($headers);
+        isset($body)    && $this->setBody($body);
     }
 
-    /**
-     * Magic string.
-     *
-     * @return string
-     */
-    public final function __toString()
+    /** @magic */
+    public final function __toString(): string
     {
-        if ($this->type == self::TYPE_REQUEST) {
-            $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());
-        } elseif ($this->type == self::TYPE_RESPONSE) {
-            $ret = sprintf("%s %s\r\n", $this->getHttpProtocol(), $this->getStatus());
-        }
-
-        $headers = $this->getHeaders();
-        $body    = $this->getBody();
-
-        if ($headers != null) {
-            foreach ($headers as $name => $value) {
-                // Skip first line (which is already added above).
-                if ($name == '0') {
-                    continue;
-                }
-
-                if (is_array($value)) {
-                    foreach ($value as $valu) {
-                        $ret .= "{$name}: {$valu}\r\n";
-                    }
-                    continue;
-                }
-
-                $ret .= "{$name}: {$value}\r\n";
-            }
-        }
-
-        if ($body != null) {
-            $ret .= "\r\n";
-            $ret .= $body;
-        }
-
-        return $ret;
+        return $this->toString();
     }
 
     /**
@@ -102,13 +69,13 @@ abstract class Message
      *
      * @return int
      */
-    public final function getType(): int
+    public final function type(): int
     {
         return $this->type;
     }
 
     /**
-     * Set http protocol.
+     * Set HTTP protocol.
      *
      * @param  string $httpProtocol
      * @return self
@@ -121,7 +88,7 @@ abstract class Message
     }
 
     /**
-     * Get http protocol.
+     * Get HTTP protocol.
      *
      * @return string
      */
@@ -131,22 +98,45 @@ abstract class Message
     }
 
     /**
-     * Set headers.
+     * Set HTTP version.
      *
-     * @param  array     $headers
-     * @param  bool|null $reset @internal
+     * @param  float $httpVersion
      * @return self
      */
-    public final function setHeaders(array $headers, bool $reset = null): self
+    public final function setHttpVersion(float $httpVersion): self
     {
-        if ($reset) {
-            $this->headers = [];
-        }
+        $this->httpVersion = $httpVersion;
 
-        ksort($headers);
+        return $this;
+    }
+
+    /**
+     * Get HTTP version.
+     *
+     * @return string
+     */
+    public final function getHttpVersion(): float
+    {
+        return $this->httpVersion;
+    }
+
+    /**
+     * Set headers.
+     *
+     * @param  array $headers
+     * @param  bool  $reset @internal
+     * @return self
+     */
+    public final function setHeaders(array $headers, bool $reset = false): self
+    {
+        $reset && $this->headers = [];
 
         foreach ($headers as $key => $value) {
             $this->setHeader((string) $key, $value);
+        }
+
+        if ($this->headers) {
+            ksort($this->headers);
         }
 
         return $this;
@@ -170,11 +160,11 @@ abstract class Message
      */
     public final function hasHeader(string $name): bool
     {
-        return $this->getHeader($name) !== null;
+        return isset($this->headers[$name]) || isset($this->headers[strtolower($name)]);
     }
 
     /**
-     * Set a header.
+     * Set header.
      *
      * @param   string            $name
      * @param   string|array|null $value
@@ -182,6 +172,8 @@ abstract class Message
      */
     public final function setHeader(string $name, string|array|null $value): self
     {
+        $name = strtolower($name);
+
         // Null means remove.
         if ($value === null) {
             unset($this->headers[$name]);
@@ -193,17 +185,15 @@ abstract class Message
     }
 
     /**
-     * Get a header.
+     * Get header.
      *
      * @param  string      $name
      * @param  string|null $default
      * @return string|array|null
      */
-    public final function getHeader(string $name, string $default = null)
+    public final function getHeader(string $name, string $default = null): string|array|null
     {
-        return $this->headers[$name]
-            ?? $this->headers[strtolower($name)]
-            ?? $default;
+        return $this->headers[$name] ?? $this->headers[strtolower($name)] ?? $default;
     }
 
     /**
@@ -227,5 +217,47 @@ abstract class Message
     public final function getBody(): string|null
     {
         return $this->body;
+    }
+
+    /**
+     * Get string representations of message object.
+     *
+     * @return string
+     * @since  6.0
+     */
+    public final function toString(): string
+    {
+        if ($this->type == self::TYPE_REQUEST) {
+            $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());
+        } elseif ($this->type == self::TYPE_RESPONSE) {
+            $ret = sprintf("%s %s\r\n", $this->getHttpProtocol(), $this->getStatus());
+        }
+
+        $headers = $this->getHeaders();
+        $body    = $this->getBody();
+
+        if ($headers != null) {
+            foreach ($headers as $name => $value) {
+                // Skip first line (which is already added above).
+                if ($name == '0') {
+                    continue;
+                }
+
+                if (is_array($value)) {
+                    foreach ($value as $value) {
+                        $ret .= "{$name}: {$value}\r\n";
+                    }
+                } else {
+                    $ret .= "{$name}: {$value}\r\n";
+                }
+            }
+        }
+
+        if ($body != null) {
+            $ret .= "\r\n";
+            $ret .= $body;
+        }
+
+        return $ret;
     }
 }

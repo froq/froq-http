@@ -22,8 +22,8 @@ final class Response extends Message
     /** @var int */
     private int $status;
 
-    /** @var array|null */
-    private array|null $parsedBody = null;
+    /** @var ?array */
+    private ?array $parsedBody = null;
 
     /**
      * Constructor.

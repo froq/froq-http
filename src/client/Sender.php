@@ -31,6 +31,7 @@ final class Sender
     {
         $curl = new Curl($client);
         $client->setCurl($curl);
+        $client->sent = true;
 
         $curl->run();
 
@@ -47,6 +48,7 @@ final class Sender
     {
         foreach ($clients as $client) {
             $client->setCurl(new Curl($client));
+            $client->sent = true;
         }
 
         $curlm = new CurlMulti($clients);
