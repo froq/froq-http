@@ -25,15 +25,15 @@ final class Http
      * Protocols.
      * @const string
      */
-    public const PROTOCOL_1_0     = 'HTTP/1.0',
-                 PROTOCOL_1_1     = 'HTTP/1.1',
-                 PROTOCOL_2_0     = 'HTTP/2.0';
+    public const PROTOCOL_1_0 = 'HTTP/1.0',
+                 PROTOCOL_1_1 = 'HTTP/1.1',
+                 PROTOCOL_2_0 = 'HTTP/2.0';
 
     /**
-     * Version default.
+     * Default protocol.
      * @const string
      */
-    public const PROTOCOL_DEFAULT = self::PROTOCOL_1_1;
+    public const DEFAULT_PROTOCOL = 'HTTP/1.1';
 
     /**
      * Date format (https://tools.ietf.org/html/rfc7231#section-7.1.1.2).
@@ -49,7 +49,7 @@ final class Http
      */
     public static function protocol(): string
     {
-        return ($_SERVER['SERVER_PROTOCOL'] ?? self::PROTOCOL_DEFAULT);
+        return ($_SERVER['SERVER_PROTOCOL'] ?? self::DEFAULT_PROTOCOL);
     }
 
     /**
