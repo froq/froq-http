@@ -257,12 +257,13 @@ final class Response extends Message
                 $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
 
                 // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && str_contains(
-                    (string) $this->app->request()->header('Accept-Encoding'), 'gzip'
-                )) {
-                    $temp = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
-                    if ($temp && !$error) {
-                        [$content, $temp] = [$temp, null];
+                if ($gzipOptions
+                    && $contentLength >= $gzipOptionsMinlen
+                    && str_contains((string) $this->app->request()->header('Accept-Encoding'), 'gzip')
+                ) {
+                    $encodedContent = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
+                    if ($encodedContent && !$error) {
+                        [$content, $encodedContent] = [$encodedContent, null];
 
                         // Cancel PHP compression.
                         ini_set('zlib.output_compression', false);
