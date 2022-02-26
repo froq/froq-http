@@ -45,8 +45,11 @@ final class Request extends Message
     /** @var string */
     private string $id;
 
-    /** @var array */
-    private array $times;
+    /** @var int */
+    private int $time;
+
+    /** @var float */
+    private float $utime;
 
     /**
      * Constructor.
@@ -61,8 +64,10 @@ final class Request extends Message
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
+
         $this->id     = get_request_id();
-        $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
+        $this->time   = $_SERVER['REQUEST_TIME'];
+        $this->utime  = $_SERVER['REQUEST_TIME_FLOAT'];
 
         // Lock URI as read-only.
         $this->uri->readOnly(true);
@@ -132,14 +137,25 @@ final class Request extends Message
     }
 
     /**
-     * Get times property.
+     * Get time property.
      *
-     * @return array
-     * @since  4.6
+     * @return int
+     * @since  6.0
      */
-    public function times(): array
+    public function time(): int
     {
-        return $this->times;
+        return $this->time;
+    }
+
+    /**
+     * Get utime property.
+     *
+     * @return float
+     * @since  6.0
+     */
+    public function utime(): float
+    {
+        return $this->utime;
     }
 
     /**
