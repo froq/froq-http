@@ -158,7 +158,9 @@ abstract class Message
      */
     public final function hasHeader(string $name): bool
     {
-        return isset($this->headers[$name]) || isset($this->headers[strtolower($name)]);
+        $name = strtolower($name);
+
+        return isset($this->headers[$name]);
     }
 
     /**
@@ -191,7 +193,9 @@ abstract class Message
      */
     public final function getHeader(string $name, string $default = null): string|array|null
     {
-        return $this->headers[$name] ?? $this->headers[strtolower($name)] ?? $default;
+        $name = strtolower($name);
+
+        return $this->headers[$name] ?? $default;
     }
 
     /**
