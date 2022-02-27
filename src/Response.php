@@ -418,7 +418,6 @@ final class Response extends Message
         if ($value === null) {
             header_remove($name);
         } else {
-            $name = strtolower($name);
             header($name .': '. $value, $replace);
         }
     }
