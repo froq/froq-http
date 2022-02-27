@@ -147,12 +147,7 @@ final class Response extends Message
         $header = http_build_header($name, $value);
         $header || throw new ResponseException('Invalid header name, it is empty');
 
-        // Remove directive.
-        if (is_null($value)) {
-            header_remove($name);
-        } else {
-            header($header, $replace);
-        }
+        $this->head($name, $value, $replace);
     }
 
     /**
@@ -197,7 +192,7 @@ final class Response extends Message
         $cookie = http_build_cookie($name, $value, $options);
         $cookie || throw new ResponseException('Invalid cookie name, it is empty');
 
-        header('Set-Cookie: ' . $cookie, false);
+        $this->head('Set-Cookie', $cookie, false);
     }
 
     /**
@@ -403,8 +398,6 @@ final class Response extends Message
     {
         $code = $this->status->getCode();
 
-        header('Status: '. $code);
-
         if (!http_response_code($code)) {
             ($this->httpVersion >= 2.0)
                 ? header(sprintf('%s %s', $this->httpProtocol, $code))
@@ -417,21 +410,35 @@ final class Response extends Message
     }
 
     /**
+     * Head(er) wrapper.
+     */
+    private function head(string $name, string|int|null $value, bool $replace = true): void
+    {
+        // Remove directive.
+        if ($value === null) {
+            header_remove($name);
+        } else {
+            $name = strtolower($name);
+            header($name .': '. $value, $replace);
+        }
+    }
+
+    /**
      * Done wrapper.
      */
-    private function done(array $headers, string $output = null): void
+    private function done(array $headers, string|null $output = null): void
     {
         $this->free();
         $this->expose();
 
         // Print headers.
         foreach ($headers as $name => $value) {
-            header($name .': '. $value);
+            $this->head($name, $value);
         }
 
-        // Print output content.
+        // Print output.
         if ($output !== null) {
-            print($output);
+            print $output;
         }
     }
 
@@ -450,7 +457,7 @@ final class Response extends Message
     {
         $art = $this->app->config('exposeAppRuntime');
         if ($art && ($art === true || $art === $this->app->env())) {
-            header('X-Art: '. $this->app->runtime(format: true));
+            $this->head('X-Art', $this->app->runtime(format: true));
         }
     }
 }
