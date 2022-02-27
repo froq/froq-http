@@ -24,8 +24,8 @@ final class Status extends Statuses
     /** @var int */
     private int $code = 0;
 
-    /** @var string|null */
-    private string|null $text = null;
+    /** @var ?string */
+    private ?string $text = null;
 
     /**
      * Constructor.

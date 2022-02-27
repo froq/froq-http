@@ -254,13 +254,13 @@ abstract class Message
                 $attributes = $attributes + ['type' => $contentType];
 
                 // Content type check for a proper response.
-                $contentType = trim((string) $attributes['type']);
-                $contentType || throw new MessageException('Missing content type');
+                $contentType = trim((string) $attributes['type'])
+                    ?: throw new MessageException('Missing content type');
 
                 $type = new \Type($content);
                 if ($type->isArray()) {
                     // Note: must be checked here only!
-                    if (!preg_test('~(json|xml)~i', $contentType)) {
+                    if (!preg_test('~json|xml~i', $contentType)) {
                         throw new MessageException(
                             'Invalid content type `%s` for `array` type content, '.
                             'content type must be denoted like `xxx/json` or `xxx/xml`',

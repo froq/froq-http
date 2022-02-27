@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
+use froq\common\exception\UnsupportedOperationException;
 use froq\common\interface\{Arrayable, Listable};
 use froq\collection\trait\GetTrait;
-use froq\common\exception\UnsupportedOperationException;
 
 /**
  * Segments.
@@ -228,7 +228,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function offsetSet(mixed $key, mixed $value): never
     {
-        throw new UnsupportedOperationException('Cannot modify read-only object ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
     }
 
     /**
@@ -237,6 +237,6 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function offsetUnset(mixed $key): never
     {
-        throw new UnsupportedOperationException('Cannot modify read-only object ' . self::class);
+        throw new UnsupportedOperationException('Cannot modify read-only object ' . static::class);
     }
 }

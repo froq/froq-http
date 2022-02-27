@@ -50,7 +50,7 @@ class Url extends ComponentCollection implements Stringable
 
         if (is_string($source)) {
             if ($source == '') {
-                throw new UrlException('Invalid URL/URI source, empty source given');
+                throw new UrlException('Invalid URL/URI source, empty source');
             }
 
             $source = http_parse_url($source);

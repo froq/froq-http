@@ -53,12 +53,9 @@ final class Uri extends Url
      */
     public function segment(int|string $key, string $default = null): string|null
     {
-        if (!isset($this->segments)) {
-            throw new UriException(
-                'Property $segments not set yet [tip: method generateSegments() '.
-                'not called yet]'
-            );
-        }
+        isset($this->segments) || throw new UriException(
+            'Property $segments not set yet [method generateSegments() not called]'
+        );
 
         return $this->segments->get($key, $default);
     }
@@ -72,12 +69,9 @@ final class Uri extends Url
      */
     public function segments(array $keys = null, array $defaults = null): array|Segments
     {
-        if (!isset($this->segments)) {
-            throw new UriException(
-                'Property $segments not set yet [tip: method generateSegments() '.
-                'not called yet]'
-            );
-        }
+        isset($this->segments) || throw new UriException(
+            'Property $segments not set yet [method generateSegments() not called]'
+        );
 
         if ($keys === null) {
             return $this->segments;
@@ -101,9 +95,9 @@ final class Uri extends Url
      */
     public function generateSegments(string $root = null): void
     {
-        if (isset($this->segments)) {
-            throw new UriException('Cannot re-generate segments');
-        }
+        isset($this->segments) && throw new UriException(
+            'Cannot re-generate segments'
+        );
 
         $path = $this->get('path', '');
 
@@ -132,10 +126,7 @@ final class Uri extends Url
 
                 // Prevent wrong generate action.
                 if (!str_starts_with($path, $root)) {
-                    throw new UriException(
-                        'URI path `%s` has no root such `%s`',
-                        [$path, $root]
-                    );
+                    throw new UriException('Path `%s` has no root `%s`', [$path, $root]);
                 }
 
                 // Drop root from path.
@@ -149,10 +140,7 @@ final class Uri extends Url
 
             // In any case.
             if ($segments === false) {
-                throw new UriException(
-                    'Cannot generate segments [error: %s]',
-                    '@error'
-                );
+                throw new UriException('Cannot generate segments [error: @error]');
             }
         }
 

@@ -12,7 +12,7 @@ use froq\http\client\curl\CurlError;
 /**
  * Curl Response Error.
  *
- * Represents an error object that only thrown when client options "throwHttpErrors" is true.
+ * An error class, only thrown when client option `throwHttpErrors` is true.
  *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlResponseError

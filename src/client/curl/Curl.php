@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\curl\{CurlError, CurlException};
 use froq\http\client\Client;
 use CurlHandle;
 
@@ -36,7 +35,7 @@ final class Curl
     /** @var froq\http\client\Client */
     private Client $client;
 
-    /** @var string @since 5.0 */
+    /** @var string */
     private string $headers = '';
 
     /**
@@ -101,8 +100,8 @@ final class Curl
      */
     public function run(): void
     {
-        $client = $this->getClient();
-        $client || throw new CurlException('No client initiated yet to process');
+        $client = $this->getClient()
+            ?: throw new CurlException('No client initiated yet to process');
 
         $client->setup();
 
@@ -127,11 +126,11 @@ final class Curl
      */
     public function &init(): CurlHandle
     {
-        $client = $this->getClient();
-        $client || throw new CurlException('No client initiated yet to process');
+        $client = $this->getClient()
+            ?: throw new CurlException('No client initiated yet to process');
 
-        $handle = curl_init();
-        $handle || throw new CurlException('Failed curl session [error: %s]', '@error');
+        $handle = curl_init()
+            ?: throw new CurlException('Failed curl session [error: @error]');
 
         $request = $client->getRequest();
 
@@ -247,7 +246,7 @@ final class Curl
         }
 
         if (!curl_setopt_array($handle, $options)) {
-            throw new CurlException('Failed to apply cURL options [error: %s]', '@error');
+            throw new CurlException('Failed to apply cURL options [error: @error]');
         }
 
         return $handle;

@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\curl\{CurlError, CurlException};
 use froq\http\client\Client;
 use CurlHandle;
 
@@ -73,11 +72,11 @@ final class CurlMulti
      */
     public function run(): void
     {
-        $clients = $this->getClients();
-        $clients || throw new CurlException('No clients initiated yet to process');
+        $clients = $this->getClients()
+            ?: throw new CurlException('No clients initiated yet to process');
 
-        $multiHandle = curl_multi_init();
-        $multiHandle || throw new CurlException('Failed multi-curl session [error: %s]', '@error');
+        $multiHandle = curl_multi_init()
+            ?: throw new CurlException('Failed multi-curl session [error: @error]');
 
         $stack = [];
 
