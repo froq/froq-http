@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 use froq\http\{Response, message\ContentType};
 use froq\file\{File, mime\Mime};
 
@@ -50,16 +49,16 @@ final class FilePayload extends Payload implements PayloadInterface
         if (!$file) {
             throw new PayloadException('File empty');
         } elseif (!$type->isString() && !$type->isStream()) {
-            throw new PayloadException('File content must be a valid readable file path,'
-                . ' binary string or stream, %s given', $type);
+            throw new PayloadException('File content must be a valid readable file path, '.
+                'binary string or stream, %s given', $type);
         } elseif ($fileName && !$this->isValidFileName($fileName)) {
             throw new PayloadException('File name must not contain non-ascii characters');
         }
 
         // Direct file reads.
         if ($direct && !$type->isString()) {
-            throw new PayloadException('File content must be string (a valid file path)'
-                . ' when `direct` option is true, %s given', $type);
+            throw new PayloadException('File content must be a valid readable file path '.
+                'when `direct` option is true, %s given', $type);
         }
 
         if (!$direct && $type->isString()) {
@@ -73,17 +72,16 @@ final class FilePayload extends Payload implements PayloadInterface
 
                 $fileSize    = filesize($file);
                 $memoryLimit = self::getMemoryLimit($limit);
-                if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
-                        . ' value (%s)', $limit);
+                if ($memoryLimit > -1 && $fileSize > $memoryLimit) {
+                    throw new PayloadException('Given file exceeding `memory_limit` current ini '.
+                        'configuration value (%s)', $limit);
                 }
 
                 try {
                     $file = fopen($file, 'rb');
                 } catch (\Error) { $file = null; }
 
-                $file || throw new PayloadException('Failed creating file resource, file content must be a'
-                    . ' valid readable file path');
+                $file || throw new PayloadException('Failed creating file resource [error: @error]');
 
                 $fileName   = $fileName ?: filename($temp, true);
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
@@ -95,7 +93,7 @@ final class FilePayload extends Payload implements PayloadInterface
                     $file && fwrite($file, $temp);
                 } catch (\Error) { $file = null; }
 
-                $file || throw new PayloadException('Failed creating file resource, cannot write temp-file');
+                $file || throw new PayloadException('Failed creating file resource [error: @error]');
 
                 $fileName   = strval($fileName ?: crc32($temp));
                 $modifiedAt = self::getModifiedAt('', $modifiedAt);

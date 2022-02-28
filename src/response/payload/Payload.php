@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\payload\{PayloadInterface, PayloadException,
-    JsonPayload, XmlPayload, FilePayload, ImagePayload};
 use froq\http\{Response, response\Status};
 use froq\common\trait\AttributeTrait;
 use froq\file\mime\Mime;
@@ -27,11 +25,11 @@ class Payload
     /** @see froq\common\trait\AttributeTrait */
     use AttributeTrait;
 
-    /** @var mixed|null */
-    protected mixed $content = null;
+    /** @var mixed */
+    protected mixed $content;
 
     /** @var froq\http\Response|null */
-    protected Response|null $response = null;
+    protected Response|null $response;
 
     /**
      * Constructor.
@@ -54,7 +52,7 @@ class Payload
     /**
      * Get content.
      *
-     * @return mixed|null
+     * @return mixed
      */
     public final function getContent(): mixed
     {
@@ -165,10 +163,8 @@ class Payload
         }
         // Not ready to handle, try to create (eg: Payload).
         else {
-            $contentType = $payload->getContentType();
-            if ($contentType == null) {
-                throw new PayloadException('Content type must not be empty');
-            }
+            $contentType = $payload->getContentType()
+                ?: throw new PayloadException('Content type must not be empty');
 
             // Detect content type and process.
             switch ($type = self::sniffContentType($contentType)) {
@@ -193,7 +189,7 @@ class Payload
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
                         throw new PayloadException(
-                            'Failed getting string content from payload %s, [return: %s]',
+                            'Failed getting string content from payload %s [return: %s]',
                             [get_class($payload), get_type($content)]
                         );
                     }
@@ -206,11 +202,11 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_image($content) && !is_stream($content)
-                        // Skip direct file reads.
+                        // Skip direct image/file reads.
                         && !$payload->getAttribute('direct')
                     ) {
                         throw new PayloadException(
-                            'Failed getting resource content from payload %s, [return: %s]',
+                            'Failed getting resource content from payload %s [return: %s]',
                             [get_class($payload), get_type($content)]
                         );
                     }
@@ -235,11 +231,6 @@ class Payload
 
     /**
      * Get "modified at" option as timestamp.
-     *
-     * @param  string $file
-     * @param  mixed  $option
-     * @return int|string|null
-     * @since  5.0
      */
     protected static function getModifiedAt(string $file, mixed $option): int|string|null
     {
@@ -261,10 +252,6 @@ class Payload
 
     /**
      * Get "memory limit" directive as converted.
-     *
-     * @param  string|null &$limit
-     * @return int
-     * @since  5.0
      */
     protected static function getMemoryLimit(string &$limit = null): int
     {

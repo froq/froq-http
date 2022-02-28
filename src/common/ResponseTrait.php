@@ -12,11 +12,11 @@ use froq\http\common\{HeaderTrait, CookieTrait};
 /**
  * Response Trait.
  *
- * @package  froq\http\common
- * @object   froq\http\common\ResponseTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\ResponseTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait ResponseTrait
 {

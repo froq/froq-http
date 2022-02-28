@@ -12,13 +12,11 @@ use froq\http\request\Params;
 /**
  * Param Trait.
  *
- * A trait that used by Request class, utilizes accessing to request parameters.
- *
- * @package  froq\http\common
- * @object   froq\http\common\ParamTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\ParamTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait ParamTrait
 {

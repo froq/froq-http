@@ -8,19 +8,15 @@ declare(strict_types=1);
 namespace froq\http\common;
 
 use froq\http\common\CookieException;
-use froq\http\response\Cookie;
 
 /**
  * Cookie Trait.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing
- * (to Request & Response) / modifying (of Response only) cookies.
- *
- * @package  froq\http\common
- * @object   froq\http\common\CookieTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\CookieTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait CookieTrait
 {

@@ -16,7 +16,7 @@ use froq\{App, util\Util, encoding\Encoder};
 /**
  * Response.
  *
- * Represents a HTTP response entity which extends `Message` class and mainly deals with Froq! application
+ * An HTTP response class, extends `Message` class and mainly deals with Froq! application
  * and controllers.
  *
  * @package froq\http

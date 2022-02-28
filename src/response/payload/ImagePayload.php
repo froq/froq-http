@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 use froq\http\{Response, message\ContentType};
 use froq\file\File;
 
@@ -48,17 +47,17 @@ final class ImagePayload extends Payload implements PayloadInterface
         if (!$image) {
             throw new PayloadException('Image empty');
         } elseif (!$type->isString() && !$type->isImage()) {
-            throw new PayloadException('Image content must be a valid readable file path,'
-                . ' binary string or GdImage, %s given', $type);
+            throw new PayloadException('Image content must be a valid readable file path, '.
+                'binary string or GdImage, %s given', $type);
         } elseif (!$imageType || !$this->isValidImageType($imageType)) {
             throw new PayloadException('Invalid image type `%s` [valids: %s]',
                 [$imageType ?: 'null', join(',', ContentType::imageTypes())]);
         }
 
-        // Direct file reads.
+        // Direct image reads.
         if ($direct && !$type->isString()) {
-            throw new PayloadException('Image content must be string (a valid file path)'
-                . ' when `direct` option is true, %s given', $type);
+            throw new PayloadException('Image content must be a valid readable file path '.
+                'when `direct` option is true, %s given', $type);
         }
 
         if (!$direct && $type->isString()) {
@@ -73,16 +72,15 @@ final class ImagePayload extends Payload implements PayloadInterface
                 $imageSize   = filesize($image);
                 $memoryLimit = self::getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
-                        . ' value (%s)', $limit);
+                    throw new PayloadException('Given image exceeding `memory_limit` current ini '.
+                        'configuration value (%s)', $limit);
                 }
 
                 try {
                     $image = imagecreatefromstring(file_get_contents($image));
                 } catch (\Error) { $image = null; }
 
-                $image || throw new PayloadException('Failed creating image source, invalid file contents in'
-                    . ' %s file', $temp);
+                $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
@@ -92,7 +90,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                     $image = imagecreatefromstring($image);
                 } catch (\Error) { $image = null; }
 
-                $image || throw new PayloadException('Failed creating image source, invalid string contents');
+                $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
                 $modifiedAt = self::getModifiedAt('', $modifiedAt);
             }

@@ -10,8 +10,8 @@ namespace froq\http\response;
 /**
  * Statuses.
  *
- * Represents an HTTP Status Code registry with `all()` method. All code & text (reason phrases)
- * resouces can be found at: https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
+ * An HTTP Status Code registry with `all()` method. Code & text (reason phrases) resouces
+ * can be found at: https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
  *
  * @package froq\http\response
  * @object  froq\http\response\Statuses

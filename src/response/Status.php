@@ -12,7 +12,7 @@ use froq\http\response\{Statuses, StatusException};
 /**
  * Status.
  *
- * Represents an HTTP Status Code object with some utility methods.
+ * An HTTP Status Code class with some utility methods.
  *
  * @package froq\http\response
  * @object  froq\http\response\Status

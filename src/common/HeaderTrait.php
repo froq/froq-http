@@ -12,14 +12,11 @@ use froq\http\common\HeaderException;
 /**
  * Header Trait.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing
- * (to Request & Response) / modifying (of Response only) headers.
- *
- * @package  froq\http\common
- * @object   froq\http\common\HeaderTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\HeaderTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait HeaderTrait
 {

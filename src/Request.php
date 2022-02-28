@@ -14,7 +14,7 @@ use froq\App;
 /**
  * Request.
  *
- * Represents a HTTP request entity which extends `Message` class and mainly deals with Froq! application
+ * A HTTP request class, extends `Message` class and mainly deals with Froq! application
  * and controllers.
  *
  * @package froq\http

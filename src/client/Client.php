@@ -14,7 +14,7 @@ use froq\event\Events;
 /**
  * Client.
  *
- * Represents a client object that interacts via cURL library with the remote servers using only HTTP protocols.
+ * A client class that interacts via cURL library with the remote servers using only HTTP protocols.
  * Hence it should not be used for other protocols and should be ensure that cURL library is available.
  *
  * @package froq\http\client

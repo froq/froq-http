@@ -13,7 +13,7 @@ namespace froq\http\message;
  * @package froq\http\message
  * @object  froq\http\message\ContentType
  * @author  Kerem Güneş
- * @since   5.0 Derived from Body constants.
+ * @since   5.0
  * @static
  */
 final class ContentType extends \StaticClass
@@ -37,7 +37,7 @@ final class ContentType extends \StaticClass
                  APPLICATION_OCTET_STREAM = 'application/octet-stream';
 
     /**
-     * Get text valid types.
+     * Get text types.
      *
      * @return array
      * @since  6.0
@@ -52,7 +52,7 @@ final class ContentType extends \StaticClass
     }
 
     /**
-     * Get image valid types.
+     * Get image types.
      *
      * @return array
      * @since  6.0
@@ -66,7 +66,7 @@ final class ContentType extends \StaticClass
     }
 
     /**
-     * Get file valid types.
+     * Get file types.
      *
      * @return array
      * @since  6.0

@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
-use froq\http\message\ContentType;
 use froq\common\trait\AttributeTrait;
 
 /**
@@ -20,14 +19,11 @@ use froq\common\trait\AttributeTrait;
  */
 final class Body
 {
-    /**
-     * @see froq\common\trait\AttributeTrait
-     * @since 4.0
-     */
+    /** @see froq\common\trait\AttributeTrait */
     use AttributeTrait;
 
-    /** @var mixed|null */
-    private mixed $content = null;
+    /** @var mixed */
+    private mixed $content;
 
     /**
      * Constructor.

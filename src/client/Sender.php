@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\client\{Client, Response};
 use froq\http\client\curl\{Curl, CurlMulti};
 
 /**
@@ -16,7 +15,7 @@ use froq\http\client\curl\{Curl, CurlMulti};
  * @package froq\http\client
  * @object  froq\http\client\Sender
  * @author  Kerem Güneş
- * @since   3.0, 4.0 Renamed from MessageEmitter.
+ * @since   3.0, 4.0
  * @static
  */
 final class Sender

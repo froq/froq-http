@@ -14,13 +14,10 @@ use froq\collection\trait\GetTrait;
 /**
  * Segments.
  *
- * An internal read-only class that holds URI segment data with some utility methods.
- *
  * @package froq\http\request
  * @object  froq\http\request\Segments
  * @author  Kerem Güneş
  * @since   4.1
- * @internal
  */
 final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
 {
