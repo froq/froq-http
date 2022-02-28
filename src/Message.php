@@ -257,8 +257,7 @@ abstract class Message
                 $contentType = trim((string) $attributes['type'])
                     ?: throw new MessageException('Missing content type');
 
-                $type = new \Type($content);
-                if ($type->isArray()) {
+                if (is_array($content)) {
                     // Note: must be checked here only!
                     if (!preg_test('~json|xml~i', $contentType)) {
                         throw new MessageException(
@@ -267,11 +266,11 @@ abstract class Message
                             $contentType
                         );
                     }
-                } elseif (!$type->isNull() && !$type->isString()
-                       && !$type->isImage() && !$type->isStream()) {
+                } elseif (!is_null($content) && !is_string($content)
+                       && !is_image($content) && !is_stream($content)) {
                     throw new MessageException(
                         'Invalid content value type `%s`, it must be string|image|stream|null',
-                        $type
+                        get_type($content)
                     );
                 }
 
