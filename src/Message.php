@@ -266,12 +266,15 @@ abstract class Message
                             $contentType
                         );
                     }
-                } elseif (!is_null($content) && !is_string($content)
-                       && !is_image($content) && !is_stream($content)) {
-                    throw new MessageException(
-                        'Invalid content value type `%s`, it must be string|image|stream|null',
-                        get_type($content)
-                    );
+                } else {
+                    // Expected, processable types.
+                    if (!is_null($content) && !is_string($content)
+                        && !is_image($content) && !is_stream($content)) {
+                        throw new MessageException(
+                            'Invalid content value type `%s`, it must be string|image|stream|null',
+                            get_type($content)
+                        );
+                    }
                 }
 
                 $payload = new Payload($code, $content, $attributes);
