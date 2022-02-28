@@ -50,8 +50,8 @@ final class ImagePayload extends Payload implements PayloadInterface
             throw new PayloadException('Image content must be a valid readable file path, '.
                 'binary string or GdImage, %s given', $type);
         } elseif (!$imageType || !$this->isValidImageType($imageType)) {
-            throw new PayloadException('Invalid image type `%s` [valids: %s]',
-                [$imageType ?: 'null', join(',', ContentType::imageTypes())]);
+            throw new PayloadException('Invalid image type `%s` [valids: %a]',
+                [$imageType ?: 'null', ContentType::imageTypes()]);
         }
 
         // Direct image reads.
