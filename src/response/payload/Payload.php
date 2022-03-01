@@ -251,7 +251,7 @@ class Payload
     }
 
     /**
-     * Get "memory limit" directive as converted.
+     * Get "memory limit" directive as converted bytes.
      */
     protected static function getMemoryLimit(string &$limit = null): int
     {
