@@ -178,19 +178,19 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
     }
 
     /**
-     * @inheritDoc froq\common\interface\Listable
-     */
-    public function toList(): array
-    {
-        return slice($this->paramsList() ?? [], 0);
-    }
-
-    /**
      * @inheritDoc froq\common\interface\Arrayable
      */
     public function toArray(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @inheritDoc froq\common\interface\Listable
+     */
+    public function toList(): array
+    {
+        return slice($this->paramsList() ?? [], 0);
     }
 
     /**
