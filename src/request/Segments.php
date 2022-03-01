@@ -220,6 +220,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
 
     /**
      * @inheritDoc ArrayAccess
+     * @throws     ReadonlyError
      */
     public function offsetSet(mixed $key, mixed $value): never
     {
@@ -228,6 +229,7 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
 
     /**
      * @inheritDoc ArrayAccess
+     * @throws     ReadonlyError
      */
     public function offsetUnset(mixed $key): never
     {
