@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\client\Message;
-
 /**
  * Request.
  *

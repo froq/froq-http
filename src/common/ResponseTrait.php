@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\{HeaderTrait, CookieTrait};
-
 /**
  * Response Trait.
  *
@@ -20,11 +18,11 @@ use froq\http\common\{HeaderTrait, CookieTrait};
  */
 trait ResponseTrait
 {
-    /** @see froq\http\common\HeaderTrait */
-    use HeaderTrait;
-
-    /** @see froq\http\common\CookieTrait */
-    use CookieTrait;
+    /**
+     * @see froq\http\common\HeaderTrait
+     * @see froq\http\common\CookieTrait
+     */
+    use HeaderTrait, CookieTrait;
 
     /**
      * Set status code.

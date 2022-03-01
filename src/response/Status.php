@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\response\{Statuses, StatusException};
-
 /**
  * Status.
  *

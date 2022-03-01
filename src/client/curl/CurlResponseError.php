@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\curl\CurlError;
-
 /**
  * Curl Response Error.
  *

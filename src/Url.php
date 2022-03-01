@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\UrlException;
 use froq\collection\ComponentCollection;
 use froq\common\interface\Stringable;
 

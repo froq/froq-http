@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\HeaderException;
-
 /**
  * Header Trait.
  *

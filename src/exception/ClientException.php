@@ -28,13 +28,13 @@ class ClientException extends HttpException
      * Constructor.
      *
      * @param  string|null    $message
-     * @param  any|null       $messageParams
+     * @param  mixed|null     $messageParams
      * @param  int|null       $code
      * @param  Throwable|null $previous
      * @param  Throwable|null $cause
      * @throws froq\http\HttpException
      */
-    public function __construct(string $message = null, $messageParams = null, int $code = null,
+    public function __construct(string $message = null, mixed $messageParams = null, int $code = null,
         Throwable $previous = null, Throwable $cause = null)
     {
         if ($code !== null) {
