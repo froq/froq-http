@@ -95,7 +95,7 @@ abstract class Message
      * Get HTTP protocol.
      *
      * @return string
-     * @since  5.0 Replaced with getHttpVersion().
+     * @since  5.0
      */
     public final function getHttpProtocol(): string
     {
@@ -106,7 +106,7 @@ abstract class Message
      * Get HTTP version.
      *
      * @return float
-     * @since  4.7, 5.0 Replaced with getHttpVersionNumber().
+     * @since  5.0
      */
     public final function getHttpVersion(): float
     {

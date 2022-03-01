@@ -48,7 +48,7 @@ final class Response extends Message
     /**
      * Get runtime.
      *
-     * @alias to App.runtime()
+     * @alias App.runtime()
      * @since 5.0
      */
     public function time(...$args)

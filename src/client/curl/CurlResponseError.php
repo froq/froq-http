@@ -10,7 +10,8 @@ namespace froq\http\client\curl;
 /**
  * Curl Response Error.
  *
- * An error class, only thrown when client option `throwHttpErrors` is true.
+ * An error class, only thrown when client option `throwHttpErrors` is true or used as
+ * client `$error` property when any HTTP error (status code >= 400) occurs.
  *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlResponseError
