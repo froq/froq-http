@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\HttpException;
-
 /**
  * Message Exception.
  *
