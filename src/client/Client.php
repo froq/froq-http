@@ -305,7 +305,7 @@ final class Client
         }
 
         // Ensure scheme is http or https.
-        if (!in_array($parsedUrl['scheme'], ['http', 'https'])) {
+        if (!in_array($parsedUrl['scheme'], ['http', 'https'], true)) {
             throw new ClientException('Invalid URL `%s`, `http` or `https` scheme required', $url);
         }
 

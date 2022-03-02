@@ -170,7 +170,7 @@ final class Curl
         // Else we add them manually, if method is suitable for this.
         if ($body !== null) {
             $options[CURLOPT_POSTFIELDS] = $body;
-        } elseif (in_array($method, ['POST', 'PUT', 'PATCH'])) {
+        } elseif (in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
             $options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded';
             $options[CURLOPT_HTTPHEADER][] = 'Content-Length: '. strlen((string) $body);
         }

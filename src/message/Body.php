@@ -144,7 +144,7 @@ final class Body
         return in_array($this->getContentType(), [
             ContentType::APPLICATION_OCTET_STREAM,
             ContentType::APPLICATION_DOWNLOAD
-        ]);
+        ], true);
     }
 
     /**
@@ -156,8 +156,8 @@ final class Body
     public function isImage(): bool
     {
         return in_array($this->getContentType(), [
-            ContentType::IMAGE_JPEG, ContentType::IMAGE_PNG,
-            ContentType::IMAGE_GIF, ContentType::IMAGE_WEBP
-        ]);
+            ContentType::IMAGE_JPEG, ContentType::IMAGE_WEBP,
+            ContentType::IMAGE_PNG,  ContentType::IMAGE_GIF
+        ], true);
     }
 }
