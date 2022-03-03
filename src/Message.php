@@ -14,8 +14,8 @@ use froq\App;
 /**
  * Message.
  *
- * Represents an abstract HTTP message entity which is used by `Request/Response` classes
- * and mainly deals with Froq! application and controllers.
+ * An abstract class, mimics HTTP Message, used by `Request` and `Response` classes
+ * these mainly deals with Froq! application and controllers.
  *
  * @package froq\http
  * @object  froq\http\Message
