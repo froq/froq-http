@@ -7,9 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interface\{Listable, Arrayable, Objectable, Stringable};
-use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait};
-use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait};
+use froq\common\interface\{Arrayable, Objectable, Listable, Stringable};
+use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait, CountTrait, EmptyTrait, ToListTrait, ToArrayTrait};
 use froq\util\Util;
 
 /**
@@ -22,23 +21,11 @@ use froq\util\Util;
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Countable, \ArrayAccess
+final class UrlQuery implements Arrayable, Objectable, Listable, Stringable, \Countable, \ArrayAccess
 {
-    /**
-     * @see froq\common\trait\DataCountTrait
-     * @see froq\common\trait\DataEmptyTrait
-     * @see froq\common\trait\DataToListTrait
-     * @see froq\common\trait\DataToArrayTrait
-     */
-    use DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait;
+    /** @see froq\common\trait\*Trait */
+    use EachTrait, FilterTrait, MapTrait, GetTrait, CountTrait, EmptyTrait, ToListTrait, ToArrayTrait;
 
-    /**
-     * @see froq\collection\trait\EachTrait
-     * @see froq\collection\trait\FilterTrait
-     * @see froq\collection\trait\MapTrait
-     * @see froq\collection\trait\GetTrait
-     */
-    use EachTrait, FilterTrait, MapTrait, GetTrait;
 
     /** @var array */
     private array $data = [];
@@ -55,18 +42,6 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
     }
 
     /** @magic */
-    public function __debugInfo(): array
-    {
-        return $this->data;
-    }
-
-    /** @magic */
-    public function __toString(): string
-    {
-        return $this->toString();
-    }
-
-    /** @magic */
     public function __set(string $key, string|null $value): void
     {
         $this->set($key, $value);
@@ -76,6 +51,18 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable, \Co
     public function __get(string $key): string|null
     {
         return $this->get($key);
+    }
+
+    /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
+    /** @magic */
+    public function __debugInfo(): array
+    {
+        return $this->data;
     }
 
     /**
