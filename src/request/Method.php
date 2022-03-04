@@ -45,9 +45,7 @@ final class Method implements Stringable
     }
 
     /**
-     * Magic string.
-     *
-     * @return string
+     * @magic
      */
     public function __toString()
     {

@@ -40,9 +40,7 @@ final class Scheme implements Stringable
     }
 
     /**
-     * Magic string.
-     *
-     * @return string
+     * @magic
      */
     public function __toString()
     {
