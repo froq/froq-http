@@ -107,7 +107,7 @@ final class Status extends Statuses
         return ($this->code >= 200 && $this->code <= 299);
     }
 
-    /** @aliasOf isError() */
+    /** @alias isError() */
     public function isFailure(): bool
     {
         return $this->isError();
