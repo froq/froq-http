@@ -24,11 +24,11 @@ final class JsonPayload extends Payload implements PayloadInterface
      * Constructor.
      *
      * @param int                     $code
-     * @param any                     $content
+     * @param mixed                   $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, mixed $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] ??= ContentType::APPLICATION_JSON;
 

@@ -156,7 +156,7 @@ class Payload
             if (!is_null($content) && !is_string($content)
                 && !is_image($content) && !is_stream($content)) {
                 throw new PayloadException(
-                    'Failed to achive string/resource content from payload %s',
+                    'Failed to achive string|image|stream|null content from payload %s',
                     get_class($payload)
                 );
             }
@@ -189,7 +189,7 @@ class Payload
                     $content = $payload->handle();
                     if (!is_null($content) && !is_string($content)) {
                         throw new PayloadException(
-                            'Failed getting string content from payload %s [return: %s]',
+                            'Failed getting string|null content from payload %s [return: %s]',
                             [get_class($payload), get_type($content)]
                         );
                     }
@@ -202,11 +202,10 @@ class Payload
 
                     $content = $payload->handle();
                     if (!is_image($content) && !is_stream($content)
-                        // Skip direct image/file reads.
-                        && !$payload->getAttribute('direct')
+                        && !$payload->getAttribute('direct') // Skip direct image/file reads.
                     ) {
                         throw new PayloadException(
-                            'Failed getting resource content from payload %s [return: %s]',
+                            'Failed getting image|stream content from payload %s [return: %s]',
                             [get_class($payload), get_type($content)]
                         );
                     }

@@ -69,7 +69,7 @@ final class Client
      * Constructor.
      *
      * @param string|null                  $url
-     * @param array<string, any>|null      $options
+     * @param array<string, mixed>|null    $options
      * @param array<string, callable>|null $events
      */
     public function __construct(string $url = null, array $options = null, array $events = null)

@@ -149,7 +149,7 @@ abstract class Message
     /**
      * Add headers.
      *
-     * @param  array<string, any> $headers
+     * @param  array<string, mixed> $headers
      * @return static
      * @since  4.0
      */
@@ -165,7 +165,7 @@ abstract class Message
     /**
      * Set headers.
      *
-     * @param  array<string, any> $headers
+     * @param  array<string, mixed> $headers
      * @return static
      */
     public final function setHeaders(array $headers): static
@@ -180,7 +180,7 @@ abstract class Message
     /**
      * Set cookies.
      *
-     * @param  array<string, any> $cookies
+     * @param  array<string, mixed> $cookies
      * @return static
      */
     public final function setCookies(array $cookies): static
