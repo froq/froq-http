@@ -49,7 +49,7 @@ trait CookieTrait
     /**
      * Add a cookie.
      *
-     * @alias of setCookie()
+     * @alias setCookie()
      */
     public function addCookie(...$args)
     {
