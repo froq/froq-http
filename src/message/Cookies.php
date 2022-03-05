@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
-use froq\collection\collator\MapCollator;
+use froq\collection\collector\MapCollector;
 
 /**
  * Cookies.
@@ -17,5 +17,5 @@ use froq\collection\collator\MapCollator;
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class Cookies extends MapCollator
+final class Cookies extends MapCollector
 {}
