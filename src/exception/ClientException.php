@@ -21,7 +21,6 @@ use Throwable;
  */
 class ClientException extends HttpException
 {
-    /** @see froq\http\exception\trait\PrepareTrait */
     use PrepareTrait;
 
     /**

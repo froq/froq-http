@@ -18,10 +18,6 @@ namespace froq\http\common;
  */
 trait ResponseTrait
 {
-    /**
-     * @see froq\http\common\HeaderTrait
-     * @see froq\http\common\CookieTrait
-     */
     use HeaderTrait, CookieTrait;
 
     /**

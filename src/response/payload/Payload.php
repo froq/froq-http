@@ -22,7 +22,6 @@ use froq\util\Util;
  */
 class Payload
 {
-    /** @see froq\common\trait\AttributeTrait */
     use AttributeTrait;
 
     /** @var mixed */

@@ -18,11 +18,6 @@ namespace froq\http\common;
  */
 trait RequestTrait
 {
-    /**
-     * @see froq\http\common\HeaderTrait
-     * @see froq\http\common\CookieTrait
-     * @see froq\http\common\ParamTrait
-     */
     use HeaderTrait, CookieTrait, ParamTrait {
         ParamTrait::cookie insteadof CookieTrait;
         ParamTrait::hasCookie insteadof CookieTrait;

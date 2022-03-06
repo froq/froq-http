@@ -26,7 +26,6 @@ use froq\{App, util\Util, encoding\Encoder};
  */
 final class Response extends Message
 {
-    /** @see froq\http\common\ResponseTrait */
     use ResponseTrait;
 
     /** @var froq\http\response\Status */

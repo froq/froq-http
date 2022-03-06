@@ -24,7 +24,6 @@ use froq\event\Events;
  */
 final class Client
 {
-    /** @see froq\common\trait\OptionTrait */
     use OptionTrait;
 
     /** @var froq\http\client\Request */

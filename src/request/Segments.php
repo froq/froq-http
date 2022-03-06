@@ -20,7 +20,6 @@ use froq\collection\trait\GetTrait;
  */
 final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
 {
-    /** @see froq\collection\trait\GetTrait */
     use GetTrait;
 
     /** @const string */

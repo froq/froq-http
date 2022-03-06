@@ -24,7 +24,6 @@ use froq\App;
  */
 final class Request extends Message
 {
-    /** @see froq\http\common\RequestTrait */
     use RequestTrait;
 
     /** @var froq\http\request\Method */

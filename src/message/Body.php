@@ -19,7 +19,6 @@ use froq\common\trait\AttributeTrait;
  */
 final class Body
 {
-    /** @see froq\common\trait\AttributeTrait */
     use AttributeTrait;
 
     /** @var mixed */
