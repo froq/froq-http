@@ -134,7 +134,7 @@ final class Params extends \StaticClass
         mixed             $default   = null,  // Eg: "ok", false or ["ok"], [false] for multi-names.
         callable|string   $map       = null,  // Eg: "int", "intval" or "trim|upper".
         callable          $filter    = null,  // Eg: "is_numeric" or any filter function.
-        bool              $trim      = false, // Set trim as map function, can be disable for JSON inputs.
+        bool              $trim      = false, // Set trim as map function, but can be disable for JSON inputs etc.
         bool              $combine   = false  // Combine names/values, not for dotted name notations (eg: "foo.bar").
     ): mixed
     {
