@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\{Response, message\ContentType};
-use froq\encoding\Encoder;
+use froq\encoding\encoder\Encoder;
 
 /**
  * Xml Payload.
@@ -46,17 +46,23 @@ final class XmlPayload extends Payload implements PayloadInterface
         }
 
         if (!Encoder::isEncoded('xml', $content)) {
-            if (!is_array($content)) {
-                throw new PayloadException('Content must be array for non-encoded XML payloads, %s given',
-                    get_type($content));
-            }
+            is_array($content) || throw new PayloadException(
+                'Content must be array for non-encoded XML payloads, %t given',
+                $content
+            );
 
             $options = $this->response?->getApp()->config('response.xml');
-            $content = Encoder::xmlEncode($content, $options, $error);
 
-            if ($error) {
+            /** @var froq\encoding\encoder\XmlEncoder */
+            $encoder = Encoder::create('xml', (array) $options);
+            $encoder->setInput($content);
+
+            if (!$encoder->encode($error)) {
                 throw new PayloadException($error->message, code: $error->code, cause: $error);
             }
+
+            $content = $encoder->getInput();
+            unset($encoder); // Free.
         }
 
         return $content;

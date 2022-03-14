@@ -11,7 +11,7 @@ use froq\http\common\ResponseTrait;
 use froq\http\response\{Status, StatusException};
 use froq\http\message\{ContentType, ContentCharset};
 use froq\file\object\{FileObject, ImageObject};
-use froq\{App, util\Util, encoding\Encoder};
+use froq\{App, util\Util, encoding\encoder\Encoder};
 
 /**
  * Response.
@@ -252,13 +252,16 @@ final class Response extends Message
                 $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
 
                 // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions
-                    && $contentLength >= $gzipOptionsMinlen
-                    && str_contains((string) $this->app->request()->header('Accept-Encoding'), 'gzip')
-                ) {
-                    $encodedContent = Encoder::gzipEncode($content, (array) $gzipOptions, $error);
-                    if ($encodedContent && !$error) {
-                        [$content, $encodedContent] = [$encodedContent, null];
+                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && (
+                    str_contains($this->app->request()->getHeader('Accept-Encoding', ''), 'gzip')
+                )) {
+                    /** @var froq\encoding\encoder\GzipEncoder */
+                    $encoder = Encoder::create('gzip', (array) $gzipOptions);
+                    $encoder->setInput($content);
+
+                    if ($encoder->encode()) {
+                        $content = $encoder->getInput();
+                        unset($encoder); // Free.
 
                         // Cancel PHP compression.
                         ini_set('zlib.output_compression', false);
