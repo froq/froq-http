@@ -24,9 +24,9 @@ trait HeaderTrait
      * @param  string      $name
      * @param  string|null $value
      * @param  bool        $replace
-     * @return self|array|null
+     * @return mixed<self|string|int|array|null>
      */
-    public function header(string $name, string $value = null, bool $replace = true)
+    public function header(string $name, string $value = null, bool $replace = true): mixed
     {
         if (func_num_args() == 1) {
             return $this->getHeader($name);

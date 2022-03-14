@@ -24,9 +24,9 @@ trait CookieTrait
      * @param  string      $name
      * @param  string|null $value
      * @param  array|null  $options
-     * @return self|array|null
+     * @return mixed<self|string|null>
      */
-    public function cookie(string $name, string $value = null, array $options = null)
+    public function cookie(string $name, string $value = null, array $options = null): mixed
     {
         if (func_num_args() == 1) {
             return $this->getCookie($name);
