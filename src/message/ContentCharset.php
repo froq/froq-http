@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use froq\encoding\Encoding;
+
 /**
  * Content Charset.
  *
@@ -16,10 +18,11 @@ namespace froq\http\message;
  * @since   5.0
  * @static
  */
-final class ContentCharset extends \StaticClass
+final class ContentCharset extends Encoding
 {
-    /** @const string */
-    public const NA     = 'n/a',
-                 UTF_8  = 'utf-8',
-                 UTF_16 = 'utf-16';
+    /**
+     * Not assigned.
+     * @const string
+     */
+    public const NA = 'n/a';
 }
