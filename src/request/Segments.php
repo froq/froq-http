@@ -221,9 +221,9 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      * @inheritDoc ArrayAccess
      * @throws     ReadonlyError
      */
-    public function offsetSet(mixed $key, mixed $value): never
+    public function offsetSet(mixed $key, mixed $_): never
     {
-        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
+        throw new \ReadonlyError($this);
     }
 
     /**
@@ -232,6 +232,6 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
      */
     public function offsetUnset(mixed $key): never
     {
-        throw new \ReadonlyError('Cannot modify readonly class ' . static::class);
+        throw new \ReadonlyError($this);
     }
 }
