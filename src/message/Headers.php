@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
-use froq\collection\collector\MapCollector;
-
 /**
- * Headers.
- *
  * @package froq\http\message
  * @object  froq\http\message\Headers
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class Headers extends MapCollector
+final class Headers extends \froq\collection\collector\MapCollector
 {}

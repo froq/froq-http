@@ -10,8 +10,6 @@ namespace froq\http\message;
 use froq\common\trait\AttributeTrait;
 
 /**
- * Body.
- *
  * @package froq\http\message
  * @object  froq\http\message\Body
  * @author  Kerem Güneş
