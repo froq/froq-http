@@ -10,8 +10,10 @@ namespace froq\http;
 use froq\http\common\ResponseTrait;
 use froq\http\response\{Status, StatusException};
 use froq\http\message\{ContentType, ContentCharset};
+use froq\encoding\encoder\{GZipEncoder, ZLibEncoder};
 use froq\file\object\{FileObject, ImageObject};
-use froq\{App, util\Util, encoding\encoder\Encoder};
+use froq\{App, util\Util};
+use Assert;
 
 /**
  * Response.
@@ -211,6 +213,7 @@ final class Response extends Message
      * Send body.
      *
      * @return void
+     * @throws froq\http\ResponseException
      */
     public function sendBody(): void
     {
@@ -248,30 +251,42 @@ final class Response extends Message
 
             // Prevent gzip corruption for 0 byte data.
             if ($contentLength > 0) {
-                $gzipOptions = $this->app->config('response.gzip');
-                $gzipOptionsMinlen = $gzipOptions ? ($gzipOptions['minlen'] ?? 64) : null;
+                // This can be disabled leaving empty.
+                $compressOptions = (array) $this->app->config('response.compress');
 
-                // Gzip options may be emptied by developer to disable gzip using null.
-                if ($gzipOptions && $contentLength >= $gzipOptionsMinlen && (
-                    str_contains($this->app->request()->getHeader('Accept-Encoding', ''), 'gzip')
-                )) {
-                    /** @var froq\encoding\encoder\GzipEncoder */
-                    $encoder = Encoder::create('gzip', (array) $gzipOptions);
-                    $encoder->setInput($content);
+                if ($compressOptions) {
+                    $compressType   = $compressOptions[0] ?? null;      // Compress types: gzip, zlib.
+                    $compressLevel  = $compressOptions['level'] ?? -1;  // Compress level: -1 as default.
+                    $compressMinlen = $compressOptions['minlen'] ?? 64; // Compress minlen: 64 bytes as default.
 
-                    if ($encoder->encode()) {
-                        $content = $encoder->getInput();
-                        unset($encoder); // Free.
+                    Assert::equals($compressType, ['gzip', 'zlib'], new ResponseException(
+                        'Config option `response.compress[0]` must be `gzip` or `zlib`, `%s` given',
+                        $compressType
+                    ));
 
-                        // Cancel PHP compression.
-                        ini_set('zlib.output_compression', false);
+                    $acceptEncoding  = (string) $this->app->request()->getHeader('Accept-Encoding');
+                    $contentEncoding = ($compressType == 'gzip') ? 'gzip' : 'deflate';
 
-                        // Add required headers.
-                        $headers['Vary'] = 'Accept-Encoding';
-                        $headers['Content-Encoding'] = 'gzip';
+                    if ($contentLength >= $compressMinlen && str_contains($acceptEncoding, $contentEncoding)) {
+                        $encoder = ($contentEncoding == 'gzip')
+                            ? new GZipEncoder(['level' => $compressLevel])
+                            : new ZLibEncoder(['level' => $compressLevel]);
+                        $encoder->setInput($content);
 
-                        // Update content length.
-                        $headers['Content-Length'] = strlen($content);
+                        if ($encoder->encode()) {
+                            $content = $encoder->getInput();
+                            unset($encoder);
+
+                            // Cancel PHP compression.
+                            ini_set('zlib.output_compression', false);
+
+                            // Add related headers.
+                            $headers['Vary'] = 'Accept-Encoding';
+                            $headers['Content-Encoding'] = $contentEncoding;
+
+                            // Update content length.
+                            $headers['Content-Length'] = strlen($content);
+                        }
                     }
                 }
             }

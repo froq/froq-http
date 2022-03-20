@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 use froq\http\{Response, message\ContentType};
-use froq\encoding\encoder\Encoder;
+use froq\encoding\encoder\JsonEncoder;
 
 /**
  * Json Payload.
@@ -46,11 +46,11 @@ final class JsonPayload extends Payload implements PayloadInterface
             return $content;
         }
 
-        if (!Encoder::isEncoded('json', $content)) {
-            $options = $this->response?->getApp()->config('response.json');
+        if (!JsonEncoder::isEncoded($content)) {
+            // When given in config as "response.json" field.
+            $options = (array) $this->response?->getApp()->config('response.json');
 
-            /** @var froq\encoding\encoder\JsonEncoder */
-            $encoder = Encoder::create('json', (array) $options);
+            $encoder = new JsonEncoder($options);
             $encoder->setInput($content);
 
             if (!$encoder->encode($error)) {
