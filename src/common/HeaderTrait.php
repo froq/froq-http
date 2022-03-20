@@ -133,4 +133,17 @@ trait HeaderTrait
 
         return $this;
     }
+
+    /**
+     * Parse a header.
+     *
+     * @param  string $name
+     * @param  bool   $verbose
+     * @return array
+     * @since  6.0
+     */
+    public function parseHeader(string $name, bool $verbose = false): array
+    {
+        return http_parse_header($name .':'. $this->getHeader($name), verbose: $verbose);
+    }
 }
