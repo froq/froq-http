@@ -7,9 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\interface\{Arrayable, Listable};
-use froq\collection\trait\GetTrait;
-
 /**
  * Segments.
  *
@@ -18,10 +15,8 @@ use froq\collection\trait\GetTrait;
  * @author  Kerem Güneş
  * @since   4.1
  */
-final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
+final class Segments implements \Countable, \ArrayAccess
 {
-    use GetTrait;
-
     /** @const string */
     public const ROOT = '/';
 
@@ -78,21 +73,21 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
     /**
      * Get params.
      *
-     * @return array|null
+     * @return array
      */
-    public function params(): array|null
+    public function params(): array
     {
-        return $this->data['params'] ?? null;
+        return $this->data['params'] ?? [];
     }
 
     /**
      * Get params list.
      *
-     * @return array|null
+     * @return array
      */
-    public function paramsList(): array|null
+    public function paramsList(): array
     {
-        return $this->data['paramsList'] ?? null;
+        return $this->data['paramsList'] ?? [];
     }
 
     /**
@@ -166,39 +161,22 @@ final class Segments implements Arrayable, Listable, \Countable, \ArrayAccess
     }
 
     /**
-     * Check whether param list empty.
+     * List.
      *
-     * @return bool
-     * @since  4.2, 4.9
+     * @param  int $index
+     * @return array
      */
-    public function isEmpty(): bool
+    public function list(int $index = 0): array
     {
-        return empty($this->paramsList());
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Arrayable
-     */
-    public function toArray(): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Listable
-     */
-    public function toList(): array
-    {
-        return slice($this->paramsList() ?? [], 0);
+        return slice($this->paramsList(), $index);
     }
 
     /**
      * @inheritDoc Countable
-     * @since 4.9
      */
     public function count(): int
     {
-        return count($this->paramsList() ?? []);
+        return count($this->paramsList());
     }
 
     /**
