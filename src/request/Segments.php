@@ -197,19 +197,19 @@ final class Segments implements \Countable, \ArrayAccess
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     ReadonlyClassError
+     * @throws     ReadonlyError
      */
     public function offsetSet(mixed $key, mixed $_): never
     {
-        throw new \ReadonlyClassError($this);
+        throw new \ReadonlyError($this);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     ReadonlyClassError
+     * @throws     ReadonlyError
      */
     public function offsetUnset(mixed $key): never
     {
-        throw new \ReadonlyClassError($this);
+        throw new \ReadonlyError($this);
     }
 }
