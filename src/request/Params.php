@@ -142,15 +142,11 @@ final class Params extends \StaticClass
 
         // Some speed..
         if (empty($source)) {
-            if ($all) {
-                return [];
-            }
+            if ($all) return [];
 
             if (is_array($name)) {
                 $default = array_pad((array) $default, $count = count($name), null);
-                if ($combine) {
-                    $default = array_combine($name, array_slice($default, 0, $count));
-                }
+                $combine && $default = array_combine($name, array_slice($default, 0, $count));
             }
 
             return $default;
