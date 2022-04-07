@@ -47,7 +47,7 @@ class ServerException extends HttpException
             }
         }
 
-        [$code, $message] = self::prepare($code, $message);
+        [$code, $message] = parent::prepare($code, $message);
 
         parent::__construct($message, $messageParams, code: $code, previous: $previous, cause: $cause);
     }
