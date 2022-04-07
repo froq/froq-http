@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\exception;
 
-use froq\http\exception\trait\PrepareTrait;
 use froq\http\HttpException;
 use Throwable;
 
@@ -21,8 +20,6 @@ use Throwable;
  */
 class ServerException extends HttpException
 {
-    use PrepareTrait;
-
     /**
      * Constructor.
      *
@@ -45,7 +42,8 @@ class ServerException extends HttpException
 
             // Forbid invalid code assigns.
             if ($code < 500 || $code > 599) {
-                throw new HttpException('Invalid server exception code %s, it must be between 500-599', $code);
+                throw new HttpException('Invalid server exception code %s, it must be between 500-599',
+                    $code);
             }
         }
 

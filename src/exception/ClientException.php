@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace froq\http\exception;
 
-use froq\http\exception\trait\PrepareTrait;
 use froq\http\HttpException;
 use Throwable;
 
@@ -21,8 +20,6 @@ use Throwable;
  */
 class ClientException extends HttpException
 {
-    use PrepareTrait;
-
     /**
      * Constructor.
      *
@@ -45,7 +42,8 @@ class ClientException extends HttpException
 
             // Forbid invalid code assigns.
             if ($code < 400 || $code > 499) {
-                throw new HttpException('Invalid client exception code %s, it must be between 400-499', $code);
+                throw new HttpException('Invalid client exception code %s, it must be between 400-499',
+                    $code);
             }
         }
 
