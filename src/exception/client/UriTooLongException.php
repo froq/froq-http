@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class UriTooLongException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::URI_TOO_LONG;
+    public final const CODE = Status::URI_TOO_LONG;
 }

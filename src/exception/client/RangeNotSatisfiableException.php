@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class RangeNotSatisfiableException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::RANGE_NOT_SATISFIABLE;
+    public final const CODE = Status::RANGE_NOT_SATISFIABLE;
 }

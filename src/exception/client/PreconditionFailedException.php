@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class PreconditionFailedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PRECONDITION_FAILED;
+    public final const CODE = Status::PRECONDITION_FAILED;
 }

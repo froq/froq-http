@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NotExtendedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NOT_EXTENDED;
+    public final const CODE = Status::NOT_EXTENDED;
 }

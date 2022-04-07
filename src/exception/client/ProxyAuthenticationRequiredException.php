@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class ProxyAuthenticationRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PROXY_AUTHENTICATION_REQUIRED;
+    public final const CODE = Status::PROXY_AUTHENTICATION_REQUIRED;
 }

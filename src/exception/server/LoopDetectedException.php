@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class LoopDetectedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::LOOP_DETECTED;
+    public final const CODE = Status::LOOP_DETECTED;
 }

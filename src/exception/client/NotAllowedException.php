@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NotAllowedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::NOT_ALLOWED;
+    public final const CODE = Status::NOT_ALLOWED;
 }

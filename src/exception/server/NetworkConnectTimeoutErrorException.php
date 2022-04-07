@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NetworkConnectTimeoutErrorException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NETWORK_CONNECT_TIMEOUT_ERROR;
+    public final const CODE = Status::NETWORK_CONNECT_TIMEOUT_ERROR;
 }

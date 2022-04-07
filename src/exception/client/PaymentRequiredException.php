@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class PaymentRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PAYMENT_REQUIRED;
+    public final const CODE = Status::PAYMENT_REQUIRED;
 }

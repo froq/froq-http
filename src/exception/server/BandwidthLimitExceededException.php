@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class BandwidthLimitExceededException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::BANDWIDTH_LIMIT_EXCEEDED;
+    public final const CODE = Status::BANDWIDTH_LIMIT_EXCEEDED;
 }

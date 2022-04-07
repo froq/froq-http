@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class GatewayTimeoutException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::GATEWAY_TIMEOUT;
+    public final const CODE = Status::GATEWAY_TIMEOUT;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class HttpVersionNotSupportedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::HTTP_VERSION_NOT_SUPPORTED;
+    public final const CODE = Status::HTTP_VERSION_NOT_SUPPORTED;
 }

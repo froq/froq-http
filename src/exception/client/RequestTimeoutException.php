@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class RequestTimeoutException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::REQUEST_TIMEOUT;
+    public final const CODE = Status::REQUEST_TIMEOUT;
 }

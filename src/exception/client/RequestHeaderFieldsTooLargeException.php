@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class RequestHeaderFieldsTooLargeException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::REQUEST_HEADER_FIELDS_TOO_LARGE;
+    public final const CODE = Status::REQUEST_HEADER_FIELDS_TOO_LARGE;
 }

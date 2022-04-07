@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class UnprocessableEntityException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UNPROCESSABLE_ENTITY;
+    public final const CODE = Status::UNPROCESSABLE_ENTITY;
 }

@@ -26,7 +26,7 @@ class Statuses
      *
      * @const int
      */
-    public const
+    public final const
         // Informationals (1xx).
         CONTINUE                        = 100,
         SWITCHING_PROTOCOLS             = 101,

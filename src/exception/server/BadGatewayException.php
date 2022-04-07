@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class BadGatewayException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::BAD_GATEWAY;
+    public final const CODE = Status::BAD_GATEWAY;
 }

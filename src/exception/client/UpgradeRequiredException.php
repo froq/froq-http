@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class UpgradeRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UPGRADE_REQUIRED;
+    public final const CODE = Status::UPGRADE_REQUIRED;
 }

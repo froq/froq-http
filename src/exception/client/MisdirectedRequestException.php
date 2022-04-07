@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class MisdirectedRequestException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::MISDIRECTED_REQUEST;
+    public final const CODE = Status::MISDIRECTED_REQUEST;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class InsufficientStorageException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::INSUFFICIENT_STORAGE;
+    public final const CODE = Status::INSUFFICIENT_STORAGE;
 }

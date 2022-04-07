@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class LockedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::LOCKED;
+    public final const CODE = Status::LOCKED;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class TooManyRequestsException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::TOO_MANY_REQUESTS;
+    public final const CODE = Status::TOO_MANY_REQUESTS;
 }

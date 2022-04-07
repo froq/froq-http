@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class GoneException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::GONE;
+    public final const CODE = Status::GONE;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class ConflictException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::CONFLICT;
+    public final const CODE = Status::CONFLICT;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class LengthRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::LENGTH_REQUIRED;
+    public final const CODE = Status::LENGTH_REQUIRED;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NotImplementedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NOT_IMPLEMENTED;
+    public final const CODE = Status::NOT_IMPLEMENTED;
 }

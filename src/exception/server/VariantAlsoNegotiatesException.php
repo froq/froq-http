@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class VariantAlsoNegotiatesException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::VARIANT_ALSO_NEGOTIATES;
+    public final const CODE = Status::VARIANT_ALSO_NEGOTIATES;
 }

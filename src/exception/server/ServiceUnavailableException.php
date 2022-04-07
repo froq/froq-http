@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class ServiceUnavailableException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::SERVICE_UNAVAILABLE;
+    public final const CODE = Status::SERVICE_UNAVAILABLE;
 }

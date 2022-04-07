@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class UnsupportedMediaTypeException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UNSUPPORTED_MEDIA_TYPE;
+    public final const CODE = Status::UNSUPPORTED_MEDIA_TYPE;
 }

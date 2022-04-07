@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NetworkAuthenticationRequiredException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NETWORK_AUTHENTICATION_REQUIRED;
+    public final const CODE = Status::NETWORK_AUTHENTICATION_REQUIRED;
 }

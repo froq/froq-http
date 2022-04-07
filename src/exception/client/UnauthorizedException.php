@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class UnauthorizedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UNAUTHORIZED;
+    public final const CODE = Status::UNAUTHORIZED;
 }

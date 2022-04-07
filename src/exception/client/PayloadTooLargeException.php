@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class PayloadTooLargeException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PAYLOAD_TOO_LARGE;
+    public final const CODE = Status::PAYLOAD_TOO_LARGE;
 }

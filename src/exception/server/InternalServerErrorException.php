@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class InternalServerErrorException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::INTERNAL_SERVER_ERROR;
+    public final const CODE = Status::INTERNAL_SERVER_ERROR;
 }

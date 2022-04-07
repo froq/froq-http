@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class ForbiddenException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::FORBIDDEN;
+    public final const CODE = Status::FORBIDDEN;
 }

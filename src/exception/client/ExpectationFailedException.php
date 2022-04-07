@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class ExpectationFailedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::EXPECTATION_FAILED;
+    public final const CODE = Status::EXPECTATION_FAILED;
 }

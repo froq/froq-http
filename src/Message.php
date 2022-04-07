@@ -28,8 +28,8 @@ abstract class Message
      * Types.
      * @const int
      */
-    public const TYPE_REQUEST  = 1,
-                 TYPE_RESPONSE = 2;
+    public final const TYPE_REQUEST  = 1,
+                       TYPE_RESPONSE = 2;
 
     /** @var froq\App */
     protected App $app;

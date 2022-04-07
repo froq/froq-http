@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class TooEarlyException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::TOO_EARLY;
+    public final const CODE = Status::TOO_EARLY;
 }

@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class NoResponseException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::NO_RESPONSE;
+    public final const CODE = Status::NO_RESPONSE;
 }

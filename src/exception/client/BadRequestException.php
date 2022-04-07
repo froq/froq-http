@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class BadRequestException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::BAD_REQUEST;
+    public final const CODE = Status::BAD_REQUEST;
 }

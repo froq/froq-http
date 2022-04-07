@@ -21,5 +21,5 @@ use froq\http\response\Status;
 class RetryWithException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::RETRY_WITH;
+    public final const CODE = Status::RETRY_WITH;
 }
