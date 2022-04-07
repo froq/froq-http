@@ -24,18 +24,8 @@ use froq\App;
  */
 abstract class Message
 {
-    /**
-     * Types.
-     * @const int
-     */
-    public final const TYPE_REQUEST  = 1,
-                       TYPE_RESPONSE = 2;
-
     /** @var froq\App */
     protected App $app;
-
-    /** @var int */
-    protected int $type;
 
     /** @var string */
     protected string $httpProtocol;
@@ -56,13 +46,10 @@ abstract class Message
      * Constructor.
      *
      * @param froq\App $app
-     * @param int      $type
      */
-    public function __construct(App $app, int $type)
+    public function __construct(App $app)
     {
         $this->app          = $app;
-        $this->type         = $type;
-
         $this->httpProtocol = Http::protocol();
         $this->httpVersion  = Http::version();
 
@@ -79,16 +66,6 @@ abstract class Message
     public final function getApp(): App
     {
         return $this->app;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return int
-     */
-    public final function getType(): int
-    {
-        return $this->type;
     }
 
     /**
@@ -313,7 +290,7 @@ abstract class Message
      */
     public final function isRequest(): bool
     {
-        return ($this->type == self::TYPE_REQUEST);
+        return ($this instanceof Request);
     }
 
     /**
@@ -323,6 +300,6 @@ abstract class Message
      */
     public final function isResponse(): bool
     {
-        return ($this->type == self::TYPE_RESPONSE);
+        return ($this instanceof Response);
     }
 }

@@ -57,7 +57,7 @@ final class Request extends Message
      */
     public function __construct(App $app)
     {
-        parent::__construct($app, Message::TYPE_REQUEST);
+        parent::__construct($app);
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);

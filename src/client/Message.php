@@ -17,13 +17,6 @@ namespace froq\http\client;
  */
 abstract class Message
 {
-    /** @const int */
-    public final const TYPE_REQUEST  = 1,
-                       TYPE_RESPONSE = 2;
-
-    /** @var int */
-    protected int $type;
-
     /** @var string */
     protected string $httpProtocol;
 
@@ -39,15 +32,12 @@ abstract class Message
     /**
      * Constructor.
      *
-     * @param int         $type
      * @param string|null $httpProtocol
      * @param array|null  $headers
      * @param string|null $body
      */
-    public function __construct(int $type, string $httpProtocol = null, array $headers = null, string $body = null)
+    public function __construct(string $httpProtocol = null, array $headers = null, string $body = null)
     {
-        $this->type = $type;
-
         $httpProtocol ??= http_protocol();
         $this->setHttpProtocol($httpProtocol);
         $this->setHttpVersion((float) substr($httpProtocol, 5, 3));
@@ -60,16 +50,6 @@ abstract class Message
     public final function __toString(): string
     {
         return $this->toString();
-    }
-
-    /**
-     * Get type.
-     *
-     * @return int
-     */
-    public final function type(): int
-    {
-        return $this->type;
     }
 
     /**
@@ -229,9 +209,9 @@ abstract class Message
      */
     public final function toString(): string
     {
-        if ($this->type == self::TYPE_REQUEST) {
+        if ($this instanceof Request) {
             $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());
-        } elseif ($this->type == self::TYPE_RESPONSE) {
+        } elseif ($this instanceof Response) {
             $ret = sprintf("%s %s\r\n", $this->getHttpProtocol(), $this->getStatus());
         }
 

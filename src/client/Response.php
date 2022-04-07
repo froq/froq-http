@@ -37,7 +37,7 @@ final class Response extends Message
         $this->setStatus($status)
              ->setParsedBody($parsedBody);
 
-        parent::__construct(Message::TYPE_RESPONSE, null, $headers, $body);
+        parent::__construct(null, $headers, $body);
     }
 
     /**

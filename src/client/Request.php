@@ -53,7 +53,7 @@ final class Request extends Message
         $headers = array_replace_recursive(self::$headersDefault, (array) $headers);
         $headers = array_lower_keys($headers);
 
-        parent::__construct(Message::TYPE_REQUEST, null, $headers, $body);
+        parent::__construct(null, $headers, $body);
     }
 
     /**

@@ -40,7 +40,7 @@ final class Response extends Message
      */
     public function __construct(App $app)
     {
-        parent::__construct($app, Message::TYPE_RESPONSE);
+        parent::__construct($app);
 
         $this->status = new Status();
         $this->setStatus(Status::OK);
