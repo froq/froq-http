@@ -7,11 +7,13 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use froq\collection\collector\MapCollector;
+
 /**
  * @package froq\http\message
  * @object  froq\http\message\Cookies
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class Cookies extends \froq\collection\collector\MapCollector
+final class Cookies extends MapCollector
 {}

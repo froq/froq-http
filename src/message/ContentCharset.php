@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use froq\common\object\Enum;
+
 /**
  * @package froq\http\message
  * @object  froq\http\message\ContentCharset
@@ -14,7 +16,7 @@ namespace froq\http\message;
  * @since   5.0
  * @enum
  */
-final class ContentCharset extends \froq\common\object\Enum
+final class ContentCharset extends Enum
 {
     /**
      * Not assigned.

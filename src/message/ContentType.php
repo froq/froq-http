@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\message;
 
+use froq\common\object\Enum;
+
 /**
  * @package froq\http\message
  * @object  froq\http\message\ContentType
@@ -14,7 +16,7 @@ namespace froq\http\message;
  * @since   5.0
  * @enum
  */
-final class ContentType extends \froq\common\object\Enum
+final class ContentType extends Enum
 {
     /**
      * Not assigned.
