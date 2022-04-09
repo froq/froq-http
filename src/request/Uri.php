@@ -20,7 +20,7 @@ use froq\http\Url;
 final class Uri extends Url
 {
     /** @var froq\http\request\Segments */
-    private Segments $segments;
+    public readonly Segments $segments;
 
     /** @var array<string> */
     protected static array $components = ['path', 'query', 'queryParams', 'fragment'];
@@ -63,6 +63,7 @@ final class Uri extends Url
      * @param  array<int|string>|null $keys
      * @param  array<string>|null     $defaults
      * @return array<string>froq\http\request\Segments
+     * @throws froq\http\request\UriException
      */
     public function segments(array $keys = null, array $defaults = null): array|Segments
     {
