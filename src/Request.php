@@ -27,28 +27,28 @@ final class Request extends Message
     use RequestTrait;
 
     /** @var froq\http\request\Method */
-    protected Method $method;
+    public readonly Method $method;
 
     /** @var froq\http\request\Scheme */
-    protected Scheme $scheme;
+    public readonly Scheme $scheme;
 
     /** @var froq\http\request\Uri */
-    protected Uri $uri;
+    public readonly Uri $uri;
 
     /** @var froq\http\request\Client */
-    protected Client $client;
-
-    /** @var froq\http\UrlQuery */
-    protected UrlQuery $query;
+    public readonly Client $client;
 
     /** @var string */
-    private string $id;
+    public readonly string $id;
 
     /** @var int */
-    private int $time;
+    public readonly int $time;
 
     /** @var float */
-    private float $utime;
+    public readonly float $utime;
+
+    /** @var froq\http\UrlQuery */
+    private readonly UrlQuery $query;
 
     /**
      * Constructor.
@@ -73,46 +73,6 @@ final class Request extends Message
     }
 
     /**
-     * Get method property.
-     *
-     * @return froq\http\request\Method
-     */
-    public function method(): Method
-    {
-        return $this->method;
-    }
-
-    /**
-     * Get scheme property.
-     *
-     * @return froq\http\request\Scheme
-     */
-    public function scheme(): Scheme
-    {
-        return $this->scheme;
-    }
-
-    /**
-     * Get uri property.
-     *
-     * @return froq\http\request\Uri
-     */
-    public function uri(): Uri
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Get client property.
-     *
-     * @return froq\http\request\Client
-     */
-    public function client(): Client
-    {
-        return $this->client;
-    }
-
-    /**
      * Get query property or create newly.
      *
      * @return froq\http\UrlQuery
@@ -122,39 +82,6 @@ final class Request extends Message
     {
         // More memory friendly..
         return $this->query ??= new UrlQuery($_GET);
-    }
-
-    /**
-     * Get id property.
-     *
-     * @return string
-     * @since  4.6
-     */
-    public function id(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * Get time property.
-     *
-     * @return int
-     * @since  6.0
-     */
-    public function time(): int
-    {
-        return $this->time;
-    }
-
-    /**
-     * Get utime property.
-     *
-     * @return float
-     * @since  6.0
-     */
-    public function utime(): float
-    {
-        return $this->utime;
     }
 
     /**

@@ -23,7 +23,7 @@ use froq\common\interface\Stringable;
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /** @var array|string|null */
+    /** @var array<string>|string|null */
     protected array|string|null $source;
 
     /** @var array<string> */

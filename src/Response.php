@@ -31,7 +31,7 @@ final class Response extends Message
     use ResponseTrait;
 
     /** @var froq\http\response\Status */
-    protected Status $status;
+    public readonly Status $status;
 
     /**
      * Constructor.
@@ -228,16 +228,15 @@ final class Response extends Message
             return;
         }
 
-        $body       = $this->body;
-        $content    = $body->getContent();
-        $attributes = $body->getAttributes();
+        $content    = $this->body->getContent();
+        $attributes = $this->body->getAttributes();
 
         // Those n/a responses output nothing.
-        if ($body->isNa()) {
+        if ($this->body->isNa()) {
             $this->done(['Content-Type' => 'n/a', 'Content-Length' => 0]);
         }
         // Text contents (html, json, xml etc.).
-        elseif ($body->isText()) {
+        elseif ($this->body->isText()) {
             $content        = (string) $content;
             $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
             $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
@@ -294,7 +293,7 @@ final class Response extends Message
             $this->done($headers, $content);
         }
         // Image contents.
-        elseif ($body->isImage()) {
+        elseif ($this->body->isImage()) {
             [$image, $imageType, $modifiedAt, $expiresAt, $direct, $etag] = [
                 $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
             ];
@@ -348,7 +347,7 @@ final class Response extends Message
             }
         }
         // File contents (actually file downloads).
-        elseif ($body->isFile()) {
+        elseif ($this->body->isFile()) {
             [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rate] = [
                 $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rate'])
             ];

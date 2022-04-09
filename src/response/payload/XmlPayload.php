@@ -52,7 +52,7 @@ final class XmlPayload extends Payload implements PayloadInterface
             );
 
             // When given in config as "response.xml" field.
-            $options = (array) $this->response?->getApp()->config('response.xml');
+            $options = (array) $this->response?->app->config('response.xml');
 
             $encoder = new XmlEncoder($options);
             $encoder->setInput($content);

@@ -25,22 +25,22 @@ use froq\App;
 abstract class Message
 {
     /** @var froq\App */
-    protected App $app;
+    public readonly App $app;
 
     /** @var string */
-    protected string $httpProtocol;
+    public readonly string $httpProtocol;
 
     /** @var float */
-    protected float $httpVersion;
+    public readonly float $httpVersion;
 
     /** @var froq\http\message\Headers */
-    protected Headers $headers;
+    public readonly Headers $headers;
 
     /** @var froq\http\message\Cookies */
-    protected Cookies $cookies;
+    public readonly Cookies $cookies;
 
     /** @var froq\http\message\Body */
-    protected Body $body;
+    public readonly Body $body;
 
     /**
      * Constructor.
@@ -56,38 +56,6 @@ abstract class Message
         $this->headers      = new Headers();
         $this->cookies      = new Cookies();
         $this->body         = new Body();
-    }
-
-    /**
-     * Get app.
-     *
-     * @return froq\App
-     */
-    public final function getApp(): App
-    {
-        return $this->app;
-    }
-
-    /**
-     * Get HTTP protocol.
-     *
-     * @return string
-     * @since  5.0
-     */
-    public final function getHttpProtocol(): string
-    {
-        return $this->httpProtocol;
-    }
-
-    /**
-     * Get HTTP version.
-     *
-     * @return float
-     * @since  5.0
-     */
-    public final function getHttpVersion(): float
-    {
-        return $this->httpVersion;
     }
 
     /**
@@ -210,7 +178,7 @@ abstract class Message
             } else {
                 $attributes = (array) $attributes;
                 // Content type could be set by headers before.
-                $contentType = $this->header('Content-Type') ?: ContentType::TEXT_HTML;
+                $contentType = $this->getHeader('Content-Type') ?: ContentType::TEXT_HTML;
 
                 // Response contents (eg: return this.response(...)).
                 if ($content instanceof Response) {
