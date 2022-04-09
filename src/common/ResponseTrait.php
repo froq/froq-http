@@ -56,8 +56,8 @@ trait ResponseTrait
     {
         $this->body->setContent($content);
 
-        $type    && $this->setContentType($type);
-        $charset && $this->setContentCharset($charset);
+        $type    && $this->body->setContentType($type);
+        $charset && $this->body->setContentCharset($charset);
 
         return $this;
     }
