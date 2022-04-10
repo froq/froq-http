@@ -235,4 +235,30 @@ trait ParamTrait
     {
         return Params::hasCookie($names);
     }
+
+    /**
+     * Get a segment param.
+     *
+     * @param  string      $name
+     * @param  string|null $default
+     * @return string|null
+     * @since  6.0
+     */
+    public function segmentParam(string $name, string $default = null): string|null
+    {
+        return $this->uri->segment($name, $default);
+    }
+
+    /**
+     * Get many segment params.
+     *
+     * @param  array<string>|null $names
+     * @param  array<string>|null $defaults
+     * @return array<string>|null
+     * @since  6.0
+     */
+    public function segmentParams(array $names = null, array $defaults = null): array|null
+    {
+        return $this->uri->segments($names, $defaults);
+    }
 }
