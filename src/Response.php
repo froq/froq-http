@@ -472,7 +472,7 @@ final class Response extends Message
     private function expose(): void
     {
         $art = $this->app->config('exposeAppRuntime');
-        if ($art && ($art === true || $art === $this->app->env())) {
+        if ($art && ($art === true || $art === $this->app->env)) {
             $this->head('X-Art', $this->app->runtime(format: true));
         }
     }
