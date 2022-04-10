@@ -263,7 +263,7 @@ final class Response extends Message
                         $compressType
                     ));
 
-                    $acceptEncoding  = (string) $this->app->request()->getHeader('Accept-Encoding');
+                    $acceptEncoding  = (string) $this->app->request->getHeader('Accept-Encoding');
                     $contentEncoding = ($compressType == 'gzip') ? 'gzip' : 'deflate';
 
                     if ($contentLength >= $compressMinlen && str_contains($acceptEncoding, $contentEncoding)) {
