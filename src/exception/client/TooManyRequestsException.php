@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Too Many Requests Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\TooManyRequestsException
  * @author  Kerem Güneş

@@ -13,7 +13,7 @@ use froq\file\mime\Mime;
 use froq\util\Util;
 
 /**
- * Payload.
+ * Base payload class extended by other payload classes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\Payload

@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Gateway Timeout Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\GatewayTimeoutException
  * @author  Kerem Güneş

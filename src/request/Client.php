@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\util\Util;
 
 /**
- * Client.
+ * A read-only class, for keeping some client properties.
  *
  * @package froq\http\request
  * @object  froq\http\request\Client

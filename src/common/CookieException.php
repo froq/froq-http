@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\HttpException;
-
 /**
- * Cookie Exception.
- *
  * @package froq\http\common
  * @object  froq\http\common\CookieException
  * @author  Kerem Güneş
  * @since   4.0
  */
-class CookieException extends HttpException
+class CookieException extends \froq\http\HttpException
 {}

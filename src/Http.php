@@ -8,10 +8,8 @@ declare(strict_types=1);
 namespace froq\http;
 
 /**
- * Http.
- *
  * A static class that provides HTTP/1.0, HTTP/1.1 and HTTP/2.0 protocols & versions
- * and HTTP related utility methods.
+ * and some HTTP related utility methods.
  *
  * @package froq\http
  * @object  froq\http\Http
@@ -19,7 +17,7 @@ namespace froq\http;
  * @since   1.0
  * @static
  */
-final class Http
+final class Http extends \StaticClass
 {
     /** @const string */
     public const PROTOCOL_1_0 = 'HTTP/1.0',

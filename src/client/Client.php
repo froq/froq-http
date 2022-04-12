@@ -12,8 +12,6 @@ use froq\common\trait\OptionTrait;
 use froq\event\Events;
 
 /**
- * Client.
- *
  * A client class that interacts via cURL library with the remote servers using only HTTP protocols.
  * Hence it should not be used for other protocols and should be ensure that cURL library is available.
  *

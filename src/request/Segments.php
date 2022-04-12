@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 /**
- * Segments.
+ * Segments class, for parsing/getting URI path segments.
  *
  * @package froq\http\request
  * @object  froq\http\request\Segments

@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Proxy Authentication Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ProxyAuthenticationRequiredException
  * @author  Kerem Güneş

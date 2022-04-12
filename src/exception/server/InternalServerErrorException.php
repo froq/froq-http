@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Internal Server Error Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\InternalServerErrorException
  * @author  Kerem Güneş

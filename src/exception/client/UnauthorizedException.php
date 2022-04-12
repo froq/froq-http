@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Unauthorized Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UnauthorizedException
  * @author  Kerem Güneş

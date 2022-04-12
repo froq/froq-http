@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace froq\http\client\curl;
 
 /**
- * Curl Response Error.
- *
  * An error class, only thrown when client option `throwHttpErrors` is true or used as
  * client `$error` property when any HTTP error (status code >= 400) occurs.
  *

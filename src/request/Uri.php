@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\http\Url;
 
 /**
- * Uri.
+ * URI class, used by request class.
  *
  * @package froq\http\request
  * @object  froq\http\request\Uri

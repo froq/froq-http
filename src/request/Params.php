@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\util\Arrays;
 
 /**
- * Params.
+ * Params, for getting get/post/cookie params.
  *
  * @package froq\http\request
  * @object  froq\http\request\Params

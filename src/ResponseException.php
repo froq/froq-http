@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace froq\http;
 
 /**
- * Response Exception.
- *
  * @package froq\http
  * @object  froq\http\ResponseException
  * @author  Kerem Güneş

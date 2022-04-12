@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\common\interface\Stringable;
 
 /**
- * Method.
+ * Method class, used by request class.
  *
  * @package froq\http\request
  * @object  froq\http\request\Method

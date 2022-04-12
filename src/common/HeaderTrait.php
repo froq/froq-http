@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\common;
 
 /**
- * Header Trait.
+ * A trait, provides header utilities for request/response classes.
  *
  * @package froq\http\common
  * @object  froq\http\common\HeaderTrait

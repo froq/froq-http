@@ -10,7 +10,7 @@ namespace froq\http\client;
 use froq\http\client\curl\{Curl, CurlMulti};
 
 /**
- * Sender.
+ * Sender class used in client instances for sending single/multi requests.
  *
  * @package froq\http\client
  * @object  froq\http\client\Sender
@@ -18,7 +18,7 @@ use froq\http\client\curl\{Curl, CurlMulti};
  * @since   3.0, 4.0
  * @static
  */
-final class Sender
+final class Sender extends \StaticClass
 {
     /**
      * Send a request with a single client.
@@ -50,12 +50,12 @@ final class Sender
             $client->sent = true;
         }
 
-        $curlm = new CurlMulti($clients);
-        $curlm->run();
+        $curlMulti = new CurlMulti($clients);
+        $curlMulti->run();
 
         $responses = [];
 
-        foreach ($curlm->getClients() as $client) {
+        foreach ($curlMulti->getClients() as $client) {
             $responses[] = $client->getResponse();
         }
 

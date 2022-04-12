@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Precondition Failed Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\PreconditionFailedException
  * @author  Kerem Güneş

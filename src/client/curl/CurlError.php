@@ -7,11 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\common\Error;
-
 /**
- * Curl Error.
- *
  * An error class that contains some methods that can be used to detect most
  * occurring cURL errors. For more error checks can be done with `CURLE_*`
  * constants using `CurlError.getCode()` method.
@@ -21,7 +17,7 @@ use froq\common\Error;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class CurlError extends Error
+class CurlError extends \froq\common\Error
 {
     /**
      * Check for CURLE_URL_MALFORMAT(3).

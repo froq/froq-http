@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Bandwidth Limit Exceeded Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\BandwidthLimitExceededException
  * @author  Kerem Güneş

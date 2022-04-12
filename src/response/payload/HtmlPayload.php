@@ -10,7 +10,7 @@ namespace froq\http\response\payload;
 use froq\http\{Response, message\ContentType};
 
 /**
- * Html Payload.
+ * A payload class for sending HTML texts as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\HtmlPayload

@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\ClientException;
-
 /**
- * Curl Exception.
- *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlException
  * @author  Kerem Güneş
  * @since   4.0
  */
-class CurlException extends ClientException
+class CurlException extends \froq\http\client\ClientException
 {}

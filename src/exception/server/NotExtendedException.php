@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Not Extended Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\NotExtendedException
  * @author  Kerem Güneş

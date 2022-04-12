@@ -7,18 +7,13 @@ declare(strict_types=1);
 
 namespace froq\http\exception;
 
-use froq\http\HttpException;
-use Throwable;
-
 /**
- * Client Exception.
- *
  * @package froq\http\exception
  * @object  froq\http\exception\ClientException
  * @author  Kerem Güneş
  * @since   5.0
  */
-class ClientException extends HttpException
+class ClientException extends \froq\http\HttpException
 {
     /**
      * Constructor.
@@ -31,7 +26,7 @@ class ClientException extends HttpException
      * @throws froq\http\HttpException
      */
     public function __construct(string $message = null, mixed $messageParams = null, int $code = null,
-        Throwable $previous = null, Throwable $cause = null)
+        \Throwable $previous = null, \Throwable $cause = null)
     {
         if ($code !== null) {
             // Forbid code assigns for internal classes.

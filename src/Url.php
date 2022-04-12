@@ -11,8 +11,6 @@ use froq\collection\ComponentCollection;
 use froq\common\interface\Stringable;
 
 /**
- * Url.
- *
  * A URL object with strict/optional components that accessible via set/get methods or via
  * `__call()` magic with their names (eg: `getPath()`), and some other utility methods.
  *

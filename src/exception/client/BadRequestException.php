@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Bad Request Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\BadRequestException
  * @author  Kerem Güneş

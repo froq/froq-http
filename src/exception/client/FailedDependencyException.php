@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Failed Dependency Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\FailedDependencyException
  * @author  Kerem Güneş

@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Variant Also Negotiates Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\VariantAlsoNegotiatesException
  * @author  Kerem Güneş

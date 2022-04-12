@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\ResponseException;
-
 /**
- * Payload Exception.
- *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\PayloadException
  * @author  Kerem Güneş
  * @since   4.0
  */
-class PayloadException extends ResponseException
+class PayloadException extends \froq\http\ResponseException
 {}

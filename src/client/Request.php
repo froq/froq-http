@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\client;
 
 /**
- * Request.
+ * A client request class.
  *
  * @package froq\http\client
  * @object  froq\http\client\Request

@@ -16,8 +16,6 @@ use froq\{App, util\Util};
 use Assert;
 
 /**
- * Response.
- *
  * An HTTP response class, extends `Message` class and mainly deals with Froq! application
  * and controllers.
  *

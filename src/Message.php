@@ -12,8 +12,6 @@ use froq\http\response\payload\Payload;
 use froq\App;
 
 /**
- * Message.
- *
  * An abstract class, mimics HTTP Message, used by `Request` and `Response` classes
  * these mainly deals with Froq! application and controllers.
  *

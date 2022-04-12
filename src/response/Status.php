@@ -8,9 +8,7 @@ declare(strict_types=1);
 namespace froq\http\response;
 
 /**
- * Status.
- *
- * An HTTP Status Code class with some utility methods.
+ * An HTTP Status Code class with some utility methods, and used by response class.
  *
  * @package froq\http\response
  * @object  froq\http\response\Status

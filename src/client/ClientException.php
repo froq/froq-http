@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\HttpException;
-
 /**
- * Client Exception.
- *
  * @package froq\http\client
  * @object  froq\http\client\ClientException
  * @author  Kerem Güneş
  * @since   3.0
  */
-class ClientException extends HttpException
+class ClientException extends \froq\http\HttpException
 {}

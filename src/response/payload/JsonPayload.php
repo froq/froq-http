@@ -11,7 +11,7 @@ use froq\http\{Response, message\ContentType};
 use froq\encoding\encoder\JsonEncoder;
 
 /**
- * Json Payload.
+ * A payload class for sending JSON texts as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\JsonPayload

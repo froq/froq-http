@@ -11,7 +11,7 @@ use froq\http\{Response, message\ContentType};
 use froq\file\File;
 
 /**
- * Image Payload.
+ * A payload class for sending images as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\ImagePayload

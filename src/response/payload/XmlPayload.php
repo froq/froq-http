@@ -11,7 +11,7 @@ use froq\http\{Response, message\ContentType};
 use froq\encoding\encoder\XmlEncoder;
 
 /**
- * Xml Payload.
+ * A payload class for sending XML texts as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\XmlPayload

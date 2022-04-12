@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * HTTP Version Not Supported Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\HttpVersionNotSupportedException
  * @author  Kerem Güneş

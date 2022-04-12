@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\common;
 
 /**
- * Request Trait.
+ * A trait, provides some utilities for request class.
  *
  * @package froq\http\common
  * @object  froq\http\common\RequestTrait

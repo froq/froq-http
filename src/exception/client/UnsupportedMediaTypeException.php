@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Unsupported Media Type Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UnsupportedMediaTypeException
  * @author  Kerem Güneş

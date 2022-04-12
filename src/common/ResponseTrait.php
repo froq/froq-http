@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\common;
 
 /**
- * Response Trait.
+ * A trait, provides some utilities for response class.
  *
  * @package froq\http\common
  * @object  froq\http\common\ResponseTrait

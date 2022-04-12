@@ -12,8 +12,6 @@ use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\App;
 
 /**
- * Request.
- *
  * A HTTP request class, extends `Message` class and mainly deals with Froq! application
  * and controllers.
  *

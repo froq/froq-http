@@ -10,6 +10,7 @@
         "froq/froq-common": "^5.0",
         "froq/froq": "^5.0",
         "froq/froq-file": "^5.0",
+        "froq/froq-event": "^5.0",
         "froq/froq-encoding": "^5.0"
     },
     "autoload": {

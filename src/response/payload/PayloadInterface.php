@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 /**
- * Payload Interface.
- *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\PayloadInterface
  * @author  Kerem Güneş

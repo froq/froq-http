@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Network Read Timeout Error Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\NetworkReadTimeoutErrorException
  * @author  Kerem Güneş

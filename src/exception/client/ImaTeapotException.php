@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * I'm a Teapot Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ImaTeapotException
  * @author  Kerem Güneş

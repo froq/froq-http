@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\HttpException;
-
 /**
- * Header Exception.
- *
  * @package froq\http\common
  * @object  froq\http\common\HeaderException
  * @author  Kerem Güneş
  * @since   4.0
  */
-class HeaderException extends HttpException
+class HeaderException extends \froq\http\HttpException
 {}

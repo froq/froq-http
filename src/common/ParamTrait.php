@@ -10,7 +10,7 @@ namespace froq\http\common;
 use froq\http\request\Params;
 
 /**
- * Param Trait.
+ * A trait, provides param utilities for request class.
  *
  * @package froq\http\common
  * @object  froq\http\common\ParamTrait

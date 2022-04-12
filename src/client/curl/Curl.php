@@ -11,8 +11,6 @@ use froq\http\client\Client;
 use CurlHandle;
 
 /**
- * Curl.
- *
  * A class for handling single cURL opearations & feeding back client.
  *
  * @package froq\http\client\curl

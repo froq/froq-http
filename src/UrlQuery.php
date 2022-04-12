@@ -8,12 +8,10 @@ declare(strict_types=1);
 namespace froq\http;
 
 use froq\common\interface\{Arrayable, Objectable, Listable, Stringable};
-use froq\collection\trait\{FilterTrait, MapTrait, EachTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait};
+use froq\collection\trait\{FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait};
 use froq\util\Util;
 
 /**
- * Url Query.
- *
  * An array-like class for working with URL-queries in OOP-style.
  *
  * @package froq\http
@@ -23,7 +21,7 @@ use froq\util\Util;
  */
 final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countable, \ArrayAccess
 {
-    use FilterTrait, MapTrait, EachTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
+    use FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
 
     /** @var array */
     private array $data = [];

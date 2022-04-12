@@ -10,7 +10,7 @@ namespace froq\http\response\payload;
 use froq\http\{Response, message\ContentType};
 
 /**
- * Plain Payload.
+ * A payload class for sending plain texts as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\PlainPayload

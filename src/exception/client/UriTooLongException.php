@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * URI Too Long Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UriTooLongException
  * @author  Kerem Güneş

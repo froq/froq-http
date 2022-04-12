@@ -11,7 +11,7 @@ use froq\http\{Response, message\ContentType};
 use froq\file\{File, mime\Mime};
 
 /**
- * File Payload.
+ * A payload class for sending files as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\FilePayload

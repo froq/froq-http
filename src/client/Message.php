@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\client;
 
 /**
- * Message.
+ * Message class for request/response classes.
  *
  * @package froq\http\client
  * @object  froq\http\client\Message
