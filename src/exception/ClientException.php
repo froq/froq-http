@@ -31,13 +31,13 @@ class ClientException extends \froq\http\HttpException
         if ($code !== null) {
             // Forbid code assigns for internal classes.
             if (static::class != self::class && str_starts_with(static::class, __namespace__)) {
-                throw new HttpException('Cannot set $code parameter for %s, it is already set internally',
+                throw new parent('Cannot set $code parameter for %s, it is already set internally',
                     static::class);
             }
 
             // Forbid invalid code assigns.
             if ($code < 400 || $code > 499) {
-                throw new HttpException('Invalid client exception code %s, it must be between 400-499',
+                throw new parent('Invalid client exception code %s, it must be between 400-499',
                     $code);
             }
         }
