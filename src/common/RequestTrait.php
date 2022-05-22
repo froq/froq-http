@@ -79,6 +79,17 @@ trait RequestTrait
     }
 
     /**
+     * Is purge.
+     *
+     * @return bool
+     * @since  4.3
+     */
+    public function isPurge(): bool
+    {
+        return $this->method->isPurge();
+    }
+
+    /**
      * Is options.
      *
      * @return bool
@@ -142,6 +153,28 @@ trait RequestTrait
     public function isMove(): bool
     {
         return $this->method->isMove();
+    }
+
+    /**
+     * Is link.
+     *
+     * @return bool
+     * @since  4.3, 6.0
+     */
+    public function isLink(): bool
+    {
+        return $this->method->isLink();
+    }
+
+    /**
+     * Is unlink.
+     *
+     * @return bool
+     * @since  4.3, 6.0
+     */
+    public function isUnlink(): bool
+    {
+        return $this->method->isUnlink();
     }
 
     /**

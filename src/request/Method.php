@@ -124,6 +124,16 @@ final class Method implements Stringable
     }
 
     /**
+     * Is purge.
+     *
+     * @return bool
+     */
+    public function isPurge(): bool
+    {
+        return ($this->name == self::PURGE);
+    }
+
+    /**
      * Is options.
      *
      * @return bool
@@ -181,6 +191,26 @@ final class Method implements Stringable
     public function isMove(): bool
     {
         return ($this->name == self::MOVE);
+    }
+
+    /**
+     * Is link.
+     *
+     * @return bool
+     */
+    public function isLink(): bool
+    {
+        return ($this->name == self::LINK);
+    }
+
+    /**
+     * Is unlink.
+     *
+     * @return bool
+     */
+    public function isUnlink(): bool
+    {
+        return ($this->name == self::UNLINK);
     }
 
     /**
