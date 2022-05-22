@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\util\Util;
 
 /**
- * A read-only class, for keeping some client properties.
+ * An accessor class, for accessing some client properties.
  *
  * @package froq\http\request
  * @object  froq\http\request\Client
@@ -19,43 +19,11 @@ use froq\util\Util;
  */
 final class Client
 {
-    /** @var ?string */
-    private ?string $ip = null;
-
-    /** @var ?string */
-    private ?string $locale = null;
-
-    /** @var ?string */
-    private ?string $language = null;
-
-    /** @var ?string */
-    private ?string $userAgent = null;
-
     /**
      * Constructor.
      */
     public function __construct()
-    {
-        $this->ip = Util::getClientIp();
-
-        $acceptLanguage = trim($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
-        if ($acceptLanguage != '') {
-            $language = substr($acceptLanguage, 0, 2);
-
-            if (str_contains($acceptLanguage, '-')) {
-                $this->locale = str_replace('-', '_', substr($acceptLanguage, 0, 5));
-            } else {
-                $this->locale = $language .'_'. $language;
-            }
-
-            $this->language = $language;
-        }
-
-        $userAgent = Util::getClientUserAgent();
-        if ($userAgent != null) {
-            $this->userAgent = substr($userAgent, 0, 255); // Far enough for safety.
-        }
-    }
+    {}
 
     /**
      * Get ip.
@@ -64,27 +32,7 @@ final class Client
      */
     public function getIp(): ?string
     {
-        return $this->ip;
-    }
-
-    /**
-     * Get locale.
-     *
-     * @return ?string
-     */
-    public function getLocale(): ?string
-    {
-        return $this->locale;
-    }
-
-    /**
-     * Get language.
-     *
-     * @return ?string
-     */
-    public function getLanguage(): ?string
-    {
-        return $this->language;
+        return Util::getClientIp();
     }
 
     /**
@@ -94,6 +42,66 @@ final class Client
      */
     public function getUserAgent(): ?string
     {
-        return $this->userAgent;
+        return Util::getClientUserAgent();
+    }
+
+    /**
+     * Get locale.
+     *
+     * @return ?string
+     */
+    public function getLocale(): ?string
+    {
+        $acceptLanguage = $this->getAcceptLanguage();
+
+        if ($acceptLanguage) {
+            $language = substr($acceptLanguage, 0, 2);
+
+            if (str_contains($acceptLanguage, '-')) {
+                $temp = explode('-', substr($acceptLanguage, 0, 5));
+                return sprintf('%s_%s', $temp[0], @strtoupper($temp[1] ?: $temp[0]));
+            } else {
+                return $language .'_'. strtoupper($language);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get language.
+     *
+     * @return ?string
+     */
+    public function getLanguage(): ?string
+    {
+        $acceptLanguage = $this->getAcceptLanguage();
+
+        if ($acceptLanguage) {
+            return substr($acceptLanguage, 0, 2);
+        }
+        return null;
+    }
+
+    /**
+     * Get accept-language.
+     *
+     * @return ?string
+     * @since  6.0
+     */
+    public function getAcceptLanguage(): ?string
+    {
+        return $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+    }
+
+    /**
+     * Get referer.
+     *
+     * @return ?string
+     * @since  6.0
+     */
+    public function getReferer(): ?string
+    {
+        return $_SERVER['HTTP_REFERER'] ?? null;
     }
 }
