@@ -233,12 +233,6 @@ final class Params extends \StaticClass
 
         // Multi-map (eg: "trim|upper").
         foreach (explode('|', $map) as $map) {
-            // Nulls stay nulls.
-            if (is_null($input)) {
-                continue;
-            }
-
-            // @todo: Use split().
             if (!$map) continue;
 
             // Wraps "[]" for safe map calls.
