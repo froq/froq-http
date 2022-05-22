@@ -61,7 +61,7 @@ final class Client
                 $temp = explode('-', substr($acceptLanguage, 0, 5));
                 return sprintf('%s_%s', $temp[0], @strtoupper($temp[1] ?: $temp[0]));
             } else {
-                return $language .'_'. strtoupper($language);
+                return sprintf('%s_%s', $language, strtoupper($language));
             }
         }
 
