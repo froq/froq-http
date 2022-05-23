@@ -200,16 +200,27 @@ final class Request extends Message
     }
 
     /**
-     * Get context, aka URI path.
+     * Get path.
      *
      * @param  bool $escape
      * @return string
-     * @since  4.8
+     * @since  4.8, 6.0
      */
-    public function getContext(bool $escape = false): string
+    public function getPath(bool $escape = false): string
     {
         return !$escape ? $this->uri->get('path')
              : htmlspecialchars($this->uri->get('path'));
+    }
+
+    /**
+     * Get query.
+     *
+     * @return string
+     * @since  6.0
+     */
+    public function getQuery(): string
+    {
+        return $_SERVER['QUERY_STRING'] ?? '';
     }
 
     /**
@@ -239,7 +250,7 @@ final class Request extends Message
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobals('POST', $content, json: !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobals('POST', $content, json: str_contains($contentType, '/json'));
         }
 
         $_COOKIE = $this->prepareGlobals('COOKIE');
