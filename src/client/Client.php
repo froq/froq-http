@@ -33,8 +33,8 @@ final class Client
     /** @var froq\http\client\curl\Curl */
     private Curl $curl;
 
-    /** @var froq\http\client\curl\CurlError */
-    private CurlError|CurlResponseError|null $error;
+    /** @var froq\http\client\curl\{CurlError|CurlResponseError} */
+    private CurlError|CurlResponseError|null $error = null;
 
     /** @var ?string */
     private ?string $result = null;
@@ -370,25 +370,12 @@ final class Client
      * @param  ?array                      $resultInfo
      * @param  ?froq\http\client\CurlError $error
      * @return void
+     * @throws froq\http\client\curl\{CurlError|CurlResponseError}
      * @internal
      */
     public function end(?string $result, ?array $resultInfo, ?CurlError $error = null): void
     {
-        // These options can discard error event below.
-        if ($error) {
-            if ($this->options['throwErrors']) {
-                throw $error;
-            }
-        } elseif (!$error && $resultInfo['http_code'] >= 400) {
-            $error = new CurlResponseError($resultInfo['http_code']);
-            if ($this->options['throwHttpErrors']) {
-                throw $error;
-            }
-        }
-
-        $this->error = $error;
-
-        if ($resultInfo) {
+        if ($result != '' || $resultInfo) {
             $headers = http_parse_headers($resultInfo['request_header']);
             if (!$headers) {
                 return;
@@ -492,8 +479,25 @@ final class Client
             }
         }
 
-        // Call error event if exists.
+        // These options may discard error event below.
         if ($error) {
+            $this->error = $error;
+
+            if ($this->options['throwErrors']) {
+                throw $this->error;
+            }
+        } elseif (!$error && $resultInfo['http_code'] >= 400) {
+            $this->error = new CurlResponseError($resultInfo['http_code']);
+            $this->error->setRequest($this->request);
+            $this->error->setResponse($this->response);
+
+            if ($this->options['throwHttpErrors']) {
+                throw $this->error;
+            }
+        }
+
+        // Call error event if exists.
+        if ($this->error) {
             $this->fireEvent('error');
         }
 

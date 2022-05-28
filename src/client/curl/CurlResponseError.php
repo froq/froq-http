@@ -7,9 +7,12 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
+use froq\http\client\{Request, Response};
+
 /**
  * An error class, only thrown when client option `throwHttpErrors` is true or used as
- * client `$error` property when any HTTP error (status code >= 400) occurs.
+ * client `$error` property when any HTTP error (status code >= 400) occurs and always
+ * created for these errors in client `end()` method.
  *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlResponseError
@@ -19,7 +22,13 @@ namespace froq\http\client\curl;
 class CurlResponseError extends CurlError
 {
     /** @var int */
-    private int $status;
+    public readonly int $status;
+
+    /** @var froq\http\client\Request|null */
+    private ?Request $request = null;
+
+    /** @var froq\http\client\Response|null */
+    private ?Response $response = null;
 
     /**
      * Constructor.
@@ -36,5 +45,47 @@ class CurlResponseError extends CurlError
         $arguments['code'] = $status;
 
         parent::__construct(...$arguments);
+    }
+
+    /**
+     * Set request.
+     *
+     * @param  froq\http\client\Request $request
+     * @return void
+     */
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * Get request.
+     *
+     * @return froq\http\client\Request|null
+     */
+    public function getRequest(): Request|null
+    {
+        return $this->request;
+    }
+
+    /**
+     * Set response.
+     *
+     * @param  froq\http\client\Response $response
+     * @return void
+     */
+    public function setResponse(Response $response): void
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * Get response.
+     *
+     * @return froq\http\client\Response|null
+     */
+    public function getResponse(): Response|null
+    {
+        return $this->response;
     }
 }
