@@ -57,7 +57,7 @@ final class JsonPayload extends Payload implements PayloadInterface
                 throw new PayloadException($error->message, code: $error->code, cause: $error);
             }
 
-            $content = $encoder->getInput();
+            $content = $encoder->getOutput();
             unset($encoder); // Free.
         }
 

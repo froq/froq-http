@@ -271,7 +271,7 @@ final class Response extends Message
                         $encoder->setInput($content);
 
                         if ($encoder->encode()) {
-                            $content = $encoder->getInput();
+                            $content = $encoder->getOutput();
                             unset($encoder);
 
                             // Cancel PHP compression.
