@@ -57,12 +57,13 @@ final class XmlPayload extends Payload implements PayloadInterface
             $encoder = new XmlEncoder($options);
             $encoder->setInput($content);
 
-            if (!$encoder->encode($error)) {
-                throw new PayloadException($error->message, code: $error->code, cause: $error);
+            if ($encoder->encode()) {
+                $content = $encoder->getOutput();
+            } elseif ($error = $encoder->error()) {
+                throw new PayloadException(
+                    $error->message, code: $error->code, cause: $error
+                );
             }
-
-            $content = $encoder->getOutput();
-            unset($encoder); // Free.
         }
 
         return $content;
