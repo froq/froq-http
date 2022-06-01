@@ -44,9 +44,7 @@ final class Method implements Stringable
         $this->setName($name);
     }
 
-    /**
-     * @magic
-     */
+    /** @magic */
     public function __toString()
     {
         return $this->toString();
