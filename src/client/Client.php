@@ -488,8 +488,8 @@ final class Client
             }
         } elseif (!$error && $resultInfo['http_code'] >= 400) {
             $this->error = new CurlResponseError($resultInfo['http_code']);
-            $this->error->setRequest($this->request);
-            $this->error->setResponse($this->response);
+            $this->error->setRequest(clone $this->request);
+            $this->error->setResponse(clone $this->response);
 
             if ($this->options['throwHttpErrors']) {
                 throw $this->error;
