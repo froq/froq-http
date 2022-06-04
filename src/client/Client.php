@@ -9,7 +9,7 @@ namespace froq\http\client;
 
 use froq\http\client\curl\{Curl, CurlError, CurlResponseError};
 use froq\common\trait\OptionTrait;
-use froq\event\Events;
+use froq\event\EventStack;
 
 /**
  * A client class that interacts via cURL library with the remote servers using only HTTP protocols.
@@ -53,8 +53,8 @@ final class Client
         'method'      => 'GET', 'curl'            => null, // Curl options.
     ];
 
-    /** @var froq\event\Events */
-    private Events $events;
+    /** @var froq\event\EventStack */
+    private EventStack $events;
 
     /** @var bool */
     public bool $sent = false;
@@ -76,7 +76,7 @@ final class Client
 
         $this->setOptions($options, self::$optionsDefault);
 
-        $this->events = new Events();
+        $this->events = new EventStack();
         if ($events) {
             foreach ($events as $name => $callback) {
                 $this->events->add($name, $callback);
