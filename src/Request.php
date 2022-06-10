@@ -114,15 +114,14 @@ final class Request extends Message
     }
 
     /**
-     * Get PHP input as JSON array.
+     * Get PHP input as JSON-decoded.
      *
-     * @return array
+     * @return mixed
      * @since  4.5
      */
-    public function json(): array
+    public function json(): mixed
     {
-        return (array) json_decode($this->input(),
-            flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+        return json_decode($this->input(), flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
     }
 
     /**
