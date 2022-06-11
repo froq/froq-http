@@ -346,12 +346,12 @@ final class Response extends Message
         }
         // File contents (actually file downloads).
         elseif ($this->body->isFile()) {
-            [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rate] = [
-                $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rate'])
+            [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rateLimit] = [
+                $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rateLimit'])
             ];
 
             // If rate limit is null or -1, than file size will be used as rate limit.
-            $rateLimit = $rate ?? (int) $this->app->config('response.file.rateLimit', -1);
+            $rateLimit ??= (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
