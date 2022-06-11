@@ -67,7 +67,7 @@ final class FilePayload extends Payload implements PayloadInterface
             // Check if content is a file.
             if (File::isFile($file)) {
                 if (File::errorCheck($file, $error)) {
-                    throw new PayloadException($error->message, code: $error->code, cause: $error);
+                    throw new PayloadException($error);
                 }
 
                 $fileSize    = filesize($file);
@@ -104,7 +104,7 @@ final class FilePayload extends Payload implements PayloadInterface
         // File may be stream.
         elseif (!$type->isStream()) {
             if (File::errorCheck($file, $error)) {
-                throw new PayloadException($error->message, code: $error->code, cause: $error);
+                throw new PayloadException($error);
             }
 
             $fileName   = $fileName ?: filename($file, true);

@@ -66,7 +66,7 @@ final class ImagePayload extends Payload implements PayloadInterface
             // Check if content is a file.
             if (File::isFile($image)) {
                 if (File::errorCheck($image, $error)) {
-                    throw new PayloadException($error->message, code: $error->code, cause: $error);
+                    throw new PayloadException($error);
                 }
 
                 $imageSize   = filesize($image);
@@ -100,7 +100,7 @@ final class ImagePayload extends Payload implements PayloadInterface
         // Image may be GdImage.
         elseif (!$type->isImage()) {
             if (File::errorCheck($image, $error)) {
-                throw new PayloadException($error->message, code: $error->code, cause: $error);
+                throw new PayloadException($error);
             }
 
             $modifiedAt = self::getModifiedAt($image, $modifiedAt);
