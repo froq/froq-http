@@ -89,8 +89,7 @@ final class FilePayload extends Payload implements PayloadInterface
             // Convert content to source.
             else {
                 try {
-                    $file = tmpfile();
-                    $file && fwrite($file, $temp);
+                    fwrite($file = tmpfile(), $temp);
                 } catch (\Error) { $file = null; }
 
                 $file || throw new PayloadException('Failed creating file resource [error: @error]');

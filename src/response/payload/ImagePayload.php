@@ -77,7 +77,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 }
 
                 try {
-                    $image = imagecreatefromstring(file_get_contents($image));
+                    $image = imagecreatefromstring(file_get_contents($temp));
                 } catch (\Error) { $image = null; }
 
                 $image || throw new PayloadException('Failed creating image resource [error: @error]');
