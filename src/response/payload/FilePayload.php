@@ -129,7 +129,7 @@ final class FilePayload extends Payload implements PayloadInterface
         // Add extension to file name.
         $fileName = $fileName .'.'. ($fileExtension ?? (
             $fileMime ? Mime::getExtensionByType($fileMime)
-                      : Mime::getExtension($fileName)
+                      : File::getExtension($fileName)
         ));
 
         // Update attributes.
