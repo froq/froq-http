@@ -9,7 +9,7 @@ namespace froq\http\client;
 
 use froq\http\client\curl\{Curl, CurlError, CurlResponseError};
 use froq\common\trait\OptionTrait;
-use froq\event\EventStack;
+use froq\event\EventManager;
 
 /**
  * A client class that interacts via cURL library with the remote servers using only HTTP protocols.
@@ -53,8 +53,8 @@ final class Client
         'method'      => 'GET', 'curl'            => null, // Curl options.
     ];
 
-    /** @var froq\event\EventStack */
-    private EventStack $events;
+    /** @var froq\event\EventManager */
+    private EventManager $eventManager;
 
     /** @var bool */
     public bool $sent = false;
@@ -76,10 +76,10 @@ final class Client
 
         $this->setOptions($options, self::$optionsDefault);
 
-        $this->events = new EventStack();
+        $this->eventManager = new EventManager($this);
         if ($events) {
             foreach ($events as $name => $callback) {
-                $this->events->add($name, $callback);
+                $this->eventManager->add($name, $callback);
             }
         }
     }
@@ -498,7 +498,7 @@ final class Client
 
         // Call error event if exists.
         if ($this->error) {
-            $this->fireEvent('error');
+            $this->fireEvent('error', $this->error);
         }
 
         // Call end event if exists.
@@ -519,9 +519,10 @@ final class Client
      * @since  4.0
      * @internal
      */
-    public function fireEvent(string $name): void
+    public function fireEvent(string $name, mixed ...$arguments): void
     {
-        $event = $this->events->get($name);
-        $event && $event($this);
+        if ($this->eventManager->has($name)) {
+            $this->eventManager->fire($name, ...$arguments);
+        }
     }
 }
