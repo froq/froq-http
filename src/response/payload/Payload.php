@@ -111,6 +111,7 @@ class Payload
     {
         return $this->getAttribute('headers', []);
     }
+
     /**
      * Get response cookies attribute.
      *
@@ -122,8 +123,6 @@ class Payload
     }
 
     /**
-     * Process.
-     *
      * Detect payload content type, processes over and return an array which contains content,
      * content attributes (mime, size or filename etc.) and response attributes (code, headers,
      * cookies).
