@@ -178,7 +178,7 @@ final class Response extends Message
         }
 
         // Protect session name.
-        if ($name === $this->app->session?->name()) {
+        if ($name === $this->app->session?->option('name')) {
             throw new ResponseException('Invalid cookie name `%s`, it is reserved as session name',
                 $name);
         }
