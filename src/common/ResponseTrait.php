@@ -143,4 +143,15 @@ trait ResponseTrait
     {
         return $this->body->getAttributes() ?: null;
     }
+
+    /**
+     * Response allows a body?
+     *
+     * @return bool
+     * @since  6.0
+     */
+    public function allowsBody(): bool
+    {
+        return $this->status->isAllowedForBody();
+    }
 }

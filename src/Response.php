@@ -220,9 +220,8 @@ final class Response extends Message
             ob_end_clean();
         }
 
-        // Response may contain not-modified status with null content.
-        if ($this->body->getContent() == null
-            && $this->status->getCode() == Status::NOT_MODIFIED) {
+        // Check non-body stuff.
+        if (!$this->allowsBody()) {
             return;
         }
 

@@ -156,6 +156,27 @@ final class Status extends Statuses
     }
 
     /**
+     * Status allowed for a body?
+     *
+     * @return bool
+     * @since  6.0
+     */
+    public function isAllowedForBody(): bool
+    {
+        // No contents.
+        if ($this->code == 204 || $this->code == 304) {
+            return false;
+        }
+
+        // Informationals.
+        if ($this->code >= 100 && $this->code <= 199) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Validate given status code.
      *
      * @param  int $code

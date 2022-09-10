@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\{Response, response\Status};
+use froq\http\Response;
 use froq\common\trait\AttributeTrait;
 use froq\file\mime\Mime;
 use froq\util\Util;
@@ -135,12 +135,11 @@ class Payload
         $payload = $this;
         $payload->setResponse($response);
 
-        // Check for not-modified status.
-        if ($payload->getContent() == null
-            && $payload->getResponseCode() == Status::NOT_MODIFIED) {
+        // Check non-body stuff.
+        if (!$response->allowsBody()) {
             // Return content, content attributes, response attributes.
             return [
-                $content = null,
+                null,
                 $payload->getAttributes(),
                 [$payload->getResponseCode(),
                  $payload->getResponseHeaders(),
