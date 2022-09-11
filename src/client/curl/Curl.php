@@ -143,8 +143,8 @@ final class Curl
             CURLOPT_CUSTOMREQUEST     => $method, // Prepared, set by request object.
             CURLOPT_URL               => $url,    // Prepared, set by request object.
             CURLOPT_HEADER            => false,   // Made by header function.
-            CURLOPT_RETURNTRANSFER    => true,    // For proper response headers & body split.
-            CURLINFO_HEADER_OUT       => true,    // For proper request headers split.
+            CURLOPT_RETURNTRANSFER    => true,    // For properly parsing response headers & body.
+            CURLINFO_HEADER_OUT       => true,    // For properly parsing request headers.
             // Mutable (client) options.
             CURLOPT_AUTOREFERER       => true,
             CURLOPT_FOLLOWLOCATION    => (bool) $clientOptions['redirs'],
@@ -253,8 +253,6 @@ final class Curl
     /**
      * Collect response headers (called by "CURLOPT_HEADERFUNCTION" option).
      *
-     * @param  string $header
-     * @return int
      * @since  5.0
      */
     private function collectHeaders(string $header): int
@@ -275,10 +273,6 @@ final class Curl
 
     /**
      * Check option validity.
-     *
-     * @param  mixed        $option
-     * @param  string|null &$name
-     * @return bool
      */
     private function checkOption(mixed $option, string|null &$name): bool
     {
