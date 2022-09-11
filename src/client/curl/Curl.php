@@ -22,12 +22,12 @@ final class Curl
 {
     /** @const array */
     public const BLOCKED_OPTIONS = [
-        'CURLOPT_CUSTOMREQUEST'  => 10036,
-        'CURLOPT_URL'            => 10002,
-        'CURLOPT_HEADER'         => 42,
-        'CURLOPT_RETURNTRANSFER' => 19913,
-        'CURLOPT_HEADERFUNCTION' => 20079,
-        'CURLINFO_HEADER_OUT'    => 2,
+        'CURLOPT_CUSTOMREQUEST'  => CURLOPT_CUSTOMREQUEST,
+        'CURLOPT_URL'            => CURLOPT_URL,
+        'CURLOPT_HEADER'         => CURLOPT_HEADER,
+        'CURLOPT_RETURNTRANSFER' => CURLOPT_RETURNTRANSFER,
+        'CURLOPT_HEADERFUNCTION' => CURLOPT_HEADERFUNCTION,
+        'CURLINFO_HEADER_OUT'    => CURLINFO_HEADER_OUT,
     ];
 
     /** @var froq\http\client\Client */
@@ -225,7 +225,7 @@ final class Curl
                 }
 
                 // Check for internal options.
-                if (self::checkOption($option, $name)) {
+                if ($this->checkOption($option, $name)) {
                     throw new CurlException(
                         'Not allowed cURL option %s given [tip: some options are set internally and '.
                         'not allowed for a proper request/response process, not allowed options are: %s]',
@@ -280,7 +280,7 @@ final class Curl
      * @param  string|null &$name
      * @return bool
      */
-    private static function checkOption(mixed $option, string|null &$name): bool
+    private function checkOption(mixed $option, string|null &$name): bool
     {
         $name = null;
 
