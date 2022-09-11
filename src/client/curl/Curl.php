@@ -227,9 +227,8 @@ final class Curl
                 // Check for internal options.
                 if ($this->checkOption($option, $name)) {
                     throw new CurlException(
-                        'Not allowed cURL option %s given [tip: some options are set internally and '.
-                        'not allowed for a proper request/response process, not allowed options are: %s]',
-                        [$name, join(', ', array_keys(self::BLOCKED_OPTIONS))]
+                        'Blocked cURL option %s given [blocked options: %A]',
+                        [$name, array_keys(self::BLOCKED_OPTIONS)]
                     );
                 }
 
