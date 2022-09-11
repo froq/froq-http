@@ -406,13 +406,12 @@ final class Client
                 return;
             }
 
-            // Http version can be modified with CURLOPT_HTTP_VERSION, so here we update to provide
-            // an accurate result for viewing or dumping purposes (eg: echo $client->getRequest()).
+            // Update request object details.
             $this->request->setHttpProtocol($requestLine['protocol'])
                           ->setHttpVersion($requestLine['version'])
                           ->setHeaders($headers, reset: true);
 
-            // @cancel
+            // @cancel: Using CURLOPT_HEADERFUNCTION option in Curl object.
             // Checker for redirections etc. (for finding final HTTP-Message).
             // $next = fn($body) => $body && str_starts_with($body, 'HTTP/');
 
@@ -425,7 +424,7 @@ final class Client
 
             $headers = $resultInfo['response_header'];
 
-            // Get last slice of multi headers (via redirections).
+            // Get last slice of multi headers (eg: redirections).
             if ($headers && str_contains($headers, "\r\n\r\n")) {
                 $headers = last(explode("\r\n\r\n", $headers));
             }
@@ -440,21 +439,20 @@ final class Client
                 return;
             }
 
+            // Update response object details.
             $this->response->setHttpProtocol($responseLine['protocol'])
                            ->setHttpVersion($responseLine['version'])
                            ->setStatus($responseLine['status'])
                            ->setHeaders($headers);
 
-            // Set response body (and parsed body).
+            // Set response raw & parsed body.
             if ($result != '') {
                 $body = $result;
                 $parsedBody = null;
                 unset($result);
 
-                [$contentEncoding, $contentType] = [
-                    $this->response->getHeader('content-encoding'),
-                    $this->response->getHeader('content-type'),
-                ];
+                $contentEncoding = $this->response->getHeader('content-encoding');
+                $contentType = $this->response->getHeader('content-type');
 
                 // Decode GZip (if GZip'ed).
                 if ($contentEncoding && str_contains($contentEncoding, 'gzip')) {

@@ -250,9 +250,8 @@ final class Curl
     }
 
     /**
-     * Collect response headers (called by "CURLOPT_HEADERFUNCTION" option).
-     *
-     * @since  5.0
+     * Collect response headers (used for CURLOPT_HEADERFUNCTION option).
+     * @since 5.0
      */
     private function collectHeaders(string $header): int
     {
