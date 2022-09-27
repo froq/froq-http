@@ -90,11 +90,11 @@ final class Response extends Message
      * Get parsed body mapping to target class/object.
      *
      * @param  string|object $target
-     * @param  bool          $allowNullBody
      * @param  array         $options
+     * @param  bool          $allowNullBody
      * @return object|null
      */
-    public function getParsedBodyAs(string|object $target, bool $allowNullBody = true, array $options = []): object|null
+    public function getParsedBodyAs(string|object $target, array $options = [], bool $allowNullBody = true): object|null
     {
         if ($allowNullBody && $this->parsedBody === null) {
             return null;
