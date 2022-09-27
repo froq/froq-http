@@ -85,5 +85,23 @@ final class Response extends Message
     {
         return $this->parsedBody;
     }
+
+    /**
+     * Get parsed body mapping to target class/object.
+     *
+     * @param  string|object $target
+     * @param  bool          $allowNullBody
+     * @param  array         $options
+     * @return object|null
+     */
+    public function getParsedBodyAs(string|object $target, bool $allowNullBody = true, array $options = []): object|null
+    {
+        if ($allowNullBody && $this->parsedBody === null) {
+            return null;
+        }
+
+        $mapper = new \ObjectMapper($target, $options);
+        return $mapper->map((array) $this->parsedBody);
+    }
 }
 
