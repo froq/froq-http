@@ -104,4 +104,3 @@ final class Response extends Message
         return $mapper->map((array) $this->parsedBody);
     }
 }
-
