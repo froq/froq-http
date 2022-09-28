@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Precondition Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\PreconditionRequiredException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class PreconditionRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PRECONDITION_REQUIRED;
+    public final const CODE = Status::PRECONDITION_REQUIRED;
 }

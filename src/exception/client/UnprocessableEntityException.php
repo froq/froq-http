@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Unprocessable Entity Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UnprocessableEntityException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class UnprocessableEntityException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UNPROCESSABLE_ENTITY;
+    public final const CODE = Status::UNPROCESSABLE_ENTITY;
 }

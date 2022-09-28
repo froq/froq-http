@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Bad Gateway Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\BadGatewayException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class BadGatewayException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::BAD_GATEWAY;
+    public final const CODE = Status::BAD_GATEWAY;
 }

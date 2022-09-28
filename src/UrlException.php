@@ -7,11 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\HttpException;
-
 /**
- * Url Exception.
- *
  * @package froq\http
  * @object  froq\http\UrlException
  * @author  Kerem Güneş

@@ -7,16 +7,13 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\{Http, MessageException};
 use froq\http\message\{Body, Cookies, Headers, ContentType};
 use froq\http\response\payload\Payload;
 use froq\App;
 
 /**
- * Message.
- *
- * Represents an abstract HTTP message entity which is used by `Request/Response` classes
- * and mainly deals with Froq! application and controllers.
+ * An abstract class, mimics HTTP Message, used by `Request` and `Response` classes
+ * these mainly deals with Froq! application and controllers.
  *
  * @package froq\http
  * @object  froq\http\Message
@@ -25,93 +22,38 @@ use froq\App;
  */
 abstract class Message
 {
-    /**
-     * Types.
-     * @const int
-     */
-    public const TYPE_REQUEST  = 1,
-                 TYPE_RESPONSE = 2;
-
     /** @var froq\App */
-    protected App $app;
-
-    /** @var int */
-    protected int $type;
+    public readonly App $app;
 
     /** @var string */
-    protected string $httpProtocol;
+    public readonly string $httpProtocol;
 
     /** @var float */
-    protected float $httpVersion;
+    public readonly float $httpVersion;
 
     /** @var froq\http\message\Headers */
-    protected Headers $headers;
+    public readonly Headers $headers;
 
     /** @var froq\http\message\Cookies */
-    protected Cookies $cookies;
+    public readonly Cookies $cookies;
 
     /** @var froq\http\message\Body */
-    protected Body $body;
+    public readonly Body $body;
 
     /**
      * Constructor.
      *
      * @param froq\App $app
-     * @param int      $type
      */
-    public function __construct(App $app, int $type)
+    public function __construct(App $app)
     {
         $this->app          = $app;
-        $this->type         = $type;
-
         $this->httpProtocol = Http::protocol();
         $this->httpVersion  = Http::version();
 
         $this->headers      = new Headers();
         $this->cookies      = new Cookies();
         $this->body         = new Body();
-    }
-
-    /**
-     * Get app.
-     *
-     * @return froq\App
-     */
-    public final function getApp(): App
-    {
-        return $this->app;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return int
-     */
-    public final function getType(): int
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get HTTP protocol.
-     *
-     * @return string
-     * @since  5.0 Replaced with getHttpVersion().
-     */
-    public final function getHttpProtocol(): string
-    {
-        return $this->httpProtocol;
-    }
-
-    /**
-     * Get HTTP version.
-     *
-     * @return float
-     * @since  4.7, 5.0 Replaced with getHttpVersionNumber().
-     */
-    public final function getHttpVersion(): float
-    {
-        return $this->httpVersion;
     }
 
     /**
@@ -122,7 +64,7 @@ abstract class Message
      */
     public final function headers(...$args): static|Headers
     {
-        return $args ? $this->setHeaders(...$args) : $this->headers;
+        return $args ? $this->setHeaders(...$args) : $this->getHeaders();
     }
 
     /**
@@ -133,7 +75,7 @@ abstract class Message
      */
     public final function cookies(...$args): static|Cookies
     {
-        return $args ? $this->setCookies(...$args) : $this->cookies;
+        return $args ? $this->setCookies(...$args) : $this->getCookies();
     }
 
     /**
@@ -144,13 +86,13 @@ abstract class Message
      */
     public final function body(...$args): static|Body
     {
-        return $args ? $this->setBody(...$args) : $this->body;
+        return $args ? $this->setBody(...$args) : $this->getBody();
     }
 
     /**
      * Add headers.
      *
-     * @param  array<string, any> $headers
+     * @param  array<string, mixed> $headers
      * @return static
      * @since  4.0
      */
@@ -166,7 +108,7 @@ abstract class Message
     /**
      * Set headers.
      *
-     * @param  array<string, any> $headers
+     * @param  array<string, mixed> $headers
      * @return static
      */
     public final function setHeaders(array $headers): static
@@ -181,7 +123,7 @@ abstract class Message
     /**
      * Set cookies.
      *
-     * @param  array<string, any> $cookies
+     * @param  array<string, mixed> $cookies
      * @return static
      */
     public final function setCookies(array $cookies): static
@@ -232,44 +174,64 @@ abstract class Message
             if ($content instanceof Payload) {
                 $payload = $content;
             } else {
-                // Prepare defaults with type.
-                $attributes = array_merge(
-                    ['type' => $this->getContentType() ?? ContentType::TEXT_HTML],
-                    (array) $attributes
-                );
+                $attributes = (array) $attributes;
+                // Content type could be set by headers before.
+                $contentType = $this->getHeader('Content-Type') ?: ContentType::TEXT_HTML;
 
-                // Content & content type checks.
-                if (is_array($content)) {
-                    $contentType = trim($attributes['type'] ?? '');
-                    if ($contentType == '') {
-                        throw new MessageException(
-                            'Missing content type for `array` type content'
-                        );
-                    } elseif (!preg_test('~(json|xml)~', $contentType)) {
-                        throw new MessageException(
-                            'Invalid content type for `array` type content, ' .
-                            'content type must be such type `xxx/json` or `xxx/xml`'
-                        );
-                    }
-                } elseif (!is_null($content) && !is_scalar($content)) {
-                    throw new MessageException(
-                        'Invalid content value type `%s`, content value must be string|null',
-                        get_type($content)
-                    );
+                // Response contents (eg: return this.response(...)).
+                if ($content instanceof Response) {
+                    $code = $content->getStatusCode();
+                    $contentType = $content->getContentType() ?? $contentType;
+
+                    // Update attributes with current body attributes.
+                    $attributes = [...$attributes, ...$content->body->getAttributes()];
+
+                    // Update content with current body content.
+                    $content = $content->body->getContent();
+                } else {
+                    $code = $this->getStatusCode();
+                    $contentType = $this->getContentType() ?? $contentType;
                 }
 
-                $payload = new Payload($this->getStatusCode(), $content, $attributes);
+                // Attributes with default type if none.
+                $attributes = $attributes + ['type' => $contentType];
+
+                // Content type check for a proper response.
+                $contentType = trim((string) $attributes['type'])
+                    ?: throw new MessageException('Missing content type');
+
+                if (is_array($content)) {
+                    // Note: must be checked here only!
+                    if (!preg_test('~json|xml~i', $contentType)) {
+                        throw new MessageException(
+                            'Invalid content type `%s` for `array` type content, '.
+                            'content type must be denoted like `xxx/json` or `xxx/xml`',
+                            $contentType
+                        );
+                    }
+                } else {
+                    // Expected, processable types.
+                    if (!is_null($content) && !is_string($content)
+                        && !is_image($content) && !is_stream($content)) {
+                        throw new MessageException(
+                            'Invalid content value type `%s`, it must be string|image|stream|null',
+                            get_type($content)
+                        );
+                    }
+                }
+
+                $payload = new Payload($code, $content, $attributes);
             }
 
-            $result = $payload->process($this);
+            // Extract needed stuff from payload process.
+            [$content, $attributes, [$status, $headers, $cookies]] = $payload->process($this);
 
-            // Set original arguments or their overrides, finally..
-            $this->body->setContent($result[0])
-                       ->setAttributes($result[1]);
+            // Set body content & attributes.
+            $this->body->setContent($content)
+                       ->setAttributes($attributes);
 
-            // Set response attributes
-            [$code, $headers, $cookies] = $result[2];
-            $code    && $this->setStatus($code);
+            // Set response stuff.
+            $status  && $this->setStatus($status);
             $headers && $this->setHeaders($headers);
             $cookies && $this->setCookies($cookies);
         }
@@ -294,7 +256,7 @@ abstract class Message
      */
     public final function isRequest(): bool
     {
-        return ($this->type == self::TYPE_REQUEST);
+        return ($this instanceof Request);
     }
 
     /**
@@ -304,6 +266,6 @@ abstract class Message
      */
     public final function isResponse(): bool
     {
-        return ($this->type == self::TYPE_RESPONSE);
+        return ($this instanceof Response);
     }
 }

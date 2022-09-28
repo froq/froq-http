@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Not Extended Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\NotExtendedException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class NotExtendedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NOT_EXTENDED;
+    public final const CODE = Status::NOT_EXTENDED;
 }

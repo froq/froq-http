@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Range Not Satisfiable Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\RangeNotSatisfiableException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class RangeNotSatisfiableException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::RANGE_NOT_SATISFIABLE;
+    public final const CODE = Status::RANGE_NOT_SATISFIABLE;
 }

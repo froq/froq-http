@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Client Closed Request Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ClientClosedRequestException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ClientClosedRequestException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::CLIENT_CLOSED_REQUEST;
+    public final const CODE = Status::CLIENT_CLOSED_REQUEST;
 }

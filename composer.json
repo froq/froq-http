@@ -6,11 +6,12 @@
     "license": "Apache-2.0",
     "authors": [{"name": "Kerem Güneş"}],
     "require": {
-        "php": "^8.0",
-        "froq/froq-common": "^5.0",
-        "froq/froq": "^5.0",
-        "froq/froq-file": "^5.0",
-        "froq/froq-encoding": "^5.0"
+        "php": "^8.1",
+        "froq/froq-common": "^6.0",
+        "froq/froq": "^6.0",
+        "froq/froq-file": "^6.0",
+        "froq/froq-event": "^6.0",
+        "froq/froq-encoding": "^6.0"
     },
     "autoload": {
         "classmap": ["src/"]

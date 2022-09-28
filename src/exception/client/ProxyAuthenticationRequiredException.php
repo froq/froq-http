@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Proxy Authentication Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ProxyAuthenticationRequiredException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ProxyAuthenticationRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PROXY_AUTHENTICATION_REQUIRED;
+    public final const CODE = Status::PROXY_AUTHENTICATION_REQUIRED;
 }

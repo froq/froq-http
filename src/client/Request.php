@@ -7,10 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\client\Message;
-
 /**
- * Request.
+ * A client request class.
  *
  * @package froq\http\client
  * @object  froq\http\client\Request
@@ -28,6 +26,13 @@ final class Request extends Message
     /** @var ?array */
     private ?array $urlParams = null;
 
+    /** @var array */
+    private static array $headersDefault = [
+        'accept'          => '*/*',
+        'accept-encoding' => 'gzip',
+        'user-agent'      => 'Froq HTTP Client (+http://github.com/froq/froq-http)',
+    ];
+
     /**
      * Constructor.
      *
@@ -44,18 +49,11 @@ final class Request extends Message
              ->setUrl($url)
              ->setUrlParams($urlParams);
 
-        // Default headers.
-        static $headersDefault = [
-            'accept'          => '*/*',
-            'accept-encoding' => 'gzip',
-            'user-agent'      => 'Froq HTTP Client (+http://github.com/froq/froq-http)',
-        ];
-
         // Merge & normalize headers.
-        $headers = array_replace_recursive($headersDefault, $headers ?? []);
-        $headers = array_change_key_case($headers, CASE_LOWER);
+        $headers = array_replace_recursive(self::$headersDefault, (array) $headers);
+        $headers = array_lower_keys($headers);
 
-        parent::__construct(Message::TYPE_REQUEST, null, $headers, $body);
+        parent::__construct(null, $headers, $body);
     }
 
     /**
@@ -82,7 +80,7 @@ final class Request extends Message
     }
 
     /**
-     * Set url.
+     * Set URL.
      *
      * @param  string $url
      * @return self
@@ -95,7 +93,7 @@ final class Request extends Message
     }
 
     /**
-     * Get url.
+     * Get URL.
      *
      * @return string
      */
@@ -105,7 +103,7 @@ final class Request extends Message
     }
 
     /**
-     * Set url params.
+     * Set URL params.
      *
      * @param  array|null $urlParams
      * @return self
@@ -118,7 +116,7 @@ final class Request extends Message
     }
 
     /**
-     * Get url params.
+     * Get URL params.
      *
      * @return array|null
      */
@@ -128,7 +126,7 @@ final class Request extends Message
     }
 
     /**
-     * Get uri.
+     * Get URI.
      *
      * @return string
      * @internal
@@ -136,6 +134,6 @@ final class Request extends Message
     protected function getUri(): string
     {
         // Extract the only path and query part of URL.
-        return preg_replace('~^\w+://[^/]+(/.*)~', '\\1', $this->getUrl());
+        return preg_replace('~^\w+://[^/]+(/.*)~', '\1', $this->getUrl());
     }
 }

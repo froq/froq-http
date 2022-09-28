@@ -8,10 +8,6 @@ declare(strict_types=1);
 namespace froq\http\response\payload;
 
 /**
- * Payload Interface.
- *
- * Used by child classes only that derived from Payload object.
- *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\PayloadInterface
  * @author  Kerem Güneş

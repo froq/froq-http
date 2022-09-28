@@ -7,19 +7,14 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\HeaderException;
-
 /**
- * Header Trait.
+ * A trait, provides header utilities for request/response classes.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing
- * (to Request & Response) / modifying (of Response only) headers.
- *
- * @package  froq\http\common
- * @object   froq\http\common\HeaderTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\HeaderTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait HeaderTrait
 {
@@ -29,9 +24,9 @@ trait HeaderTrait
      * @param  string      $name
      * @param  string|null $value
      * @param  bool        $replace
-     * @return self|array|null
+     * @return mixed<self|string|int|array|null>
      */
-    public function header(string $name, string $value = null, bool $replace = true)
+    public function header(string $name, string $value = null, bool $replace = true): mixed
     {
         if (func_num_args() == 1) {
             return $this->getHeader($name);
@@ -83,12 +78,12 @@ trait HeaderTrait
     /**
      * Set a header.
      *
-     * @param  string      $name
-     * @param  string|null $value
+     * @param  string                    $name
+     * @param  string|array<string>|null $value
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function setHeader(string $name, string|null $value): self
+    public function setHeader(string $name, string|array|null $value): self
     {
         if ($this->isRequest()) {
             throw new HeaderException('Cannot modify request headers');
@@ -108,8 +103,9 @@ trait HeaderTrait
      */
     public function getHeader(string $name, string|array $default = null): string|array|null
     {
-        return $this->headers->get($name, $default)
-            ?? $this->headers->get(strtolower($name), $default);
+        return $this->headers->get($name)
+            ?? $this->headers->get(strtolower($name))
+            ?? $default;
     }
 
     /**
@@ -127,7 +123,7 @@ trait HeaderTrait
         }
 
         $header = $this->getHeader($name);
-        if ($header != null) {
+        if ($header !== null) {
                $this->headers->remove($name)
             || $this->headers->remove(strtolower($name));
 
@@ -136,5 +132,18 @@ trait HeaderTrait
         }
 
         return $this;
+    }
+
+    /**
+     * Parse a header.
+     *
+     * @param  string $name
+     * @param  bool   $verbose
+     * @return array
+     * @since  6.0
+     */
+    public function parseHeader(string $name, bool $verbose = false): array
+    {
+        return http_parse_header($name .':'. $this->getHeader($name), verbose: $verbose);
     }
 }

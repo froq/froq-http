@@ -7,11 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\MessageException;
-
 /**
- * Response Exception.
- *
  * @package froq\http
  * @object  froq\http\ResponseException
  * @author  Kerem Güneş

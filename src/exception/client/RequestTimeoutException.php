@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Request Timeout Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\RequestTimeoutException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class RequestTimeoutException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::REQUEST_TIMEOUT;
+    public final const CODE = Status::REQUEST_TIMEOUT;
 }

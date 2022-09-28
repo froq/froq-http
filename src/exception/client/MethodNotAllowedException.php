@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Method Not Allowed Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\MethodNotAllowedException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class MethodNotAllowedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::METHOD_NOT_ALLOWED;
+    public final const CODE = Status::METHOD_NOT_ALLOWED;
 }

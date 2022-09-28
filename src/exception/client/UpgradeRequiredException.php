@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Upgrade Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UpgradeRequiredException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class UpgradeRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UPGRADE_REQUIRED;
+    public final const CODE = Status::UPGRADE_REQUIRED;
 }

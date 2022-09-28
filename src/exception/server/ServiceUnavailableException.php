@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Service Unavailable Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\ServiceUnavailableException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ServiceUnavailableException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::SERVICE_UNAVAILABLE;
+    public final const CODE = Status::SERVICE_UNAVAILABLE;
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\request;
 
 /**
- * Files.
+ * A static class, for getting posted files.
  *
  * @package froq\http\request
  * @object  froq\http\request\Files
@@ -16,7 +16,7 @@ namespace froq\http\request;
  * @since   1.0
  * @static
  */
-final class Files
+final class Files extends \StaticClass
 {
     /**
      * Get normalizing all files.

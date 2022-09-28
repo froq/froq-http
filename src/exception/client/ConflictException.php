@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Conflict Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ConflictException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ConflictException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::CONFLICT;
+    public final const CODE = Status::CONFLICT;
 }

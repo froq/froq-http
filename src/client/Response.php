@@ -7,10 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
-use froq\http\client\Message;
-
 /**
- * Response.
+ * A server response class.
  *
  * @package froq\http\client
  * @object  froq\http\client\Response
@@ -39,7 +37,7 @@ final class Response extends Message
         $this->setStatus($status)
              ->setParsedBody($parsedBody);
 
-        parent::__construct(Message::TYPE_RESPONSE, null, $headers, $body);
+        parent::__construct(null, $headers, $body);
     }
 
     /**
@@ -87,5 +85,22 @@ final class Response extends Message
     {
         return $this->parsedBody;
     }
-}
 
+    /**
+     * Get parsed body mapping to target class/object.
+     *
+     * @param  string|object $target
+     * @param  array         $options
+     * @param  bool          $allowNullBody
+     * @return object|null
+     */
+    public function getParsedBodyAs(string|object $target, array $options = [], bool $allowNullBody = true): object|null
+    {
+        if ($allowNullBody && $this->parsedBody === null) {
+            return null;
+        }
+
+        $mapper = new \ObjectMapper($target, $options);
+        return $mapper->map((array) $this->parsedBody);
+    }
+}

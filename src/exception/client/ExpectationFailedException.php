@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Expectation Failed Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ExpectationFailedException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ExpectationFailedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::EXPECTATION_FAILED;
+    public final const CODE = Status::EXPECTATION_FAILED;
 }

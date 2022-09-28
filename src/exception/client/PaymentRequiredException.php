@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Payment Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\PaymentRequiredException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class PaymentRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PAYMENT_REQUIRED;
+    public final const CODE = Status::PAYMENT_REQUIRED;
 }

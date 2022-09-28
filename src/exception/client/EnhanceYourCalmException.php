@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Enhance Your Calm Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\EnhanceYourCalmException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class EnhanceYourCalmException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::ENHANCE_YOUR_CALM;
+    public final const CODE = Status::ENHANCE_YOUR_CALM;
 }

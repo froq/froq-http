@@ -7,27 +7,18 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\{HeaderTrait, CookieTrait, ParamTrait};
-
 /**
- * Request Trait.
+ * A trait, provides some utilities for request class.
  *
- * @package  froq\http\common
- * @object   froq\http\common\RequestTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\RequestTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait RequestTrait
 {
-    /** @see froq\http\common\HeaderTrait */
-    use HeaderTrait;
-
-    /** @see froq\http\common\CookieTrait */
-    use CookieTrait;
-
-    /** @see froq\http\common\ParamTrait */
-    use ParamTrait {
+    use HeaderTrait, CookieTrait, ParamTrait {
         ParamTrait::cookie insteadof CookieTrait;
         ParamTrait::hasCookie insteadof CookieTrait;
     }
@@ -85,6 +76,17 @@ trait RequestTrait
     public function isDelete(): bool
     {
         return $this->method->isDelete();
+    }
+
+    /**
+     * Is purge.
+     *
+     * @return bool
+     * @since  4.3
+     */
+    public function isPurge(): bool
+    {
+        return $this->method->isPurge();
     }
 
     /**
@@ -151,6 +153,28 @@ trait RequestTrait
     public function isMove(): bool
     {
         return $this->method->isMove();
+    }
+
+    /**
+     * Is link.
+     *
+     * @return bool
+     * @since  4.3, 6.0
+     */
+    public function isLink(): bool
+    {
+        return $this->method->isLink();
+    }
+
+    /**
+     * Is unlink.
+     *
+     * @return bool
+     * @since  4.3, 6.0
+     */
+    public function isUnlink(): bool
+    {
+        return $this->method->isUnlink();
     }
 
     /**

@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Length Required Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\LengthRequiredException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class LengthRequiredException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::LENGTH_REQUIRED;
+    public final const CODE = Status::LENGTH_REQUIRED;
 }

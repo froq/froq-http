@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Not Found Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\NotFoundException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class NotFoundException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::NOT_FOUND;
+    public final const CODE = Status::NOT_FOUND;
 }

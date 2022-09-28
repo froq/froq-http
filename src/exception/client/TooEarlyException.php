@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Too Early Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\TooEarlyException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class TooEarlyException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::TOO_EARLY;
+    public final const CODE = Status::TOO_EARLY;
 }

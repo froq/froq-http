@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Loop Detected Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\LoopDetectedException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class LoopDetectedException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::LOOP_DETECTED;
+    public final const CODE = Status::LOOP_DETECTED;
 }

@@ -7,268 +7,182 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\common\exception\UnsupportedOperationException;
-use froq\common\interface\{Arrayable, Listable};
-use froq\{Router, mvc\Controller};
-use Countable, ArrayAccess;
-
 /**
- * Segments.
- *
- * Represents a read-only segment stack object with some utility methods.
+ * Segments class, for parsing/getting URI path segments.
  *
  * @package froq\http\request
  * @object  froq\http\request\Segments
  * @author  Kerem Güneş
  * @since   4.1
  */
-final class Segments implements Arrayable, Listable, Countable, ArrayAccess
+final class Segments implements \Countable, \ArrayAccess
 {
-    /**
-     * Root.
-     * @const string
-     */
+    /** @const string */
     public const ROOT = '/';
 
     /** @var array */
-    private array $stack = [];
+    private array $data = [];
 
     /** @var string */
-    private string $stackRoot = self::ROOT;
+    private string $root = self::ROOT;
 
     /**
      * Constructor.
      *
-     * @param array|null  $stack
-     * @param string|null $stackRoot
+     * @param array|null  $data
+     * @param string|null $root
      */
-    public function __construct(array $stack = null, string $stackRoot = null)
+    public function __construct(array $data = null, string $root = null)
     {
-        $stack     && $this->stack     = $stack;
-        $stackRoot && $this->stackRoot = $stackRoot;
+        $data && $this->data = $data;
+        $root && $this->root = $root;
+    }
+
+    /** @magic */
+    public function __set(string $key, string|null $value): void
+    {
+        $this->offsetSet($key, $value);
+    }
+
+    /** @magic */
+    public function __get(string $key): string|null
+    {
+        return $this->offsetGet($key);
     }
 
     /**
-     * Get stack property.
-     *
-     * @return array
-     */
-    public function stack(): array
-    {
-        return $this->stack;
-    }
-
-    /**
-     * Get stack-root property.
+     * Get root.
      *
      * @return string
      */
-    public function stackRoot(): string
+    public function root(): string
     {
-        return $this->stackRoot;
+        return $this->root;
     }
 
     /**
-     * Get controller.
+     * Get data.
      *
-     * @param  bool $suffix
-     * @return string|null
+     * @return array
      */
-    public function getController(bool $suffix = false): string|null
+    public function data(): array
     {
-        $controller = $this->stack['controller'] ?? null;
-
-        if ($controller && $suffix) {
-            $controller .= Controller::SUFFIX;
-        }
-
-        return $controller;
-    }
-
-    /**
-     * Get action.
-     *
-     * @param  bool $suffix
-     * @return string|null
-     */
-    public function getAction(bool $suffix = false): string|null
-    {
-        $action = $this->stack['action'] ?? null;
-
-        if ($action && $suffix) {
-            $action .= Controller::ACTION_SUFFIX;
-        }
-
-        return $action;
+        return $this->data;
     }
 
     /**
      * Get params.
      *
-     * @param  bool $list
-     * @return array|null
+     * @return array
      */
-    public function getParams(bool $list = false): array|null
+    public function params(): array
     {
-        return !$list ? $this->stack['params'] ?? null
-                      : $this->stack['paramsList'] ?? null;
+        return $this->data['params'] ?? [];
     }
 
     /**
      * Get params list.
      *
-     * @return array|null
+     * @return array
      */
-    public function getParamsList(): array|null
+    public function paramsList(): array
     {
-        return $this->stack['paramsList'] ?? null;
-    }
-
-    /**
-     * Get action params.
-     *
-     * @param  bool $list
-     * @return array|null
-     */
-    public function getActionParams(bool $list = false): array|null
-    {
-        return !$list ? $this->stack['actionParams'] ?? null
-                      : $this->stack['actionParamsList'] ?? null;
-    }
-
-    /**
-     * Get action params list.
-     *
-     * @return array|null.
-     */
-    public function getActionParamsList(): array|null
-    {
-        return $this->stack['actionParamsList'] ?? null;
+        return $this->data['paramsList'] ?? [];
     }
 
     /**
      * Get a segment param.
      *
-     * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
+     * @param  int|string  $key
+     * @param  string|null $default
+     * @return string|null
      */
-    public function get(int|string $key, $default = null)
+    public function get(int|string $key, string $default = null): string|null
     {
-        return is_int($key) ? $this->stack['paramsList'][$key - 1] ?? $default
-                            : $this->stack['params'][$key] ?? $default;
+        return is_int($key) ? $this->data['paramsList'][$key] ?? $default
+                            : $this->data['params'][$key]     ?? $default;
     }
 
     /**
-     * Get a segment param by given name.
+     * Get a segment param.
      *
-     * @param  string   $name
-     * @param  any|null $default
-     * @return any|null
+     * @param  string      $name
+     * @param  string|null $default
+     * @return string|null
      */
-    public function getParam(string $name, $default = null)
+    public function getParam(string $name, string $default = null): string|null
     {
-        return $this->stack['params'][$name] ?? $default;
+        return $this->data['params'][$name] ?? $default;
     }
 
     /**
-     * Get an action param.
+     * Get many segment params.
      *
-     * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
+     * @param  array<string>|null $names
+     * @param  array<string>|null $defaults
+     * @return array<string>|null
      */
-    public function getActionParam(int|string $key, $default = null)
+    public function getParams(array $names = null, array $defaults = null): array|null
     {
-        return is_int($key) ? $this->stack['actionParamsList'][$key - 1] ?? $default
-                            : $this->stack['actionParams'][$key] ?? $default;
+        if ($names === null) {
+            return $this->data['params'] ?? $defaults;
+        }
+
+        $values = [];
+        foreach ($names as $i => $name) {
+            $values[] = $this->data['params'][$name] ?? $defaults[$i] ?? null;
+        }
+
+        return $values;
     }
 
     /**
      * From array.
      *
-     * @param  array $array
+     * @param  array<string> $array
+     * @param  string|null   $root
      * @return froq\http\request\Segments
      */
-    public static function fromArray(array $array): Segments
+    public static function fromArray(array $array, string $root = null): Segments
     {
-        $array = array_values($array);
+        $data = ['params' => [], 'paramsList' => []];
 
-        [$controller, $action] = [
-            Router::prepareControllerName($array[0] ?? Controller::DEFAULT_SHORT, false),
-            Router::prepareActionName($array[1] ?? Controller::ACTION_DEFAULT, false)
-        ];
-
-        $stack = [
-            'controller'   => $controller,
-            'action'       => $action,
-            'params'       => [], 'paramsList' => [],
-            'actionParams' => [], 'actionParamsList' => [],
-        ];
-
-        $paramsList = $array;
-        foreach (array_chunk($array, 2) as $chunk) {
-            $stack['params'][$chunk[0]] = $chunk[1] ?? '';
+        // Chunk as key/value pairs.
+        foreach (array_chunk($array, 2) as $dat) {
+            $data['params'][$dat[0]] = $dat[1] ?? null;
         }
 
-        $actionParamsList = array_slice($array, 2);
-        foreach (array_chunk($actionParamsList, 2) as $chunk) {
-            $stack['actionParams'][$chunk[0]] = $chunk[1] ?? '';
+        // Index from 1, not 0.
+        foreach ($array as $i => $dat) {
+            $data['paramsList'][$i + 1] = $dat;
         }
 
-        // @cancel
-        // Setting indexes from 1, not 0.
-        // array_unshift($paramsList, null);
-        // array_unshift($actionParamsList, null);
-
-        $stack['paramsList']       = array_filter($paramsList, 'strlen');
-        $stack['actionParamsList'] = array_filter($actionParamsList, 'strlen');
-
-        return new Segments($stack);
+        return new Segments($data, $root);
     }
 
     /**
-     * Check whether param list empty.
+     * List.
      *
-     * @return bool
-     * @since  4.2, 4.9 Renamed from empty().
+     * @param  int $index
+     * @return array
      */
-    public function isEmpty(): bool
+    public function list(int $index = 0): array
     {
-        return empty($this->getParamsList());
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Listable
-     * @param      int $offset
-     * @since      4.2
-     */
-    public function toList(int $offset = 0): array
-    {
-        return array_slice((array) $this->getParamsList(), $offset);
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Arrayable
-     */
-    public function toArray(): array
-    {
-        return $this->getStack();
+        return slice($this->paramsList(), $index);
     }
 
     /**
      * @inheritDoc Countable
-     * @since 4.9
      */
     public function count(): int
     {
-        return count((array) $this->getParamsList());
+        return count($this->paramsList());
     }
 
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetExists($key)
+    public function offsetExists(mixed $key): bool
     {
         return $this->get($key) !== null;
     }
@@ -276,26 +190,26 @@ final class Segments implements Arrayable, Listable, Countable, ArrayAccess
     /**
      * @inheritDoc ArrayAccess
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $key): string|null
     {
         return $this->get($key);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exception\UnsupportedOperationException
+     * @throws     ReadonlyError
      */
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $key, mixed $_): never
     {
-        throw new UnsupportedOperationException('No set() allowed for ' . self::class);
+        throw new \ReadonlyError($this);
     }
 
     /**
      * @inheritDoc ArrayAccess
-     * @throws     froq\common\exception\UnsupportedOperationException
+     * @throws     ReadonlyError
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $key): never
     {
-        throw new UnsupportedOperationException('No unset() allowed for ' . self::class);
+        throw new \ReadonlyError($this);
     }
 }

@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\common\interface\Stringable;
 
 /**
- * Scheme.
+ * Scheme class, used by request class.
  *
  * @package froq\http\request
  * @object  froq\http\request\Scheme
@@ -39,11 +39,7 @@ final class Scheme implements Stringable
         $this->setName($name);
     }
 
-    /**
-     * Magic string.
-     *
-     * @return string
-     */
+    /** @magic */
     public function __toString()
     {
         return $this->toString();

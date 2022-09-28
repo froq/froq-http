@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * I'm a Teapot Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\ImaTeapotException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class ImaTeapotException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::IMA_TEAPOT;
+    public final const CODE = Status::IMA_TEAPOT;
 }

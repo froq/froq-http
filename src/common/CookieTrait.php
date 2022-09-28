@@ -7,20 +7,14 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\CookieException;
-use froq\http\response\Cookie;
-
 /**
- * Cookie Trait.
+ * A trait, provides cookie utilities for request/response classes.
  *
- * Represents a trait stack that used by both Request and Response objects, utilizes accessing
- * (to Request & Response) / modifying (of Response only) cookies.
- *
- * @package  froq\http\common
- * @object   froq\http\common\CookieTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\CookieTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait CookieTrait
 {
@@ -30,9 +24,9 @@ trait CookieTrait
      * @param  string      $name
      * @param  string|null $value
      * @param  array|null  $options
-     * @return self|array|null
+     * @return mixed<self|string|null>
      */
-    public function cookie(string $name, string $value = null, array $options = null)
+    public function cookie(string $name, string $value = null, array $options = null): mixed
     {
         if (func_num_args() == 1) {
             return $this->getCookie($name);
@@ -55,7 +49,7 @@ trait CookieTrait
     /**
      * Add a cookie.
      *
-     * @alias of setCookie()
+     * @alias setCookie()
      */
     public function addCookie(...$args)
     {
@@ -77,7 +71,7 @@ trait CookieTrait
             throw new CookieException('Cannot modify request cookies');
         }
 
-        $this->cookies->set($name, new Cookie($name, $value, $options));
+        $this->cookies->set($name, ['value' => $value, 'options' => $options]);
 
         return $this;
     }
@@ -109,7 +103,7 @@ trait CookieTrait
         }
 
         $cookie = $this->getCookie($name);
-        if ($cookie != null) {
+        if ($cookie !== null) {
             $this->cookies->remove($name);
 
             // Remove instantly.

@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Gateway Timeout Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\GatewayTimeoutException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class GatewayTimeoutException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::GATEWAY_TIMEOUT;
+    public final const CODE = Status::GATEWAY_TIMEOUT;
 }

@@ -7,15 +7,12 @@ declare(strict_types=1);
 
 namespace froq\http;
 
+use froq\http\common\RequestTrait;
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
-use froq\http\{Message, UrlQuery, RequestException, common\RequestTrait};
-use froq\{App, util\Util};
-use Error;
+use froq\App;
 
 /**
- * Request.
- *
- * Represents a HTTP request entity which extends `Message` class and mainly deals with Froq! application
+ * A HTTP request class, extends `Message` class and mainly deals with Froq! application
  * and controllers.
  *
  * @package froq\http
@@ -25,29 +22,31 @@ use Error;
  */
 final class Request extends Message
 {
-    /** @see froq\http\common\RequestTrait */
     use RequestTrait;
 
     /** @var froq\http\request\Method */
-    protected Method $method;
+    public readonly Method $method;
 
     /** @var froq\http\request\Scheme */
-    protected Scheme $scheme;
+    public readonly Scheme $scheme;
 
     /** @var froq\http\request\Uri */
-    protected Uri $uri;
+    public readonly Uri $uri;
 
     /** @var froq\http\request\Client */
-    protected Client $client;
+    public readonly Client $client;
 
-    /** @var froq\http\UrlQuery @since 5.1 */
-    protected UrlQuery $query;
+    /** @var string */
+    public readonly string $id;
 
-    /** @var string @since 4.6 */
-    private string $id;
+    /** @var int */
+    public readonly int $time;
 
-    /** @var array *@since 4.6 */
-    private array $times;
+    /** @var float */
+    public readonly float $utime;
+
+    /** @var froq\http\UrlQuery */
+    private readonly UrlQuery $query;
 
     /**
      * Constructor.
@@ -56,54 +55,19 @@ final class Request extends Message
      */
     public function __construct(App $app)
     {
-        parent::__construct($app, Message::TYPE_REQUEST);
+        parent::__construct($app);
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
         $this->uri    = new Uri($_SERVER['REQUEST_URI']);
         $this->client = new Client();
-        $this->id     = get_request_id(); // From util.sugars.
-        $this->times  = [$_SERVER['REQUEST_TIME'], $_SERVER['REQUEST_TIME_FLOAT']];
-    }
 
-    /**
-     * Get method property.
-     *
-     * @return froq\http\request\Method
-     */
-    public function method(): Method
-    {
-        return $this->method;
-    }
+        $this->id     = get_request_id();
+        $this->time   = $_SERVER['REQUEST_TIME'];
+        $this->utime  = $_SERVER['REQUEST_TIME_FLOAT'];
 
-    /**
-     * Get scheme property.
-     *
-     * @return froq\http\request\Scheme
-     */
-    public function scheme(): Scheme
-    {
-        return $this->scheme;
-    }
-
-    /**
-     * Get uri property.
-     *
-     * @return froq\http\request\Uri
-     */
-    public function uri(): Uri
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Get client property.
-     *
-     * @return froq\http\request\Client
-     */
-    public function client(): Client
-    {
-        return $this->client;
+        // Lock URI as read-only.
+        $this->uri->readOnly(true);
     }
 
     /**
@@ -116,28 +80,6 @@ final class Request extends Message
     {
         // More memory friendly..
         return $this->query ??= new UrlQuery($_GET);
-    }
-
-    /**
-     * Get id property.
-     *
-     * @return string
-     * @since  4.6
-     */
-    public function id(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * Get times property.
-     *
-     * @return array
-     * @since  4.6
-     */
-    public function times(): array
-    {
-        return $this->times;
     }
 
     /**
@@ -172,15 +114,40 @@ final class Request extends Message
     }
 
     /**
-     * Get PHP input as JSON array.
+     * Get PHP input as JSON-decoded.
      *
-     * @return array
+     * @return mixed
      * @since  4.5
      */
-    public function json(): array
+    public function json(): mixed
     {
-        return (array) json_decode($this->input(),
-            flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+        return json_decode($this->input(), flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
+    }
+
+    /**
+     * Get a URI segment.
+     *
+     * @param  int|string  $key
+     * @param  string|null $default
+     * @return string|null
+     * @since  5.0, 6.0
+     */
+    public function segment(int|string $key, string $default = null): string|null
+    {
+        return $this->uri->segment($key, $default);
+    }
+
+    /**
+     * Get all/many URI segments or Segments object.
+     *
+     * @param  array<int|string>|null $keys
+     * @param  array<string>|null     $defaults
+     * @return array<string>|froq\http\request\Segments
+     * @since  5.0, 6.0
+     */
+    public function segments(array $keys = null, array $defaults = null): array|Segments
+    {
+        return $this->uri->segments($keys, $defaults);
     }
 
     /**
@@ -232,42 +199,27 @@ final class Request extends Message
     }
 
     /**
-     * Get context, aka URI path.
+     * Get path.
      *
      * @param  bool $escape
      * @return string
-     * @since  4.8
+     * @since  4.8, 6.0
      */
-    public function getContext(bool $escape = false): string
+    public function getPath(bool $escape = false): string
     {
         return !$escape ? $this->uri->get('path')
              : htmlspecialchars($this->uri->get('path'));
     }
 
     /**
-     * Get a URI segment.
+     * Get query.
      *
-     * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
-     * @since  5.0
+     * @return string
+     * @since  6.0
      */
-    public function getSegment(int|string $key, $default = null)
+    public function getQuery(): string
     {
-        return $this->uri->segment($key, $default);
-    }
-
-    /**
-     * Get all/many URI segments.
-     *
-     * @param  array<int|string>|null $keys
-     * @param  any|null               $default
-     * @return froq\http\request\Segments|array
-     * @since  5.0
-     */
-    public function getSegments(array $keys = null, $default = null): Segments|array
-    {
-        return $this->uri->segments($keys, $default);
+        return $_SERVER['QUERY_STRING'] ?? '';
     }
 
     /**
@@ -279,11 +231,11 @@ final class Request extends Message
      */
     public function load(): void
     {
-        static $loaded;
+        static $done;
 
         // Check/tick for load-once state.
-        $loaded ? throw new RequestException('Request was already loaded')
-                : ($loaded = true);
+        $done ? throw new RequestException('Request was already loaded')
+              : ($done = true);
 
         $headers = $this->prepareHeaders();
 
@@ -293,35 +245,29 @@ final class Request extends Message
         $content     = $this->input();
         $contentType = strtolower($headers['content-type'] ?? '');
 
-        // This allows dotted params keys in globals (eg: x.a=1&x.b=2).
-        $dotted = (bool) $this->app->config('request.dottedParams');
-
-        $_GET = $this->prepareGlobalVariable('GET', dotted: $dotted);
+        $_GET = $this->prepareGlobals('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
         if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
-            $_POST = $this->prepareGlobalVariable('POST', $content, dotted: $dotted,
-                json: !!str_contains($contentType, '/json'));
+            $_POST = $this->prepareGlobals('POST', $content, json: str_contains($contentType, '/json'));
         }
 
-        $_COOKIE = $this->prepareGlobalVariable('COOKIE', dotted: $dotted);
+        $_COOKIE = $this->prepareGlobals('COOKIE');
 
-        // Fill body object.
+        // Fill body.
         $this->setBody($content, ($contentType ? ['type' => $contentType] : null));
 
-        // Fill & lock headers and cookies objects.
+        // Fill headers and cookies.
         foreach ($headers as $name => $value) {
-            $this->headers->add($name, $value);
+            $this->headers->set($name, $value);
         }
         foreach ($_COOKIE as $name => $value) {
-            $this->cookies->add($name, $value);
+            $this->cookies->set($name, $value);
         }
-        $this->headers->lock(); $this->cookies->lock();
 
-        // Modify URI params as well.
-        if ($dotted) {
-            $this->uri->unlock()->set('queryParams', $_GET)->lock();
-        }
+        // Lock headers and cookies as read-only.
+        $this->headers->readOnly(true);
+        $this->cookies->readOnly(true);
     }
 
     /**
@@ -331,29 +277,31 @@ final class Request extends Message
      */
     private function prepareHeaders(): array
     {
-        try {
-            $headers = (array) getallheaders();
-        } catch (Error) {
-            $headers = [];
+        $headers = getallheaders();
+
+        if (!$headers) {
             foreach ($_SERVER as $key => $value) {
                 if (str_starts_with((string) $key, 'HTTP_')) {
-                    $key = str_replace(['_', ' '], '-', substr($key, 5));
-                    $headers[$key] = $value;
+                    $name = str_replace(['_', ' '], '-', substr($key, 5));
+                    $headers[$name] = $value;
                 }
             }
         }
 
-        // Lowerize names.
-        $headers = array_change_key_case($headers, CASE_LOWER);
+        // Lower all names.
+        $headers = array_lower_keys($headers);
 
         // Content issues.
-        if (isset($_SERVER['CONTENT_TYPE'])) {
+        if (!isset($headers['content-type'])
+            && isset($_SERVER['CONTENT_TYPE'])) {
             $headers['content-type'] = $_SERVER['CONTENT_TYPE'];
         }
-        if (isset($_SERVER['CONTENT_LENGTH'])) {
+        if (!isset($headers['content-length'])
+            && isset($_SERVER['CONTENT_LENGTH'])) {
             $headers['content-length'] = $_SERVER['CONTENT_LENGTH'];
         }
-        if (isset($_SERVER['CONTENT_MD5'])) {
+        if (!isset($headers['content-md5'])
+            && isset($_SERVER['CONTENT_MD5'])) {
             $headers['content-md5'] = $_SERVER['CONTENT_MD5'];
         }
 
@@ -373,52 +321,49 @@ final class Request extends Message
     }
 
     /**
-     * Prepare a global variable (without changing dotted param keys if dotted option is true).
+     * Prepare globals.
      *
      * @param  string $name
      * @param  string $source
-     * @param  bool   $dotted
      * @param  bool   $json
      * @return array
      */
-    private function prepareGlobalVariable(string $name, string $source = '', bool $dotted = false, bool $json = false): array
+    private function prepareGlobals(string $name, string $source = '', bool $json = false): array
     {
-        $encode = false;
+        // Plus check macro.
+        $plussed = fn($s) => $s && str_contains($s, '+');
 
         switch ($name) {
             case 'GET':
-                if (!$dotted) {
+                $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
+
+                if (!$plussed($source)) {
                     return $_GET;
                 }
-
-                $source = (string) ($_SERVER['QUERY_STRING'] ?? '');
-                $encode = true;
                 break;
             case 'POST':
-                if (!$dotted && !$json) {
-                    return $_POST;
-                }
-
-                // This is checked in constructor via content-type header.
                 if ($json) {
                     return (array) json_decode($source,
                         flags: JSON_OBJECT_AS_ARRAY | JSON_BIGINT_AS_STRING);
                 }
+
+                if (!$plussed($source)) {
+                    return $_POST;
+                }
                 break;
             case 'COOKIE':
-                if (!$dotted) {
+                $source = (string) ($_SERVER['HTTP_COOKIE'] ?? '');
+
+                if (!$plussed($source)) {
                     return $_COOKIE;
                 }
 
-                if (!empty($_SERVER['HTTP_COOKIE'])) {
-                    $source = (string) implode('&', array_map('trim',
-                        array: explode(';', (string) $_SERVER['HTTP_COOKIE'])
-                    ));
+                if ($source != '') {
+                    $source = (string) implode('&', array_map('trim', explode(';', $source)));
                 }
                 break;
         }
 
-        // Run parsing process.
-        return Util::parseQueryString($source, $encode, dotted: $dotted);
+        return http_parse_query($source);
     }
 }

@@ -7,12 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\client\curl;
 
-use froq\http\client\curl\{CurlError, CurlException};
 use froq\http\client\Client;
 use CurlHandle;
 
 /**
- * Curl Multi.
+ * A class for handling multiple cURL opearations & feeding back client.
  *
  * @package froq\http\client\curl
  * @object  froq\http\client\curl\CurlMulti
@@ -44,10 +43,10 @@ final class CurlMulti
     public function setClients(array $clients): void
     {
         foreach ($clients as $client) {
-            if (!$client instanceof Client) {
-                throw new CurlException('Each client must be instance of %s, %s given',
-                    [Client::class, get_type($client)]);
-            }
+            ($client instanceof Client) || throw new CurlException(
+                'Each client must be instance of %s, %t given',
+                [Client::class, $client]
+            );
 
             $this->clients[] = $client;
         }
@@ -71,11 +70,11 @@ final class CurlMulti
      */
     public function run(): void
     {
-        $clients = $this->getClients();
-        $clients || throw new CurlException('No clients initiated yet to process');
+        $clients = $this->getClients()
+            ?: throw new CurlException('No clients initiated yet to process');
 
-        $multiHandle = curl_multi_init();
-        $multiHandle || throw new CurlException('Failed multi-curl session [error: %s]', '@error');
+        $multiHandle = curl_multi_init()
+            ?: throw new CurlException('Failed multi-curl session [error: @error]');
 
         $stack = [];
 
@@ -130,16 +129,16 @@ final class CurlMulti
 
                 $result = $ok ? curl_multi_getcontent($handle) : false;
                 if ($result !== false) {
-                    $client->end($result, $curl->getHandleInfo($handle), null);
+                    $client->end($result, $curl->getHandleInfo($handle));
                 } else {
-                    $client->end(null, null, new CurlError(curl_error($handle), null, $info['result']));
+                    $client->end(null, null, new CurlError(curl_error($handle), code: $info['result']));
                 }
 
                 // This can be set true to break the queue.
-                if ($client->aborted) {
+                if ($client->abort) {
                     $client->fireEvent('abort');
 
-                    // Break upper loop.
+                    // Break outer loop.
                     break 2;
                 }
             }

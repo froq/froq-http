@@ -7,13 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
-use froq\http\Response;
+use froq\http\{Response, message\ContentType};
 use froq\file\File;
-use Error;
 
 /**
- * Image Payload.
+ * A payload class for sending images as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\ImagePayload
@@ -44,38 +42,45 @@ final class ImagePayload extends Payload implements PayloadInterface
             $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
         ];
 
-        if ($image == null) {
-            throw new PayloadException('Image must not be empty');
-        } elseif (!is_string($image) && !is_image($image)) {
-            throw new PayloadException('Image content must be a valid readable file path,'
-                . ' binary string or GdImage, %s given', get_type($image));
-        } elseif ($imageType == null || !preg_match('~^image/(?:jpeg|png|gif|webp)$~', $imageType)) {
-            throw new PayloadException('Invalid image type `%s`, valids are: image/jpeg,'
-                . ' image/png, image/gif, image/webp', $imageType ?: 'null');
+        $type = new \Type($image);
+
+        if (!$image) {
+            throw new PayloadException('Image empty');
+        } elseif (!$type->isString() && !$type->isImage()) {
+            throw new PayloadException('Image content must be a valid readable file path, '.
+                'binary string or GdImage, %s given', $type);
+        } elseif (!$imageType || !$this->isValidImageType($imageType)) {
+            throw new PayloadException('Invalid image type `%s` [valids: %a]',
+                [$imageType ?: 'null', ContentType::imageTypes()]);
         }
 
-        if (!$direct && is_string($image)) {
+        // Direct image reads.
+        if ($direct && !$type->isString()) {
+            throw new PayloadException('Image content must be a valid readable file path '.
+                'when `direct` option is true, %s given', $type);
+        }
+
+        if (!$direct && $type->isString()) {
             $temp = $image;
 
             // Check if content is a file.
             if (File::isFile($image)) {
                 if (File::errorCheck($image, $error)) {
-                    throw new PayloadException($error->getMessage(), null, $error->getCode());
+                    throw new PayloadException($error);
                 }
 
                 $imageSize   = filesize($image);
                 $memoryLimit = self::getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini configuration'
-                        . ' value (%s)', $limit);
+                    throw new PayloadException('Given image exceeding `memory_limit` current ini '.
+                        'configuration value (%s)', $limit);
                 }
 
                 try {
-                    $image = imagecreatefromstring(file_get_contents($image));
-                } catch (Error) { $image = null; }
+                    $image = imagecreatefromstring(file_get_contents($temp));
+                } catch (\Error) { $image = null; }
 
-                $image || throw new PayloadException('Failed creating image source, invalid file contents in'
-                    . ' %s file', $temp);
+                $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
                 $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
             }
@@ -83,9 +88,9 @@ final class ImagePayload extends Payload implements PayloadInterface
             else {
                 try {
                     $image = imagecreatefromstring($image);
-                } catch (Error) { $image = null; }
+                } catch (\Error) { $image = null; }
 
-                $image || throw new PayloadException('Failed creating image source, invalid string contents');
+                $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
                 $modifiedAt = self::getModifiedAt('', $modifiedAt);
             }
@@ -93,9 +98,9 @@ final class ImagePayload extends Payload implements PayloadInterface
             unset($temp);
         }
         // Image may be GdImage.
-        elseif (!is_image($image)) {
+        elseif (!$type->isImage()) {
             if (File::errorCheck($image, $error)) {
-                throw new PayloadException($error->getMessage(), null, $error->getCode());
+                throw new PayloadException($error);
             }
 
             $modifiedAt = self::getModifiedAt($image, $modifiedAt);
@@ -108,5 +113,13 @@ final class ImagePayload extends Payload implements PayloadInterface
         ]);
 
         return ($content = $image);
+    }
+
+    /**
+     * Valid iamge-type checker.
+     */
+    private function isValidImageType(mixed $imageType): bool
+    {
+        return preg_test('~^image/(?:jpeg|webp|png|gif)$~', (string) $imageType);
     }
 }

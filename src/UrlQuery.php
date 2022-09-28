@@ -7,41 +7,24 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interface\{Listable, Arrayable, Objectable, Stringable};
-use froq\common\trait\{DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait};
-use froq\collection\trait\{EachTrait, FilterTrait, MapTrait, GetTrait};
-use froq\util\{Util, Arrays};
+use froq\common\interface\{Arrayable, Objectable, Listable, Stringable};
+use froq\collection\trait\{FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait};
+use froq\util\Util;
 
 /**
- * Url Query.
- *
- * Represents a URL-query class to be available to work in OOP style with URL-queries.
+ * An array-like class for working with URL-queries in OOP-style.
  *
  * @package froq\http
  * @object  froq\http\UrlQuery
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
+final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countable, \ArrayAccess
 {
-    /**
-     * @see froq\common\trait\DataCountTrait
-     * @see froq\common\trait\DataEmptyTrait
-     * @see froq\common\trait\DataToListTrait
-     * @see froq\common\trait\DataToArrayTrait
-     */
-    use DataCountTrait, DataEmptyTrait, DataToListTrait, DataToArrayTrait;
-
-    /**
-     * @see froq\collection\trait\EachTrait
-     * @see froq\collection\trait\FilterTrait
-     * @see froq\collection\trait\MapTrait
-     * @see froq\collection\trait\GetTrait
-     */
-    use EachTrait, FilterTrait, MapTrait, GetTrait;
+    use FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
 
     /** @var array */
-    private array $data;
+    private array $data = [];
 
     /**
      * Constructor.
@@ -50,11 +33,32 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
      */
     public function __construct(array|string $data)
     {
-        is_array($data) || $data = Util::parseQueryString($data);
+        $this->data = is_array($data) ? self::mapData($data)
+            : http_parse_query_string($data);
+    }
 
-        $data = array_map_recursive('strval', $data);
+    /** @magic */
+    public function __set(string $key, string|null $value): void
+    {
+        $this->set($key, $value);
+    }
 
-        $this->data = $data;
+    /** @magic */
+    public function __get(string $key): string|null
+    {
+        return $this->get($key);
+    }
+
+    /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
+    /** @magic */
+    public function __debugInfo(): array
+    {
+        return $this->data;
     }
 
     /**
@@ -80,14 +84,14 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     }
 
     /**
-     * Check whether a key is set & not empty '' / null (usable for dotted notations) and
+     * Check whether a key is set & not empty "" / null (usable for dotted notations) and
      * set ref'ed value with fetched value.
      *
-     * @param  string    $key
-     * @param  any|null &$value
+     * @param  string       $key
+     * @param  string|null &$value
      * @return bool
      */
-    public function hasValue(string $key, &$value = null): bool
+    public function hasValue(string $key, string|null &$value = null): bool
     {
         $value = $this->get($key);
 
@@ -95,27 +99,125 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     }
 
     /**
-     * Get a value by given key.
+     * Add an item.
      *
-     * @param  string   $key
-     * @param  any|null $default
-     * @return any|null
+     * @param string       $key
+     * @param string|array $value
+     * @return self
+     * @since  6.0
      */
-    public function get(string $key, $default = null)
+    public function add(string $key, string|array $value): self
     {
-        return array_fetch($this->data, $key, $default);
+        if (is_array($value)) {
+            $value = self::mapData($value);
+        }
+
+        if (isset($this->data[$key])) {
+            $this->data[$key] = array_concat([], $this->data[$key], $value);
+        } else {
+            $this->data[$key] = $value;
+        }
+
+        return $this;
     }
 
     /**
-     * Get all values by given keys.
+     * Add many items.
      *
-     * @param  array    $keys
-     * @param  any|null $default
+     * @param  array<string, string> $data
+     * @return self
+     * @since  6.0
+     */
+    public function addAll(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $this->add($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set an item.
+     *
+     * @param string $key
+     * @param string $value
+     * @return self
+     * @since  6.0
+     */
+    public function set(string $key, string $value): self
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set many items.
+     *
+     * @param  array<string, string> $data
+     * @return self
+     * @since  6.0
+     */
+    public function setAll(array $data): self
+    {
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get an item.
+     *
+     * @param  string     $key
+     * @param  mixed|null $default
+     * @return mixed
+     */
+    public function get(string $key, mixed $default = null): mixed
+    {
+        return array_get($this->data, $key, $default);
+    }
+
+    /**
+     * Get many items.
+     *
+     * @param  array      $keys
+     * @param  array|null $defaults
      * @return array
      */
-    public function getAll(array $keys, $default = null): array
+    public function getAll(array $keys, array $defaults = null): array
     {
-        return array_fetch($this->data, $keys, $default);
+        return array_get_all($this->data, $keys, $defaults);
+    }
+
+    /**
+     * Remove an item.
+     *
+     * @param  string $key
+     * @return self
+     * @since  6.0
+     */
+    public function remove(string $key): self
+    {
+        array_remove($this->data, $key);
+
+        return $this;
+    }
+
+    /**
+     * Remove many items.
+     *
+     * @param  array<string> $keys
+     * @return self
+     * @since  6.0
+     */
+    public function removeAll(array $keys): self
+    {
+        array_remove_all($this->data, $keys);
+
+        return $this;
     }
 
     /**
@@ -131,7 +233,7 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
      */
     public function toString(): string
     {
-        return Util::buildQueryString($this->data);
+        return http_build_query_string($this->data);
     }
 
     /**
@@ -154,5 +256,50 @@ final class UrlQuery implements Listable, Arrayable, Objectable, Stringable
     public static function fromString(string $data): self
     {
         return new self($data);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetExists(mixed $key): bool
+    {
+        return $this->get($key) !== null;
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetGet(mixed $key): string
+    {
+        return $this->get($key);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetSet(mixed $key, mixed $value): void
+    {
+        $this->set($key, $value);
+    }
+
+    /**
+     * @inheritDoc ArrayAccess
+     */
+    public function offsetUnset(mixed $key): void
+    {
+        $this->remove($key);
+    }
+
+    /**
+     * Map data to uniform as string.
+     */
+    private static function mapData(array $data): array
+    {
+        return array_map_recursive(function ($value) {
+            if (is_bool($value)) {
+                $value = (int) $value;
+            }
+            return (string) $value;
+        }, $data);
     }
 }

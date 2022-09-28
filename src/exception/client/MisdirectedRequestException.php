@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Misdirected Request Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\MisdirectedRequestException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class MisdirectedRequestException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::MISDIRECTED_REQUEST;
+    public final const CODE = Status::MISDIRECTED_REQUEST;
 }

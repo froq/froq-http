@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Insufficient Storage Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\InsufficientStorageException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class InsufficientStorageException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::INSUFFICIENT_STORAGE;
+    public final const CODE = Status::INSUFFICIENT_STORAGE;
 }

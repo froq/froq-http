@@ -10,7 +10,7 @@ namespace froq\http\request;
 use froq\common\interface\Stringable;
 
 /**
- * Method.
+ * Method class, used by request class.
  *
  * @package froq\http\request
  * @object  froq\http\request\Method
@@ -44,11 +44,7 @@ final class Method implements Stringable
         $this->setName($name);
     }
 
-    /**
-     * Magic string.
-     *
-     * @return string
-     */
+    /** @magic */
     public function __toString()
     {
         return $this->toString();
@@ -126,6 +122,16 @@ final class Method implements Stringable
     }
 
     /**
+     * Is purge.
+     *
+     * @return bool
+     */
+    public function isPurge(): bool
+    {
+        return ($this->name == self::PURGE);
+    }
+
+    /**
      * Is options.
      *
      * @return bool
@@ -183,6 +189,26 @@ final class Method implements Stringable
     public function isMove(): bool
     {
         return ($this->name == self::MOVE);
+    }
+
+    /**
+     * Is link.
+     *
+     * @return bool
+     */
+    public function isLink(): bool
+    {
+        return ($this->name == self::LINK);
+    }
+
+    /**
+     * Is unlink.
+     *
+     * @return bool
+     */
+    public function isUnlink(): bool
+    {
+        return ($this->name == self::UNLINK);
     }
 
     /**

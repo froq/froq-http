@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Variant Also Negotiates Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\VariantAlsoNegotiatesException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class VariantAlsoNegotiatesException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::VARIANT_ALSO_NEGOTIATES;
+    public final const CODE = Status::VARIANT_ALSO_NEGOTIATES;
 }

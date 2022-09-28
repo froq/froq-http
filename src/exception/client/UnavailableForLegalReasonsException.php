@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Unavailable For Legal Reasons Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\UnavailableForLegalReasonsException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class UnavailableForLegalReasonsException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::UNAVAILABLE_FOR_LEGAL_REASONS;
+    public final const CODE = Status::UNAVAILABLE_FOR_LEGAL_REASONS;
 }

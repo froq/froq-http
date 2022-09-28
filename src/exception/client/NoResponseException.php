@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * No Response Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\NoResponseException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class NoResponseException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::NO_RESPONSE;
+    public final const CODE = Status::NO_RESPONSE;
 }

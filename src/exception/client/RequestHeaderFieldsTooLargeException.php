@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Request Header Fields Too Large Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\RequestHeaderFieldsTooLargeException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class RequestHeaderFieldsTooLargeException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::REQUEST_HEADER_FIELDS_TOO_LARGE;
+    public final const CODE = Status::REQUEST_HEADER_FIELDS_TOO_LARGE;
 }

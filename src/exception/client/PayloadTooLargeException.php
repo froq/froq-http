@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Payload Too Large Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\PayloadTooLargeException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class PayloadTooLargeException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::PAYLOAD_TOO_LARGE;
+    public final const CODE = Status::PAYLOAD_TOO_LARGE;
 }

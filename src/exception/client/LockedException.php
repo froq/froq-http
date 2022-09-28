@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Locked Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\LockedException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class LockedException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::LOCKED;
+    public final const CODE = Status::LOCKED;
 }

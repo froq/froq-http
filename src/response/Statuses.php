@@ -8,23 +8,23 @@ declare(strict_types=1);
 namespace froq\http\response;
 
 /**
- * Status Codes.
- *
- * Represents an HTTP Status Code registry with some utility methods. All code & text (reason phrases)
- * resouces can be found at: https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
+ * An HTTP Status Code registry class with `all()` method. Code & text resouces can be
+ * found at https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
  *
  * @package froq\http\response
- * @object  froq\http\response\StatusCodes
+ * @object  froq\http\response\Statuses
  * @author  Kerem Güneş
  * @since   4.0
+ * @internal
  */
-class StatusCodes
+class Statuses
 {
     /**
      * Status constants.
+     *
      * @const int
      */
-    public const
+    public final const
         // Informationals (1xx).
         CONTINUE                        = 100,
         SWITCHING_PROTOCOLS             = 101,
@@ -107,10 +107,11 @@ class StatusCodes
         NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
 
     /**
-     * Statuses map.
-     * @var array
+     * Status map.
+     *
+     * @var array<int, string>
      */
-    private static array $statuses = [
+    private static array $all = [
         // Informationals (1xx).
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -192,49 +193,12 @@ class StatusCodes
     ];
 
     /**
-     * Get all statuses.
+     * Get status map.
      *
-     * @return array
+     * @return array<int, string>
      */
     public static final function all(): array
     {
-        return self::$statuses;
-    }
-
-    /**
-     * Validate given status code.
-     *
-     * @param  int $code
-     * @return bool
-     */
-    public static final function validate(int $code): bool
-    {
-        // @cancel
-        // Since only IANA-defined codes are here, do not use $statuses.
-        // return array_key_exists($code, self::$statuses);
-
-        return ($code >= 100 && $code <= 599);
-    }
-
-    /**
-     * Get code by text.
-     *
-     * @param  string $text
-     * @return int|null
-     */
-    public static final function getCodeByText(string $text): int|null
-    {
-        return array_flip(self::$statuses)[$text] ?? null;
-    }
-
-    /**
-     * Get text by code.
-     *
-     * @param  int $code
-     * @return string|null
-     */
-    public static final function getTextByCode(int $code): string|null
-    {
-        return self::$statuses[$code] ?? null;
+        return self::$all;
     }
 }

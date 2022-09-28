@@ -11,8 +11,6 @@ use froq\http\exception\ClientException;
 use froq\http\response\Status;
 
 /**
- * Gone Exception.
- *
  * @package froq\http\exception\client
  * @object  froq\http\exception\client\GoneException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class GoneException extends ClientException
 {
     /** @const int */
-    public const CODE = Status::GONE;
+    public final const CODE = Status::GONE;
 }

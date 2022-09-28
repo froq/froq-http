@@ -7,24 +7,18 @@ declare(strict_types=1);
 
 namespace froq\http\common;
 
-use froq\http\common\{HeaderTrait, CookieTrait};
-
 /**
- * Response Trait.
+ * A trait, provides some utilities for response class.
  *
- * @package  froq\http\common
- * @object   froq\http\common\ResponseTrait
- * @author   Kerem Güneş
- * @since    4.0
- * @internal Used in froq\http only.
+ * @package froq\http\common
+ * @object  froq\http\common\ResponseTrait
+ * @author  Kerem Güneş
+ * @since   4.0
+ * @internal
  */
 trait ResponseTrait
 {
-    /** @see froq\http\common\HeaderTrait */
-    use HeaderTrait;
-
-    /** @see froq\http\common\CookieTrait */
-    use CookieTrait;
+    use HeaderTrait, CookieTrait;
 
     /**
      * Set status code.
@@ -50,14 +44,44 @@ trait ResponseTrait
     }
 
     /**
+     * Set content.
+     *
+     * @param  mixed       $content
+     * @param  string|null $type
+     * @param  string|null $charset
+     * @return self
+     * @since  6.0
+     */
+    public function setContent(mixed $content, string $type = null, string $charset = null): self
+    {
+        $this->body->setContent($content);
+
+        $type    && $this->body->setContentType($type);
+        $charset && $this->body->setContentCharset($charset);
+
+        return $this;
+    }
+
+    /**
+     * Get content.
+     *
+     * @return mixed
+     * @since  6.0
+     */
+    public function getContent(): mixed
+    {
+        return $this->body->getContent();
+    }
+
+    /**
      * Set content type.
      *
-     * @param  ?string $type
+     * @param  string $type
      * @return self
      */
-    public function setContentType(?string $type): self
+    public function setContentType(string $type): self
     {
-        $this->body->setAttribute('type', $type);
+        $this->body->setContentType($type);
 
         return $this;
     }
@@ -65,22 +89,22 @@ trait ResponseTrait
     /**
      * Get content type.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getContentType(): ?string
+    public function getContentType(): string|null
     {
-        return $this->body->getAttribute('type');
+        return $this->body->getContentType();
     }
 
     /**
      * Set content charset.
      *
-     * @param  ?string $charset
+     * @param  string $charset
      * @return self
      */
-    public function setContentCharset(?string $charset): self
+    public function setContentCharset(string $charset): self
     {
-        $this->body->setAttribute('charset', $charset);
+        $this->body->setContentCharset($charset);
 
         return $this;
     }
@@ -88,10 +112,46 @@ trait ResponseTrait
     /**
      * Get content charset.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getContentCharset(): ?string
+    public function getContentCharset(): string|null
     {
-        return $this->body->getAttribute('charset');
+        return $this->body->getContentCharset();
+    }
+
+    /**
+     * Set content attributes.
+     *
+     * @param  string $attributes
+     * @return self
+     * @since  6.0
+     */
+    public function setContentAttributes(array $attributes): self
+    {
+        $this->body->setAttributes($attributes);
+
+        return $this;
+    }
+
+    /**
+     * Get content attributes.
+     *
+     * @return array|null
+     * @since  6.0
+     */
+    public function getContentAttributes(): array|null
+    {
+        return $this->body->getAttributes() ?: null;
+    }
+
+    /**
+     * Response allows a body?
+     *
+     * @return bool
+     * @since  6.0
+     */
+    public function allowsBody(): bool
+    {
+        return $this->status->isAllowedForBody();
     }
 }

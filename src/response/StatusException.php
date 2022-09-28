@@ -7,15 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\response;
 
-use froq\http\ResponseException;
-
 /**
- * Status Exception.
- *
  * @package froq\http\response
  * @object  froq\http\response\StatusException
  * @author  Kerem Güneş
  * @since   4.0
  */
-class StatusException extends ResponseException
+class StatusException extends \froq\http\ResponseException
 {}

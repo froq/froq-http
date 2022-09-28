@@ -7,12 +7,10 @@ declare(strict_types=1);
 
 namespace froq\http\request;
 
-use froq\http\request\{Segments, UriException};
 use froq\http\Url;
-use Throwable;
 
 /**
- * Uri.
+ * URI class, used by request class.
  *
  * @package froq\http\request
  * @object  froq\http\request\Uri
@@ -22,7 +20,10 @@ use Throwable;
 final class Uri extends Url
 {
     /** @var froq\http\request\Segments */
-    private Segments $segments;
+    public readonly Segments $segments;
+
+    /** @var array<string> */
+    protected static array $components = ['path', 'query', 'queryParams', 'fragment'];
 
     /**
      * Constructor.
@@ -33,55 +34,53 @@ final class Uri extends Url
     public function __construct(array|string $source)
     {
         try {
-            parent::__construct($source, components: ['path', 'query', 'queryParams', 'fragment']);
-        } catch (Throwable $e) {
+            parent::__construct($source, self::$components);
+        } catch (\Throwable $e) {
             throw new UriException($e);
         }
-
-        $this->readOnly(true); // Lock.
     }
 
     /**
-     * Get a segment.
+     * Get a segment param.
      *
-     * @param  int|string $key
-     * @param  any|null   $default
-     * @return any|null
+     * @param  int|string  $key
+     * @param  string|null $default
+     * @return string|null
      * @throws froq\http\request\UriException
      */
-    public function segment(int|string $key, $default = null)
+    public function segment(int|string $key, string $default = null): string|null
     {
-        if (isset($this->segments)) {
-            return $this->segments->get($key, $default);
-        }
+        isset($this->segments) || throw new UriException(
+            'Property $segments not set yet [method generateSegments() not called]'
+        );
 
-        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
-            . ' not called yet]');
+        return $this->segments->get($key, $default);
     }
 
     /**
-     * Get segments property or params.
+     * Get a segment param or Segments object.
      *
      * @param  array<int|string>|null $keys
-     * @param  any|null               $default
-     * @return froq\http\request\Segments|array
+     * @param  array<string>|null     $defaults
+     * @return array<string>froq\http\request\Segments
+     * @throws froq\http\request\UriException
      */
-    public function segments(array $keys = null, $default = null): Segments|array
+    public function segments(array $keys = null, array $defaults = null): array|Segments
     {
-        if (isset($this->segments)) {
-            if ($keys === null) {
-                return $this->segments;
-            }
+        isset($this->segments) || throw new UriException(
+            'Property $segments not set yet [method generateSegments() not called]'
+        );
 
-            $ret = [];
-            foreach ($keys as $key) {
-                $ret[] = $this->segments->get($key, $default);
-            }
-            return $ret;
+        if ($keys === null) {
+            return $this->segments;
         }
 
-        throw new UriException('Property $segments not set yet [tip: method generateSegments()'
-            . ' not called yet]');
+        $values = [];
+        foreach ($keys as $i => $key) {
+            $values[] = $this->segments->get($key, $defaults[$i] ?? null);
+        }
+
+        return $values;
     }
 
     /**
@@ -94,20 +93,38 @@ final class Uri extends Url
      */
     public function generateSegments(string $root = null): void
     {
-        $path = $this->get('path') ?: '';
+        isset($this->segments) && throw new UriException(
+            'Cannot re-generate segments'
+        );
 
-        [$path, $segments, $segmentsRoot] = [
-            rawurldecode($path), [], Segments::ROOT
-        ];
+        $path = $this->get('path', '');
 
-        if ($path && $path != $segmentsRoot) {
+        $this->segments = self::parseSegments($path, $root);
+    }
+
+    /**
+     * Parse segments.
+     *
+     * @param  string      $path
+     * @param  string|null $root
+     * @return froq\http\request\Segments
+     * @throws froq\http\request\UriException
+     * @since  6.0
+     */
+    public static function parseSegments(string $path, string $root = null): Segments
+    {
+        $path         = rawurldecode($path);
+        $segments     = [];
+        $segmentsRoot = Segments::ROOT;
+
+        if ($path != '' && $path != $segmentsRoot) {
             // Drop root if exists.
-            if ($root && $root != $segmentsRoot) {
-                $root = '/'. trim($root, '/');
+            if ($root != '' && $root != $segmentsRoot) {
+                $root = '/' . trim($root, '/');
 
                 // Prevent wrong generate action.
                 if (!str_starts_with($path, $root)) {
-                    throw new UriException('URI path `%s` has no root such `%s`', [$path, $root]);
+                    throw new UriException('Path `%s` has no root `%s`', [$path, $root]);
                 }
 
                 // Drop root from path.
@@ -117,9 +134,14 @@ final class Uri extends Url
                 $segmentsRoot = $root;
             }
 
-            $segments = (array) preg_split('~/+~', $path, -1, 1);
+            $segments = preg_split('~/+~', $path, flags: 1);
+
+            // In any case.
+            if ($segments === false) {
+                throw new UriException('Cannot generate segments [error: @error]');
+            }
         }
 
-        $this->segments = Segments::fromArray($segments, $segmentsRoot);
+        return Segments::fromArray($segments, $segmentsRoot);
     }
 }

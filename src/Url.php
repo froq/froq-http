@@ -7,16 +7,12 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\http\UrlException;
 use froq\collection\ComponentCollection;
 use froq\common\interface\Stringable;
-use froq\util\{Util, Arrays};
 
 /**
- * Url.
- *
- * Represents a URL object with strict/optional components that accessible via set/get methods or via
- * `__call()` magic with their names (eg: `getScheme()`), and some other utility methods.
+ * A URL object with strict/optional components that accessible via set/get methods or via
+ * `__call()` magic with their names (eg: `getPath()`), and some other utility methods.
  *
  * @package froq\http
  * @object  froq\http\Url
@@ -25,111 +21,94 @@ use froq\util\{Util, Arrays};
  */
 class Url extends ComponentCollection implements Stringable
 {
-    /** @var array|string */
-    protected array|string $source;
+    /** @var array<string>|string|null */
+    protected array|string|null $source;
 
-    /** @var array */
+    /** @var array<string> */
     protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
-        'query', 'queryParams', 'fragment', 'authority', 'userInfo'];
+        'query', 'queryParams', 'fragment', 'origin', 'authority'];
 
     /**
      * Constructor.
      *
-     * @param   array|string|null $source
-     * @param   array|null        $components
+     * @param   array<string>|string|null source
+     * @param   array<string>|null        $components
      * @@throws froq\http\UrlException
      */
     public function __construct(array|string $source = null, array $components = null)
     {
-        $components ??= self::$components;
+        parent::__construct($components ??= self::$components);
 
-        // Set components.
-        parent::__construct($components);
+        $this->source = $source;
 
-        if ($source == null) {
+        if ($source === null) {
             return;
         }
 
-        // Keep source.
-        $this->source = $source;
-
         if (is_string($source)) {
-            $i = 0;
-            // $colon = strpos($source, ':');
-
-            // Fix beginning-slashes & colons issue that falsifying parse_url();
-            if (str_starts_with($source, '//')) {
-                while (($source[++$i] ?? '') === '/');
-
-                $source = '/'. substr($source, $i);
+            if ($source == '') {
+                throw new UrlException('Invalid URL/URI source, empty source');
             }
 
-            // if ($colon) {
-            //     $source = str_replace(':', '%3A', $source);
-            // }
-
-            $source = parse_url($source);
-            if ($source === false) {
+            $source = http_parse_url($source);
+            if (!$source) {
                 throw new UrlException('Invalid URL/URI source, parsing failed');
             }
-
-            // Put slashes & colons back (to keep source original).
-            if (isset($source['path'])) {
-                if ($i) {
-                    $source['path'] = str_repeat('/', $i - 1) . $source['path'];
-                }
-
-                // if ($colon) {
-                //     $source['path'] = str_replace('%3A', ':', $source['path']);
-                // }
-            }
-        }
-
-        if (isset($source['query'])) {
-            $query = Arrays::pull($source, 'query');
-            if ($query != null) {
-                $source += ['query' => $query, 'queryParams' => Util::parseQueryString($query)];
-            }
-        }
-
-        if (isset($source['authority'])) {
-            $authority = parse_url('scheme://' . $source['authority']);
-            if ($authority === false) {
-                throw new UrlException('Invalid authority, parsing failed');
-            }
-
-            // Drop used fake scheme above.
-            unset($authority['scheme']);
-
-            $source = array_merge($source, $authority);
         } else {
-            $authority = $userInfo = '';
+            // Update query stuff.
+            if (isset($source['query']) || isset($source['queryParams'])) {
+                $temp = [];
+                if (isset($source['query'])) {
+                    $temp = http_parse_query_string($source['query']);
+                }
+                if (isset($source['queryParams'])) {
+                    $temp = array_replace($temp, $source['queryParams']);
+                }
+                $source['query'] = http_build_query_string($temp);
+                $source['queryParams'] = $temp;
+                unset($temp);
+            }
+        }
 
+        if (!isset($source['origin'])) {
+            $origin = null;
+            if (isset($source['scheme'], $source['host'])) {
+                $origin = sprintf('%s://%s%s', $source['scheme'], $source['host'], (
+                    isset($source['port']) ? ':' . $source['port'] : ''
+                ));
+            }
+
+            $source['origin'] = $origin;
+        }
+
+        if (!isset($source['authority'])) {
+            $authority = null;
             isset($source['user']) && $authority .= $source['user'];
             isset($source['pass']) && $authority .= ':' . $source['pass'];
 
-            $userInfo = $authority;
-
-            if ($userInfo != '') {
-                $source['userInfo'] = $userInfo;
-
-                $authority .= '@'; // Separate.
+            // Add separator.
+            if ($authority != '') {
+                $authority .= '@';
             }
 
             isset($source['host']) && $authority .= $source['host'];
             isset($source['port']) && $authority .= ':' . $source['port'];
 
-            if ($authority != '') {
-                $source['authority'] = $authority;
-            }
+            $source['authority'] = $authority;
         }
 
         // Use self component names only.
-        $source = Arrays::include($source, $components);
+        $source = array_include($source, $components);
 
         foreach ($source as $name => $value) {
             $this->set($name, $value);
         }
+    }
+
+    /** @magic */
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     /**
@@ -139,7 +118,7 @@ class Url extends ComponentCollection implements Stringable
      */
     public function source(): array|string|null
     {
-        return $this->source ?? null;
+        return $this->source;
     }
 
     /**
@@ -147,28 +126,6 @@ class Url extends ComponentCollection implements Stringable
      */
     public function toString(): string
     {
-        [$scheme, $authority, $path, $query, $queryParams, $fragment] = array_select(
-            $this->toArray(), ['scheme', 'authority', 'path', 'query', 'queryParams', 'fragment']
-        );
-
-        $ret = '';
-
-        // Syntax Components: https://tools.ietf.org/html/rfc3986#section-3
-        if ($scheme) {
-            $ret .= $scheme;
-            $ret .= $authority ? '://' . $authority : ':';
-        } elseif ($authority) {
-            $ret .= $authority;
-        }
-
-        if ($queryParams) {
-            $query = Util::buildQueryString($queryParams);
-        }
-
-        $path     && $ret .= $path;
-        $query    && $ret .= '?' . $query;
-        $fragment && $ret .= '#' . $fragment;
-
-        return $ret;
+        return http_build_url($this->data);
     }
 }

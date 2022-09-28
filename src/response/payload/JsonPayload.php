@@ -7,12 +7,11 @@ declare(strict_types=1);
 
 namespace froq\http\response\payload;
 
-use froq\http\response\payload\{Payload, PayloadInterface, PayloadException};
 use froq\http\{Response, message\ContentType};
-use froq\encoding\Encoder;
+use froq\encoding\encoder\JsonEncoder;
 
 /**
- * Json Payload.
+ * A payload class for sending JSON texts as response content with attributes.
  *
  * @package froq\http\response\payload
  * @object  froq\http\response\payload\JsonPayload
@@ -25,11 +24,11 @@ final class JsonPayload extends Payload implements PayloadInterface
      * Constructor.
      *
      * @param int                     $code
-     * @param any                     $content
+     * @param mixed                   $content
      * @param array|null              $attributes
      * @param froq\http\Response|null $response
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, mixed $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] ??= ContentType::APPLICATION_JSON;
 
@@ -47,15 +46,19 @@ final class JsonPayload extends Payload implements PayloadInterface
             return $content;
         }
 
-        if (!Encoder::isEncoded('json', $content)) {
-            $options = null;
-            if ($this->response != null) {
-                $options = $this->response->getApp()->config('response.json');
-            }
+        if (!JsonEncoder::isEncoded($content)) {
+            // When given in config as "response.json" field.
+            $options = (array) $this->response?->app->config('response.json');
 
-            $content = Encoder::jsonEncode($content, $options, $error);
-            if ($error != null) {
-                throw new PayloadException($error->getMessage(), null, $error->getCode());
+            $encoder = new JsonEncoder($options);
+            $encoder->setInput($content);
+
+            if ($encoder->encode()) {
+                $content = $encoder->getOutput();
+            } elseif ($error = $encoder->error()) {
+                throw new PayloadException(
+                    $error->message, code: $error->code, cause: $error
+                );
             }
         }
 

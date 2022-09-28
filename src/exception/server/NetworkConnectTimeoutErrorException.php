@@ -11,8 +11,6 @@ use froq\http\exception\ServerException;
 use froq\http\response\Status;
 
 /**
- * Network Connect Timeout Error Exception.
- *
  * @package froq\http\exception\server
  * @object  froq\http\exception\server\NetworkConnectTimeoutErrorException
  * @author  Kerem Güneş
@@ -21,5 +19,5 @@ use froq\http\response\Status;
 class NetworkConnectTimeoutErrorException extends ServerException
 {
     /** @const int */
-    public const CODE = Status::NETWORK_CONNECT_TIMEOUT_ERROR;
+    public final const CODE = Status::NETWORK_CONNECT_TIMEOUT_ERROR;
 }
