@@ -91,12 +91,12 @@ final class Response extends Message
      *
      * @param  string|object $target
      * @param  array         $options
-     * @param  bool          $allowNullBody
+     * @param  bool          $skipNullBody
      * @return object|null
      */
-    public function getParsedBodyAs(string|object $target, array $options = [], bool $allowNullBody = true): object|null
+    public function getParsedBodyAs(string|object $target, array $options = [], bool $skipNullBody = true): object|null
     {
-        if ($allowNullBody && $this->parsedBody === null) {
+        if ($skipNullBody && $this->parsedBody === null) {
             return null;
         }
 
