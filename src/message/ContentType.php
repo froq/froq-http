@@ -44,7 +44,7 @@ final class ContentType extends Enum
                  IMAGE_PNG  = 'image/png',
                  IMAGE_GIF  = 'image/gif';
 
-     /**
+    /**
      * Files.
      * @const string
      */
