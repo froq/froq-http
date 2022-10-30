@@ -11,7 +11,7 @@ use froq\http\common\ResponseTrait;
 use froq\http\response\{Status, StatusException};
 use froq\http\message\{ContentType, ContentCharset};
 use froq\encoding\encoder\{GZipEncoder, ZLibEncoder};
-use froq\file\object\{FileObject, ImageObject};
+use froq\file\object\{ImageObject, FileObject};
 use froq\{App, util\Util};
 use Assert;
 
@@ -230,7 +230,7 @@ final class Response extends Message
 
         // Those n/a responses output nothing.
         if ($this->body->isNa()) {
-            $this->done(['Content-Type' => 'n/a', 'Content-Length' => 0]);
+            $this->echo(['Content-Type' => 'n/a', 'Content-Length' => 0]);
         }
         // Text contents (html, json, xml etc.).
         elseif ($this->body->isText()) {
@@ -267,8 +267,8 @@ final class Response extends Message
                         $encoder = ($contentEncoding == 'gzip')
                             ? new GZipEncoder(['level' => $compressLevel])
                             : new ZLibEncoder(['level' => $compressLevel]);
-                        $encoder->setInput($content);
 
+                        $encoder->setInput($content);
                         if ($encoder->encode()) {
                             $content = $encoder->getOutput();
                             unset($encoder);
@@ -287,7 +287,7 @@ final class Response extends Message
                 }
             }
 
-            $this->done($headers, $content);
+            $this->echo($headers, $content);
         }
         // Image contents.
         elseif ($this->body->isImage()) {
@@ -297,7 +297,7 @@ final class Response extends Message
 
             $headers = ['Content-Type' => $imageType];
 
-            // For direct file reads.
+            // For direct file read.
             if ($direct) {
                 $headers['Content-Length'] = filesize($image);
 
@@ -313,13 +313,14 @@ final class Response extends Message
 
                 $headers['X-Dimensions'] = vsprintf('%dx%d', getimagesize($image));
 
-                $this->done($headers);
+                $this->echo($headers);
 
-                readfile($image); // Read.
+                readfile($image);
             }
             // For resize/crop purposes.
             else {
                 $options = $attributes['options'] ?? $this->app->config('response.image');
+                $options = $options ? (array) $options : null;
 
                 $image   = new ImageObject($image, $imageType, $options);
                 $content = $image->toString();
@@ -338,7 +339,7 @@ final class Response extends Message
 
                 $headers['X-Dimensions'] = vsprintf('%dx%d', $image->dimensions());
 
-                $this->done($headers, $content);
+                $this->echo($headers, $content);
 
                 unset($image); // Free.
             }
@@ -373,28 +374,21 @@ final class Response extends Message
                 $headers['X-Rate-Limit'] = Util::formatBytes($rateLimit) . '/s';
             }
 
-            $this->done($headers);
+            $this->echo($headers);
 
-            // For direct file reads.
+            // For direct file read.
             if ($direct) {
-                $file = fopen($file, 'rb');
-
-                do {
-                    print fread($file, $rateLimit);
-                    sleep(1); // Apply rate limit.
-                } while (!connection_aborted() && !feof($file));
-
-                fclose($file);
+                readfile($file);
             }
-            // For resource reads.
+            // For resource read.
             else {
                 $file = new FileObject($file);
                 $file->rewind();
 
                 do {
-                    print $file->read($rateLimit);
+                    echo $file->read($rateLimit);
                     sleep(1); // Apply rate limit.
-                } while (!connection_aborted() && $file->valid());
+                } while ($file->valid() && !connection_aborted());
 
                 unset($file); // Free.
             }
@@ -437,9 +431,9 @@ final class Response extends Message
     }
 
     /**
-     * Done wrapper.
+     * Echo wrapper.
      */
-    private function done(array $headers, string|null $output = null): void
+    private function echo(array $headers, string|null $output = null): void
     {
         $this->free();
         $this->expose();
@@ -451,7 +445,7 @@ final class Response extends Message
 
         // Print output.
         if ($output !== null) {
-            print $output;
+            echo $output;
         }
     }
 
