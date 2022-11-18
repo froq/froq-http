@@ -122,7 +122,7 @@ final class Uri extends Url
             if ($root !== '' && $root !== $segmentsRoot) {
                 $root = '/' . trim($root, '/');
 
-                // Prevent wrong generate action.
+                // Prevent invalid generate action.
                 if (!str_starts_with($path, $root)) {
                     throw new UriException('Path `%s` has no root `%s`', [$path, $root]);
                 }
