@@ -71,7 +71,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 }
 
                 $fileSize    = filesize($file);
-                $memoryLimit = self::getMemoryLimit($limit);
+                $memoryLimit = $this->getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $fileSize > $memoryLimit) {
                     throw new PayloadException('Given file exceeding `memory_limit` current ini '.
                         'configuration value (%s)', $limit);
@@ -84,7 +84,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $file || throw new PayloadException('Failed creating file resource [error: @error]');
 
                 $fileName   = $fileName ?: filename($temp, true);
-                $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
+                $modifiedAt = $this->getModifiedAt($temp, $modifiedAt);
             }
             // Convert content to source.
             else {
@@ -95,7 +95,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $file || throw new PayloadException('Failed creating file resource [error: @error]');
 
                 $fileName   = strval($fileName ?: crc32($temp));
-                $modifiedAt = self::getModifiedAt('', $modifiedAt);
+                $modifiedAt = $this->getModifiedAt('', $modifiedAt);
             }
 
             unset($temp);
@@ -107,7 +107,7 @@ final class FilePayload extends Payload implements PayloadInterface
             }
 
             $fileName   = $fileName ?: filename($file, true);
-            $modifiedAt = self::getModifiedAt($file, $modifiedAt);
+            $modifiedAt = $this->getModifiedAt($file, $modifiedAt);
 
             $fileMime   = $fileMime ?: filemime($file);
             $fileSize   = $fileSize ?: filesize($file);

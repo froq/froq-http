@@ -33,7 +33,7 @@ final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Co
      */
     public function __construct(array|string $data)
     {
-        $this->data = is_array($data) ? self::mapData($data)
+        $this->data = is_array($data) ? $this->mapData($data)
             : http_parse_query_string($data);
     }
 
@@ -109,7 +109,7 @@ final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Co
     public function add(string $key, string|array $value): self
     {
         if (is_array($value)) {
-            $value = self::mapData($value);
+            $value = $this->mapData($value);
         }
 
         if (isset($this->data[$key])) {
@@ -293,13 +293,16 @@ final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Co
     /**
      * Map data to uniform as string.
      */
-    private static function mapData(array $data): array
+    private function mapData(array $data): array
     {
-        return array_map_recursive(function ($value) {
-            if (is_bool($value)) {
-                $value = (int) $value;
-            }
-            return (string) $value;
-        }, $data);
+        return array_map_recursive(
+            function (mixed $value): string {
+                if (is_bool($value)) {
+                    $value = (int) $value;
+                }
+                return (string) $value;
+            },
+            $data
+        );
     }
 }

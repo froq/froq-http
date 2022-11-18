@@ -164,7 +164,7 @@ class Payload
                 ?: throw new PayloadException('Content type must not be empty');
 
             // Detect content type and process.
-            switch ($type = self::sniffContentType($contentType)) {
+            switch ($type = $this->sniffContentType($contentType)) {
                 case 'n/a':
                     $content = null;
                     break;
@@ -178,7 +178,7 @@ class Payload
                     }
                     break;
                 case 'json': case 'xml':
-                    $payload = self::createPayload($type, [
+                    $payload = $this->createPayload($type, [
                         $payload->getResponseCode(), $payload->getContent(),
                         $payload->getAttributes(), $response
                     ]);
@@ -192,7 +192,7 @@ class Payload
                     }
                     break;
                 case 'image': case 'file': case 'download':
-                    $payload = self::createPayload($type, [
+                    $payload = $this->createPayload($type, [
                         $payload->getResponseCode(), $payload->getContent(),
                         $payload->getAttributes(), $response
                     ]);
@@ -228,7 +228,7 @@ class Payload
     /**
      * Get "modified at" option as timestamp.
      */
-    protected static function getModifiedAt(string $file, mixed $option): int|string|null
+    protected function getModifiedAt(string $file, mixed $option): int|string|null
     {
         // Disable directive.
         if ($option === null || $option === false) {
@@ -249,7 +249,7 @@ class Payload
     /**
      * Get "memory limit" directive as converted bytes.
      */
-    protected static function getMemoryLimit(string &$limit = null): int
+    protected function getMemoryLimit(string &$limit = null): int
     {
         $limit = (string) ini_get('memory_limit');
 
@@ -259,7 +259,7 @@ class Payload
     /**
      * Sniff given content type and return a pseudo type if valid.
      */
-    private static function sniffContentType(string $contentType): string|null
+    private function sniffContentType(string $contentType): string|null
     {
         $contentType = strtolower($contentType);
         if ($contentType == 'n/a') {
@@ -298,7 +298,7 @@ class Payload
     /**
      * Create a payload object by given pseudo type.
      */
-    private static function createPayload(string $type, array $args): PayloadInterface
+    private function createPayload(string $type, array $args): PayloadInterface
     {
         switch ($type) {
             case 'json':

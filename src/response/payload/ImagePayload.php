@@ -70,7 +70,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 }
 
                 $imageSize   = filesize($image);
-                $memoryLimit = self::getMemoryLimit($limit);
+                $memoryLimit = $this->getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
                     throw new PayloadException('Given image exceeding `memory_limit` current ini '.
                         'configuration value (%s)', $limit);
@@ -82,7 +82,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
                 $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
-                $modifiedAt = self::getModifiedAt($temp, $modifiedAt);
+                $modifiedAt = $this->getModifiedAt($temp, $modifiedAt);
             }
             // Convert content to source.
             else {
@@ -92,7 +92,7 @@ final class ImagePayload extends Payload implements PayloadInterface
 
                 $image || throw new PayloadException('Failed creating image resource [error: @error]');
 
-                $modifiedAt = self::getModifiedAt('', $modifiedAt);
+                $modifiedAt = $this->getModifiedAt('', $modifiedAt);
             }
 
             unset($temp);
@@ -103,7 +103,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 throw new PayloadException($error);
             }
 
-            $modifiedAt = self::getModifiedAt($image, $modifiedAt);
+            $modifiedAt = $this->getModifiedAt($image, $modifiedAt);
         }
 
         // Update attributes.
