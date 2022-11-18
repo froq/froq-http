@@ -117,9 +117,9 @@ final class Uri extends Url
         $segments     = [];
         $segmentsRoot = Segments::ROOT;
 
-        if ($path != '' && $path != $segmentsRoot) {
+        if ($path !== '' && $path !== $segmentsRoot) {
             // Drop root if exists.
-            if ($root != '' && $root != $segmentsRoot) {
+            if ($root !== '' && $root !== $segmentsRoot) {
                 $root = '/' . trim($root, '/');
 
                 // Prevent wrong generate action.
