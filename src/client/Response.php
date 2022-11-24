@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace froq\http\client;
 
+use froq\util\mapper\Mapper;
+
 /**
  * A server response class.
  *
@@ -87,20 +89,20 @@ final class Response extends Message
     }
 
     /**
-     * Get parsed body mapping to target class/object.
+     * Get parsed body mapping to given object.
      *
-     * @param  string|object $target
-     * @param  array         $options
-     * @param  bool          $skipNullBody
+     * @param  object $object
+     * @param  array  $options
+     * @param  bool   $skipNullBody
      * @return object|null
      */
-    public function getParsedBodyAs(string|object $target, array $options = [], bool $skipNullBody = true): object|null
+    public function getMappedBody(object $object, array $options = [], bool $skipNullBody = true): object|null
     {
         if ($skipNullBody && $this->parsedBody === null) {
             return null;
         }
 
-        $mapper = new \ObjectMapper($target, $options);
+        $mapper = new Mapper($object, $options);
         return $mapper->map((array) $this->parsedBody);
     }
 }
