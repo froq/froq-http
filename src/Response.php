@@ -132,7 +132,7 @@ final class Response extends Message
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
-                [__method__, $file, $line]);
+                [__METHOD__, $file, $line]);
         }
 
         // Multi-headers.
@@ -174,7 +174,7 @@ final class Response extends Message
     {
         if (headers_sent($file, $line)) {
             throw new ResponseException('Cannot use %s(), headers already sent at %s:%s',
-                [__method__, $file, $line]);
+                [__METHOD__, $file, $line]);
         }
 
         // Protect session name.
