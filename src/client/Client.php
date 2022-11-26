@@ -320,7 +320,7 @@ final class Client
 
         // Add cookies (if provided).
         if ($cookies) {
-            $cookies = array_reduce_keys((array) $cookies, [], fn($ret, $name) => (
+            $cookies = array_reduce_keys((array) $cookies, [], fn($ret, $name): array => (
                 [...$ret, join('=', [$name, $cookies[$name]])]
             ));
 
@@ -375,7 +375,7 @@ final class Client
      */
     public function end(?string $result, ?array $resultInfo, ?CurlError $error = null): void
     {
-        if ($result != '' || $resultInfo) {
+        if ($result || $resultInfo) {
             $headers = http_parse_headers($resultInfo['request_header']);
             if (!$headers) {
                 return;
@@ -413,7 +413,7 @@ final class Client
 
             // @cancel: Using CURLOPT_HEADERFUNCTION option in Curl object.
             // Checker for redirections etc. (for finding final HTTP-Message).
-            // $next = fn($body) => $body && str_starts_with($body, 'HTTP/');
+            // $next = fn($body): bool => $body && str_starts_with($body, 'HTTP/');
 
             // @ [$headers, $body] = explode("\r\n\r\n", $result, 2);
             // if ($next($body)) {

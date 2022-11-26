@@ -331,7 +331,7 @@ final class Request extends Message
     private function prepareGlobals(string $name, string $source = '', bool $json = false): array
     {
         // Plus check macro.
-        $plussed = fn($s) => $s && str_contains($s, '+');
+        $plussed = fn($s): bool => $s && str_contains($s, '+');
 
         switch ($name) {
             case 'GET':

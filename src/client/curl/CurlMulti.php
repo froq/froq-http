@@ -86,7 +86,7 @@ final class CurlMulti
 
 
             $result = curl_multi_add_handle($multiHandle, $handle);
-            if ($result != CURLM_OK) {
+            if ($result !== CURLM_OK) {
                 throw new CurlException(curl_multi_strerror($result), $result);
             }
 
@@ -98,7 +98,7 @@ final class CurlMulti
 
         // Exec wrapper (http://php.net/curl_multi_select#108928).
         $exec = function ($multiHandle, &$running) {
-            while (curl_multi_exec($multiHandle, $running) == CURLM_CALL_MULTI_PERFORM);
+            while (curl_multi_exec($multiHandle, $running) === CURLM_CALL_MULTI_PERFORM);
         };
 
         // Start requests.
@@ -107,7 +107,7 @@ final class CurlMulti
         do {
             // Wait a while if fail. Note: This must be here to achieve the winner (fastest) response
             // first in a right way, not in $exec loop like http://php.net/curl_multi_exec#113002.
-            if (curl_multi_select($multiHandle) == -1) {
+            if (curl_multi_select($multiHandle) === -1) {
                 usleep(1);
             }
 
@@ -119,15 +119,15 @@ final class CurlMulti
                 @ [$client, $curl] = $stack[$id];
 
                 // Check tick.
-                if (!$client || $curl->handle != $info['handle']) {
+                if (!$client || $curl->handle !== $info['handle']) {
                     continue;
                 }
 
                 // Check status.
-                $ok     = $info['result'] == CURLE_OK && $info['msg'] == CURLMSG_DONE;
+                $okay   = $info['result'] === CURLE_OK && $info['msg'] === CURLMSG_DONE;
                 $handle = $info['handle'];
 
-                $result = $ok ? curl_multi_getcontent($handle) : false;
+                $result = $okay ? curl_multi_getcontent($handle) : false;
                 if ($result !== false) {
                     $client->end($result, $curl->getHandleInfo($handle));
                 } else {

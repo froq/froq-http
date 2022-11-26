@@ -199,7 +199,7 @@ final class Status extends Statuses
      */
     public static function getCodeByText(string $text): int|null
     {
-        return array_find_key(parent::all(), fn($_text) => $_text == $text);
+        return array_find_key(parent::all(), fn($_text): bool => $_text === $text);
     }
 
     /**
@@ -210,6 +210,6 @@ final class Status extends Statuses
      */
     public static function getTextByCode(int $code): string|null
     {
-        return array_find(parent::all(), fn($_, $_code) => $_code == $code);
+        return array_find(parent::all(), fn($_, $_code): bool => $_code === $code);
     }
 }

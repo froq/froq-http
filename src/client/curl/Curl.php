@@ -184,9 +184,9 @@ final class Curl
         }
 
         // Somehow HEAD method is freezing requests and causing timeouts. @override
-        if ($method == 'HEAD') {
+        if ($method === 'HEAD') {
             $optionsExtra[CURLOPT_NOBODY] = true;
-        } elseif ($method == 'POST') {
+        } elseif ($method === 'POST') {
             $optionsExtra[CURLOPT_POST] = true;
         }
 
@@ -210,10 +210,10 @@ final class Curl
             };
         }
 
-        if ($optionsExtra != null) {
+        if ($optionsExtra !== null) {
             // // HTTP/2 requires a https scheme.
             // if (isset($optionsExtra[CURLOPT_HTTP_VERSION])
-            //     && $optionsExtra[CURLOPT_HTTP_VERSION] == CURL_HTTP_VERSION_2_0
+            //     && $optionsExtra[CURLOPT_HTTP_VERSION] === CURL_HTTP_VERSION_2_0
             //     && !str_starts_with($url, 'https')) {
             //     throw new CurlException('URL scheme must be `https` for HTTP/2 requests');
             // }
@@ -257,7 +257,7 @@ final class Curl
     {
         $line = trim($header);
 
-        if ($line != '') {
+        if ($line !== '') {
             // Status lines (for separating headers of redirect/continue etc.).
             if (str_starts_with($line, 'HTTP/')) {
                 $this->headers .= "\r\n";
@@ -283,6 +283,6 @@ final class Curl
             }
         }
 
-        return ($name != null);
+        return ($name !== null);
     }
 }
