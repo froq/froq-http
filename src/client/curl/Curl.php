@@ -204,7 +204,7 @@ final class Curl
                 '1.1'   => CURL_HTTP_VERSION_1_1,
                 '1.0'   => CURL_HTTP_VERSION_1_0,
                 default => throw new CurlException(
-                    'Invalid `httpVersion` option `%s` [valids: 2, 2.0, 1.1, 1.0]',
+                    'Invalid "httpVersion" option %q [valids: 2, 2.0, 1.1, 1.0]',
                     $clientOptions['httpVersion']
                 )
             };
@@ -215,13 +215,13 @@ final class Curl
             // if (isset($optionsExtra[CURLOPT_HTTP_VERSION])
             //     && $optionsExtra[CURLOPT_HTTP_VERSION] === CURL_HTTP_VERSION_2_0
             //     && !str_starts_with($url, 'https')) {
-            //     throw new CurlException('URL scheme must be `https` for HTTP/2 requests');
+            //     throw new CurlException('URL scheme must be "https" for HTTP/2 requests');
             // }
 
             foreach ($optionsExtra as $option => $value) {
                 // Check constant option.
                 if (!$option || !is_int($option)) {
-                    throw new CurlException('Invalid cURL constant `%s`', $option);
+                    throw new CurlException('Invalid cURL constant %q', $option);
                 }
 
                 // Check for internal options.

@@ -204,8 +204,8 @@ abstract class Message
                     // Note: must be checked here only!
                     if (!preg_test('~json|xml~i', $contentType)) {
                         throw new MessageException(
-                            'Invalid content type `%s` for `array` type content, '.
-                            'content type must be denoted like `xxx/json` or `xxx/xml`',
+                            "Invalid content type %q for 'array' type content, ".
+                            "content type must be denoted like 'xxx/json' or 'xxx/xml'",
                             $contentType
                         );
                     }
@@ -214,8 +214,8 @@ abstract class Message
                     if (!is_null($content) && !is_string($content)
                         && !is_image($content) && !is_stream($content)) {
                         throw new MessageException(
-                            'Invalid content value type `%s`, it must be string|image|stream|null',
-                            get_type($content)
+                            "Invalid content value type '%t' [valids: string, image, stream, null]",
+                            $content
                         );
                     }
                 }

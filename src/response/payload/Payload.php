@@ -209,7 +209,7 @@ class Payload
                     break;
                 default:
                     throw new PayloadException(
-                        'Invalid payload type `%s`',
+                        'Invalid payload type %q',
                         $type ?? $payload->getContentType()
                     );
             }

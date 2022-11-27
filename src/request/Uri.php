@@ -124,7 +124,7 @@ final class Uri extends Url
 
                 // Prevent invalid generate action.
                 if (!str_starts_with($path, $root)) {
-                    throw new UriException('Path `%s` has no root `%s`', [$path, $root]);
+                    throw new UriException('Path %q has no root %q', [$path, $root]);
                 }
 
                 // Drop root from path.

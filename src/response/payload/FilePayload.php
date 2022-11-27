@@ -58,7 +58,7 @@ final class FilePayload extends Payload implements PayloadInterface
         // Direct file reads.
         if ($direct && !$type->isString()) {
             throw new PayloadException('File content must be a valid readable file path '.
-                'when `direct` option is true, %s given', $type);
+                'when "direct" option is true, %s given', $type);
         }
 
         if (!$direct && $type->isString()) {
@@ -73,7 +73,7 @@ final class FilePayload extends Payload implements PayloadInterface
                 $fileSize    = filesize($file);
                 $memoryLimit = $this->getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $fileSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding `memory_limit` current ini '.
+                    throw new PayloadException('Given file exceeding "memory_limit" current ini '.
                         'configuration value (%s)', $limit);
                 }
 

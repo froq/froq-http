@@ -298,12 +298,12 @@ final class Client
         // Reproduce URL structure.
         $parsedUrl = http_parse_url($url);
         if (!$parsedUrl) {
-            throw new ClientException('Invalid URL `%s`', $url);
+            throw new ClientException('Invalid URL %q', $url);
         }
 
         // Ensure scheme is http or https.
         if (!in_array($parsedUrl['scheme'], ['http', 'https'], true)) {
-            throw new ClientException('Invalid URL `%s`, `http` or `https` scheme required', $url);
+            throw new ClientException('Invalid URL scheme %q [valids: %A]', $url, ['http', 'https']);
         }
 
         // Update params if given.

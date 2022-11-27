@@ -179,7 +179,7 @@ final class Response extends Message
 
         // Protect session name.
         if ($name === $this->app->session?->option('name')) {
-            throw new ResponseException('Invalid cookie name `%s`, it is reserved as session name',
+            throw new ResponseException('Invalid cookie name %q, it\'s reserved as session name',
                 $name);
         }
 
@@ -256,7 +256,7 @@ final class Response extends Message
                     $compressMinlen = $compressOptions['minlen'] ?? 64; // Compress minlen: 64 bytes as default.
 
                     Assert::equals($compressType, ['gzip', 'zlib'], new ResponseException(
-                        'Config option `response.compress[0]` must be `gzip` or `zlib`, `%s` given',
+                        "Config option 'response.compress[0]' must be 'gzip' or 'zlib', %q given",
                         $compressType
                     ));
 

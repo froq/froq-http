@@ -50,14 +50,14 @@ final class ImagePayload extends Payload implements PayloadInterface
             throw new PayloadException('Image content must be a valid readable file path, '.
                 'binary string or GdImage, %s given', $type);
         } elseif (!$imageType || !$this->isValidImageType($imageType)) {
-            throw new PayloadException('Invalid image type `%s` [valids: %a]',
+            throw new PayloadException('Invalid image type %q [valids: %A]',
                 [$imageType ?: 'null', ContentType::imageTypes()]);
         }
 
         // Direct image reads.
         if ($direct && !$type->isString()) {
             throw new PayloadException('Image content must be a valid readable file path '.
-                'when `direct` option is true, %s given', $type);
+                'when "direct" option is true, %s given', $type);
         }
 
         if (!$direct && $type->isString()) {
@@ -72,7 +72,7 @@ final class ImagePayload extends Payload implements PayloadInterface
                 $imageSize   = filesize($image);
                 $memoryLimit = $this->getMemoryLimit($limit);
                 if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given image exceeding `memory_limit` current ini '.
+                    throw new PayloadException('Given image exceeding "memory_limit" current ini '.
                         'configuration value (%s)', $limit);
                 }
 
