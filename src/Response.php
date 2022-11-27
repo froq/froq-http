@@ -144,7 +144,7 @@ final class Response extends Message
         }
 
         $header = http_build_header($name, $value);
-        $header || throw new ResponseException('Invalid header name, it is empty');
+        $header || throw new ResponseException('Invalid header name, it\'s empty');
 
         $this->head($name, $value, $replace);
     }
@@ -190,7 +190,7 @@ final class Response extends Message
         }
 
         $cookie = http_build_cookie($name, $value, $options);
-        $cookie || throw new ResponseException('Invalid cookie name, it is empty');
+        $cookie || throw new ResponseException('Invalid cookie name, it\'s empty');
 
         $this->head('Set-Cookie', $cookie, false);
     }
