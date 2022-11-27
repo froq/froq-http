@@ -168,7 +168,7 @@ final class Curl
         // Else we add them manually, if method is suitable for this.
         if ($body !== null) {
             $options[CURLOPT_POSTFIELDS] = $body;
-        } elseif (in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
+        } elseif (equals($method, 'POST', 'PUT', 'PATCH')) {
             $options[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded';
             $options[CURLOPT_HTTPHEADER][] = 'Content-Length: '. strlen((string) $body);
         }
@@ -178,7 +178,7 @@ final class Curl
 
         if (isset($clientOptions['curl'])) {
             is_array($clientOptions['curl']) || throw new CurlException(
-                'Options `curl` field must be array|null, %t given', $clientOptions['curl']
+                'Options "curl" field must be array|null, %t given', $clientOptions['curl']
             );
             $optionsExtra = $clientOptions['curl'];
         }
