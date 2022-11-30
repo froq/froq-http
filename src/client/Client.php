@@ -366,14 +366,14 @@ final class Client
      * End is an internal method and called by `Curl` and `CurlMulti` after cURL operations end
      * in `run()` method, for both single and multi clients.
      *
-     * @param  ?string                     $result
-     * @param  ?array                      $resultInfo
-     * @param  ?froq\http\client\CurlError $error
+     * @param  string|null                     $result
+     * @param  array|null                      $resultInfo
+     * @param  froq\http\client\CurlError|null $error
      * @return void
      * @throws froq\http\client\curl\{CurlError|CurlResponseError}
      * @internal
      */
-    public function end(?string $result, ?array $resultInfo, ?CurlError $error = null): void
+    public function end(string|null $result, array|null $resultInfo, CurlError $error = null): void
     {
         if ($result || $resultInfo) {
             $headers = http_parse_headers($resultInfo['request_header']);
