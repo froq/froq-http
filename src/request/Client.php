@@ -28,9 +28,9 @@ final class Client
     /**
      * Get ip.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getIp(): ?string
+    public function getIp(): string|null
     {
         return Util::getClientIp();
     }
@@ -38,9 +38,9 @@ final class Client
     /**
      * Get user agent.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getUserAgent(): ?string
+    public function getUserAgent(): string|null
     {
         return Util::getClientUserAgent();
     }
@@ -48,9 +48,9 @@ final class Client
     /**
      * Get locale.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getLocale(): ?string
+    public function getLocale(): string|null
     {
         $acceptLanguage = $this->getAcceptLanguage();
 
@@ -71,9 +71,9 @@ final class Client
     /**
      * Get language.
      *
-     * @return ?string
+     * @return string|null
      */
-    public function getLanguage(): ?string
+    public function getLanguage(): string|null
     {
         $acceptLanguage = $this->getAcceptLanguage();
 
@@ -86,10 +86,10 @@ final class Client
     /**
      * Get accept-language.
      *
-     * @return ?string
+     * @return string|null
      * @since  6.0
      */
-    public function getAcceptLanguage(): ?string
+    public function getAcceptLanguage(): string|null
     {
         return $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
     }
@@ -97,10 +97,10 @@ final class Client
     /**
      * Get referer.
      *
-     * @return ?string
+     * @return string|null
      * @since  6.0
      */
-    public function getReferer(): ?string
+    public function getReferer(): string|null
     {
         return $_SERVER['HTTP_REFERER'] ?? null;
     }
