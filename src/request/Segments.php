@@ -15,7 +15,7 @@ namespace froq\http\request;
  * @author  Kerem Güneş
  * @since   4.1
  */
-final class Segments implements \Countable, \ArrayAccess
+class Segments implements \Countable, \ArrayAccess
 {
     /** @const string */
     public const ROOT = '/';

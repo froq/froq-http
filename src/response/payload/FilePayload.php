@@ -18,7 +18,7 @@ use froq\file\{File, mime\Mime};
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class FilePayload extends Payload implements PayloadInterface
+class FilePayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.

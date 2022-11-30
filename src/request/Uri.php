@@ -17,7 +17,7 @@ use froq\http\Url;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Uri extends Url
+class Uri extends Url
 {
     /** @var froq\http\request\Segments */
     public readonly Segments $segments;

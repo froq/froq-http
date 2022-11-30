@@ -16,7 +16,7 @@ use froq\common\object\Enum;
  * @since   5.0
  * @enum
  */
-final class ContentCharset extends Enum
+class ContentCharset extends Enum
 {
     /**
      * Not assigned.

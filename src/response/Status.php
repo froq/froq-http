@@ -15,7 +15,7 @@ namespace froq\http\response;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Status extends Statuses
+class Status extends Statuses
 {
     /** Code. */
     private int $code = 0;

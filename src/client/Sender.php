@@ -18,7 +18,7 @@ use froq\http\client\curl\{Curl, CurlMulti};
  * @since   3.0, 4.0
  * @static
  */
-final class Sender extends \StaticClass
+class Sender extends \StaticClass
 {
     /**
      * Send a request with a single client.

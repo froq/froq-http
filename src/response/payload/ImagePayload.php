@@ -18,7 +18,7 @@ use froq\file\File;
  * @author  Kerem Güneş
  * @since   3.9
  */
-final class ImagePayload extends Payload implements PayloadInterface
+class ImagePayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.

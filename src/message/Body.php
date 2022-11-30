@@ -15,7 +15,7 @@ use froq\common\trait\AttributeTrait;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Body
+class Body
 {
     use AttributeTrait;
 

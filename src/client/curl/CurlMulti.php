@@ -18,7 +18,7 @@ use CurlHandle, CurlMultiHandle;
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class CurlMulti
+class CurlMulti
 {
     /** @var array<froq\http\client\Client> */
     protected array $clients;

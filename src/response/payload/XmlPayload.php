@@ -18,7 +18,7 @@ use froq\encoding\encoder\XmlEncoder;
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class XmlPayload extends Payload implements PayloadInterface
+class XmlPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.

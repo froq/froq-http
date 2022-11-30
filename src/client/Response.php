@@ -17,7 +17,7 @@ use froq\util\mapper\Mapper;
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class Response extends Message
+class Response extends Message
 {
     /** Status. */
     private int $status;

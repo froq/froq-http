@@ -20,7 +20,7 @@ use froq\event\EventManager;
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class Client
+class Client
 {
     use OptionTrait;
 

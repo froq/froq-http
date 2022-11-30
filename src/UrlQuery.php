@@ -19,7 +19,7 @@ use froq\util\Util;
  * @author  Kerem Güneş
  * @since   5.1
  */
-final class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countable, \ArrayAccess
+class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countable, \ArrayAccess
 {
     use FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
 

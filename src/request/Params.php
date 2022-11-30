@@ -18,7 +18,7 @@ use froq\util\Arrays;
  * @since   1.0
  * @static
  */
-final class Params extends \StaticClass
+class Params extends \StaticClass
 {
     /**
      * Get all params by GPC sort.

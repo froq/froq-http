@@ -16,7 +16,7 @@ use froq\common\object\Enum;
  * @since   5.0
  * @enum
  */
-final class ContentType extends Enum
+class ContentType extends Enum
 {
     /**
      * Not assigned.

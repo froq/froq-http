@@ -16,7 +16,7 @@ namespace froq\http\request;
  * @since   1.0
  * @static
  */
-final class Files extends \StaticClass
+class Files extends \StaticClass
 {
     /**
      * Get normalizing all files.

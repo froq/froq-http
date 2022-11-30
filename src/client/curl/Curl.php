@@ -18,7 +18,7 @@ use CurlHandle;
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class Curl
+class Curl
 {
     /** @const array */
     public const BLOCKED_OPTIONS = [

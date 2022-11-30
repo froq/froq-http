@@ -17,7 +17,7 @@ use froq\http\{Response, message\ContentType};
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class PlainPayload extends Payload implements PayloadInterface
+class PlainPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.

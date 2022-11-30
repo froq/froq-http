@@ -15,7 +15,7 @@ namespace froq\http\client;
  * @author  Kerem Güneş
  * @since   3.0
  */
-final class Request extends Message
+class Request extends Message
 {
     /** Method. */
     private string $method;

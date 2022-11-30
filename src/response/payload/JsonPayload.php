@@ -18,7 +18,7 @@ use froq\encoding\encoder\JsonEncoder;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class JsonPayload extends Payload implements PayloadInterface
+class JsonPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.

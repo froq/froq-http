@@ -15,5 +15,5 @@ use froq\collection\collector\MapCollector;
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class Headers extends MapCollector
+class Headers extends MapCollector
 {}

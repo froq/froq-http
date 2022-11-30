@@ -17,7 +17,7 @@ use froq\common\interface\Stringable;
  * @author  Kerem Güneş
  * @since   4.0
  */
-final class Scheme implements Stringable
+class Scheme implements Stringable
 {
     /**
      * Names.

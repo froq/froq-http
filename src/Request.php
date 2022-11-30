@@ -20,7 +20,7 @@ use froq\App;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Request extends Message
+class Request extends Message
 {
     use RequestTrait;
 

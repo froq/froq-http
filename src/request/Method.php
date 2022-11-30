@@ -17,7 +17,7 @@ use froq\common\interface\Stringable;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Method implements Stringable
+class Method implements Stringable
 {
     /**
      * Names.

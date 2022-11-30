@@ -24,7 +24,7 @@ use Assert;
  * @author  Kerem Güneş
  * @since   1.0
  */
-final class Response extends Message
+class Response extends Message
 {
     use ResponseTrait;
 

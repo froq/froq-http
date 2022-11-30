@@ -17,7 +17,7 @@ namespace froq\http;
  * @since   1.0
  * @static
  */
-final class Http extends \StaticClass
+class Http extends \StaticClass
 {
     /** @const string */
     public const PROTOCOL_1_0 = 'HTTP/1.0',
