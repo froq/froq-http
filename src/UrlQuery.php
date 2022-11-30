@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace froq\http;
 
-use froq\common\interface\{Arrayable, Objectable, Listable, Stringable};
+use froq\common\interface\{Arrayable, Listable, Stringable};
 use froq\collection\trait\{FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait};
 use froq\util\Util;
 
@@ -19,7 +19,7 @@ use froq\util\Util;
  * @author  Kerem Güneş
  * @since   5.1
  */
-class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countable, \ArrayAccess
+class UrlQuery implements Arrayable, Listable, Stringable, \Countable, \ArrayAccess
 {
     use FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
 
@@ -218,14 +218,6 @@ class UrlQuery implements Arrayable, Listable, Objectable, Stringable, \Countabl
         array_remove_all($this->data, $keys);
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc froq\common\interface\Objectable
-     */
-    public function toObject(): object
-    {
-        return Util::makeObject($this->data);
     }
 
     /**
