@@ -17,16 +17,16 @@ namespace froq\http\client;
  */
 final class Request extends Message
 {
-    /** @var string */
+    /** Method. */
     private string $method;
 
-    /** @var string */
+    /** URL. */
     private string $url;
 
-    /** @var ?array */
+    /** URL params. */
     private ?array $urlParams = null;
 
-    /** @var array */
+    /** Default options. */
     private static array $headersDefault = [
         'accept'          => '*/*',
         'accept-encoding' => 'gzip',
