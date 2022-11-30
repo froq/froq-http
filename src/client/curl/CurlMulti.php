@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace froq\http\client\curl;
 
 use froq\http\client\Client;
-use CurlHandle;
+use CurlHandle, CurlMultiHandle;
 
 /**
  * A class for handling multiple cURL opearations & feeding back client.
@@ -97,7 +97,7 @@ final class CurlMulti
         }
 
         // Exec wrapper (http://php.net/curl_multi_select#108928).
-        $exec = function ($multiHandle, &$running) {
+        $exec = function (CurlMultiHandle $multiHandle, int &$running): void {
             while (curl_multi_exec($multiHandle, $running) === CURLM_CALL_MULTI_PERFORM);
         };
 
