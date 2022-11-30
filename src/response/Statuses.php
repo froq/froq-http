@@ -197,7 +197,7 @@ class Statuses
      *
      * @return array<int, string>
      */
-    public static final function all(): array
+    public static function all(): array
     {
         return self::$all;
     }
