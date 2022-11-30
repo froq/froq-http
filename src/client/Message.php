@@ -17,16 +17,16 @@ namespace froq\http\client;
  */
 abstract class Message
 {
-    /** @var string */
+    /** HTTP protocol. */
     protected string $httpProtocol;
 
-    /** @var float */
+    /** HTTP version. */
     protected float $httpVersion;
 
-    /** @var ?array */
+    /** Headers. */
     protected ?array $headers = null;
 
-    /** @var ?string */
+    /** Body. */
     protected ?string $body = null;
 
     /**

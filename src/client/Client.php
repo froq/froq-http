@@ -24,25 +24,25 @@ final class Client
 {
     use OptionTrait;
 
-    /** @var froq\http\client\Request */
+    /** Request instance. */
     private Request $request;
 
-    /** @var froq\http\client\Response */
+    /** Response instance. */
     private Response $response;
 
-    /** @var froq\http\client\curl\Curl */
+    /** Curl instance. */
     private Curl $curl;
 
-    /** @var froq\http\client\curl\{CurlError|CurlResponseError} */
+    /** Curl or Curl response error. */
     private CurlError|CurlResponseError|null $error = null;
 
-    /** @var ?string */
+    /** Result. */
     private ?string $result = null;
 
-    /** @var ?array */
+    /** Result info. */
     private ?array $resultInfo = null;
 
-    /** @var array */
+    /** Default options. */
     private static array $optionsDefault = [
         'redirs'      => true,  'redirsMax'       => 3,
         'timeout'     => 5,     'timeoutConnect'  => 3,
@@ -53,13 +53,13 @@ final class Client
         'method'      => 'GET', 'curl'            => null, // Curl options.
     ];
 
-    /** @var froq\event\EventManager */
+    /** EventManager instance. */
     private EventManager $eventManager;
 
-    /** @var bool */
+    /** Sent state. */
     public bool $sent = false;
 
-    /** @var bool */
+    /** Abort state. */
     public bool $abort = false;
 
     /**

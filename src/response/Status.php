@@ -17,10 +17,10 @@ namespace froq\http\response;
  */
 final class Status extends Statuses
 {
-    /** @var int */
+    /** Code. */
     private int $code = 0;
 
-    /** @var ?string */
+    /** Text (aka reason phrase). */
     private ?string $text = null;
 
     /**

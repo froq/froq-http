@@ -19,10 +19,10 @@ use froq\util\mapper\Mapper;
  */
 final class Response extends Message
 {
-    /** @var int */
+    /** Status. */
     private int $status;
 
-    /** @var ?array */
+    /** Parsed body (for JSON stuff). */
     private ?array $parsedBody = null;
 
     /**
