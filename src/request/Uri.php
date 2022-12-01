@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\request;
 
 use froq\http\Url;
@@ -13,17 +11,19 @@ use froq\http\Url;
  * URI class, used by request class.
  *
  * @package froq\http\request
- * @object  froq\http\request\Uri
+ * @class   froq\http\request\Uri
  * @author  Kerem Güneş
  * @since   1.0
  */
 class Uri extends Url
 {
-    /** @var froq\http\request\Segments */
+    /** Segments instance. */
     public readonly Segments $segments;
 
-    /** @var array<string> */
-    protected static array $components = ['path', 'query', 'queryParams', 'fragment'];
+    /** Components. */
+    protected static array $components = [
+        'path', 'query', 'queryParams', 'fragment'
+    ];
 
     /**
      * Constructor.

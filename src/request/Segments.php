@@ -1,29 +1,27 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\request;
 
 /**
- * Segments class, for parsing/getting URI path segments.
+ * Segments class, for parsing / getting URI path segments.
  *
  * @package froq\http\request
- * @object  froq\http\request\Segments
+ * @class   froq\http\request\Segments
  * @author  Kerem Güneş
  * @since   4.1
  */
 class Segments implements \Countable, \ArrayAccess
 {
-    /** @const string */
+    /** Default root. */
     public const ROOT = '/';
 
-    /** @var array */
+    /** Segments data. */
     private array $data = [];
 
-    /** @var string */
+    /** Segments root. */
     private string $root = self::ROOT;
 
     /**
@@ -38,13 +36,17 @@ class Segments implements \Countable, \ArrayAccess
         $root && $this->root = $root;
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __set(string $key, string|null $value): void
     {
         $this->offsetSet($key, $value);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __get(string $key): string|null
     {
         return $this->offsetGet($key);

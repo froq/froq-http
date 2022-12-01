@@ -1,54 +1,34 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\message;
 
 use froq\common\object\Enum;
 
 /**
  * @package froq\http\message
- * @object  froq\http\message\ContentType
+ * @class   froq\http\message\ContentType
  * @author  Kerem Güneş
  * @since   5.0
  * @enum
  */
 class ContentType extends Enum
 {
-    /**
-     * Not assigned.
-     * @const string
-     */
+    /** Not assigned. */
     public const NA = 'n/a';
 
-    /**
-     * Texts.
-     * @const string
-     */
-    public const TEXT_HTML        = 'text/html',
-                 TEXT_PLAIN       = 'text/plain',
-                 TEXT_XML         = 'text/xml',
-                 TEXT_JSON        = 'text/json',
-                 APPLICATION_XML  = 'application/xml',
-                 APPLICATION_JSON = 'application/json';
+    /** Texts. */
+    public const TEXT_HTML = 'text/html', TEXT_PLAIN = 'text/plain', TEXT_XML = 'text/xml', TEXT_JSON = 'text/json',
+                 APPLICATION_XML  = 'application/xml', APPLICATION_JSON = 'application/json';
 
-    /**
-     * Images.
-     * @const string
-     */
-    public const IMAGE_JPEG = 'image/jpeg',
-                 IMAGE_WEBP = 'image/webp',
-                 IMAGE_PNG  = 'image/png',
-                 IMAGE_GIF  = 'image/gif';
+    /** Images. */
+    public const IMAGE_JPEG = 'image/jpeg', IMAGE_WEBP = 'image/webp', IMAGE_PNG = 'image/png',
+                 IMAGE_GIF = 'image/gif';
 
-    /**
-     * Files.
-     * @const string
-     */
-    public const APPLICATION_DOWNLOAD     = 'application/download',
+    /** Files. */
+    public const APPLICATION_DOWNLOAD = 'application/download',
                  APPLICATION_OCTET_STREAM = 'application/octet-stream';
 
     /**

@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client;
 
 /**
- * Message class for request/response classes.
+ * Base message class for request / response classes.
  *
  * @package froq\http\client
- * @object  froq\http\client\Message
+ * @class   froq\http\client\Message
  * @author  Kerem Güneş
  * @since   3.0
  */
@@ -23,10 +21,10 @@ abstract class Message
     /** HTTP version. */
     protected float $httpVersion;
 
-    /** Headers. */
+    /** Message headers. */
     protected ?array $headers = null;
 
-    /** Body. */
+    /** Message body. */
     protected ?string $body = null;
 
     /**

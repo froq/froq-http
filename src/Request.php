@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 use froq\http\common\RequestTrait;
@@ -16,7 +14,7 @@ use froq\App;
  * and controllers.
  *
  * @package froq\http
- * @object  froq\http\Request
+ * @class   froq\http\Request
  * @author  Kerem Güneş
  * @since   1.0
  */
@@ -24,28 +22,28 @@ class Request extends Message
 {
     use RequestTrait;
 
-    /** @var froq\http\request\Method */
+    /** Method instance. */
     public readonly Method $method;
 
-    /** @var froq\http\request\Scheme */
+    /** Scheme instance. */
     public readonly Scheme $scheme;
 
-    /** @var froq\http\request\Uri */
+    /** Uri instance. */
     public readonly Uri $uri;
 
-    /** @var froq\http\request\Client */
+    /** Client instance. */
     public readonly Client $client;
 
-    /** @var string */
+    /** Request ID. */
     public readonly string $id;
 
-    /** @var int */
+    /** Request time. */
     public readonly int $time;
 
-    /** @var float */
+    /** Request micro time. */
     public readonly float $utime;
 
-    /** @var froq\http\UrlQuery */
+    /** UrlQuery instance. */
     private readonly UrlQuery $query;
 
     /**

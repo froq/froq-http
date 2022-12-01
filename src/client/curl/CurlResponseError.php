@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client\curl;
 
 use froq\http\client\{Request, Response};
@@ -15,19 +13,19 @@ use froq\http\client\{Request, Response};
  * created for these errors in client `end()` method.
  *
  * @package froq\http\client\curl
- * @object  froq\http\client\curl\CurlResponseError
+ * @class   froq\http\client\curl\CurlResponseError
  * @author  Kerem Güneş
  * @since   5.0
  */
-class CurlResponseError extends CurlError
+class CurlResponseError extends \froq\common\Error
 {
-    /** @var int */
+    /** Status code. */
     public readonly int $status;
 
-    /** @var froq\http\client\Request|null */
+    /** Request instance. */
     private ?Request $request = null;
 
-    /** @var froq\http\client\Response|null */
+    /** Response instance. */
     private ?Response $response = null;
 
     /**

@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\request;
 
 use froq\common\interface\Stringable;
@@ -13,16 +11,13 @@ use froq\common\interface\Stringable;
  * Method class, used by request class.
  *
  * @package froq\http\request
- * @object  froq\http\request\Method
+ * @class   froq\http\request\Method
  * @author  Kerem Güneş
  * @since   1.0
  */
-class Method implements Stringable
+class Method implements Stringable, \Stringable
 {
-    /**
-     * Names.
-     * @const string
-     */
+    /** Names. */
     public const GET     = 'GET',     POST    = 'POST',
                  PUT     = 'PUT',     PATCH   = 'PATCH',
                  DELETE  = 'DELETE',  PURGE   = 'PURGE',
@@ -31,7 +26,7 @@ class Method implements Stringable
                  COPY    = 'COPY',    MOVE    = 'MOVE',
                  LINK    = 'LINK',    UNLINK  = 'UNLINK';
 
-    /** @var string */
+    /** Name. */
     private string $name;
 
     /**
@@ -44,8 +39,10 @@ class Method implements Stringable
         $this->setName($name);
     }
 
-    /** @magic */
-    public function __toString()
+    /**
+     * @magic
+     */
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -78,7 +75,7 @@ class Method implements Stringable
      */
     public function isGet(): bool
     {
-        return ($this->name == self::GET);
+        return ($this->name === self::GET);
     }
 
     /**
@@ -88,7 +85,7 @@ class Method implements Stringable
      */
     public function isPost(): bool
     {
-        return ($this->name == self::POST);
+        return ($this->name === self::POST);
     }
 
     /**
@@ -98,7 +95,7 @@ class Method implements Stringable
      */
     public function isPut(): bool
     {
-        return ($this->name == self::PUT);
+        return ($this->name === self::PUT);
     }
 
     /**
@@ -108,7 +105,7 @@ class Method implements Stringable
      */
     public function isPatch(): bool
     {
-        return ($this->name == self::PATCH);
+        return ($this->name === self::PATCH);
     }
 
     /**
@@ -118,7 +115,7 @@ class Method implements Stringable
      */
     public function isDelete(): bool
     {
-        return ($this->name == self::DELETE);
+        return ($this->name === self::DELETE);
     }
 
     /**
@@ -128,7 +125,7 @@ class Method implements Stringable
      */
     public function isPurge(): bool
     {
-        return ($this->name == self::PURGE);
+        return ($this->name === self::PURGE);
     }
 
     /**
@@ -138,7 +135,7 @@ class Method implements Stringable
      */
     public function isOptions(): bool
     {
-        return ($this->name == self::OPTIONS);
+        return ($this->name === self::OPTIONS);
     }
 
     /**
@@ -148,7 +145,7 @@ class Method implements Stringable
      */
     public function isHead(): bool
     {
-        return ($this->name == self::HEAD);
+        return ($this->name === self::HEAD);
     }
 
     /**
@@ -158,7 +155,7 @@ class Method implements Stringable
      */
     public function isTrace(): bool
     {
-        return ($this->name == self::TRACE);
+        return ($this->name === self::TRACE);
     }
 
     /**
@@ -168,7 +165,7 @@ class Method implements Stringable
      */
     public function isConnect(): bool
     {
-        return ($this->name == self::CONNECT);
+        return ($this->name === self::CONNECT);
     }
 
     /**
@@ -178,7 +175,7 @@ class Method implements Stringable
      */
     public function isCopy(): bool
     {
-        return ($this->name == self::COPY);
+        return ($this->name === self::COPY);
     }
 
     /**
@@ -188,7 +185,7 @@ class Method implements Stringable
      */
     public function isMove(): bool
     {
-        return ($this->name == self::MOVE);
+        return ($this->name === self::MOVE);
     }
 
     /**
@@ -198,7 +195,7 @@ class Method implements Stringable
      */
     public function isLink(): bool
     {
-        return ($this->name == self::LINK);
+        return ($this->name === self::LINK);
     }
 
     /**
@@ -208,7 +205,7 @@ class Method implements Stringable
      */
     public function isUnlink(): bool
     {
-        return ($this->name == self::UNLINK);
+        return ($this->name === self::UNLINK);
     }
 
     /**
@@ -218,12 +215,13 @@ class Method implements Stringable
      */
     public function isAjax(): bool
     {
-        return (
-            (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-            || (isset($_SERVER['HTTP_X_AJAX'])
-                && (strtolower($_SERVER['HTTP_X_AJAX']) === 'true' || $_SERVER['HTTP_X_AJAX'] === '1'))
-        );
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            return strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        }
+        if (isset($_SERVER['HTTP_X_AJAX'])) {
+            return strtolower($_SERVER['HTTP_X_AJAX']) === 'true' || $_SERVER['HTTP_X_AJAX'] === '1';
+        }
+        return false;
     }
 
     /**

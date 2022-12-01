@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 use froq\http\common\ResponseTrait;
@@ -20,7 +18,7 @@ use Assert;
  * and controllers.
  *
  * @package froq\http
- * @object  froq\http\Response
+ * @class   froq\http\Response
  * @author  Kerem Güneş
  * @since   1.0
  */
@@ -28,7 +26,7 @@ class Response extends Message
 {
     use ResponseTrait;
 
-    /** @var froq\http\response\Status */
+    /** Status instance. */
     public readonly Status $status;
 
     /**

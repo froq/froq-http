@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\response\payload;
 
 use froq\http\{Response, message\ContentType};
@@ -14,7 +12,7 @@ use froq\file\File;
  * A payload class for sending images as response content with attributes.
  *
  * @package froq\http\response\payload
- * @object  froq\http\response\payload\ImagePayload
+ * @class   froq\http\response\payload\ImagePayload
  * @author  Kerem Güneş
  * @since   3.9
  */

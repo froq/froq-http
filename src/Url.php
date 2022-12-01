@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 use froq\collection\ComponentCollection;
@@ -15,18 +13,20 @@ use froq\common\interface\Stringable;
  * `__call()` magic with their names (eg: `getPath()`), and some other utility methods.
  *
  * @package froq\http
- * @object  froq\http\Url
+ * @class   froq\http\Url
  * @author  Kerem Güneş
  * @since   4.0
  */
-class Url extends ComponentCollection implements Stringable
+class Url extends ComponentCollection implements Stringable, \Stringable
 {
-    /** @var array<string>|string|null */
+    /** Resource. */
     protected array|string|null $source;
 
-    /** @var array<string> */
-    protected static array $components = ['scheme', 'host', 'port', 'user', 'pass', 'path',
-        'query', 'queryParams', 'fragment', 'origin', 'authority'];
+    /** Components. */
+    protected static array $components = [
+        'scheme', 'host', 'port', 'user', 'pass', 'path',
+        'query', 'queryParams', 'fragment', 'origin', 'authority'
+    ];
 
     /**
      * Constructor.
@@ -46,7 +46,7 @@ class Url extends ComponentCollection implements Stringable
         }
 
         if (is_string($source)) {
-            if ($source == '') {
+            if ($source === '') {
                 throw new UrlException('Invalid URL/URI source, empty source');
             }
 
@@ -72,6 +72,7 @@ class Url extends ComponentCollection implements Stringable
 
         if (!isset($source['origin'])) {
             $origin = null;
+
             if (isset($source['scheme'], $source['host'])) {
                 $origin = sprintf('%s://%s%s', $source['scheme'], $source['host'], (
                     isset($source['port']) ? ':' . $source['port'] : ''
@@ -83,11 +84,12 @@ class Url extends ComponentCollection implements Stringable
 
         if (!isset($source['authority'])) {
             $authority = null;
+
             isset($source['user']) && $authority .= $source['user'];
             isset($source['pass']) && $authority .= ':' . $source['pass'];
 
             // Add separator.
-            if ($authority != '') {
+            if ($authority !== null) {
                 $authority .= '@';
             }
 
@@ -105,7 +107,9 @@ class Url extends ComponentCollection implements Stringable
         }
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __toString(): string
     {
         return $this->toString();

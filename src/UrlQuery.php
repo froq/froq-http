@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 use froq\common\interface\{Arrayable, Listable, Stringable};
@@ -15,15 +13,15 @@ use froq\util\Util;
  * An array-like class for working with URL-queries in OOP-style.
  *
  * @package froq\http
- * @object  froq\http\UrlQuery
+ * @class   froq\http\UrlQuery
  * @author  Kerem Güneş
  * @since   5.1
  */
-class UrlQuery implements Arrayable, Listable, Stringable, \Countable, \ArrayAccess
+class UrlQuery implements Arrayable, Listable, Stringable, \Stringable, \Countable, \ArrayAccess
 {
     use FilterTrait, MapTrait, CountTrait, EmptyTrait, GetTrait, ToArrayTrait, ToListTrait;
 
-    /** @var array */
+    /** Data. */
     private array $data = [];
 
     /**
@@ -33,29 +31,36 @@ class UrlQuery implements Arrayable, Listable, Stringable, \Countable, \ArrayAcc
      */
     public function __construct(array|string $data)
     {
-        $this->data = is_array($data) ? $this->mapData($data)
-            : http_parse_query_string($data);
+        $this->data = is_array($data) ? $this->mapData($data) : http_parse_query_string($data);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __set(string $key, string|null $value): void
     {
         $this->set($key, $value);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __get(string $key): string|null
     {
         return $this->get($key);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __toString(): string
     {
         return $this->toString();
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public function __debugInfo(): array
     {
         return $this->data;

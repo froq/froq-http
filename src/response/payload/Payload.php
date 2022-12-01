@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\response\payload;
 
 use froq\http\Response;
@@ -16,7 +14,7 @@ use froq\util\Util;
  * Base payload class extended by other payload classes.
  *
  * @package froq\http\response\payload
- * @object  froq\http\response\payload\Payload
+ * @class   froq\http\response\payload\Payload
  * @author  Kerem Güneş
  * @since   4.0
  */
@@ -24,10 +22,10 @@ class Payload
 {
     use AttributeTrait;
 
-    /** @var mixed */
+    /** Payload content. */
     protected mixed $content;
 
-    /** @var froq\http\Response|null */
+    /** Response instance. */
     protected Response|null $response;
 
     /**

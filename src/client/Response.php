@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client;
 
 use froq\util\mapper\Mapper;
@@ -13,7 +11,7 @@ use froq\util\mapper\Mapper;
  * A server response class.
  *
  * @package froq\http\client
- * @object  froq\http\client\Response
+ * @class   froq\http\client\Response
  * @author  Kerem Güneş
  * @since   3.0
  */

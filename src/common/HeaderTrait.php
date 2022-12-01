@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\common;
 
 /**
  * A trait, provides header utilities for request/response classes.
  *
  * @package froq\http\common
- * @object  froq\http\common\HeaderTrait
+ * @class   froq\http\common\HeaderTrait
  * @author  Kerem Güneş
  * @since   4.0
  * @internal
@@ -28,7 +26,7 @@ trait HeaderTrait
      */
     public function header(string $name, string $value = null, bool $replace = true): mixed
     {
-        if (func_num_args() == 1) {
+        if (func_num_args() === 1) {
             return $this->getHeader($name);
         }
 

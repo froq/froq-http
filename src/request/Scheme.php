@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\request;
 
 use froq\common\interface\Stringable;
@@ -13,20 +11,17 @@ use froq\common\interface\Stringable;
  * Scheme class, used by request class.
  *
  * @package froq\http\request
- * @object  froq\http\request\Scheme
+ * @class   froq\http\request\Scheme
  * @author  Kerem Güneş
  * @since   4.0
  */
-class Scheme implements Stringable
+class Scheme implements Stringable, \Stringable
 {
-    /**
-     * Names.
-     * @const string
-     */
+    /** Names. */
     public const HTTP  = 'http',
                  HTTPS = 'https';
 
-    /** @var string */
+    /** Name. */
     private string $name;
 
     /**
@@ -39,8 +34,10 @@ class Scheme implements Stringable
         $this->setName($name);
     }
 
-    /** @magic */
-    public function __toString()
+    /**
+     * @magic
+     */
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -73,7 +70,7 @@ class Scheme implements Stringable
      */
     public function isSecure(): bool
     {
-        return ($this->name == self::HTTPS);
+        return ($this->name === self::HTTPS);
     }
 
     /**

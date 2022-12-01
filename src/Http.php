@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 /**
@@ -12,22 +10,20 @@ namespace froq\http;
  * and some HTTP related utility methods.
  *
  * @package froq\http
- * @object  froq\http\Http
+ * @class   froq\http\Http
  * @author  Kerem Güneş
  * @since   1.0
  * @static
  */
 class Http extends \StaticClass
 {
-    /** @const string */
-    public const PROTOCOL_1_0 = 'HTTP/1.0',
-                 PROTOCOL_1_1 = 'HTTP/1.1',
-                 PROTOCOL_2_0 = 'HTTP/2.0';
+    /** HTTP protocols. */
+    public const PROTOCOL_1_0 = 'HTTP/1.0', PROTOCOL_1_1 = 'HTTP/1.1', PROTOCOL_2_0 = 'HTTP/2.0';
 
-    /** @const string */
+    /** Default HTTP protocol. */
     public const DEFAULT_PROTOCOL = HTTP_DEFAULT_PROTOCOL;
 
-    /** @const string */
+    /** HTTP date format. */
     public const DATE_FORMAT = HTTP_DATE_FORMAT;
 
     /**

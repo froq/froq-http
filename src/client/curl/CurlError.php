@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client\curl;
 
 /**
@@ -13,7 +11,7 @@ namespace froq\http\client\curl;
  * constants using `CurlError.getCode()` method.
  *
  * @package froq\http\client\curl
- * @object  froq\http\client\curl\CurlError
+ * @class   froq\http\client\curl\CurlError
  * @author  Kerem Güneş
  * @since   4.0
  */
@@ -26,7 +24,7 @@ class CurlError extends \froq\common\Error
      */
     public function isBadUrl(): bool
     {
-        return ($this->code == CURLE_URL_MALFORMAT);
+        return ($this->code === CURLE_URL_MALFORMAT);
     }
 
     /**
@@ -36,7 +34,7 @@ class CurlError extends \froq\common\Error
      */
     public function isBadHost(): bool
     {
-        return ($this->code == CURLE_COULDNT_RESOLVE_HOST);
+        return ($this->code === CURLE_COULDNT_RESOLVE_HOST);
     }
 
     /**
@@ -46,6 +44,6 @@ class CurlError extends \froq\common\Error
      */
     public function isTimeout(): bool
     {
-        return ($this->code == CURLE_OPERATION_TIMEDOUT);
+        return ($this->code === CURLE_OPERATION_TIMEDOUT);
     }
 }

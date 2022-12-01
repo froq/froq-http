@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client;
 
 use froq\http\client\curl\{Curl, CurlError, CurlResponseError};
@@ -16,7 +14,7 @@ use froq\event\EventManager;
  * Hence it should not be used for other protocols and should be ensure that cURL library is available.
  *
  * @package froq\http\client
- * @object  froq\http\client\Client
+ * @class   froq\http\client\Client
  * @author  Kerem Güneş
  * @since   3.0
  */
@@ -53,7 +51,7 @@ class Client
         'method'      => 'GET', 'curl'            => null, // Curl options.
     ];
 
-    /** EventManager instance. */
+    /** Event manager instance. */
     private EventManager $eventManager;
 
     /** Sent state. */
@@ -77,10 +75,8 @@ class Client
         $this->setOptions($options, self::$optionsDefault);
 
         $this->eventManager = new EventManager($this);
-        if ($events) {
-            foreach ($events as $name => $callback) {
-                $this->eventManager->add($name, $callback);
-            }
+        if ($events) foreach ($events as $name => $callback) {
+            $this->eventManager->add($name, $callback);
         }
     }
 

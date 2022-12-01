@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\common;
 
 use froq\http\request\Params;
@@ -13,7 +11,7 @@ use froq\http\request\Params;
  * A trait, provides param utilities for request class.
  *
  * @package froq\http\common
- * @object  froq\http\common\ParamTrait
+ * @class   froq\http\common\ParamTrait
  * @author  Kerem Güneş
  * @since   4.0
  * @internal

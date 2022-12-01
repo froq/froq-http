@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client\curl;
 
 use froq\http\client\Client;
@@ -14,13 +12,13 @@ use CurlHandle, CurlMultiHandle;
  * A class for handling multiple cURL opearations & feeding back client.
  *
  * @package froq\http\client\curl
- * @object  froq\http\client\curl\CurlMulti
+ * @class   froq\http\client\curl\CurlMulti
  * @author  Kerem Güneş
  * @since   3.0
  */
 class CurlMulti
 {
-    /** @var array<froq\http\client\Client> */
+    /** Client instances. */
     protected array $clients;
 
     /**

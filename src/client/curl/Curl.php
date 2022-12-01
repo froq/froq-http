@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client\curl;
 
 use froq\http\client\Client;
@@ -14,13 +12,13 @@ use CurlHandle;
  * A class for handling single cURL opearations & feeding back client.
  *
  * @package froq\http\client\curl
- * @object  froq\http\client\curl\Curl
+ * @class   froq\http\client\curl\Curl
  * @author  Kerem Güneş
  * @since   3.0
  */
 class Curl
 {
-    /** @const array */
+    /** Blocked options. */
     public const BLOCKED_OPTIONS = [
         'CURLOPT_CUSTOMREQUEST'  => CURLOPT_CUSTOMREQUEST,
         'CURLOPT_URL'            => CURLOPT_URL,
@@ -30,10 +28,10 @@ class Curl
         'CURLINFO_HEADER_OUT'    => CURLINFO_HEADER_OUT,
     ];
 
-    /** @var froq\http\client\Client */
+    /** Client instance. */
     private Client $client;
 
-    /** @var string */
+    /** Headers buffer. */
     private string $headers = '';
 
     /**

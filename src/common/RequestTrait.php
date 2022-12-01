@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\common;
 
 /**
  * A trait, provides some utilities for request class.
  *
  * @package froq\http\common
- * @object  froq\http\common\RequestTrait
+ * @class   froq\http\common\RequestTrait
  * @author  Kerem Güneş
  * @since   4.0
  * @internal

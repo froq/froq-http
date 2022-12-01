@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\message;
 
 use froq\common\trait\AttributeTrait;
 
 /**
  * @package froq\http\message
- * @object  froq\http\message\Body
+ * @class   froq\http\message\Body
  * @author  Kerem Güneş
  * @since   1.0
  */
@@ -19,7 +17,7 @@ class Body
 {
     use AttributeTrait;
 
-    /** @var mixed */
+    /** Content. */
     private mixed $content;
 
     /**

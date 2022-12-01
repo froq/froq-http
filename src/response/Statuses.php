@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\response;
 
 /**
@@ -12,18 +10,14 @@ namespace froq\http\response;
  * found at https://www.iana.org/assignments/http-status-codes/http-status-codes.txt
  *
  * @package froq\http\response
- * @object  froq\http\response\Statuses
+ * @class   froq\http\response\Statuses
  * @author  Kerem Güneş
  * @since   4.0
  * @internal
  */
 class Statuses
 {
-    /**
-     * Status constants.
-     *
-     * @const int
-     */
+    /** Status constants. */
     public final const
         // Informationals (1xx).
         CONTINUE                        = 100,
@@ -106,11 +100,7 @@ class Statuses
         NETWORK_READ_TIMEOUT_ERROR      = 598,
         NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
 
-    /**
-     * Status map.
-     *
-     * @var array<int, string>
-     */
+    /** Status map. */
     private static array $all = [
         // Informationals (1xx).
         100 => 'Continue',

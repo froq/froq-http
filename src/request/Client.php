@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\request;
 
 use froq\util\Util;
@@ -13,7 +11,7 @@ use froq\util\Util;
  * An accessor class, for accessing some client properties.
  *
  * @package froq\http\request
- * @object  froq\http\request\Client
+ * @class   froq\http\request\Client
  * @author  Kerem Güneş
  * @since   1.0
  */

@@ -1,17 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http\client;
 
 /**
  * A client request class.
  *
  * @package froq\http\client
- * @object  froq\http\client\Request
+ * @class   froq\http\client\Request
  * @author  Kerem Güneş
  * @since   3.0
  */
@@ -26,7 +24,7 @@ class Request extends Message
     /** URL params. */
     private ?array $urlParams = null;
 
-    /** Default options. */
+    /** Default headers. */
     private static array $headersDefault = [
         'accept'          => '*/*',
         'accept-encoding' => 'gzip',

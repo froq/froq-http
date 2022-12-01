@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright (c) 2015 · Kerem Güneş
  * Apache License 2.0 · http://github.com/froq/froq-http
  */
-declare(strict_types=1);
-
 namespace froq\http;
 
 use froq\http\message\{Body, Cookies, Headers, ContentType};
@@ -16,28 +14,28 @@ use froq\App;
  * these mainly deals with Froq! application and controllers.
  *
  * @package froq\http
- * @object  froq\http\Message
+ * @class   froq\http\Message
  * @author  Kerem Güneş
  * @since   1.0
  */
 abstract class Message
 {
-    /** @var froq\App */
+    /** Froq! App. */
     public readonly App $app;
 
-    /** @var string */
+    /** HTTP protocol. */
     public readonly string $httpProtocol;
 
-    /** @var float */
+    /** HTTP version. */
     public readonly float $httpVersion;
 
-    /** @var froq\http\message\Headers */
+    /** Headers instance. */
     public readonly Headers $headers;
 
-    /** @var froq\http\message\Cookies */
+    /** Cookies instance. */
     public readonly Cookies $cookies;
 
-    /** @var froq\http\message\Body */
+    /** Body instance. */
     public readonly Body $body;
 
     /**
