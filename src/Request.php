@@ -246,7 +246,7 @@ class Request extends Message
         $_GET = $this->prepareGlobals('GET');
 
         // Post data always parsed, for GET requests as well (to utilize JSON payloads, thanks ElasticSearch..).
-        if ($content != '' && !str_contains($contentType, 'multipart/form-data')) {
+        if ($content !== '' && !str_contains($contentType, 'multipart/form-data')) {
             $_POST = $this->prepareGlobals('POST', $content, json: str_contains($contentType, '/json'));
         }
 
@@ -356,7 +356,7 @@ class Request extends Message
                     return $_COOKIE;
                 }
 
-                if ($source != '') {
+                if ($source !== '') {
                     $source = (string) implode('&', array_map('trim', explode(';', $source)));
                 }
                 break;

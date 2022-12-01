@@ -442,7 +442,7 @@ class Client
                            ->setHeaders($headers);
 
             // Set response raw & parsed body.
-            if ($result != '') {
+            if ((string) $result !== '') {
                 $body = $result;
                 $parsedBody = null;
                 unset($result);

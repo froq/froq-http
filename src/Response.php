@@ -237,7 +237,7 @@ class Response extends Message
             $contentCharset = $attributes['charset'] ?? ContentCharset::UTF_8;  // @default
             $contentLength  = strlen($content);
 
-            if ($contentCharset && $contentCharset != ContentCharset::NA) {
+            if ($contentCharset && $contentCharset !== ContentCharset::NA) {
                 $contentType = sprintf('%s; charset=%s', $contentType, $contentCharset);
             }
 
@@ -259,10 +259,10 @@ class Response extends Message
                     ));
 
                     $acceptEncoding  = (string) $this->app->request->getHeader('Accept-Encoding');
-                    $contentEncoding = ($compressType == 'gzip') ? 'gzip' : 'deflate';
+                    $contentEncoding = ($compressType === 'gzip') ? 'gzip' : 'deflate';
 
                     if ($contentLength >= $compressMinlen && str_contains($acceptEncoding, $contentEncoding)) {
-                        $encoder = ($contentEncoding == 'gzip')
+                        $encoder = ($contentEncoding === 'gzip')
                             ? new GZipEncoder(['level' => $compressLevel])
                             : new ZLibEncoder(['level' => $compressLevel]);
 
@@ -368,7 +368,7 @@ class Response extends Message
             if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 $headers['Last-Modified'] = Http::date($modifiedAt);
             }
-            if ($rateLimit != $fileSize) {
+            if ($rateLimit !== $fileSize) {
                 $headers['X-Rate-Limit'] = Util::formatBytes($rateLimit) . '/s';
             }
 

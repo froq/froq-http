@@ -89,7 +89,7 @@ class Status extends Statuses
      */
     public function ok(): bool
     {
-        return ($this->code == 200);
+        return ($this->code === 200);
     }
 
     /**
@@ -164,12 +164,12 @@ class Status extends Statuses
     public function isAllowedForBody(): bool
     {
         // No contents.
-        if ($this->code == 204 || $this->code == 304) {
+        if ($this->code === 204 || $this->code === 304) {
             return false;
         }
 
         // Informationals.
-        if ($this->code >= 100 && $this->code <= 199) {
+        if ($this->code >= 99 && $this->code <= 199) {
             return false;
         }
 

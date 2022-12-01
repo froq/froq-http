@@ -260,7 +260,7 @@ class Payload
     private function sniffContentType(string $contentType): string|null
     {
         $contentType = strtolower($contentType);
-        if ($contentType == 'n/a') {
+        if ($contentType === 'n/a') {
             return 'n/a';
         }
 

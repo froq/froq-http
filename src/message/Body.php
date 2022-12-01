@@ -113,7 +113,7 @@ class Body
      */
     public function isNa(): bool
     {
-        return ($this->getContentType() == ContentType::NA);
+        return ($this->getContentType() === ContentType::NA);
     }
 
     /**

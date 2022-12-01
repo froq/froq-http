@@ -218,10 +218,10 @@ abstract class Message
         $headers = $this->getHeaders();
         $body    = $this->getBody();
 
-        if ($headers != null) {
+        if ($headers !== null) {
             foreach ($headers as $name => $value) {
                 // Skip first line (which is already added above).
-                if ($name == '0') {
+                if ($name === 0) {
                     continue;
                 }
 
@@ -235,7 +235,7 @@ abstract class Message
             }
         }
 
-        if ($body != null) {
+        if ($body !== null) {
             $ret .= "\r\n";
             $ret .= $body;
         }
