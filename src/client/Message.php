@@ -44,7 +44,9 @@ abstract class Message
         isset($body)    && $this->setBody($body);
     }
 
-    /** @magic */
+    /**
+     * @magic
+     */
     public final function __toString(): string
     {
         return $this->toString();
