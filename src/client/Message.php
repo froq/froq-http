@@ -47,7 +47,7 @@ abstract class Message
     /**
      * @magic
      */
-    public final function __toString(): string
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -58,7 +58,7 @@ abstract class Message
      * @param  string $httpProtocol
      * @return self
      */
-    public final function setHttpProtocol(string $httpProtocol): self
+    public function setHttpProtocol(string $httpProtocol): self
     {
         $this->httpProtocol = $httpProtocol;
 
@@ -70,7 +70,7 @@ abstract class Message
      *
      * @return string
      */
-    public final function getHttpProtocol(): string
+    public function getHttpProtocol(): string
     {
         return $this->httpProtocol;
     }
@@ -81,7 +81,7 @@ abstract class Message
      * @param  float $httpVersion
      * @return self
      */
-    public final function setHttpVersion(float $httpVersion): self
+    public function setHttpVersion(float $httpVersion): self
     {
         $this->httpVersion = $httpVersion;
 
@@ -93,7 +93,7 @@ abstract class Message
      *
      * @return string
      */
-    public final function getHttpVersion(): float
+    public function getHttpVersion(): float
     {
         return $this->httpVersion;
     }
@@ -105,7 +105,7 @@ abstract class Message
      * @param  bool  $reset @internal
      * @return self
      */
-    public final function setHeaders(array $headers, bool $reset = false): self
+    public function setHeaders(array $headers, bool $reset = false): self
     {
         $reset && $this->headers = [];
 
@@ -125,7 +125,7 @@ abstract class Message
      *
      * @return array|null
      */
-    public final function getHeaders(): array|null
+    public function getHeaders(): array|null
     {
         return $this->headers;
     }
@@ -136,7 +136,7 @@ abstract class Message
      * @param  string $name
      * @return bool
      */
-    public final function hasHeader(string $name): bool
+    public function hasHeader(string $name): bool
     {
         $name = strtolower($name);
 
@@ -150,7 +150,7 @@ abstract class Message
      * @param   string|array|null $value
      * @return  self
      */
-    public final function setHeader(string $name, string|array|null $value): self
+    public function setHeader(string $name, string|array|null $value): self
     {
         $name = strtolower($name);
 
@@ -171,7 +171,7 @@ abstract class Message
      * @param  string|null $default
      * @return string|array|null
      */
-    public final function getHeader(string $name, string $default = null): string|array|null
+    public function getHeader(string $name, string $default = null): string|array|null
     {
         $name = strtolower($name);
 
@@ -184,7 +184,7 @@ abstract class Message
      * @param  string $body
      * @return self
      */
-    public final function setBody(string $body): self
+    public function setBody(string $body): self
     {
         $this->body = $body;
 
@@ -196,7 +196,7 @@ abstract class Message
      *
      * @return string|null
      */
-    public final function getBody(): string|null
+    public function getBody(): string|null
     {
         return $this->body;
     }
@@ -207,7 +207,7 @@ abstract class Message
      * @return string
      * @since  6.0
      */
-    public final function toString(): string
+    public function toString(): string
     {
         if ($this instanceof Request) {
             $ret = sprintf("%s %s %s\r\n", $this->getMethod(), $this->getUri(), $this->getHttpProtocol());

@@ -51,7 +51,7 @@ class Payload
      *
      * @return mixed
      */
-    public final function getContent(): mixed
+    public function getContent(): mixed
     {
         return $this->content;
     }
@@ -62,7 +62,7 @@ class Payload
      * @return string|null
      * @since  6.0
      */
-    public final function getContentType(): string|null
+    public function getContentType(): string|null
     {
         return $this->getAttribute('type');
     }
@@ -74,7 +74,7 @@ class Payload
      * @return void
      * @internal
      */
-    public final function setResponse(Response $response): void
+    public function setResponse(Response $response): void
     {
         $this->response = $response;
     }
@@ -85,7 +85,7 @@ class Payload
      * @return froq\http\Response|null
      * @internal
      */
-    public final function getResponse(): Response|null
+    public function getResponse(): Response|null
     {
         return $this->response;
     }
@@ -95,7 +95,7 @@ class Payload
      *
      * @return int
      */
-    public final function getResponseCode(): int
+    public function getResponseCode(): int
     {
         return $this->getAttribute('code');
     }
@@ -105,7 +105,7 @@ class Payload
      *
      * @return array
      */
-    public final function getResponseHeaders(): array
+    public function getResponseHeaders(): array
     {
         return $this->getAttribute('headers', []);
     }
@@ -115,7 +115,7 @@ class Payload
      *
      * @return array
      */
-    public final function getResponseCookies(): array
+    public function getResponseCookies(): array
     {
         return $this->getAttribute('cookies', []);
     }
@@ -128,7 +128,7 @@ class Payload
      * @param  froq\http\Response $response
      * @return array
      */
-    public final function process(Response $response): array
+    public function process(Response $response): array
     {
         $payload = $this;
         $payload->setResponse($response);

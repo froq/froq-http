@@ -60,7 +60,7 @@ abstract class Message
      * @param  ...$args
      * @return static|froq\http\message\Headers
      */
-    public final function headers(...$args): static|Headers
+    public function headers(...$args): static|Headers
     {
         return $args ? $this->setHeaders(...$args) : $this->getHeaders();
     }
@@ -71,7 +71,7 @@ abstract class Message
      * @param  ...$args
      * @return static|froq\http\message\Cookies
      */
-    public final function cookies(...$args): static|Cookies
+    public function cookies(...$args): static|Cookies
     {
         return $args ? $this->setCookies(...$args) : $this->getCookies();
     }
@@ -82,7 +82,7 @@ abstract class Message
      * @param  ...$args
      * @return static|froq\http\message\Body
      */
-    public final function body(...$args): static|Body
+    public function body(...$args): static|Body
     {
         return $args ? $this->setBody(...$args) : $this->getBody();
     }
@@ -94,7 +94,7 @@ abstract class Message
      * @return static
      * @since  4.0
      */
-    public final function addHeaders(array $headers): static
+    public function addHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -109,7 +109,7 @@ abstract class Message
      * @param  array<string, mixed> $headers
      * @return static
      */
-    public final function setHeaders(array $headers): static
+    public function setHeaders(array $headers): static
     {
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
@@ -124,7 +124,7 @@ abstract class Message
      * @param  array<string, mixed> $cookies
      * @return static
      */
-    public final function setCookies(array $cookies): static
+    public function setCookies(array $cookies): static
     {
         foreach ($cookies as $name => $value) {
             $this->setCookie($name, $value);
@@ -138,7 +138,7 @@ abstract class Message
      *
      * @return froq\http\message\Headers
      */
-    public final function getHeaders(): Headers
+    public function getHeaders(): Headers
     {
         return $this->headers;
     }
@@ -149,7 +149,7 @@ abstract class Message
      * @return froq\http\message\Cookies
      * @since  4.0
      */
-    public final function getCookies(): Cookies
+    public function getCookies(): Cookies
     {
         return $this->cookies;
     }
@@ -162,7 +162,7 @@ abstract class Message
      * @return self
      * @throws froq\http\MessageException
      */
-    public final function setBody(mixed $content, array $attributes = null): self
+    public function setBody(mixed $content, array $attributes = null): self
     {
         if ($this->isRequest()) {
             $this->body->setContent($content)
@@ -242,7 +242,7 @@ abstract class Message
      *
      * @return froq\http\message\Body
      */
-    public final function getBody(): Body
+    public function getBody(): Body
     {
         return $this->body;
     }
@@ -252,7 +252,7 @@ abstract class Message
      *
      * @return bool
      */
-    public final function isRequest(): bool
+    public function isRequest(): bool
     {
         return ($this instanceof Request);
     }
@@ -262,7 +262,7 @@ abstract class Message
      *
      * @return bool
      */
-    public final function isResponse(): bool
+    public function isResponse(): bool
     {
         return ($this instanceof Response);
     }
