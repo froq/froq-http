@@ -89,27 +89,23 @@ trait CookieTrait
     /**
      * Remove a cookie.
      *
-     * @param  string $name
-     * @param  bool   $defer
+     * @param  string     $name
+     * @param  array|null $options
      * @return self
      * @throws froq\http\common\CookieException
      */
-    public function removeCookie(string $name, bool $defer = false): self
+    public function removeCookie(string $name, array $options = null): self
     {
         if ($this->isRequest()) {
             throw new CookieException('Cannot modify request cookies');
         }
 
-        $cookie = $this->getCookie($name);
-        if ($cookie !== null) {
-            $this->cookies->remove($name);
-
-            // Remove instantly.
-            $defer || $this->sendCookie($name, null, $cookie->toArray());
-        } else {
-            // Remove instantly.
-            $defer || $this->sendCookie($name, null);
+        if (!$options && $this->hasCookie($name)) {
+            $options = $this->getCookie($name)['options'];
         }
+
+        // Mark as removed.
+        $this->setCookie($name, null, $options);
 
         return $this;
     }

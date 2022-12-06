@@ -110,24 +110,22 @@ trait HeaderTrait
      * Remove a header.
      *
      * @param  string $name
-     * @param  bool   $defer
      * @return self
      * @throws froq\http\common\HeaderException
      */
-    public function removeHeader(string $name, bool $defer = false): self
+    public function removeHeader(string $name): self
     {
         if ($this->isRequest()) {
             throw new HeaderException('Cannot modify request headers');
         }
 
-        $header = $this->getHeader($name);
-        if ($header !== null) {
+        if ($this->hasHeader($name)) {
                $this->headers->remove($name)
             || $this->headers->remove(strtolower($name));
-
-            // Remove instantly.
-            $defer || $this->sendHeader($name, null);
         }
+
+        // Mark as removed.
+        $this->setHeader($name, null);
 
         return $this;
     }
