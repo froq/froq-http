@@ -183,8 +183,8 @@ class Response extends Message
 
         // Generally by CookieTrait.setCookie().
         if (is_array($value)) {
-            $value   = $value['value'];
             $options = $value['options'] ?? null;
+            $value   = $value['value'];
         }
 
         $cookie = http_build_cookie($name, $value, $options)
