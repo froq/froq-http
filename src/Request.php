@@ -63,9 +63,6 @@ class Request extends Message
         $this->id     = get_request_id();
         $this->time   = $_SERVER['REQUEST_TIME'];
         $this->utime  = $_SERVER['REQUEST_TIME_FLOAT'];
-
-        // Lock URI as read-only.
-        $this->uri->readOnly(true);
     }
 
     /**
@@ -262,10 +259,6 @@ class Request extends Message
         foreach ($_COOKIE as $name => $value) {
             $this->cookies->set($name, $value);
         }
-
-        // Lock headers and cookies as read-only.
-        $this->headers->readOnly(true);
-        $this->cookies->readOnly(true);
     }
 
     /**
