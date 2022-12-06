@@ -57,16 +57,18 @@ class Url extends ComponentCollection implements Stringable, \Stringable
         } else {
             // Update query stuff.
             if (isset($source['query']) || isset($source['queryParams'])) {
-                $temp = [];
+                $query = [];
+
                 if (isset($source['query'])) {
-                    $temp = http_parse_query_string($source['query']);
+                    $query = http_parse_query_string($source['query']);
                 }
                 if (isset($source['queryParams'])) {
-                    $temp = array_replace($temp, $source['queryParams']);
+                    $query = array_replace($query, $source['queryParams']);
                 }
-                $source['query'] = http_build_query_string($temp);
-                $source['queryParams'] = $temp;
-                unset($temp);
+
+                $source['query'] = http_build_query_string($query);
+                $source['queryParams'] = $query;
+                unset($query);
             }
         }
 
