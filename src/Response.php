@@ -141,8 +141,8 @@ class Response extends Message
             return;
         }
 
-        $header = http_build_header($name, $value);
-        $header || throw new ResponseException('Invalid header name, it\'s empty');
+        $header = http_build_header($name, $value)
+            ?: throw new ResponseException('Invalid header name, it\'s empty');
 
         $this->head($name, $value, $replace);
     }
@@ -187,8 +187,8 @@ class Response extends Message
             $options = $value['options'] ?? null;
         }
 
-        $cookie = http_build_cookie($name, $value, $options);
-        $cookie || throw new ResponseException('Invalid cookie name, it\'s empty');
+        $cookie = http_build_cookie($name, $value, $options)
+            ?: throw new ResponseException('Invalid cookie name, it\'s empty');
 
         $this->head('Set-Cookie', $cookie, false);
     }
@@ -424,7 +424,7 @@ class Response extends Message
         if ($value === null) {
             header_remove($name);
         } else {
-            header($name .': '. $value, $replace);
+            header($name . ': ' . $value, $replace);
         }
     }
 

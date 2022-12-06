@@ -142,6 +142,6 @@ trait HeaderTrait
      */
     public function parseHeader(string $name, bool $verbose = false): array
     {
-        return http_parse_header($name .':'. $this->getHeader($name), verbose: $verbose);
+        return http_parse_header($name . ': ' . $this->getHeader($name), verbose: $verbose);
     }
 }
