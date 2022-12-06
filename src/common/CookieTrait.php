@@ -61,12 +61,12 @@ trait CookieTrait
      * @param  string|null $value
      * @param  array|null  $options
      * @return self
-     * @throws froq\http\common\CookieException
+     * @throws Error
      */
     public function setCookie(string $name, string|null $value, array $options = null): self
     {
         if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
+            throw new \Error('Cannot modify request cookies');
         }
 
         $this->cookies->set($name, ['value' => $value, 'options' => $options]);
@@ -92,12 +92,12 @@ trait CookieTrait
      * @param  string     $name
      * @param  array|null $options
      * @return self
-     * @throws froq\http\common\CookieException
+     * @throws Error
      */
     public function removeCookie(string $name, array $options = null): self
     {
         if ($this->isRequest()) {
-            throw new CookieException('Cannot modify request cookies');
+            throw new \Error('Cannot modify request cookies');
         }
 
         if (!$options && $this->hasCookie($name)) {

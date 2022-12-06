@@ -52,12 +52,12 @@ trait HeaderTrait
      * @param  string                    $name
      * @param  string|array<string>|null $value
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws Error
      */
     public function addHeader(string $name, string|array|null $value): self
     {
         if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
+            throw new \Error('Cannot modify request headers');
         }
 
         // Multi-headers (eg: Link, Cookie).
@@ -79,12 +79,12 @@ trait HeaderTrait
      * @param  string                    $name
      * @param  string|array<string>|null $value
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws Error
      */
     public function setHeader(string $name, string|array|null $value): self
     {
         if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
+            throw new \Error('Cannot modify request headers');
         }
 
         $this->headers->set($name, $value);
@@ -111,12 +111,12 @@ trait HeaderTrait
      *
      * @param  string $name
      * @return self
-     * @throws froq\http\common\HeaderException
+     * @throws Error
      */
     public function removeHeader(string $name): self
     {
         if ($this->isRequest()) {
-            throw new HeaderException('Cannot modify request headers');
+            throw new \Error('Cannot modify request headers');
         }
 
         if ($this->hasHeader($name)) {
