@@ -8,6 +8,7 @@ namespace froq\http;
 use froq\http\common\RequestTrait;
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
 use froq\App;
+use UrlQuery;
 
 /**
  * A HTTP request class, extends `Message` class and mainly deals with Froq! application
@@ -73,7 +74,6 @@ class Request extends Message
      */
     public function query(): UrlQuery
     {
-        // More memory friendly..
         return $this->query ??= new UrlQuery($_GET);
     }
 
