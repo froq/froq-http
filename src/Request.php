@@ -7,7 +7,7 @@ namespace froq\http;
 
 use froq\http\common\RequestTrait;
 use froq\http\request\{Method, Scheme, Uri, Client, Params, Files, Segments};
-use froq\App;
+use froq\{App, util\Util};
 use UrlQuery;
 
 /**
@@ -58,7 +58,7 @@ class Request extends Message
 
         $this->method = new Method($_SERVER['REQUEST_METHOD']);
         $this->scheme = new Scheme($_SERVER['REQUEST_SCHEME']);
-        $this->uri    = new Uri($_SERVER['REQUEST_URI']);
+        $this->uri    = new Uri((string) Util::getCurrentUrl());
         $this->client = new Client();
 
         $this->id     = get_request_id();
@@ -176,8 +176,14 @@ class Request extends Message
      */
     public function getUri(bool $escape = false): string
     {
-        return !$escape ? $this->uri->toString()
-             : htmlspecialchars($this->uri->toString());
+        $ret = $this->uri->getPath($escape);
+
+        if ($query = $this->uri->getQuery()) {
+            $query = '?' . http_build_query_string($query);
+            $ret .= !$escape ? $query : htmlspecialchars($query);
+        }
+
+        return $ret;
     }
 
     /**
@@ -189,8 +195,7 @@ class Request extends Message
      */
     public function getUrl(bool $escape = false): string
     {
-        return $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['SERVER_NAME']
-             . $this->getUri($escape);
+        return $this->uri->getOrigin() . $this->getUri($escape);
     }
 
     /**
@@ -202,8 +207,7 @@ class Request extends Message
      */
     public function getPath(bool $escape = false): string
     {
-        return !$escape ? $this->uri->get('path')
-             : htmlspecialchars($this->uri->get('path'));
+        return !$escape ? $this->uri->getPath() : htmlspecialchars($this->uri->getPath());
     }
 
     /**
