@@ -34,7 +34,7 @@ class FilePayload extends Payload implements PayloadInterface
     }
 
     /**
-     * @inheritDoc froq\http\response\PayloadInterface
+     * @inheritDoc froq\http\response\payload\PayloadInterface
      */
     public function handle()
     {
