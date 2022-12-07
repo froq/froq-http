@@ -5,8 +5,6 @@
  */
 namespace froq\http\request;
 
-use froq\http\Url;
-
 /**
  * URI class, used by request class.
  *
@@ -15,15 +13,10 @@ use froq\http\Url;
  * @author  Kerem Güneş
  * @since   1.0
  */
-class Uri extends Url
+class Uri extends \Url
 {
     /** Segments instance. */
     public readonly Segments $segments;
-
-    /** Components. */
-    protected static array $components = [
-        'path', 'query', 'queryParams', 'fragment'
-    ];
 
     /**
      * Constructor.
@@ -34,7 +27,7 @@ class Uri extends Url
     public function __construct(array|string $source)
     {
         try {
-            parent::__construct($source, self::$components);
+            parent::__construct($source);
         } catch (\Throwable $e) {
             throw new UriException($e);
         }
@@ -97,9 +90,7 @@ class Uri extends Url
             'Cannot re-generate segments'
         );
 
-        $path = $this->get('path', '');
-
-        $this->segments = self::parseSegments($path, $root);
+        $this->segments = self::parseSegments((string) $this->getPath(), $root);
     }
 
     /**

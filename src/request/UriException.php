@@ -11,5 +11,5 @@ namespace froq\http\request;
  * @author  Kerem Güneş
  * @since   4.0
  */
-class UriException extends \froq\http\UrlException
+class UriException extends \froq\http\HttpException
 {}
