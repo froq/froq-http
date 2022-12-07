@@ -183,8 +183,7 @@ class Request extends Message
         }
 
         if ($withQuery && ($query = $this->uri->getQuery())) {
-            $query = '?' . http_build_query_string($query);
-            $ret .= !$escape ? $query : htmlspecialchars($query);
+            $ret .= '?' . (!$escape ? $query : htmlspecialchars((string) $query));
         }
 
         return $ret;
