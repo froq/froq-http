@@ -232,10 +232,12 @@ class Payload
         if ($option === null || $option === false) {
             return null;
         }
+
         // Now directive.
         if ($option === 0) {
             return time();
         }
+
         // When manually given.
         if (is_int($option) || is_string($option)) {
             return $option;
