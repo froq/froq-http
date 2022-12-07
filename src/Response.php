@@ -226,7 +226,7 @@ class Response extends Message
         $content    = $this->body->getContent();
         $attributes = $this->body->getAttributes();
 
-        // Those n/a responses output nothing.
+        // No output for n/a responses.
         if ($this->body->isNa()) {
             $this->echo(['Content-Type' => 'n/a', 'Content-Length' => 0]);
         }
