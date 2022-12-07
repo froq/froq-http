@@ -114,7 +114,7 @@ class ImagePayload extends Payload implements PayloadInterface
     }
 
     /**
-     * Valid iamge-type checker.
+     * Valid image-type checker.
      */
     private function isValidImageType(mixed $imageType): bool
     {
