@@ -170,14 +170,19 @@ class Request extends Message
      * Get URI.
      *
      * @param  bool $escape
+     * @param  bool $withQuery
      * @return string
      * @since  4.7
      */
-    public function getUri(bool $escape = false): string
+    public function getUri(bool $escape = false, bool $withQuery = true): string
     {
-        $ret = $this->uri->getPath($escape);
+        $ret = '';
 
-        if ($query = $this->uri->getQuery()) {
+        if ($path = $this->uri->getPath()) {
+            $ret .= !$escape ? $path : htmlspecialchars($path);
+        }
+
+        if ($withQuery && ($query = $this->uri->getQuery())) {
             $query = '?' . http_build_query_string($query);
             $ret .= !$escape ? $query : htmlspecialchars($query);
         }
@@ -202,11 +207,11 @@ class Request extends Message
      *
      * @param  bool $escape
      * @return string
-     * @since  4.8, 6.0
+     * @since  6.0
      */
     public function getPath(bool $escape = false): string
     {
-        return !$escape ? $this->uri->getPath() : htmlspecialchars($this->uri->getPath());
+        return $this->getUri($escape, false);
     }
 
     /**
