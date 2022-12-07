@@ -69,7 +69,7 @@ class Request extends Message
     /**
      * Get query property or create newly.
      *
-     * @return froq\http\UrlQuery
+     * @return UrlQuery
      */
     public function query(): UrlQuery
     {
