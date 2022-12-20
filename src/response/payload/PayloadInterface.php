@@ -16,8 +16,8 @@ interface PayloadInterface
     /**
      * Handle.
      *
-     * @return string|resource|GdImage|null
+     * @return mixed
      * @throws froq\http\response\payload\PayloadException
      */
-    public function handle();
+    public function handle(): mixed;
 }

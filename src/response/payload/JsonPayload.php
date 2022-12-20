@@ -9,7 +9,7 @@ use froq\http\{Response, message\ContentType};
 use froq\encoding\encoder\JsonEncoder;
 
 /**
- * A payload class for sending JSON texts as response content with attributes.
+ * Payload class for sending JSON texts as response content.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\JsonPayload
@@ -21,10 +21,10 @@ class JsonPayload extends Payload implements PayloadInterface
     /**
      * Constructor.
      *
-     * @param int                     $code
-     * @param mixed                   $content
-     * @param array|null              $attributes
-     * @param froq\http\Response|null $response
+     * @param int        $code
+     * @param mixed      $content
+     * @param array|null $attributes
+     * @param froq\http\Response|null @internal
      */
     public function __construct(int $code, mixed $content, array $attributes = null, Response $response = null)
     {
@@ -36,13 +36,9 @@ class JsonPayload extends Payload implements PayloadInterface
     /**
      * @inheritDoc froq\http\response\payload\PayloadInterface
      */
-    public function handle()
+    public function handle(): string
     {
         $content = $this->getContent();
-
-        if (is_null($content)) {
-            return $content;
-        }
 
         if (!JsonEncoder::isEncoded($content)) {
             // When given in config as "response.json" field.
@@ -54,9 +50,7 @@ class JsonPayload extends Payload implements PayloadInterface
             if ($encoder->encode()) {
                 $content = $encoder->getOutput();
             } elseif ($error = $encoder->error()) {
-                throw new PayloadException(
-                    $error->message, code: $error->code, cause: $error
-                );
+                throw new PayloadException($error);
             }
         }
 

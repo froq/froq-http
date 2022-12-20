@@ -173,13 +173,14 @@ abstract class Message
                 $payload = $content;
             } else {
                 $attributes = (array) $attributes;
+
                 // Content type could be set by headers before.
                 $contentType = $this->getHeader('Content-Type') ?: ContentType::TEXT_HTML;
 
                 // Response contents (eg: return this.response(...)).
                 if ($content instanceof Response) {
                     $code = $content->getStatusCode();
-                    $contentType = $content->getContentType() ?? $contentType;
+                    $contentType = $content->getContentType() ?: $contentType;
 
                     // Update attributes with current body attributes.
                     $attributes = [...$attributes, ...$content->body->getAttributes()];
@@ -188,37 +189,10 @@ abstract class Message
                     $content = $content->body->getContent();
                 } else {
                     $code = $this->getStatusCode();
-                    $contentType = $this->getContentType() ?? $contentType;
+                    $contentType = $this->getContentType() ?: $contentType;
                 }
 
-                // Attributes with default type if none.
-                $attributes = $attributes + ['type' => $contentType];
-
-                // Content type check for a proper response.
-                $contentType = trim((string) $attributes['type'])
-                    ?: throw new MessageException('Missing content type');
-
-                if (is_array($content)) {
-                    // Note: must be checked here only!
-                    if (!preg_test('~json|xml~i', $contentType)) {
-                        throw new MessageException(
-                            "Invalid content type %q for 'array' type content, ".
-                            "content type must be denoted like 'xxx/json' or 'xxx/xml'",
-                            $contentType
-                        );
-                    }
-                } else {
-                    // Expected, processable types.
-                    if (!is_null($content) && !is_string($content)
-                        && !is_image($content) && !is_stream($content)) {
-                        throw new MessageException(
-                            "Invalid content value type '%t' [valids: string, image, stream, null]",
-                            $content
-                        );
-                    }
-                }
-
-                $payload = new Payload($code, $content, $attributes);
+                $payload = new Payload($code, $content, $attributes + ['type' => $contentType]);
             }
 
             // Extract needed stuff from payload process.
@@ -248,9 +222,7 @@ abstract class Message
     }
 
     /**
-     * Get whether message is request.
-     *
-     * @return bool
+     * @internal
      */
     public function isRequest(): bool
     {
@@ -258,9 +230,7 @@ abstract class Message
     }
 
     /**
-     * Get whether message is response.
-     *
-     * @return bool
+     * @internal
      */
     public function isResponse(): bool
     {

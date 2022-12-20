@@ -109,50 +109,39 @@ class Body
      * Is na.
      *
      * @return bool
-     * @since  4.0
      */
     public function isNa(): bool
     {
-        return ($this->getContentType() === ContentType::NA);
+        return strtolower((string) $this->getContentType()) === ContentType::NA;
     }
 
     /**
      * Is text.
      *
      * @return bool
-     * @since  4.0
      */
     public function isText(): bool
     {
-        return (is_null($this->content) || is_string($this->content))
-            && (!$this->isNa() && !$this->isFile() && !$this->isImage());
-    }
-
-    /**
-     * Is file.
-     *
-     * @return bool
-     * @since  4.0
-     */
-    public function isFile(): bool
-    {
-        return in_array($this->getContentType(), [
-            ContentType::APPLICATION_OCTET_STREAM,
-            ContentType::APPLICATION_DOWNLOAD
-        ], true);
+        return str_has_prefix((string) $this->getContentType(), 'text/', true);
     }
 
     /**
      * Is image.
      *
      * @return bool
-     * @since  3.9
      */
     public function isImage(): bool
     {
-        return in_array($this->getContentType(), [
-            ContentType::IMAGE_JPEG, ContentType::IMAGE_WEBP,
-            ContentType::IMAGE_PNG,  ContentType::IMAGE_GIF
-        ], true);
+        return str_has_prefix((string) $this->getContentType(), 'image/', true);
+    }
+
+    /**
+     * Is file.
+     *
+     * @return bool
+     */
+    public function isFile(): bool
+    {
+        return str_has_suffix((string) $this->getContentType(), ['octet-stream', 'download'], true);
     }
 }

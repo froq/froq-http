@@ -6,10 +6,10 @@
 namespace froq\http\response\payload;
 
 use froq\http\{Response, message\ContentType};
-use froq\file\{File, mime\Mime};
+use froq\file\{File, FileException};
 
 /**
- * A payload class for sending files as response content with attributes.
+ * Payload class for sending files as response content.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\FilePayload
@@ -21,12 +21,12 @@ class FilePayload extends Payload implements PayloadInterface
     /**
      * Constructor.
      *
-     * @param int                     $code
-     * @param string|resource         $content
-     * @param array|null              $attributes
-     * @param froq\http\Response|null $response
+     * @param int        $code
+     * @param string     $content
+     * @param array|null $attributes
+     * @param froq\http\Response|null @internal
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, string $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] = ContentType::APPLICATION_OCTET_STREAM;
 
@@ -36,115 +36,69 @@ class FilePayload extends Payload implements PayloadInterface
     /**
      * @inheritDoc froq\http\response\payload\PayloadInterface
      */
-    public function handle()
+    public function handle(): File
     {
-        [$file, $fileName, $fileMime, $fileExtension, $modifiedAt, $direct] = [
-            $this->getContent(), ...$this->getAttributes(['name', 'mime', 'extension', 'modifiedAt', 'direct'])
-        ];
+        $file = $this->getContent();
 
-        $type = new \Type($file);
+        [$fileName, $fileMime, $fileExtension, $fileSize, $modifiedAt]
+            = $this->getAttributes(['name', 'mime', 'extension', 'size', 'modifiedAt']);
 
         if (!$file) {
             throw new PayloadException('File empty');
-        } elseif (!$type->isString() && !$type->isStream()) {
-            throw new PayloadException('File content must be a valid readable file path, '.
-                'binary string or stream, %s given', $type);
-        } elseif ($fileName && !$this->isValidFileName($fileName)) {
-            throw new PayloadException('File name must not contain non-ascii characters');
-        }
-
-        // Direct file reads.
-        if ($direct && !$type->isString()) {
+        } elseif (!is_string($file)) {
             throw new PayloadException('File content must be a valid readable file path '.
-                'when "direct" option is true, %s given', $type);
+                'or source file data, %t given', $file);
+        } elseif (isset($fileName) && !$this->isValidFileName($fileName)) {
+            throw new PayloadException('File name must be string and not contain non-ascii characters');
         }
 
-        if (!$direct && $type->isString()) {
-            $temp = $file;
-
-            // Check if content is a file.
-            if (File::isFile($file)) {
-                if (File::errorCheck($file, $error)) {
-                    throw new PayloadException($error);
-                }
-
-                $fileSize    = filesize($file);
-                $memoryLimit = $this->getMemoryLimit($limit);
-                if ($memoryLimit > -1 && $fileSize > $memoryLimit) {
-                    throw new PayloadException('Given file exceeding "memory_limit" current ini '.
-                        'configuration value (%s)', $limit);
-                }
-
-                try {
-                    $file = fopen($file, 'rb');
-                } catch (\Error) { $file = null; }
-
-                $file || throw new PayloadException('Failed creating file resource [error: @error]');
-
-                $fileName   = $fileName ?: filename($temp, true);
-                $modifiedAt = $this->getModifiedAt($temp, $modifiedAt);
-            }
-            // Convert content to source.
-            else {
-                try {
-                    fwrite($file = tmpfile(), $temp);
-                } catch (\Error) { $file = null; }
-
-                $file || throw new PayloadException('Failed creating file resource [error: @error]');
-
-                $fileName   = strval($fileName ?: crc32($temp));
-                $modifiedAt = $this->getModifiedAt('', $modifiedAt);
+        try {
+            // A regular file.
+            if (@is_file($file)) {
+                $file = new File($file);
+                $file->open('rb');
+            } else {
+                // Or contents of file.
+                $file = File::fromString($file);
             }
 
-            unset($temp);
-        }
-        // File may be stream.
-        elseif (!$type->isStream()) {
-            if (File::errorCheck($file, $error)) {
-                throw new PayloadException($error);
-            }
-
-            $fileName   = $fileName ?: filename($file, true);
-            $modifiedAt = $this->getModifiedAt($file, $modifiedAt);
-
-            $fileMime   = $fileMime ?: filemime($file);
-            $fileSize   = $fileSize ?: filesize($file);
+            $fileMime && $file->setMime($fileMime);
+            $fileExtension && $file->setExtension($fileExtension);
+        } catch (FileException $e) {
+            throw new PayloadException($e, cause: $e->getCause());
         }
 
-        $fileName = $fileName ?: fmeta($file)['uri'];
-        $fileMime = $fileMime ?: filemime($fileName);
-        $fileSize = $fileSize ?: fstat($file)['size'];
+        $fileName      = $fileName      ?: $file->getPath();
+        $fileMime      = $fileMime      ?: $file->getMime();
+        $fileExtension = $fileExtension ?: $file->getExtension();
+        $fileSize      = $fileSize      ?: $file->size();
+        $modifiedAt    = $modifiedAt    ?: $file->stat()['mtime'];
 
-        // Extract file name & extension.
         if ($fileName) {
-            $name     = $fileName;
-            $fileName = filename($name);
-            if (str_contains($name, '.')) {
-                $fileExtension = file_extension($name);
+            $baseName = $fileName;
+            $fileName = file_name($baseName);
+            if (str_contains($baseName, '.')) {
+                $fileExtension = file_extension($baseName);
             }
         }
 
-        // Add extension to file name.
-        $fileName = $fileName .'.'. ($fileExtension ?? (
-            $fileMime ? Mime::getExtensionByType($fileMime)
-                      : File::getExtension($fileName)
-        ));
+        $fileName = $fileName . '.' . $fileExtension;
+        $fileMime = $fileMime ?: ContentType::APPLICATION_OCTET_STREAM;
 
         // Update attributes.
         $this->setAttributes([
             'name'   => $fileName, 'mime'       => $fileMime,
             'size'   => $fileSize, 'modifiedAt' => $modifiedAt,
-            'direct' => $direct
         ]);
 
-        return ($content = $file);
+        return $file;
     }
 
     /**
-     * Valid file-name checker.
+     * Valid file name checker.
      */
     private function isValidFileName(mixed $fileName): bool
     {
-        return preg_test('~^[\w\+\-\.]+$~', (string) $fileName);
+        return is_string($fileName) && preg_test('~^[\w\+\-\.]+$~', $fileName);
     }
 }

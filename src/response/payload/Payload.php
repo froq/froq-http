@@ -5,13 +5,12 @@
  */
 namespace froq\http\response\payload;
 
-use froq\http\Response;
+use froq\http\{Response, message\ContentType};
 use froq\common\trait\AttributeTrait;
 use froq\file\mime\Mime;
-use froq\util\Util;
 
 /**
- * Base payload class extended by other payload classes.
+ * Base payload class.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\Payload
@@ -31,10 +30,10 @@ class Payload
     /**
      * Constructor.
      *
-     * @param int                     $code
-     * @param mixed|null              $content
-     * @param array|null              $attributes
-     * @param froq\http\Response|null $response
+     * @param int        $code
+     * @param mixed|null $content
+     * @param array|null $attributes
+     * @param froq\http\Response|null @internal
      */
     public function __construct(int $code, mixed $content = null, array $attributes = null, Response $response = null)
     {
@@ -127,6 +126,7 @@ class Payload
      *
      * @param  froq\http\Response $response
      * @return array
+     * @throws froq\http\response\payload\PayloadException
      */
     public function process(Response $response): array
     {
@@ -135,125 +135,55 @@ class Payload
 
         // Check non-body stuff.
         if (!$response->allowsBody()) {
-            // Return content, content attributes, response attributes.
             return [
+                // Content.
                 null,
+                // Content attributes.
                 $payload->getAttributes(),
+                // Response attributes.
                 [$payload->getResponseCode(),
                  $payload->getResponseHeaders(),
                  $payload->getResponseCookies()]
             ];
         }
 
-        // Ready to handle (eg: JsonPayload, XmlPayload etc).
+        // Ready to handle (eg: JsonPayload etc).
         if ($payload instanceof PayloadInterface) {
             $content = $payload->handle();
-            if (!is_null($content) && !is_string($content)
-                && !is_image($content) && !is_stream($content)) {
-                throw new PayloadException(
-                    'Failed to achive string|image|stream|null content from payload %s',
-                    get_class($payload)
-                );
-            }
-        }
-        // Not ready to handle, try to create (eg: Payload).
-        else {
-            $contentType = $payload->getContentType()
-                ?: throw new PayloadException('Content type must not be empty');
+        } else {
+            $contentType = (string) $payload->getContentType();
 
             // Detect content type and process.
             switch ($type = $this->sniffContentType($contentType)) {
-                case 'n/a':
+                case ContentType::NA:
                     $content = null;
                     break;
                 case 'text':
-                    $content = $payload->getContent();
-                    if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException(
-                            'Content must be string|null for text responses, %s given',
-                            get_type($content)
-                        );
-                    }
+                    $content = $payload->content;
                     break;
                 case 'json': case 'xml':
-                    $payload = $this->createPayload($type, [
-                        $payload->getResponseCode(), $payload->getContent(),
-                        $payload->getAttributes(), $response
-                    ]);
-
-                    $content = $payload->handle();
-                    if (!is_null($content) && !is_string($content)) {
-                        throw new PayloadException(
-                            'Failed getting string|null content from payload %s [return: %s]',
-                            [get_class($payload), get_type($content)]
-                        );
-                    }
-                    break;
                 case 'image': case 'file': case 'download':
                     $payload = $this->createPayload($type, [
                         $payload->getResponseCode(), $payload->getContent(),
                         $payload->getAttributes(), $response
                     ]);
-
                     $content = $payload->handle();
-                    if (!is_image($content) && !is_stream($content)
-                        && !$payload->getAttribute('direct') // Skip direct image/file reads.
-                    ) {
-                        throw new PayloadException(
-                            'Failed getting image|stream content from payload %s [return: %s]',
-                            [get_class($payload), get_type($content)]
-                        );
-                    }
                     break;
                 default:
-                    throw new PayloadException(
-                        'Invalid payload type %q',
-                        $type ?? $payload->getContentType()
-                    );
+                    throw new PayloadException('Invalid content type %q', $type ?? $contentType);
             }
         }
 
-        // Return content, content attributes, response attributes.
         return [
+            // Content.
             $content,
+            // Content attributes.
             $payload->getAttributes(),
+            // Response attributes.
             [$payload->getResponseCode(),
              $payload->getResponseHeaders(),
              $payload->getResponseCookies()]
         ];
-    }
-
-    /**
-     * Get "modified at" option as timestamp.
-     */
-    protected function getModifiedAt(string $file, mixed $option): int|string|null
-    {
-        // Disable directive.
-        if ($option === null || $option === false) {
-            return null;
-        }
-
-        // Now directive.
-        if ($option === 0) {
-            return time();
-        }
-
-        // When manually given.
-        if (is_int($option) || is_string($option)) {
-            return $option;
-        }
-
-        return $file ? filemtime($file) : null;
-    }
-
-    /**
-     * Get "memory limit" directive as converted bytes.
-     */
-    protected function getMemoryLimit(string &$limit = null): int
-    {
-        $limit = (string) ini_get('memory_limit');
-
-        return Util::convertBytes($limit);
     }
 
     /**
@@ -262,28 +192,28 @@ class Payload
     private function sniffContentType(string $contentType): string|null
     {
         $contentType = strtolower($contentType);
-        if ($contentType === 'n/a') {
-            return 'n/a';
+        if ($contentType === ContentType::NA) {
+            return $contentType;
         }
 
-        // Eg: text/html, image/jpeg, application/json.
-        if (preg_match('~/(?:.*?(\w+)$)?~', $contentType, $match)) {
-            $match = match ($match[1]) {
+        // Eg: text/html, image/jpeg, application/json, foo/download.
+        if (preg_match('~^(\w+)/(?:.*?(\w+)$)?~', $contentType, $match)) {
+            $match = match ($match[2]) {
+                // JSON & XML types.
                 'json' => 'json', 'xml' => 'xml',
-                'jpeg', 'webp', 'png', 'gif' => 'image',
+                // Known text types.
                 'html', 'plain', 'css', 'javascript' => 'text',
-                'octet-stream' => 'file',
-                default => null,
+                // Known image types.
+                'jpeg', 'webp', 'png', 'gif' => 'image',
+                // File downloads.
+                'octet-stream', 'download' => 'file',
+                // Other text types.
+                default => $match[1] === 'text' ? 'text' : null,
             };
 
             // Any matches above.
             if ($match) {
                 return $match;
-            }
-
-            // Any type of those trivials download, x-download, force-download etc.
-            if (str_ends_with($contentType, 'download')) {
-                return 'download';
             }
 
             // Any extension with a valid type.
@@ -292,7 +222,8 @@ class Payload
             }
         }
 
-        return null; // Invalid.
+        // Invalid.
+        return null;
     }
 
     /**

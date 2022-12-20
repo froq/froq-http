@@ -6,10 +6,10 @@
 namespace froq\http\response\payload;
 
 use froq\http\{Response, message\ContentType};
-use froq\file\File;
+use froq\file\{Image, ImageException};
 
 /**
- * A payload class for sending images as response content with attributes.
+ * Payload class for sending images as response content.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\ImagePayload
@@ -21,12 +21,12 @@ class ImagePayload extends Payload implements PayloadInterface
     /**
      * Constructor.
      *
-     * @param int                     $code
-     * @param string|GdImage          $content
-     * @param array|null              $attributes
-     * @param froq\http\Response|null $response
+     * @param int        $code
+     * @param string     $content
+     * @param array|null $attributes
+     * @param froq\http\Response|null @internal
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, string $content, array $attributes = null, Response $response = null)
     {
         parent::__construct($code, $content, $attributes, $response);
     }
@@ -34,90 +34,53 @@ class ImagePayload extends Payload implements PayloadInterface
     /**
      * @inheritDoc froq\http\response\payload\PayloadInterface
      */
-    public function handle()
+    public function handle(): Image
     {
-        [$image, $imageType, $modifiedAt, $direct] = [
-            $this->getContent(), ...$this->getAttributes(['type', 'modifiedAt', 'direct'])
-        ];
+        $image = $this->getContent();
 
-        $type = new \Type($image);
+        [$imageType, $imageSize, $modifiedAt]
+            = $this->getAttributes(['type', 'size', 'modifiedAt']);
 
         if (!$image) {
             throw new PayloadException('Image empty');
-        } elseif (!$type->isString() && !$type->isImage()) {
-            throw new PayloadException('Image content must be a valid readable file path, '.
-                'binary string or GdImage, %s given', $type);
-        } elseif (!$imageType || !$this->isValidImageType($imageType)) {
-            throw new PayloadException('Invalid image type %q [valids: %A]',
-                [$imageType ?: 'null', ContentType::imageTypes()]);
-        }
-
-        // Direct image reads.
-        if ($direct && !$type->isString()) {
+        } elseif (!is_string($image)) {
             throw new PayloadException('Image content must be a valid readable file path '.
-                'when "direct" option is true, %s given', $type);
+                'or source file data, %t given', $image);
+        } elseif (!isset($imageType) || !$this->isValidImageType($imageType)) {
+            throw new PayloadException('Image type must be string and a valid image MIME type');
         }
 
-        if (!$direct && $type->isString()) {
-            $temp = $image;
-
-            // Check if content is a file.
-            if (File::isFile($image)) {
-                if (File::errorCheck($image, $error)) {
-                    throw new PayloadException($error);
-                }
-
-                $imageSize   = filesize($image);
-                $memoryLimit = $this->getMemoryLimit($limit);
-                if ($memoryLimit > -1 && $imageSize > $memoryLimit) {
-                    throw new PayloadException('Given image exceeding "memory_limit" current ini '.
-                        'configuration value (%s)', $limit);
-                }
-
-                try {
-                    $image = imagecreatefromstring(file_get_contents($temp));
-                } catch (\Error) { $image = null; }
-
-                $image || throw new PayloadException('Failed creating image resource [error: @error]');
-
-                $modifiedAt = $this->getModifiedAt($temp, $modifiedAt);
-            }
-            // Convert content to source.
-            else {
-                try {
-                    $image = imagecreatefromstring($image);
-                } catch (\Error) { $image = null; }
-
-                $image || throw new PayloadException('Failed creating image resource [error: @error]');
-
-                $modifiedAt = $this->getModifiedAt('', $modifiedAt);
+        try {
+            // A regular file.
+            if (@is_file($image)) {
+                $image = new Image($image);
+                $image->open('rb');
+            } else {
+                // Or contents of file.
+                $image = Image::fromString($image);
             }
 
-            unset($temp);
+            $imageType && $image->setMime($imageType);
+        } catch (FileException $e) {
+            throw new PayloadException($e, cause: $e->getCause());
         }
-        // Image may be GdImage.
-        elseif (!$type->isImage()) {
-            if (File::errorCheck($image, $error)) {
-                throw new PayloadException($error);
-            }
 
-            $modifiedAt = $this->getModifiedAt($image, $modifiedAt);
-        }
+        $imageSize  = $imageSize  ?: $image->size();
+        $modifiedAt = $modifiedAt ?: $image->stat()['mtime'];
 
         // Update attributes.
         $this->setAttributes([
-            'modifiedAt' => $modifiedAt,
-            'direct'     => $direct
+            'size' => $imageSize, 'modifiedAt' => $modifiedAt,
         ]);
 
-        return ($content = $image);
+        return $image;
     }
 
     /**
-     * Valid image-type checker.
+     * Valid image type checker.
      */
     private function isValidImageType(mixed $imageType): bool
     {
-        return preg_test('~^image/(?:jpeg|webp|png|gif)$~', (string) $imageType);
+        return is_string($imageType) && preg_test('~^image/([a-z]+)$~', $imageType);
     }
 }

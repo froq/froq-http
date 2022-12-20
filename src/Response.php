@@ -9,7 +9,6 @@ use froq\http\common\ResponseTrait;
 use froq\http\response\{Status, StatusException};
 use froq\http\message\{ContentType, ContentCharset};
 use froq\encoding\encoder\{GZipEncoder, ZLibEncoder};
-use froq\file\object\{ImageObject, FileObject};
 use froq\{App, util\Util};
 use Assert;
 
@@ -226,11 +225,11 @@ class Response extends Message
         $content    = $this->body->getContent();
         $attributes = $this->body->getAttributes();
 
-        // No output for n/a responses.
+        // No contents for n/a.
         if ($this->body->isNa()) {
-            $this->echo(['Content-Type' => 'n/a', 'Content-Length' => 0]);
+            $this->echo(['Content-Type' => ContentType::NA, 'Content-Length' => 0]);
         }
-        // Text contents (html, json, xml etc.).
+        // Text contents (eg: html).
         elseif ($this->body->isText()) {
             $content        = (string) $content;
             $contentType    = $attributes['type']    ?? ContentType::TEXT_HTML; // @default
@@ -289,81 +288,54 @@ class Response extends Message
         }
         // Image contents.
         elseif ($this->body->isImage()) {
-            [$image, $imageType, $modifiedAt, $expiresAt, $direct, $etag] = [
-                $content, ...array_select($attributes, ['type', 'modifiedAt', 'expiresAt', 'direct', 'etag'])
-            ];
+            /** @var froq\file\Image */
+            $image = $content;
 
-            $headers = ['Content-Type' => $imageType];
+            [$imageType, $imageSize, $modifiedAt, $expiresAt, $etag]
+                = array_select($attributes, ['type', 'size', 'modifiedAt', 'expiresAt', 'etag']);
 
-            // For direct file read.
-            if ($direct) {
-                $headers['Content-Length'] = filesize($image);
+            $headers = ['Content-Type' => $imageType, 'Content-Length' => $imageSize];
 
-                if ($etag) {
-                    $headers['ETag'] = is_string($etag) ? $etag : hash_file('fnv1a64', $image);
-                }
-                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                    $headers['Last-Modified'] = Http::date($modifiedAt);
-                }
-                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
-                    $headers['Expires'] = Http::date($expiresAt);
-                }
-
-                $headers['X-Dimensions'] = vsprintf('%dx%d', getimagesize($image));
-
-                $this->echo($headers);
-
-                readfile($image);
+            if ($etag) {
+                $headers['ETag'] = is_string($etag) ? $etag : hash('fnv1a64', $content);
             }
-            // For resize/crop purposes.
-            else {
-                $options = $attributes['options'] ?? $this->app->config('response.image');
-                $options = $options ? (array) $options : null;
-
-                $image   = new ImageObject($image, $imageType, $options);
-                $content = $image->toString();
-
-                $headers['Content-Length'] = strlen($content);
-
-                if ($etag) {
-                    $headers['ETag'] = is_string($etag) ? $etag : hash('fnv1a64', $content);
-                }
-                if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
-                    $headers['Last-Modified'] = Http::date($modifiedAt);
-                }
-                if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
-                    $headers['Expires'] = Http::date($expiresAt);
-                }
-
-                $headers['X-Dimensions'] = vsprintf('%dx%d', $image->dimensions());
-
-                $this->echo($headers, $content);
-
-                unset($image); // Free.
+            if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
+                $headers['Last-Modified'] = Http::date($modifiedAt);
             }
+            if ($expiresAt && (is_int($expiresAt) || is_string($expiresAt))) {
+                $headers['Expires'] = Http::date($expiresAt);
+            }
+
+            $headers['X-Dimensions'] = vsprintf('%dx%d', $image->dims());
+
+            $this->echo($headers);
+
+            do {
+                echo $image->read(1024 ** 2);
+            } while (!$image->eof() && !connection_aborted());
         }
-        // File contents (actually file downloads).
+        // File (download) contents.
         elseif ($this->body->isFile()) {
-            [$file, $fileMime, $fileName, $fileSize, $modifiedAt, $direct, $rateLimit] = [
-                $content, ...array_select($attributes, ['mime', 'name', 'size', 'modifiedAt', 'direct', 'rateLimit'])
-            ];
+            /** @var froq\file\File */
+            $file = $content;
 
-            // If rate limit is null or -1, than file size will be used as rate limit.
+            [$fileMime, $fileSize, $fileName, $modifiedAt, $rateLimit]
+                = array_select($attributes, ['mime', 'size', 'name', 'modifiedAt', 'rateLimit']);
+
+            // If rate limit is empty or -1, file size will be used as rate limit.
             $rateLimit ??= (int) $this->app->config('response.file.rateLimit', -1);
             if ($rateLimit < 1) {
                 $rateLimit = $fileSize;
             }
 
-            $headers = [
-                'Content-Type' => $fileMime ?: ContentType::APPLICATION_OCTET_STREAM,
-                'Content-Length' => $fileSize,
-            ];
+            $headers = ['Content-Type' => $fileMime, 'Content-Length' => $fileSize];
 
-            $headers['Content-Disposition'] = sprintf('attachment; filename="%s"', $fileName);
-            $headers['Content-Transfer-Encoding'] = 'binary';
-            $headers['Cache-Control'] = 'no-cache';
-            $headers['Pragma'] = 'no-cache';
-            $headers['Expires'] = '0';
+            // Add download headers.
+            $headers += [
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $fileName),
+                'Content-Transfer-Encoding' => 'binary', 'Cache-Control' => 'no-cache',
+                'Pragma' => 'no-cache', 'Expires' => '0',
+            ];
 
             if ($modifiedAt && (is_int($modifiedAt) || is_string($modifiedAt))) {
                 $headers['Last-Modified'] = Http::date($modifiedAt);
@@ -374,22 +346,10 @@ class Response extends Message
 
             $this->echo($headers);
 
-            // For direct file read.
-            if ($direct) {
-                readfile($file);
-            }
-            // For resource read.
-            else {
-                $file = new FileObject($file);
-                $file->rewind();
-
-                do {
-                    echo $file->read($rateLimit);
-                    sleep(1); // Apply rate limit.
-                } while ($file->valid() && !connection_aborted());
-
-                unset($file); // Free.
-            }
+            do {
+                echo $file->read($rateLimit);
+                sleep(1); // Apply rate limit.
+            } while (!$file->eof() && !connection_aborted());
         }
         // Nothing to print.
         // else {}
@@ -434,12 +394,13 @@ class Response extends Message
     private function echo(array $headers, string|null $output = null): void
     {
         $this->free();
-        $this->expose();
 
         // Print headers.
         foreach ($headers as $name => $value) {
             $this->head($name, $value);
         }
+
+        $this->expose();
 
         // Print output.
         if ($output !== null) {

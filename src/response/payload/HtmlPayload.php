@@ -8,7 +8,7 @@ namespace froq\http\response\payload;
 use froq\http\{Response, message\ContentType};
 
 /**
- * A payload class for sending HTML texts as response content with attributes.
+ * Payload class for sending HTML texts as response content.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\HtmlPayload
@@ -20,12 +20,12 @@ class HtmlPayload extends Payload implements PayloadInterface
     /**
      * Constructor.
      *
-     * @param int                     $code
-     * @param string|null             $content
-     * @param array|null              $attributes
-     * @param froq\http\Response|null $response
+     * @param int        $code
+     * @param string     $content
+     * @param array|null $attributes
+     * @param froq\http\Response|null @internal
      */
-    public function __construct(int $code, string|null $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, string $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] = ContentType::TEXT_HTML;
 
@@ -35,15 +35,8 @@ class HtmlPayload extends Payload implements PayloadInterface
     /**
      * @inheritDoc froq\http\response\payload\PayloadInterface
      */
-    public function handle()
+    public function handle(): string
     {
-        $content = $this->getContent();
-
-        if (!is_null($content) && !is_string($content)) {
-            throw new PayloadException('Content must be string|null for html payloads, %s given',
-                get_type($content));
-        }
-
-        return $content;
+        return (string) $this->getContent();
     }
 }

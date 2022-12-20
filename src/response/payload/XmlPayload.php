@@ -9,7 +9,7 @@ use froq\http\{Response, message\ContentType};
 use froq\encoding\encoder\XmlEncoder;
 
 /**
- * A payload class for sending XML texts as response content with attributes.
+ * Payload class for sending XML texts as response content.
  *
  * @package froq\http\response\payload
  * @class   froq\http\response\payload\XmlPayload
@@ -20,12 +20,13 @@ class XmlPayload extends Payload implements PayloadInterface
 {
     /**
      * Constructor.
-     * @param int                     $code
-     * @param array|string            $content
-     * @param array                   $attributes
-     * @param froq\http\Response|null $response
+     *
+     * @param int          $code
+     * @param array|string $content
+     * @param array|null   $attributes
+     * @param froq\http\Response|null @internal
      */
-    public function __construct(int $code, $content, array $attributes = null, Response $response = null)
+    public function __construct(int $code, array|string $content, array $attributes = null, Response $response = null)
     {
         $attributes['type'] ??= ContentType::APPLICATION_XML;
 
@@ -35,20 +36,18 @@ class XmlPayload extends Payload implements PayloadInterface
     /**
      * @inheritDoc froq\http\response\payload\PayloadInterface
      */
-    public function handle()
+    public function handle(): string
     {
         $content = $this->getContent();
 
-        if (is_null($content) || is_string($content)) {
-            return $content;
-        }
-
-        if (!XmlEncoder::isEncoded($content)) {
-            is_array($content) || throw new PayloadException(
-                'Content must be array for non-encoded XML payloads, %t given',
+        if (!is_array($content) && !is_string($content)) {
+            throw new PayloadException(
+                'Content must be array|string for XML payloads, %t given',
                 $content
             );
+        }
 
+        if (!is_string($content) && !XmlEncoder::isEncoded($content)) {
             // When given in config as "response.xml" field.
             $options = (array) $this->response?->app->config('response.xml');
 
@@ -58,9 +57,7 @@ class XmlPayload extends Payload implements PayloadInterface
             if ($encoder->encode()) {
                 $content = $encoder->getOutput();
             } elseif ($error = $encoder->error()) {
-                throw new PayloadException(
-                    $error->message, code: $error->code, cause: $error
-                );
+                throw new PayloadException($error);
             }
         }
 
