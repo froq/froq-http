@@ -64,16 +64,6 @@ class Request extends Message
     }
 
     /**
-     * Get query as immutable if present.
-     *
-     * @return UrlQuery|null
-     */
-    public function query(): UrlQuery|null
-    {
-        return ($query = $this->uri->getQuery()) ? clone $query : null;
-    }
-
-    /**
      * Get all params as GPC sort.
      *
      * @return array
@@ -91,6 +81,16 @@ class Request extends Message
     public function files(): array
     {
         return Files::all();
+    }
+
+    /**
+     * Get query as immutable if present.
+     *
+     * @return UrlQuery|null
+     */
+    public function query(): UrlQuery|null
+    {
+        return ($query = $this->uri->getQuery()) ? clone $query : null;
     }
 
     /**
