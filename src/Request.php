@@ -44,9 +44,6 @@ class Request extends Message
     /** Request micro time. */
     public readonly float $utime;
 
-    /** UrlQuery instance. */
-    private readonly UrlQuery $query;
-
     /**
      * Constructor.
      *
@@ -67,13 +64,13 @@ class Request extends Message
     }
 
     /**
-     * Get query property or create newly.
+     * Get query as immutable if present.
      *
-     * @return UrlQuery
+     * @return UrlQuery|null
      */
-    public function query(): UrlQuery
+    public function query(): UrlQuery|null
     {
-        return $this->query ??= new UrlQuery($_GET);
+        return ($query = $this->uri->getQuery()) ? clone $query : null;
     }
 
     /**
