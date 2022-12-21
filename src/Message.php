@@ -160,7 +160,6 @@ abstract class Message
      * @param  mixed      $content
      * @param  array|null $attributes
      * @return self
-     * @throws froq\http\MessageException
      */
     public function setBody(mixed $content, array $attributes = null): self
     {
